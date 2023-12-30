@@ -48,7 +48,7 @@ fun MediaItem(
 	  Image(
 		contentScale = ContentScale.FillBounds,
 		modifier = Modifier
-		  .size(120.dp)
+		  .size(width = 150.dp, height = 90.dp)
 		  .background(color = Color.Black, shape = RoundedCornerShape(15.dp)),
 		bitmap = item.image!!.asImageBitmap(),
 		contentDescription = "",

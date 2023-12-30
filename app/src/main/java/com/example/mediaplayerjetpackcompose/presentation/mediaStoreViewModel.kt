@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose
+package com.example.mediaplayerjetpackcompose.presentation
 
 import android.content.ContentResolver
 import androidx.compose.runtime.mutableStateListOf
@@ -9,6 +9,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.mediaplayerjetpackcompose.ApplicationClass
 import com.example.mediastore.data.MediaStoreRepository
 import com.example.mediaplayerjetpackcompose.domain.model.VideoMediaModel
 import kotlinx.coroutines.flow.collectLatest
@@ -26,7 +27,7 @@ class MediaStoreViewModel(
 	getMedia()
   }
   
-  fun getMedia() {
+  private fun getMedia() {
 	viewModelScope.launch {
 	  mediaStoreRepository.getMedia(mContentResolver = contentResolver).collectLatest {
 		mediaStoreDataList.add(it)

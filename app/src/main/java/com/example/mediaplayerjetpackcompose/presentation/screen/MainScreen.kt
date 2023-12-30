@@ -23,13 +23,14 @@ import androidx.navigation.navArgument
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(
+  navHostController: NavHostController = rememberNavController()
+) {
   
-  val navigationHandler = rememberNavController()
-  navigationHandler.currentBackStackEntryFlow.collectAsStateWithLifecycle(
+  navHostController.currentBackStackEntryFlow.collectAsStateWithLifecycle(
 	initialValue = NavigationRoute.MediaScreen
   ).value
-  val currentRoute = navigationHandler.currentDestination?.route
+  val currentRoute = navHostController.currentDestination?.route
   
   Scaffold(
 	topBar = {
@@ -39,7 +40,7 @@ fun MainScreen() {
 	}
   ){
 	Box(modifier = Modifier.padding(it)){
-	  NavController(navHostController = navigationHandler)
+	  NavController(navHostController = navHostController)
 	}
   }
   
@@ -49,7 +50,6 @@ fun MainScreen() {
 fun NavController(
   navHostController: NavHostController
 ) {
-  
   
   NavHost(navController = navHostController, startDestination = NavigationRoute.MediaScreen.route) {
 	composable(
@@ -91,7 +91,9 @@ fun NavController(
 	) {
 	  PlayerScreen(
 		videoUri = it.arguments!!.getString("videoUri").toString(),
-		navHostController = navHostController,
+		onBackClick = {
+		  navHostController.popBackStack(route = NavigationRoute.MediaScreen.route, inclusive = false)
+		}
 	  )
 	}
   }

@@ -19,7 +19,8 @@
         android:theme="@style/Theme.MediaPlayerJetpackCompose"
         tools:targetApi="tiramisu">
         <activity
-            android:name=".presentation.screen.MainActivity"
+            android:configChanges="orientation|screenSize|layoutDirection"
+            android:name=".presentation.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MediaPlayerJetpackCompose">
             <intent-filter>
