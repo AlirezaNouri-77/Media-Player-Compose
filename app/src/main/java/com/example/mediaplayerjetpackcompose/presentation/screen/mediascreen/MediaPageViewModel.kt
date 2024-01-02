@@ -1,7 +1,6 @@
-package com.example.mediaplayerjetpackcompose.presentation
+package com.example.mediaplayerjetpackcompose.presentation.screen.mediascreen
 
 import android.content.ContentResolver
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -12,15 +11,17 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.mediaplayerjetpackcompose.ApplicationClass
 import com.example.mediastore.data.MediaStoreRepository
 import com.example.mediaplayerjetpackcompose.domain.model.VideoMediaModel
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class MediaStoreViewModel(
+class MediaPageViewModel(
   private var contentResolver: ContentResolver,
   private var mediaStoreRepository: MediaStoreRepository,
 ) : ViewModel() {
   
-  var mediaStoreDataList = mutableStateListOf<VideoMediaModel>()
+  var mediaStoreDataList = listOf<VideoMediaModel>()
 	private set
   
   init {
@@ -29,8 +30,10 @@ class MediaStoreViewModel(
   
   private fun getMedia() {
 	viewModelScope.launch {
-	  mediaStoreRepository.getMedia(mContentResolver = contentResolver).collectLatest {
-		mediaStoreDataList.add(it)
+	  mediaStoreRepository.getMedia(mContentResolver = contentResolver).stateIn(
+		viewModelScope, SharingStarted.WhileSubscribed(5000L), initialValue = emptyList()
+	  ).collectLatest{
+		mediaStoreDataList = it
 	  }
 	}
   }
@@ -40,7 +43,7 @@ class MediaStoreViewModel(
 	  initializer {
 		val application = checkNotNull((this[APPLICATION_KEY])) as ApplicationClass
 		val savedStateHandle = createSavedStateHandle()
-		MediaStoreViewModel(
+		MediaPageViewModel(
 		  contentResolver = application.contentResolver,
 		  mediaStoreRepository = application.mediaStoreRepository,
 		)

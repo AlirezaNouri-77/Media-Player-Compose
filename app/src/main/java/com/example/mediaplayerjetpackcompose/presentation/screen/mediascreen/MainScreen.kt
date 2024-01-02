@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen
+package com.example.mediaplayerjetpackcompose.presentation.screen.mediascreen
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
@@ -17,9 +17,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.mediaplayerjetpackcompose.presentation.screen.MediaScreen
+import com.example.mediaplayerjetpackcompose.presentation.screen.playerscreen.PlayerScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,12 +35,12 @@ fun MainScreen(
   
   Scaffold(
 	topBar = {
-	  if (currentRoute==NavigationRoute.MediaScreen.route){
-		TopAppBar(title = { Text(text = "Video", fontSize = 22.sp, fontWeight = FontWeight.Bold,)})
+	  if (currentRoute == NavigationRoute.MediaScreen.route) {
+		TopAppBar(title = { Text(text = "Video", fontSize = 22.sp, fontWeight = FontWeight.Bold) })
 	  }
 	}
-  ){
-	Box(modifier = Modifier.padding(it)){
+  ) {
+	Box(modifier = Modifier.padding(it)) {
 	  NavController(navHostController = navHostController)
 	}
   }
@@ -50,21 +51,33 @@ fun MainScreen(
 fun NavController(
   navHostController: NavHostController
 ) {
-  
+
   NavHost(navController = navHostController, startDestination = NavigationRoute.MediaScreen.route) {
 	composable(
 	  NavigationRoute.MediaScreen.route,
 	  enterTransition = {
-		slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, tween(500))
+		slideIntoContainer(
+		  towards = AnimatedContentTransitionScope.SlideDirection.Right,
+		  tween(500)
+		)
 	  },
 	  exitTransition = {
-		slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left, tween(500))
+		slideOutOfContainer(
+		  towards = AnimatedContentTransitionScope.SlideDirection.Left,
+		  tween(500)
+		)
 	  },
 	  popEnterTransition = {
-		slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, tween(500))
+		slideIntoContainer(
+		  towards = AnimatedContentTransitionScope.SlideDirection.Right,
+		  tween(500)
+		)
 	  },
 	  popExitTransition = {
-		slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left, tween(500))
+		slideOutOfContainer(
+		  towards = AnimatedContentTransitionScope.SlideDirection.Left,
+		  tween(500)
+		)
 	  },
 	) {
 	  MediaScreen(navHostController = navHostController)
@@ -75,25 +88,37 @@ fun NavController(
 		slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left, tween(500))
 	  },
 	  exitTransition = {
-		slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, tween(500))
+		slideOutOfContainer(
+		  towards = AnimatedContentTransitionScope.SlideDirection.Right,
+		  tween(500)
+		)
 	  },
 	  popEnterTransition = {
 		slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left, tween(500))
 	  },
 	  popExitTransition = {
-		slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, tween(500))
+		slideOutOfContainer(
+		  towards = AnimatedContentTransitionScope.SlideDirection.Right,
+		  tween(500)
+		)
 	  },
 	  arguments = listOf(
 		navArgument(name = "videoUri") {
+		  type = NavType.StringType
+		},
+		navArgument(name = "displayName") {
 		  type = NavType.StringType
 		}
 	  )
 	) {
 	  PlayerScreen(
 		videoUri = it.arguments!!.getString("videoUri").toString(),
+		displayName = it.arguments!!.getString("displayName").toString(),
 		onBackClick = {
-		  navHostController.popBackStack(route = NavigationRoute.MediaScreen.route, inclusive = false)
-		}
+		  navHostController.popBackStack(
+			NavigationRoute.MediaScreen.route, inclusive = false
+		  )
+		},
 	  )
 	}
   }
@@ -101,5 +126,5 @@ fun NavController(
 
 sealed class NavigationRoute(var route: String) {
   data object MediaScreen : NavigationRoute("MediaScreen")
-  data object PlayerScreen : NavigationRoute("PlayerScreen/{videoUri}")
+  data object PlayerScreen : NavigationRoute("PlayerScreen/{videoUri}/{displayName}")
 }

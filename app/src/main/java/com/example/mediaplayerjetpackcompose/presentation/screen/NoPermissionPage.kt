@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.presentation.checkPermission
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
@@ -35,15 +36,14 @@ import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeT
 @Composable
 fun NoPermissionPage(
   onGrant: () -> Unit,
+  currentLocalLifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
+  context: Context = LocalContext.current,
 ) {
-  
-  val currentLocalLifecycleOwner = LocalLifecycleOwner.current
-  val context = LocalContext.current
   
   DisposableEffect(
 	key1 = currentLocalLifecycleOwner,
   ) {
-	val observer = LifecycleEventObserver { source, event ->
+	val observer = LifecycleEventObserver { _, event ->
 	  if (event == Lifecycle.Event.ON_RESUME) {
 		if (checkPermission(context)) {
 		  onGrant.invoke()

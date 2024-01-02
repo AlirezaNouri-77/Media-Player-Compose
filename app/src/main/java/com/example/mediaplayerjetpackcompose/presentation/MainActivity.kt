@@ -1,60 +1,97 @@
 package com.example.mediaplayerjetpackcompose.presentation
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat
-import com.example.mediaplayerjetpackcompose.presentation.screen.MainScreen
+import androidx.core.view.WindowCompat
+import com.example.mediaplayerjetpackcompose.data.encodeStringNavigation
+import com.example.mediaplayerjetpackcompose.presentation.screen.mediascreen.MainScreen
 import com.example.mediaplayerjetpackcompose.presentation.screen.NoPermissionPage
+import com.example.mediaplayerjetpackcompose.presentation.screen.playerscreen.PlayerScreen
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 class MainActivity : ComponentActivity() {
+  
+  
+  val uiState = mutableStateOf(PermissionState.Initial)
+  
+  @RequiresApi(Build.VERSION_CODES.R)
   override fun onCreate(savedInstanceState: Bundle?) {
 	super.onCreate(savedInstanceState)
 	
-	val state = mutableStateOf(PermissionState.Initial)
+	fun hideStatusBar(context: Context) {
+	  val window = (context as Activity).window
+	  WindowCompat.setDecorFitsSystemWindows(window, false)
+	  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+		window.insetsController?.apply {
+		  hide(WindowInsets.Type.statusBars())
+		  this.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+		}
+	  }
+	}
 	
 	setContent {
 	  MediaPlayerJetpackComposeTheme {
 		
+		hideStatusBar(this)
+		
 		if (checkPermission(this)) {
-		  state.value = PermissionState.PermissionIsGrant
+		  uiState.value = PermissionState.PermissionIsGrant
 		}
 		
 		PermissionHandler(
 		  context = this,
-		  onGrant = { state.value = PermissionState.PermissionIsGrant },
-		  notGrant = { state.value = PermissionState.PermissionNotGrant },
+		  onGrant = { uiState.value = PermissionState.PermissionIsGrant },
+		  notGrant = { uiState.value = PermissionState.PermissionNotGrant },
 		)
 		
-		when (state.value) {
+		when (uiState.value) {
 		  PermissionState.PermissionNotGrant -> {
 			NoPermissionPage(onGrant = {
-			  state.value = PermissionState.PermissionIsGrant
+			  uiState.value = PermissionState.PermissionIsGrant
 			})
 		  }
 		  
 		  PermissionState.PermissionIsGrant -> {
-			MainScreen()
+			intent?.let { mIntent ->
+			  if (mIntent.action == Intent.ACTION_VIEW) {
+				val videoUri = mIntent.data.toString().encodeStringNavigation()
+				val displayName = "item.name"
+				PlayerScreen(
+				  videoUri = videoUri,
+				  displayName = displayName,
+				  onBackClick = { this.finishAffinity() })
+			  } else {
+				MainScreen()
+			  }
+			}
+			
 		  }
 		  
 		  else -> {}
 		}
 		
 	  }
+	  
 	}
 	
   }
+  
 }
 
 @Composable
@@ -90,6 +127,18 @@ fun checkPermission(context: Context): Boolean {
   } == PackageManager.PERMISSION_GRANTED
 }
 
-private enum class PermissionState {
+fun hideStatusBar(context: Context) {
+  val window = (context as Activity).window
+  WindowCompat.setDecorFitsSystemWindows(window, false)
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+	window.insetsController?.apply {
+	  hide(WindowInsets.Type.statusBars())
+	  this.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+	}
+  }
+}
+
+
+enum class PermissionState {
   Initial, PermissionNotGrant, PermissionIsGrant
 }

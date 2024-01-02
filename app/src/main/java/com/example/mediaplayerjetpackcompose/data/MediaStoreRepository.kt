@@ -17,8 +17,8 @@ import java.util.concurrent.TimeUnit
 
 class MediaStoreRepository : MediaStoreRepositoryImpl {
   
-  override suspend fun getMedia(mContentResolver: ContentResolver): Flow<VideoMediaModel>{
-	
+  override suspend fun getMedia(mContentResolver: ContentResolver): Flow<List<VideoMediaModel>> {
+	var mListResult = mutableListOf<VideoMediaModel>()
 	return flow {
 	  mContentResolver.query(
 		uriMedia,
@@ -44,18 +44,23 @@ class MediaStoreRepository : MediaStoreRepositoryImpl {
 			  id!!
 			)
 			val imageBitmap = mContentResolver.loadThumbnail(contentUri, Size(640, 480), null)
-			emit(
+			
+			mListResult.add(
 			  VideoMediaModel(
-			  uri = contentUri,
-			  name = name!!,
-			  duration = duration!!,
-			  size = size!!,
-			  image = imageBitmap
+				uri = contentUri,
+				name = name!!,
+				duration = duration!!,
+				size = size!!,
+				image = imageBitmap
+			  )
 			)
-			)
+			
 		  }
 		}
 	  }
+	  
+	  emit(mListResult)
+	  
 	}.flowOn(Dispatchers.IO)
 	
   }

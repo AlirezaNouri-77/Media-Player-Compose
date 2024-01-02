@@ -6,5 +6,5 @@ import com.example.mediaplayerjetpackcompose.domain.model.VideoMediaModel
 import kotlinx.coroutines.flow.Flow
 
 interface MediaStoreRepositoryImpl {
-  suspend fun getMedia(mContentResolver: ContentResolver): Flow<VideoMediaModel>
+  suspend fun getMedia(mContentResolver: ContentResolver): Flow<List<VideoMediaModel>>
 }

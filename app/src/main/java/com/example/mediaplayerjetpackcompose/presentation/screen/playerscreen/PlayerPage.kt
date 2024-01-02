@@ -1,12 +1,8 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen
+package com.example.mediaplayerjetpackcompose.presentation.screen.playerscreen
 
-import android.app.Activity
-import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
 import android.view.View
-import android.view.WindowInsets
-import android.view.WindowInsetsController
 import androidx.activity.compose.BackHandler
 import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
@@ -31,21 +27,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
-import com.example.mediaplayerjetpackcompose.PlayerViewModel
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.decodeStringNavigation
 
@@ -54,15 +48,13 @@ import com.example.mediaplayerjetpackcompose.data.decodeStringNavigation
 @Composable
 fun PlayerScreen(
   videoUri: String,
+  displayName:String,
   onBackClick: () -> Unit = {},
+  lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
+  orientation: Int = LocalConfiguration.current.orientation,
 ) {
   
-  val context = LocalContext.current
-  val lifecycleowner = LocalLifecycleOwner.current
-  val orientation = LocalConfiguration.current.orientation
   val playerViewModel = viewModel<PlayerViewModel>(factory = PlayerViewModel.Factory)
-  
-  hideStatusBar(context)
   
   val playerControllerVisibility = remember {
 	mutableStateOf(false)
@@ -73,18 +65,17 @@ fun PlayerScreen(
 	  Configuration.ORIENTATION_LANDSCAPE -> {
 		playerViewModel.deviceOrientation.intValue = AspectRatioFrameLayout.RESIZE_MODE_FILL
 	  }
-	  
 	  else -> {
 		playerViewModel.deviceOrientation.intValue = AspectRatioFrameLayout.RESIZE_MODE_FIT
 	  }
 	}
   })
   
-  DisposableEffect(key1 = lifecycleowner, effect = {
-	val observe = LifecycleEventObserver { source, event ->
+  DisposableEffect(key1 = lifecycleOwner, effect = {
+	val observe = LifecycleEventObserver { _, event ->
 	  when (event) {
 		Lifecycle.Event.ON_START -> {
-		  playerViewModel.playPlayer()
+		  playerViewModel.resumePlayer()
 		}
 		
 		Lifecycle.Event.ON_STOP -> {
@@ -94,9 +85,9 @@ fun PlayerScreen(
 		else -> {}
 	  }
 	}
-	lifecycleowner.lifecycle.addObserver(observe)
+	lifecycleOwner.lifecycle.addObserver(observe)
 	onDispose {
-	  lifecycleowner.lifecycle.removeObserver(observe)
+	  lifecycleOwner.lifecycle.removeObserver(observe)
 	}
   })
   
@@ -112,8 +103,7 @@ fun PlayerScreen(
 	key1 = playerViewModel.onBackPress.value,
 	effect = {
 	  onDispose {
-		playerViewModel.stopPlayVideo()
-		showStatusBar(context)
+		playerViewModel.releasePlayer()
 		onBackClick.invoke()
 	  }
 	})
@@ -160,14 +150,14 @@ fun PlayerScreen(
 			contentDescription = "",
 			modifier = Modifier
 			  .clickable {
-				playerViewModel.stopPlayVideo()
+				playerViewModel.releasePlayer()
 				onBackClick.invoke()
 			  }
 			  .padding(20.dp),
 		  )
 		  Spacer(modifier = Modifier.width(15.dp))
 		  Text(
-			text = "Name of Video",
+			text = displayName,
 			fontSize = 16.sp,
 			fontWeight = FontWeight.Medium,
 			color = Color.White,
@@ -178,23 +168,4 @@ fun PlayerScreen(
   }
   
   
-}
-
-@RequiresApi(Build.VERSION_CODES.R)
-fun hideStatusBar(context: Context) {
-  val window = (context as Activity).window
-  WindowCompat.setDecorFitsSystemWindows(window, false)
-  window.insetsController?.apply {
-	hide(WindowInsets.Type.statusBars())
-	this.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-  }
-}
-
-@RequiresApi(Build.VERSION_CODES.R)
-fun showStatusBar(context: Context) {
-  val window = (context as Activity).window
-  WindowCompat.setDecorFitsSystemWindows(window, false)
-  window.insetsController?.apply {
-	show(WindowInsets.Type.statusBars())
-  }
 }
