@@ -27,24 +27,11 @@ import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeT
 
 class MainActivity : ComponentActivity() {
   
-  
-  val uiState = mutableStateOf(PermissionState.Initial)
+  private val uiState = mutableStateOf(PermissionState.Initial)
   
   @RequiresApi(Build.VERSION_CODES.R)
   override fun onCreate(savedInstanceState: Bundle?) {
 	super.onCreate(savedInstanceState)
-	
-	fun hideStatusBar(context: Context) {
-	  val window = (context as Activity).window
-	  WindowCompat.setDecorFitsSystemWindows(window, false)
-	  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-		window.insetsController?.apply {
-		  hide(WindowInsets.Type.statusBars())
-		  this.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-		}
-	  }
-	}
-	
 	setContent {
 	  MediaPlayerJetpackComposeTheme {
 		
@@ -62,19 +49,20 @@ class MainActivity : ComponentActivity() {
 		
 		when (uiState.value) {
 		  PermissionState.PermissionNotGrant -> {
-			NoPermissionPage(onGrant = {
-			  uiState.value = PermissionState.PermissionIsGrant
-			})
+			NoPermissionPage(
+			  onGrant = {
+				uiState.value = PermissionState.PermissionIsGrant
+			  }
+			)
 		  }
 		  
 		  PermissionState.PermissionIsGrant -> {
 			intent?.let { mIntent ->
 			  if (mIntent.action == Intent.ACTION_VIEW) {
 				val videoUri = mIntent.data.toString().encodeStringNavigation()
-				val displayName = "item.name"
+				val displayName = mIntent.data!!.path
 				PlayerScreen(
 				  videoUri = videoUri,
-				  displayName = displayName,
 				  onBackClick = { this.finishAffinity() })
 			  } else {
 				MainScreen()

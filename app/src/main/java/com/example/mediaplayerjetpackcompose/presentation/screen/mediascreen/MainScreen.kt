@@ -36,7 +36,7 @@ fun MainScreen(
   Scaffold(
 	topBar = {
 	  if (currentRoute == NavigationRoute.MediaScreen.route) {
-		TopAppBar(title = { Text(text = "Video", fontSize = 22.sp, fontWeight = FontWeight.Bold) })
+		TopAppBar(title = { Text(text = "Video", fontSize = 28.sp, fontWeight = FontWeight.Bold) })
 	  }
 	}
   ) {
@@ -106,14 +106,10 @@ fun NavController(
 		navArgument(name = "videoUri") {
 		  type = NavType.StringType
 		},
-		navArgument(name = "displayName") {
-		  type = NavType.StringType
-		}
 	  )
 	) {
 	  PlayerScreen(
 		videoUri = it.arguments!!.getString("videoUri").toString(),
-		displayName = it.arguments!!.getString("displayName").toString(),
 		onBackClick = {
 		  navHostController.popBackStack(
 			NavigationRoute.MediaScreen.route, inclusive = false
@@ -126,5 +122,5 @@ fun NavController(
 
 sealed class NavigationRoute(var route: String) {
   data object MediaScreen : NavigationRoute("MediaScreen")
-  data object PlayerScreen : NavigationRoute("PlayerScreen/{videoUri}/{displayName}")
+  data object PlayerScreen : NavigationRoute("PlayerScreen/{videoUri}")
 }

@@ -6,8 +6,15 @@ import android.view.View
 import androidx.activity.compose.BackHandler
 import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,28 +50,32 @@ import androidx.media3.ui.PlayerView
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.decodeStringNavigation
 
+@kotlin.OptIn(ExperimentalFoundationApi::class)
 @RequiresApi(Build.VERSION_CODES.R)
 @OptIn(UnstableApi::class)
 @Composable
 fun PlayerScreen(
   videoUri: String,
-  displayName:String,
   onBackClick: () -> Unit = {},
   lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
   orientation: Int = LocalConfiguration.current.orientation,
 ) {
   
   val playerViewModel = viewModel<PlayerViewModel>(factory = PlayerViewModel.Factory)
-  
   val playerControllerVisibility = remember {
 	mutableStateOf(false)
   }
+  
+  LaunchedEffect(key1 = videoUri, block = {
+	playerViewModel.getMediaInformationByUri(videoUri.decodeStringNavigation())
+  })
   
   LaunchedEffect(key1 = orientation, block = {
 	when (orientation) {
 	  Configuration.ORIENTATION_LANDSCAPE -> {
 		playerViewModel.deviceOrientation.intValue = AspectRatioFrameLayout.RESIZE_MODE_FILL
 	  }
+	  
 	  else -> {
 		playerViewModel.deviceOrientation.intValue = AspectRatioFrameLayout.RESIZE_MODE_FIT
 	  }
@@ -134,38 +145,40 @@ fun PlayerScreen(
 	}
   )
   
-  if (playerControllerVisibility.value) {
-	Box(modifier = Modifier.fillMaxSize()) {
-	  Box(
-		modifier = Modifier
-		  .fillMaxWidth(),
-		contentAlignment = Alignment.TopStart,
+  AnimatedVisibility(
+	visible = playerControllerVisibility.value,
+	enter = slideInVertically(initialOffsetY = { -it / 2 }),
+	exit = slideOutVertically(targetOffsetY = { -it * 2 }),
+  ) {
+	Box(
+	  modifier = Modifier
+		.fillMaxWidth(),
+	  contentAlignment = Alignment.TopStart,
+	) {
+	  Row(
+		verticalAlignment = Alignment.CenterVertically,
+		horizontalArrangement = Arrangement.Start,
 	  ) {
-		Row(
-		  verticalAlignment = Alignment.CenterVertically,
-		  horizontalArrangement = Arrangement.Start,
-		) {
-		  Image(
-			painter = painterResource(id = R.drawable.back_icon),
-			contentDescription = "",
-			modifier = Modifier
-			  .clickable {
-				playerViewModel.releasePlayer()
-				onBackClick.invoke()
-			  }
-			  .padding(20.dp),
-		  )
-		  Spacer(modifier = Modifier.width(15.dp))
-		  Text(
-			text = displayName,
-			fontSize = 16.sp,
-			fontWeight = FontWeight.Medium,
-			color = Color.White,
-		  )
-		}
+		Image(
+		  painter = painterResource(id = R.drawable.back_icon),
+		  contentDescription = "",
+		  modifier = Modifier
+			.clickable {
+			  playerViewModel.releasePlayer()
+			  onBackClick.invoke()
+			}
+			.padding(20.dp),
+		)
+		Spacer(modifier = Modifier.width(15.dp))
+		Text(
+		  text = playerViewModel.mediaInformation.value.name,
+		  fontSize = 16.sp,
+		  fontWeight = FontWeight.Medium,
+		  color = Color.White,
+		  maxLines = 1,
+		  modifier = Modifier.basicMarquee()
+		)
 	  }
 	}
   }
-  
-  
 }

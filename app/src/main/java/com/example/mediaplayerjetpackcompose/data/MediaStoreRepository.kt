@@ -5,6 +5,7 @@ import android.content.ContentUris
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import android.util.Size
 import androidx.annotation.RequiresApi
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
@@ -26,36 +27,34 @@ class MediaStoreRepository : MediaStoreRepositoryImpl {
 		selection,
 		selectionArgs,
 		sortOrder
-	  ).use { cursor ->
+	  )?.use { cursor ->
 		
-		val idColumn = cursor?.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
-		val nameColumn = cursor?.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)
-		val durationColumn = cursor?.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)
-		val sizeColumn = cursor?.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)
+		val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
+		val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)
+		val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)
+		val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)
 		
-		if (cursor != null) {
-		  while (cursor.moveToNext()) {
-			val id = idColumn?.let { cursor.getLong(it) }
-			val name = nameColumn?.let { cursor.getString(it) }
-			val duration = durationColumn?.let { cursor.getInt(it) }
-			val size = sizeColumn?.let { cursor.getInt(it) }
-			val contentUri: Uri = ContentUris.withAppendedId(
-			  MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-			  id!!
+		while (cursor.moveToNext()) {
+		  val id = idColumn.let { cursor.getLong(it) }
+		  val name = nameColumn.let { cursor.getString(it) }
+		  val duration = durationColumn.let { cursor.getInt(it) }
+		  val size = sizeColumn.let { cursor.getInt(it) }
+		  val contentUri: Uri = ContentUris.withAppendedId(
+			MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+			id
+		  )
+		  val imageBitmap = mContentResolver.loadThumbnail(contentUri, Size(640, 480), null)
+		  
+		  mListResult.add(
+			VideoMediaModel(
+			  uri = contentUri,
+			  name = name!!,
+			  duration = duration,
+			  size = size,
+			  image = imageBitmap
 			)
-			val imageBitmap = mContentResolver.loadThumbnail(contentUri, Size(640, 480), null)
-			
-			mListResult.add(
-			  VideoMediaModel(
-				uri = contentUri,
-				name = name!!,
-				duration = duration!!,
-				size = size!!,
-				image = imageBitmap
-			  )
-			)
-			
-		  }
+		  )
+		  
 		}
 	  }
 	  
@@ -64,6 +63,33 @@ class MediaStoreRepository : MediaStoreRepositoryImpl {
 	}.flowOn(Dispatchers.IO)
 	
   }
+  
+  override suspend fun getMediaInformationByUri(
+	mContentResolver: ContentResolver,
+	uri: Uri
+  ): Flow<VideoMediaModel> {
+	
+	return flow {
+	  mContentResolver.query(uri, null, null, null, null)?.use { cursor ->
+		
+		val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)
+		
+		cursor.moveToFirst()
+		
+		val name = nameColumn.let { cursor.getString(it) }
+		
+		emit(
+		  VideoMediaModel(
+			name = name,
+		  )
+		)
+		
+	  }
+	}.flowOn(Dispatchers.IO)
+	
+	
+  }
+  
   
   companion object {
 	val MediaInfoArray = arrayOf(

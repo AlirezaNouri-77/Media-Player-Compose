@@ -26,8 +26,7 @@ fun MediaScreen(
 		  item = it,
 		  onItemClick = { item ->
 			val videoUri = item.uri.toString().encodeStringNavigation()
-			val displayName = item.name
-			navHostController.navigate("PlayerScreen/${videoUri}/${displayName}"){
+			navHostController.navigate("PlayerScreen/${videoUri}"){
 			  launchSingleTop = true
 			}
 		  },
