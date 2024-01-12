@@ -2,12 +2,10 @@ package com.example.mediaplayerjetpackcompose.presentation.screenComponent
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,7 +29,7 @@ import com.example.mediaplayerjetpackcompose.data.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.domain.model.VideoMediaModel
 
 @Composable
-fun MediaItem(
+fun VideoMediaItem(
   item: VideoMediaModel,
   onItemClick: (VideoMediaModel) -> Unit,
 ) {

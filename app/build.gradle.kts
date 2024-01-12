@@ -48,9 +48,10 @@ android {
 
 dependencies {
   
-  val media3_version = "1.2.0"
-  val nav_version = "2.7.6"
-  val lifecycle_version = "2.6.2"
+  val media3Version = "1.2.0"
+  val navVersion = "2.7.6"
+  val lifecycleVersion = "2.6.2"
+  val constraintLayout = "1.0.1"
   
   implementation("androidx.core:core-ktx:1.12.0")
   implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
@@ -68,12 +69,16 @@ dependencies {
   debugImplementation("androidx.compose.ui:ui-tooling")
   debugImplementation("androidx.compose.ui:ui-test-manifest")
   
-  implementation ("androidx.media3:media3-exoplayer:$media3_version")
-  implementation ("androidx.media3:media3-exoplayer-dash:$media3_version")
-  implementation ("androidx.media3:media3-ui:$media3_version")
+  implementation ("androidx.media3:media3-exoplayer:$media3Version")
+  implementation ("androidx.media3:media3-exoplayer-dash:$media3Version")
+  implementation ("androidx.media3:media3-ui:$media3Version")
   
-  implementation("androidx.lifecycle:lifecycle-runtime-compose:$lifecycle_version")
-  implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
+  implementation("androidx.lifecycle:lifecycle-runtime-compose:$lifecycleVersion")
+  implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
   
-  implementation("androidx.navigation:navigation-compose:$nav_version")
+  implementation("androidx.navigation:navigation-compose:$navVersion")
+  
+  implementation("androidx.constraintlayout:constraintlayout-compose:$constraintLayout")
+  
+  implementation("androidx.palette:palette-ktx:1.0.0")
 }

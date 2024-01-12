@@ -1,15 +1,11 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen.playerscreen
+package com.example.mediaplayerjetpackcompose.presentation.screen.video.player
 
 import android.content.res.Configuration
-import android.os.Build
 import android.view.View
 import androidx.activity.compose.BackHandler
 import androidx.annotation.OptIn
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -51,7 +47,6 @@ import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.decodeStringNavigation
 
 @kotlin.OptIn(ExperimentalFoundationApi::class)
-@RequiresApi(Build.VERSION_CODES.R)
 @OptIn(UnstableApi::class)
 @Composable
 fun PlayerScreen(
@@ -160,7 +155,7 @@ fun PlayerScreen(
 		horizontalArrangement = Arrangement.Start,
 	  ) {
 		Image(
-		  painter = painterResource(id = R.drawable.back_icon),
+		  painter = painterResource(id = R.drawable.icon_back),
 		  contentDescription = "",
 		  modifier = Modifier
 			.clickable {

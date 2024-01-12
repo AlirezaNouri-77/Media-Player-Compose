@@ -1,13 +1,12 @@
-package com.example.mediastore.data
+package com.example.mediaplayerjetpackcompose.data.repository
 
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
 import android.util.Size
-import androidx.annotation.RequiresApi
+import com.example.mediaplayerjetpackcompose.domain.api.MediaRepositoryGetContentByUri
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.model.VideoMediaModel
 import kotlinx.coroutines.Dispatchers
@@ -16,10 +15,14 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.util.concurrent.TimeUnit
 
-class MediaStoreRepository : MediaStoreRepositoryImpl {
+class VideoMediaStoreRepository :
+  MediaStoreRepositoryImpl<VideoMediaModel>,
+  MediaRepositoryGetContentByUri<VideoMediaModel> {
   
   override suspend fun getMedia(mContentResolver: ContentResolver): Flow<List<VideoMediaModel>> {
-	var mListResult = mutableListOf<VideoMediaModel>()
+	
+	val mListResult = mutableListOf<VideoMediaModel>()
+	
 	return flow {
 	  mContentResolver.query(
 		uriMedia,
@@ -92,6 +95,7 @@ class MediaStoreRepository : MediaStoreRepositoryImpl {
   
   
   companion object {
+	
 	val MediaInfoArray = arrayOf(
 	  MediaStore.Video.Media._ID,
 	  MediaStore.Video.Media.DISPLAY_NAME,

@@ -1,6 +1,7 @@
 package com.example.mediaplayerjetpackcompose.presentation
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -20,9 +21,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import com.example.mediaplayerjetpackcompose.data.encodeStringNavigation
-import com.example.mediaplayerjetpackcompose.presentation.screen.mediascreen.MainScreen
+import com.example.mediaplayerjetpackcompose.presentation.screen.video.MainScreen
 import com.example.mediaplayerjetpackcompose.presentation.screen.NoPermissionPage
-import com.example.mediaplayerjetpackcompose.presentation.screen.playerscreen.PlayerScreen
+import com.example.mediaplayerjetpackcompose.presentation.screen.video.player.PlayerScreen
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 class MainActivity : ComponentActivity() {
@@ -32,6 +33,17 @@ class MainActivity : ComponentActivity() {
   @RequiresApi(Build.VERSION_CODES.R)
   override fun onCreate(savedInstanceState: Bundle?) {
 	super.onCreate(savedInstanceState)
+	
+	@SuppressLint("InlinedApi")
+	val permissionsList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+	  arrayOf(
+		Manifest.permission.READ_MEDIA_VIDEO,
+		Manifest.permission.READ_MEDIA_AUDIO,
+	  )
+	} else {
+	  arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+	}
+	
 	setContent {
 	  MediaPlayerJetpackComposeTheme {
 		
@@ -45,6 +57,7 @@ class MainActivity : ComponentActivity() {
 		  context = this,
 		  onGrant = { uiState.value = PermissionState.PermissionIsGrant },
 		  notGrant = { uiState.value = PermissionState.PermissionNotGrant },
+		  permissionsList = permissionsList,
 		)
 		
 		when (uiState.value) {
@@ -60,7 +73,6 @@ class MainActivity : ComponentActivity() {
 			intent?.let { mIntent ->
 			  if (mIntent.action == Intent.ACTION_VIEW) {
 				val videoUri = mIntent.data.toString().encodeStringNavigation()
-				val displayName = mIntent.data!!.path
 				PlayerScreen(
 				  videoUri = videoUri,
 				  onBackClick = { this.finishAffinity() })
@@ -83,11 +95,18 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun PermissionHandler(context: Context, onGrant: () -> Unit, notGrant: () -> Unit) {
+fun PermissionHandler(
+  context: Context,
+  onGrant: () -> Unit,
+  notGrant: () -> Unit,
+  permissionsList: Array<String>
+) {
+  
   val requestPermission = rememberLauncherForActivityResult(
-	ActivityResultContracts.RequestPermission()
+	ActivityResultContracts.RequestMultiplePermissions()
   ) {
-	if (it) {
+	val areGranted = it.values.reduce { acc, next -> acc && next }
+	if (areGranted) {
 	  onGrant.invoke()
 	} else {
 	  notGrant.invoke()
@@ -95,11 +114,7 @@ fun PermissionHandler(context: Context, onGrant: () -> Unit, notGrant: () -> Uni
   }
   
   LaunchedEffect(!checkPermission(context)) {
-	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-	  requestPermission.launch(Manifest.permission.READ_MEDIA_VIDEO)
-	} else {
-	  requestPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-	}
+	requestPermission.launch(permissionsList)
   }
   
 }
@@ -111,7 +126,10 @@ fun checkPermission(context: Context): Boolean {
 	  Manifest.permission.READ_MEDIA_VIDEO
 	)
   } else {
-	Manifest.permission.READ_EXTERNAL_STORAGE
+	ContextCompat.checkSelfPermission(
+	  context,
+	  Manifest.permission.READ_EXTERNAL_STORAGE
+	)
   } == PackageManager.PERMISSION_GRANTED
 }
 
@@ -130,3 +148,4 @@ fun hideStatusBar(context: Context) {
 enum class PermissionState {
   Initial, PermissionNotGrant, PermissionIsGrant
 }
+

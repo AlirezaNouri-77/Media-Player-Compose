@@ -1,9 +1,8 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen.playerscreen
+package com.example.mediaplayerjetpackcompose.presentation.screen.video.player
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -17,16 +16,15 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import com.example.mediaplayerjetpackcompose.ApplicationClass
 import com.example.mediaplayerjetpackcompose.domain.model.VideoMediaModel
-import com.example.mediastore.data.MediaStoreRepository
+import com.example.mediaplayerjetpackcompose.data.repository.VideoMediaStoreRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
   private var mApplicationContext: Context,
-  private var mediaStoreRepository: MediaStoreRepository,
+  private var mediaStoreRepository: VideoMediaStoreRepository,
 ) : ViewModel() {
   
   lateinit var exoPlayer: ExoPlayer
@@ -55,7 +53,6 @@ class PlayerViewModel(
   
   fun startPlayVideo(videoUri: Uri) {
 	exoPlayer.apply {
-	  MediaItem.Builder()
 	  this.addMediaItem(MediaItem.fromUri(videoUri))
 	  this.playWhenReady = true
 	  this.prepare()
@@ -85,9 +82,10 @@ class PlayerViewModel(
 		val application = checkNotNull((this[APPLICATION_KEY])) as ApplicationClass
 		PlayerViewModel(
 		  mApplicationContext = application.applicationContext,
-		  mediaStoreRepository = application.mediaStoreRepository,
+		  mediaStoreRepository = application.videoMediaStoreRepository,
 		)
 	  }
 	}
   }
+  
 }

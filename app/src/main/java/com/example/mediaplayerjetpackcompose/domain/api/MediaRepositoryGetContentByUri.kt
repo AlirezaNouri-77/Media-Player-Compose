@@ -5,7 +5,6 @@ import android.net.Uri
 import com.example.mediaplayerjetpackcompose.domain.model.VideoMediaModel
 import kotlinx.coroutines.flow.Flow
 
-interface MediaStoreRepositoryImpl {
-  suspend fun getMedia(mContentResolver: ContentResolver): Flow<List<VideoMediaModel>>
-  suspend fun getMediaInformationByUri(mContentResolver: ContentResolver,uri: Uri): Flow<VideoMediaModel>
+interface MediaRepositoryGetContentByUri<out T> {
+  suspend fun getMediaInformationByUri(mContentResolver: ContentResolver, uri: Uri): Flow<T>
 }
