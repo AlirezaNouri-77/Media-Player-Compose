@@ -28,8 +28,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -45,11 +43,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.mediaplayerjetpackcompose.MusicState
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.presentation.screenComponent.MusicMediaItem
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -58,19 +57,11 @@ fun MusicScreen(
   musicPageViewModel: MusicPageViewModel,
   scope: CoroutineScope = rememberCoroutineScope(),
 ) {
-  
-  val icon = if (musicPageViewModel.isPlayerRunning) R.drawable.icon_pause else R.drawable.icon_play
+  val currentMusicState = musicPageViewModel.currentMusicState.collectAsStateWithLifecycle().value
+  val currentMusicPosition =
+	musicPageViewModel.currentMusicPosition.collectAsStateWithLifecycle().value
   val modalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
   val showBottomSheet = remember { mutableStateOf(false) }
-  val bottomSheetOffset = remember(modalBottomSheetState) {
-	derivedStateOf {
-	  runCatching { modalBottomSheetState.requireOffset() }.getOrDefault(0f)
-	}
-  }
-  
-  LaunchedEffect(key1 = bottomSheetOffset.value, block = {
-	musicPageViewModel.shouldHideTopBarAndBottomBar = bottomSheetOffset.value <= 1000f
-  })
   
   ConstraintLayout(
 	modifier = Modifier
@@ -81,14 +72,19 @@ fun MusicScreen(
 	
 	if (showBottomSheet.value) {
 	  BottomSheet(
-		musicPageViewModel = musicPageViewModel,
 		sheetState = modalBottomSheetState,
-		icon = icon,
+		currentMusicState = currentMusicState,
+		currentMusicPosition = currentMusicPosition,
+		onPauseMusic = musicPageViewModel::pauseMusic,
+		onResumeMusic = musicPageViewModel::resumeMusic,
+		onMoveNextMusic = musicPageViewModel::moveToNext,
+		onMovePreviousMusic = musicPageViewModel::moveToPrevious,
+		onSeekTo = { musicPageViewModel.seekToPosition(it) },
 		onDismissed = {
 		  scope.launch { modalBottomSheetState.hide() }.invokeOnCompletion {
 			if (!modalBottomSheetState.isVisible) showBottomSheet.value = false
 		  }
-		}
+		},
 	  )
 	}
 	
@@ -103,18 +99,15 @@ fun MusicScreen(
 		},
 	) {
 	  itemsIndexed(
-		items = musicPageViewModel.musicMediaStoreDataList,
-		key = { _, item -> item.id },
+		items = musicPageViewModel.musicList,
+		key = { _, item -> item.musicId },
 	  ) { index, item ->
 		MusicMediaItem(
 		  item = item,
-		  onItemClick = { musicMediaModel ->
+		  currentMediaID = currentMusicState.mediaId,
+		  onItemClick = {
 			showBottomSheet.value = true
-			musicPageViewModel.apply {
-			  currentListPosition = index
-			  currentMusic.value = musicMediaModel
-			  playMusic(musicMediaModel.uri)
-			}
+			musicPageViewModel.playMusic(index = index, musicPageViewModel.musicList)
 		  },
 		)
 	  }
@@ -131,7 +124,7 @@ fun MusicScreen(
 		.constrainAs(bottomRow) { bottom.linkTo(parent.bottom, margin = 6.dp) },
 	) {
 	  Text(
-		text = musicPageViewModel.currentMusic.value.name,
+		text = currentMusicState.metadata.title.toString(),
 		fontSize = 16.sp,
 		fontWeight = FontWeight.Normal,
 		modifier = Modifier
@@ -143,14 +136,14 @@ fun MusicScreen(
 	  )
 	  Button(
 		onClick = {
-		  when (musicPageViewModel.isPlayerRunning) {
-			true -> musicPageViewModel.musicPlayer.pause()
-			false -> musicPageViewModel.musicPlayer.play()
+		  when (currentMusicState.isPlaying) {
+			true -> musicPageViewModel.pauseMusic()
+			false -> musicPageViewModel.resumeMusic()
 		  }
 		},
 		colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
 	  ) {
-		AnimatedContent(targetState = icon, label = "") { int ->
+		AnimatedContent(targetState = if (currentMusicState.isPlaying) R.drawable.icon_pause else R.drawable.icon_play, label = "") { int ->
 		  Image(
 			painter = painterResource(id = int),
 			contentDescription = "",
@@ -166,10 +159,15 @@ fun MusicScreen(
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun BottomSheet(
-  musicPageViewModel: MusicPageViewModel,
+  currentMusicState: MusicState,
+  currentMusicPosition: Long,
   sheetState: SheetState,
   onDismissed: () -> Unit,
-  icon: Int,
+  onPauseMusic: () -> Unit,
+  onResumeMusic: () -> Unit,
+  onMoveNextMusic: () -> Unit,
+  onMovePreviousMusic: () -> Unit,
+  onSeekTo: (Long) -> Unit,
 ) {
   
   ModalBottomSheet(
@@ -185,15 +183,15 @@ private fun BottomSheet(
 	) {
 	  
 	  Text(
-		text = musicPageViewModel.currentMusic.value.artist,
+		text = currentMusicState.metadata.artist.toString(),
 		fontSize = 22.sp,
 		fontWeight = FontWeight.SemiBold,
 		modifier = Modifier.padding(15.dp),
 	  )
 	  
-	  if (musicPageViewModel.currentMusic.value.image != null) {
+	  if (currentMusicState.metadata.artworkData != null) {
 		Image(
-		  bitmap = musicPageViewModel.currentMusic.value.image!!.asImageBitmap(),
+		  painter = painterResource(id = R.drawable.placeholder_music),
 		  contentDescription = "",
 		  modifier = Modifier
 			.size(300.dp)
@@ -212,7 +210,7 @@ private fun BottomSheet(
 	  Spacer(modifier = Modifier.height(25.dp))
 	  
 	  Text(
-		text = musicPageViewModel.currentMusic.value.name,
+		text = currentMusicState.metadata.title.toString(),
 		fontSize = 20.sp,
 		modifier = Modifier
 		  .fillMaxWidth()
@@ -231,26 +229,28 @@ private fun BottomSheet(
 		horizontalArrangement = Arrangement.Absolute.SpaceBetween,
 	  ) {
 		Text(
-		  text = musicPageViewModel.currentMusicPosition.toInt().convertMilliSecondToTime(),
+		  text = currentMusicPosition.toInt()
+			.convertMilliSecondToTime(),
 		  fontSize = 13.sp,
 		  fontWeight = FontWeight.Normal,
 		)
 		Text(
-		  text = musicPageViewModel.currentMusic.value.duration.convertMilliSecondToTime(),
+		  text = currentMusicState.metadata.extras?.getInt("Duration")
+			?.convertMilliSecondToTime() ?: "--:--",
 		  fontSize = 13.sp,
 		  fontWeight = FontWeight.Normal,
 		)
 	  }
 	  Slider(
-		value = musicPageViewModel.currentMusicPosition,
+		value = currentMusicPosition.toFloat(),
 		modifier = Modifier
 		  .fillMaxWidth()
 		  .padding(horizontal = 15.dp),
 		onValueChange = {
-		  musicPageViewModel.currentMusicPosition = it
-		  musicPageViewModel.musicPlayer.seekTo(it.toLong())
+		  onSeekTo.invoke(it.toLong())
 		},
-		valueRange = 0f..musicPageViewModel.currentMusic.value.duration.toFloat(),
+		valueRange = 0f..(currentMusicState.metadata.extras?.getInt("Duration")
+		  ?.toFloat() ?: 0f),
 	  )
 	  
 	  Spacer(modifier = Modifier.height(15.dp))
@@ -261,9 +261,7 @@ private fun BottomSheet(
 	  ) {
 		
 		Button(
-		  onClick = {
-			musicPageViewModel.moveToBeforeMusic()
-		  },
+		  onClick = { onMovePreviousMusic.invoke() },
 		  colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
 		) {
 		  Image(
@@ -279,14 +277,14 @@ private fun BottomSheet(
 		
 		Button(
 		  onClick = {
-			when (musicPageViewModel.isPlayerRunning) {
-			  true -> musicPageViewModel.musicPlayer.pause()
-			  false -> musicPageViewModel.musicPlayer.play()
+			when (currentMusicState.isPlaying) {
+			  true -> onPauseMusic.invoke()
+			  false -> onResumeMusic.invoke()
 			}
 		  },
 		  colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
 		) {
-		  AnimatedContent(targetState = icon, label = "") {
+		  AnimatedContent(targetState = if(currentMusicState.isPlaying) R.drawable.icon_pause else R.drawable.icon_play, label = "") {
 			Image(
 			  painter = painterResource(id = it),
 			  contentDescription = "",
@@ -299,7 +297,7 @@ private fun BottomSheet(
 		
 		Button(
 		  onClick = {
-			musicPageViewModel.moveToNextMusic()
+			onMoveNextMusic.invoke()
 		  },
 		  colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
 		) {

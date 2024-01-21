@@ -1,8 +1,7 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen.video
+package com.example.mediaplayerjetpackcompose.presentation.screen
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,47 +9,49 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.session.MediaController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.mediaplayerjetpackcompose.domain.model.bottomNavigation.BottomNavigationModel
+import com.example.mediaplayerjetpackcompose.data.MusicPlayerService
 import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.MusicScreen
+import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPage
+import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.player.PlayerScreen
+import com.example.mediaplayerjetpackcompose.presentation.screenComponent.BottomNavigationBar
+import com.google.common.util.concurrent.ListenableFuture
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
   navHostController: NavHostController = rememberNavController()
 ) {
-  
   navHostController.currentBackStackEntryFlow.collectAsStateWithLifecycle(
 	initialValue = NavigationRoute.VideoScreen
   ).value
   val currentRoute = navHostController.currentDestination?.route
   
   val videoPageViewModel: VideoPageViewModel = viewModel(factory = VideoPageViewModel.Factory)
-  val musicPageViewModel: MusicPageViewModel = viewModel(factory = MusicPageViewModel.Factory)
+  val musicPageViewModel: MusicPageViewModel =
+	viewModel(factory = MusicPageViewModel.Factory)
   
   val topBarTitle = when (currentRoute) {
 	NavigationRoute.VideoScreen.route -> "Video"
@@ -58,8 +59,7 @@ fun MainScreen(
 	else -> ""
   }
   
-  val isDataLoaded =
-	videoPageViewModel.mediaStoreDataList.isNotEmpty() && musicPageViewModel.musicMediaStoreDataList.isNotEmpty()
+  val isDataLoaded = true
   
   if (isDataLoaded) {
 	Scaffold(
@@ -76,7 +76,12 @@ fun MainScreen(
 	  },
 	  bottomBar = {
 		if (currentRoute != null && currentRoute != NavigationRoute.PlayerScreen.route) {
-		  PlayerNavigationBar(currentRoute = currentRoute, navHostController = navHostController)
+		  BottomNavigationBar(
+			currentRoute = currentRoute,
+			onClick = {
+			  navHostController.navigate(it)
+			},
+		  )
 		}
 	  },
 	) {
@@ -103,33 +108,6 @@ fun MainScreen(
 	}
   }
   
-  
-}
-
-@Composable
-fun PlayerNavigationBar(
-  currentRoute: String,
-  navHostController: NavHostController,
-  bottomNavigationItemList: List<BottomNavigationModel> = listOf(BottomNavigationModel.Video, BottomNavigationModel.Music)
-) {
-  
-  NavigationBar{
-	bottomNavigationItemList.forEach {
-	  NavigationBarItem(
-		selected = currentRoute == it.route.route,
-		alwaysShowLabel = false,
-		onClick = {
-		  if (currentRoute != it.route.route) {
-			navHostController.navigate(it.route.route)
-		  }
-		},
-		icon = {
-		  Image(painter = painterResource(id = it.icon), contentDescription = "")
-		},
-		label = { Text(text = it.title) }
-	  )
-	}
-  }
   
 }
 

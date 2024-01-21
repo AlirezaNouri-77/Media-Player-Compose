@@ -1,7 +1,7 @@
 package com.example.mediaplayerjetpackcompose.domain.model.bottomNavigation
 
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.presentation.screen.video.NavigationRoute
+import com.example.mediaplayerjetpackcompose.presentation.screen.NavigationRoute
 
 sealed class BottomNavigationModel(
   var title: String,

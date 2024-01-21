@@ -16,10 +16,9 @@ import kotlinx.coroutines.flow.flowOn
 import java.util.concurrent.TimeUnit
 
 class VideoMediaStoreRepository :
-  MediaStoreRepositoryImpl<VideoMediaModel>,
   MediaRepositoryGetContentByUri<VideoMediaModel> {
-  
-  override suspend fun getMedia(mContentResolver: ContentResolver): Flow<List<VideoMediaModel>> {
+	
+	suspend fun getMedia(mContentResolver: ContentResolver): Flow<List<VideoMediaModel>> {
 	
 	val mListResult = mutableListOf<VideoMediaModel>()
 	

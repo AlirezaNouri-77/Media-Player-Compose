@@ -2,23 +2,22 @@ package com.example.mediaplayerjetpackcompose.data.repository
 
 import android.content.ContentResolver
 import android.content.ContentUris
+import android.content.Context
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
-import android.util.Size
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.model.MusicMediaModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import java.io.FileNotFoundException
 import java.util.concurrent.TimeUnit
 
 class MusicMediaStoreRepository : MediaStoreRepositoryImpl<MusicMediaModel> {
   
-  override suspend fun getMedia(mContentResolver: ContentResolver): Flow<List<MusicMediaModel>> {
+  override suspend fun getMedia(mContentResolver: ContentResolver , context: Context): Flow<List<MusicMediaModel>> {
 	
 	val resultList = mutableListOf<MusicMediaModel>()
 	
@@ -36,8 +35,6 @@ class MusicMediaStoreRepository : MediaStoreRepositoryImpl<MusicMediaModel> {
 		val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
 		val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
 		val bitrateColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.BITRATE)
-		val bucketDisplayNameColumn =
-		  cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.BUCKET_DISPLAY_NAME)
 		val artistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
 		
 		while (cursor.moveToNext()) {
@@ -46,27 +43,22 @@ class MusicMediaStoreRepository : MediaStoreRepositoryImpl<MusicMediaModel> {
 		  val duration = durationColumn.let { cursor.getInt(it) }
 		  val bitrate = bitrateColumn.let { cursor.getInt(it) }
 		  val size = sizeColumn.let { cursor.getInt(it) }
-		  val bucketName = bucketDisplayNameColumn.let { cursor.getString(it) }
 		  val artist = artistColumn.let { cursor.getString(it) }
 		  val contentUri: Uri = ContentUris.withAppendedId(
 			MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
 			id
 		  )
-		  val imageBitmap = try {
-			 mContentResolver.loadThumbnail(contentUri, Size(400, 400), null)
-		  } catch (e: FileNotFoundException) {
-			null
-		  }
+		  val artworkByteArray = getImageArt(context, uriMedia)
 		  
 		  resultList.add(
 			MusicMediaModel(
+			  musicId = id,
 			  uri = contentUri,
-			  name = name!!,
+			  name = name,
 			  duration = duration,
 			  size = size,
-			  image = imageBitmap,
+			  artworkByteArray = artworkByteArray,
 			  bitrate = bitrate,
-			  bucketDisplayName = bucketName,
 			  artist = artist,
 			)
 		  )
@@ -102,4 +94,12 @@ class MusicMediaStoreRepository : MediaStoreRepositoryImpl<MusicMediaModel> {
 	)
 	
   }
+  private fun getImageArt(context: Context, uri: Uri): ByteArray? {
+	return runCatching {
+	  val mediaMetadataRetriever = MediaMetadataRetriever()
+	  mediaMetadataRetriever.setDataSource(context, uri)
+	  mediaMetadataRetriever.embeddedPicture
+	}.getOrNull()
+  }
+  
 }

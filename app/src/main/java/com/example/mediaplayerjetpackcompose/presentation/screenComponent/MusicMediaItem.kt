@@ -1,6 +1,7 @@
 package com.example.mediaplayerjetpackcompose.presentation.screenComponent
 
 import android.net.Uri
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,14 +25,15 @@ import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeT
 @Composable
 fun MusicMediaItem(
   item: MusicMediaModel,
-  onItemClick: (MusicMediaModel) -> Unit,
+  currentMediaID:String,
+  onItemClick: () -> Unit,
 ) {
-  
   Row(
 	modifier = Modifier
 	  .fillMaxWidth()
+	  .background(color = if (currentMediaID==item.musicId.toString()) Color.Gray else Color.White)
 	  .padding(vertical = 7.dp, horizontal = 5.dp)
-	  .clickable { onItemClick.invoke(item) },
+	  .clickable { onItemClick.invoke() },
 	verticalAlignment = Alignment.CenterVertically,
   ) {
 	Column(Modifier.weight(1f)) {
@@ -63,27 +66,4 @@ fun MusicMediaItem(
 	}
   }
   
-  
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MusicMediaItemPreview() {
-  MediaPlayerJetpackComposeTheme {
-	MusicMediaItem(
-	  item = MusicMediaModel(
-		uri = Uri.EMPTY,
-		name = "Name of Song",
-		duration = 182831,
-		size = 1491293,
-		image = null,
-		bitrate = 128,
-		bucketDisplayName = "",
-		artist = "",
-	  ),
-	  onItemClick = {
-		
-	  },
-	)
-  }
 }

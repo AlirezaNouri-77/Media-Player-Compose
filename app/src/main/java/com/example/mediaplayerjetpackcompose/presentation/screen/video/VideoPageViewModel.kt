@@ -9,6 +9,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.media3.session.MediaController
 import com.example.mediaplayerjetpackcompose.ApplicationClass
 import com.example.mediaplayerjetpackcompose.data.repository.VideoMediaStoreRepository
 import com.example.mediaplayerjetpackcompose.domain.model.VideoMediaModel
@@ -32,7 +33,7 @@ class VideoPageViewModel(
 	viewModelScope.launch {
 	  videoMediaStoreRepository.getMedia(mContentResolver = contentResolver).stateIn(
 		viewModelScope, SharingStarted.WhileSubscribed(5000L), initialValue = emptyList()
-	  ).collect{
+	  ).collect {
 		mediaStoreDataList.addAll(it)
 	  }
 	}

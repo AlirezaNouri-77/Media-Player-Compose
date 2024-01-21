@@ -3,6 +3,7 @@ package com.example.mediaplayerjetpackcompose.presentation
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -14,27 +15,29 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
+import com.example.mediaplayerjetpackcompose.ApplicationClass
+import com.example.mediaplayerjetpackcompose.data.MusicPlayerService
 import com.example.mediaplayerjetpackcompose.data.encodeStringNavigation
-import com.example.mediaplayerjetpackcompose.presentation.screen.video.MainScreen
 import com.example.mediaplayerjetpackcompose.presentation.screen.NoPermissionPage
+import com.example.mediaplayerjetpackcompose.presentation.screen.MainScreen
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.player.PlayerScreen
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 class MainActivity : ComponentActivity() {
   
-  private val uiState = mutableStateOf(PermissionState.Initial)
-  
-  @RequiresApi(Build.VERSION_CODES.R)
+  var app = ApplicationClass()
   override fun onCreate(savedInstanceState: Bundle?) {
 	super.onCreate(savedInstanceState)
 	
-	@SuppressLint("InlinedApi")
+	val uiState = mutableStateOf(PermissionState.Initial)
+	
 	val permissionsList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 	  arrayOf(
 		Manifest.permission.READ_MEDIA_VIDEO,
@@ -92,6 +95,15 @@ class MainActivity : ComponentActivity() {
 	
   }
   
+  override fun onStop() {
+	super.onStop()
+	//app.playBackHandler.release()
+  }
+  
+  override fun onStart() {
+	super.onStart()
+	//app.playBackHandler.initialExoPlayer()
+  }
 }
 
 @Composable
