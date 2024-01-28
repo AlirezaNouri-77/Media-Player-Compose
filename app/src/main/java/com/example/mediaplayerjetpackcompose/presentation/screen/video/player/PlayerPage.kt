@@ -55,125 +55,125 @@ fun PlayerScreen(
   lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
   orientation: Int = LocalConfiguration.current.orientation,
 ) {
-  
+
   val playerViewModel = viewModel<PlayerViewModel>(factory = PlayerViewModel.Factory)
   val playerControllerVisibility = remember {
-	mutableStateOf(false)
+    mutableStateOf(false)
   }
-  
+
   LaunchedEffect(key1 = videoUri, block = {
-	playerViewModel.getMediaInformationByUri(videoUri.decodeStringNavigation())
+    playerViewModel.getMediaInformationByUri(videoUri.decodeStringNavigation())
   })
-  
+
   LaunchedEffect(key1 = orientation, block = {
-	when (orientation) {
-	  Configuration.ORIENTATION_LANDSCAPE -> {
-		playerViewModel.deviceOrientation.intValue = AspectRatioFrameLayout.RESIZE_MODE_FILL
-	  }
-	  
-	  else -> {
-		playerViewModel.deviceOrientation.intValue = AspectRatioFrameLayout.RESIZE_MODE_FIT
-	  }
-	}
+    when (orientation) {
+      Configuration.ORIENTATION_LANDSCAPE -> {
+        playerViewModel.deviceOrientation.intValue = AspectRatioFrameLayout.RESIZE_MODE_FILL
+      }
+
+      else -> {
+        playerViewModel.deviceOrientation.intValue = AspectRatioFrameLayout.RESIZE_MODE_FIT
+      }
+    }
   })
-  
+
   DisposableEffect(key1 = lifecycleOwner, effect = {
-	val observe = LifecycleEventObserver { _, event ->
-	  when (event) {
-		Lifecycle.Event.ON_START -> {
-		  playerViewModel.resumePlayer()
-		}
-		
-		Lifecycle.Event.ON_STOP -> {
-		  playerViewModel.pausePlayer()
-		}
-		
-		else -> {}
-	  }
-	}
-	lifecycleOwner.lifecycle.addObserver(observe)
-	onDispose {
-	  lifecycleOwner.lifecycle.removeObserver(observe)
-	}
+    val observe = LifecycleEventObserver { _, event ->
+      when (event) {
+        Lifecycle.Event.ON_START -> {
+          playerViewModel.resumePlayer()
+        }
+
+        Lifecycle.Event.ON_STOP -> {
+          playerViewModel.pausePlayer()
+        }
+
+        else -> {}
+      }
+    }
+    lifecycleOwner.lifecycle.addObserver(observe)
+    onDispose {
+      lifecycleOwner.lifecycle.removeObserver(observe)
+    }
   })
-  
+
   BackHandler(enabled = true) {
-	playerViewModel.onBackPress.value = true
+    playerViewModel.onBackPress.value = true
   }
-  
+
   LaunchedEffect(key1 = videoUri, block = {
-	playerViewModel.startPlayVideo(videoUri.decodeStringNavigation())
+    playerViewModel.startPlayVideo(videoUri.decodeStringNavigation())
   })
-  
+
   DisposableEffect(
-	key1 = playerViewModel.onBackPress.value,
-	effect = {
-	  onDispose {
-		playerViewModel.releasePlayer()
-		onBackClick.invoke()
-	  }
-	})
-  
+    key1 = playerViewModel.onBackPress.value,
+    effect = {
+      onDispose {
+        playerViewModel.releasePlayer()
+        onBackClick.invoke()
+      }
+    })
+
   AndroidView(
-	modifier = Modifier
-	  .fillMaxSize()
-	  .background(color = Color.Black),
-	factory = {
-	  PlayerView(it).apply {
-		this.player = playerViewModel.exoPlayer
-		this.useController = true
-		this.setControllerVisibilityListener(PlayerView.ControllerVisibilityListener { visibility ->
-		  when (visibility) {
-			View.VISIBLE -> {
-			  playerControllerVisibility.value = true
-			}
-			
-			View.GONE -> {
-			  playerControllerVisibility.value = false
-			}
-		  }
-		})
-	  }
-	},
-	update = {
-	  it.resizeMode = playerViewModel.deviceOrientation.intValue
-	}
+    modifier = Modifier
+      .fillMaxSize()
+      .background(color = Color.Black),
+    factory = {
+      PlayerView(it).apply {
+        this.player = playerViewModel.exoPlayer
+        this.useController = true
+        this.setControllerVisibilityListener(PlayerView.ControllerVisibilityListener { visibility ->
+          when (visibility) {
+            View.VISIBLE -> {
+              playerControllerVisibility.value = true
+            }
+
+            View.GONE -> {
+              playerControllerVisibility.value = false
+            }
+          }
+        })
+      }
+    },
+    update = {
+      it.resizeMode = playerViewModel.deviceOrientation.intValue
+    }
   )
-  
+
   AnimatedVisibility(
-	visible = playerControllerVisibility.value,
-	enter = slideInVertically(initialOffsetY = { -it / 2 }),
-	exit = slideOutVertically(targetOffsetY = { -it * 2 }),
+    visible = playerControllerVisibility.value,
+    enter = slideInVertically(initialOffsetY = { -it / 2 }),
+    exit = slideOutVertically(targetOffsetY = { -it * 2 }),
   ) {
-	Box(
-	  modifier = Modifier
-		.fillMaxWidth(),
-	  contentAlignment = Alignment.TopStart,
-	) {
-	  Row(
-		verticalAlignment = Alignment.CenterVertically,
-		horizontalArrangement = Arrangement.Start,
-	  ) {
-		Image(
-		  painter = painterResource(id = R.drawable.icon_back),
-		  contentDescription = "",
-		  modifier = Modifier
-			.clickable {
-			  playerViewModel.releasePlayer()
-			  onBackClick.invoke()
-			}
-			.padding(20.dp),
-		)
-		Spacer(modifier = Modifier.width(15.dp))
-		Text(
-		  text = playerViewModel.mediaInformation.value.name,
-		  fontSize = 16.sp,
-		  fontWeight = FontWeight.Medium,
-		  color = Color.White,
-		  maxLines = 1,
-		  modifier = Modifier.basicMarquee()
-		)
-	  }
-	}
+    Box(
+      modifier = Modifier
+        .fillMaxWidth(),
+      contentAlignment = Alignment.TopStart,
+    ) {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start,
+      ) {
+        Image(
+          painter = painterResource(id = R.drawable.icon_back),
+          contentDescription = "",
+          modifier = Modifier
+            .clickable {
+              playerViewModel.releasePlayer()
+              onBackClick.invoke()
+            }
+            .padding(20.dp),
+        )
+        Spacer(modifier = Modifier.width(15.dp))
+        Text(
+          text = playerViewModel.mediaInformation.value.name,
+          fontSize = 16.sp,
+          fontWeight = FontWeight.Medium,
+          color = Color.White,
+          maxLines = 1,
+          modifier = Modifier.basicMarquee()
+        )
+      }
+    }
   }
 }

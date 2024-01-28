@@ -16,7 +16,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -39,52 +38,52 @@ fun NoPermissionPage(
   currentLocalLifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
   context: Context = LocalContext.current,
 ) {
-  
+
   DisposableEffect(
-	key1 = currentLocalLifecycleOwner,
+    key1 = currentLocalLifecycleOwner,
   ) {
-	val observer = LifecycleEventObserver { _, event ->
-	  if (event == Lifecycle.Event.ON_RESUME) {
-		if (checkPermission(context)) {
-		  onGrant.invoke()
-		}
-	  }
-	}
-	currentLocalLifecycleOwner.lifecycle.addObserver(observer)
-	onDispose {
-	  currentLocalLifecycleOwner.lifecycle.removeObserver(observer)
-	}
+    val observer = LifecycleEventObserver { _, event ->
+      if (event == Lifecycle.Event.ON_RESUME) {
+        if (checkPermission(context)) {
+          onGrant.invoke()
+        }
+      }
+    }
+    currentLocalLifecycleOwner.lifecycle.addObserver(observer)
+    onDispose {
+      currentLocalLifecycleOwner.lifecycle.removeObserver(observer)
+    }
   }
-  
+
   Column(
-	modifier = Modifier
-	  .fillMaxSize()
-	  .padding(horizontal = 15.dp),
-	verticalArrangement = Arrangement.Center,
-	horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = Modifier
+      .fillMaxSize()
+      .padding(horizontal = 15.dp),
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-	Text(
-	  text = "Simple Media Player",
-	  fontSize = 35.sp, fontWeight = FontWeight.Bold,
-	)
-	Spacer(modifier = Modifier.height(90.dp))
-	Image(
-	  painter = painterResource(id = R.drawable.warning_icon),
-	  contentDescription = "",
-	  Modifier.aspectRatio(3f)
-	)
-	Spacer(modifier = Modifier.height(20.dp))
-	Text(
-	  text = "This app need to storage permission for Work properly",
-	  fontSize = 18.sp
-	)
-	Spacer(modifier = Modifier.height(20.dp))
-	Button(onClick = { openPermissionSetting(context) }) {
-	  Text(text = "Go to setting")
-	}
+    Text(
+      text = "Simple Media Player",
+      fontSize = 35.sp, fontWeight = FontWeight.Bold,
+    )
+    Spacer(modifier = Modifier.height(90.dp))
+    Image(
+      painter = painterResource(id = R.drawable.warning_icon),
+      contentDescription = "",
+      Modifier.aspectRatio(3f)
+    )
+    Spacer(modifier = Modifier.height(20.dp))
+    Text(
+      text = "This app need to storage permission for Work properly",
+      fontSize = 18.sp
+    )
+    Spacer(modifier = Modifier.height(20.dp))
+    Button(onClick = { openPermissionSetting(context) }) {
+      Text(text = "Go to setting")
+    }
   }
-  
-  
+
+
 }
 
 fun openPermissionSetting(context: Context) {
@@ -98,6 +97,6 @@ fun openPermissionSetting(context: Context) {
 @Composable
 fun PreviewNoPermissionPage() {
   MediaPlayerJetpackComposeTheme {
-	NoPermissionPage(onGrant = {})
+    NoPermissionPage(onGrant = {})
   }
 }

@@ -2,7 +2,6 @@ package com.example.mediaplayerjetpackcompose
 
 import android.content.ComponentName
 import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -26,76 +25,83 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 
 class PlayBackHandler(private var context: Context) {
-  
+
   init {
-	initialExoPlayer()
+    initialExoPlayer()
   }
-  
+
   private var factory: ListenableFuture<MediaController>? = null
   var mediaController by mutableStateOf<MediaController?>(null)
-	private set
+    private set
   var currentMusicPosition = flow {
-	while (currentCoroutineContext().isActive) {
-	  val position = mediaController?.currentPosition ?: 0L
-	  emit(position)
-	  delay(1000L)
-	}
+    while (currentCoroutineContext().isActive) {
+      val position = mediaController?.currentPosition ?: 0L
+      emit(position)
+      delay(1000L)
+    }
   }
-  
+
   private var _musicState =
-	MutableStateFlow(MusicState(isPlaying = false, metadata = MediaMetadata.EMPTY, mediaId = ""))
+    MutableStateFlow(MusicState(isPlaying = false, metadata = MediaMetadata.EMPTY, mediaId = ""))
   var musicState: StateFlow<MusicState> = _musicState.asStateFlow()
-  
+
   private fun initialExoPlayer() {
-	if (factory == null) {
-	  factory = MediaController.Builder(
-		context, SessionToken(
-		  context, ComponentName(context, MusicPlayerService::class.java)
-		)
-	  ).buildAsync().also {
-		it.addListener(
-		  {
-			mediaController = factory?.get().also { it?.addListener(exoPlayerListener) }
-		  },
-		  MoreExecutors.directExecutor(),
-		)
-	  }
-	}
+    if (factory == null) {
+      factory = MediaController.Builder(
+        context, SessionToken(
+          context, ComponentName(context, MusicPlayerService::class.java)
+        )
+      ).buildAsync().also {
+        it.addListener(
+          {
+            mediaController = factory?.get().also { it?.addListener(exoPlayerListener) }
+          },
+          MoreExecutors.directExecutor(),
+        )
+      }
+    }
   }
-  
+
   fun moveToNext() = mediaController?.seekToNext()
   fun moveToPrevious() = mediaController?.seekToPrevious()
   fun resumeMusic() = mediaController?.play()
   fun pauseMusic() = mediaController?.pause()
   fun seekToPosition(position: Long) = mediaController?.seekTo(position)
-  
+
   fun playMusic(index: Int, musicList: List<MusicMediaModel>) = mediaController?.let {
-	it.setMediaItems(musicList.map(MusicMediaModel::toMediaItem), index, 0L)
-	it.playWhenReady
-	it.prepare()
-	it.play()
+    it.setMediaItems(musicList.map(MusicMediaModel::toMediaItem), index, 0L)
+    it.playWhenReady
+    it.prepare()
+    it.play()
   }
-  
+
+  fun updateMediaList(index: Int, musicList: List<MusicMediaModel>, startPosition: Long) =
+    mediaController?.setMediaItems(
+      musicList.map(MusicMediaModel::toMediaItem),
+      index,
+      startPosition
+    )
+
   private val exoPlayerListener = object : Player.Listener {
-	override fun onIsPlayingChanged(isPlaying: Boolean) {
-	  _musicState.update { it.copy(isPlaying = isPlaying) }
-	}
-	
-	override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-	  _musicState.update { it.copy(metadata = mediaMetadata) }
-	}
-	
-	override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-	  _musicState.update { it.copy(mediaId = mediaItem?.mediaId ?: "") }
-	}
-	
-	override fun onPlaybackStateChanged(playbackState: Int) {
-	  if (playbackState == Player.STATE_ENDED) {
-		mediaController?.seekToNextMediaItem()
-	  }
-	}
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+      _musicState.update { it.copy(isPlaying = isPlaying) }
+    }
+
+    override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+      _musicState.update { it.copy(metadata = mediaMetadata) }
+    }
+
+    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+      _musicState.update { it.copy(mediaId = mediaItem?.mediaId ?: "") }
+    }
+
+    override fun onPlaybackStateChanged(playbackState: Int) {
+      if (playbackState == Player.STATE_ENDED) {
+        mediaController?.seekToNextMediaItem()
+      }
+    }
   }
-  
+
 }
 
 data class MusicState(var isPlaying: Boolean, val metadata: MediaMetadata, val mediaId: String)

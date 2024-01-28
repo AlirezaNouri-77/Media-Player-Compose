@@ -34,45 +34,45 @@ fun VideoMediaItem(
   onItemClick: (VideoMediaModel) -> Unit,
 ) {
   Surface(
-	onClick = { onItemClick.invoke(item) },
-	modifier = Modifier
-	  .fillMaxWidth()
-	  .padding(5.dp),
+    onClick = { onItemClick.invoke(item) },
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(5.dp),
   ) {
-	Row(
-	  verticalAlignment = Alignment.CenterVertically,
-	  horizontalArrangement = Arrangement.Start,
-	) {
-	  Image(
-		contentScale = ContentScale.FillBounds,
-		modifier = Modifier
-		  .size(width = 150.dp, height = 90.dp)
-		  .background(color = Color.Black, shape = RoundedCornerShape(15.dp)),
-		bitmap = item.image!!.asImageBitmap(),
-		contentDescription = "",
-	  )
-	  Spacer(modifier = Modifier.width(10.dp))
-	  Column {
-		Text(
-		  text = item.name,
-		  fontSize = 16.sp,
-		  fontWeight = FontWeight.Medium,
-		)
-		Spacer(modifier = Modifier.height(3.dp))
-		Text(
-		  modifier = Modifier.fillMaxWidth(),
-		  textAlign = TextAlign.End,
-		  text = item.size.convertByteToReadableSize(),
-		  fontSize = 14.sp,
-		)
-		Text(
-		  modifier = Modifier.fillMaxWidth(),
-		  textAlign = TextAlign.End,
-		  text = item.duration.convertMilliSecondToTime(),
-		  fontSize = 14.sp,
-		)
-	  }
-	}
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.Start,
+    ) {
+      Image(
+        contentScale = ContentScale.FillBounds,
+        modifier = Modifier
+          .size(width = 150.dp, height = 90.dp)
+          .background(color = Color.Black, shape = RoundedCornerShape(15.dp)),
+        bitmap = item.image!!.asImageBitmap(),
+        contentDescription = "",
+      )
+      Spacer(modifier = Modifier.width(10.dp))
+      Column {
+        Text(
+          text = item.name,
+          fontSize = 16.sp,
+          fontWeight = FontWeight.Medium,
+        )
+        Spacer(modifier = Modifier.height(3.dp))
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          textAlign = TextAlign.End,
+          text = item.size.convertByteToReadableSize(),
+          fontSize = 14.sp,
+        )
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          textAlign = TextAlign.End,
+          text = item.duration.convertMilliSecondToTime(),
+          fontSize = 14.sp,
+        )
+      }
+    }
   }
-  
+
 }

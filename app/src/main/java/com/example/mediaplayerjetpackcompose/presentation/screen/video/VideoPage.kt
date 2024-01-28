@@ -16,21 +16,21 @@ fun VideoPage(
   navHostController: NavHostController,
   videoItemList: List<VideoMediaModel>,
 ) {
-  
+
   Box(modifier = Modifier.fillMaxSize()) {
-	LazyColumn(modifier = Modifier.fillMaxSize()) {
-	  items(items = videoItemList, key = { item -> item.id }) {
-		VideoMediaItem(
-		  item = it,
-		  onItemClick = { item ->
-			val videoUri = item.uri.toString().encodeStringNavigation()
-			navHostController.navigate("PlayerScreen/${videoUri}") {
-			  launchSingleTop = true
-			}
-		  },
-		)
-	  }
-	}
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+      items(items = videoItemList, key = { item -> item.id }) {
+        VideoMediaItem(
+          item = it,
+          onItemClick = { item ->
+            val videoUri = item.uri.toString().encodeStringNavigation()
+            navHostController.navigate("PlayerScreen/${videoUri}") {
+              launchSingleTop = true
+            }
+          },
+        )
+      }
+    }
   }
-  
+
 }

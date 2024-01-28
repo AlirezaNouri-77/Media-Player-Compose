@@ -82,4 +82,6 @@ dependencies {
   implementation("androidx.constraintlayout:constraintlayout-compose:$constraintLayout")
   
   implementation("androidx.palette:palette-ktx:1.0.0")
+
+  debugImplementation ("com.squareup.leakcanary:leakcanary-android:3.0-alpha-1")
 }

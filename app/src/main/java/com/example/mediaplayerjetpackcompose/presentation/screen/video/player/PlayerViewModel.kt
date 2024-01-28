@@ -15,8 +15,8 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import com.example.mediaplayerjetpackcompose.ApplicationClass
-import com.example.mediaplayerjetpackcompose.domain.model.VideoMediaModel
 import com.example.mediaplayerjetpackcompose.data.repository.VideoMediaStoreRepository
+import com.example.mediaplayerjetpackcompose.domain.model.VideoMediaModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
@@ -26,66 +26,66 @@ class PlayerViewModel(
   private var mApplicationContext: Context,
   private var mediaStoreRepository: VideoMediaStoreRepository,
 ) : ViewModel() {
-  
+
   lateinit var exoPlayer: ExoPlayer
   var onBackPress = mutableStateOf(false)
   var mediaInformation = mutableStateOf(VideoMediaModel())
-  
+
   init {
-	initialPlayer()
+    initialPlayer()
   }
-  
+
   @SuppressLint("UnsafeOptInUsageError")
   var deviceOrientation = mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT)
-  
+
   fun getMediaInformationByUri(uri: Uri) = viewModelScope.launch {
-	mediaStoreRepository.getMediaInformationByUri(mApplicationContext.contentResolver, uri).stateIn(
-	  viewModelScope,
-	  SharingStarted.WhileSubscribed(5000L), initialValue = VideoMediaModel()
-	).collectLatest {
-	  mediaInformation.value = it
-	}
+    mediaStoreRepository.getMediaInformationByUri(mApplicationContext.contentResolver, uri).stateIn(
+      viewModelScope,
+      SharingStarted.WhileSubscribed(5000L), initialValue = VideoMediaModel()
+    ).collectLatest {
+      mediaInformation.value = it
+    }
   }
-  
+
   private fun initialPlayer() {
-	exoPlayer = ExoPlayer.Builder(mApplicationContext.applicationContext).build()
+    exoPlayer = ExoPlayer.Builder(mApplicationContext.applicationContext).build()
   }
-  
+
   fun startPlayVideo(videoUri: Uri) {
-	exoPlayer.apply {
-	  this.addMediaItem(MediaItem.fromUri(videoUri))
-	  this.playWhenReady = true
-	  this.prepare()
-	  this.play()
-	}
+    exoPlayer.apply {
+      this.addMediaItem(MediaItem.fromUri(videoUri))
+      this.playWhenReady = true
+      this.prepare()
+      this.play()
+    }
   }
-  
+
   fun pausePlayer() {
-	exoPlayer.pause()
+    exoPlayer.pause()
   }
-  
+
   fun resumePlayer() {
-	exoPlayer.play()
+    exoPlayer.play()
   }
-  
+
   fun releasePlayer() {
-	exoPlayer.pause()
-	exoPlayer.clearMediaItems()
-	exoPlayer.pause()
-	exoPlayer.release()
-	onBackPress.value = false
+    exoPlayer.pause()
+    exoPlayer.clearMediaItems()
+    exoPlayer.pause()
+    exoPlayer.release()
+    onBackPress.value = false
   }
-  
+
   companion object {
-	val Factory: ViewModelProvider.Factory = viewModelFactory {
-	  initializer {
-		val application = checkNotNull((this[APPLICATION_KEY])) as ApplicationClass
-		PlayerViewModel(
-		  mApplicationContext = application.applicationContext,
-		  mediaStoreRepository = application.videoMediaStoreRepository,
-		)
-	  }
-	}
+    val Factory: ViewModelProvider.Factory = viewModelFactory {
+      initializer {
+        val application = checkNotNull((this[APPLICATION_KEY])) as ApplicationClass
+        PlayerViewModel(
+          mApplicationContext = application.applicationContext,
+          mediaStoreRepository = application.videoMediaStoreRepository,
+        )
+      }
+    }
   }
-  
+
 }
