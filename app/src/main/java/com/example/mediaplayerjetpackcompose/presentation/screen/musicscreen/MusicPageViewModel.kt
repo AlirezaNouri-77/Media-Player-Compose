@@ -1,26 +1,39 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.os.Build
+import android.util.Size
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.toColor
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.palette.graphics.Palette
 import com.example.mediaplayerjetpackcompose.ApplicationClass
 import com.example.mediaplayerjetpackcompose.PlayBackHandler
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.repository.MusicMediaStoreRepository
 import com.example.mediaplayerjetpackcompose.domain.model.MusicMediaModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
@@ -41,6 +54,7 @@ class MusicPageViewModel(
   var currentListSort = mutableStateOf(SortItem.NAME)
   var currentTabState by mutableIntStateOf(0)
   var isDec = mutableStateOf(false)
+  var showBottomSheet = mutableStateOf(false)
 
   var currentMusicState = playBackHandler.musicState
   var currentMusicPosition = playBackHandler.currentMusicPosition.stateIn(
@@ -53,49 +67,35 @@ class MusicPageViewModel(
     getMusic()
   }
 
-  fun sortMusicListByCategory(sort: SortItem) {
-    viewModelScope.launch(Dispatchers.Main) {
-      when (sort) {
-        SortItem.NAME -> {
-          musicList.sortBy { it.name }
-          musicCategoryList.sortBy { it.name }
+  fun sortMusicListByCategory(
+    list: MutableList<MusicMediaModel>
+  ): MutableList<MusicMediaModel> {
+    viewModelScope.launch(Dispatchers.IO) {
+      if (!isDec.value) {
+        when (currentListSort.value) {
+          SortItem.NAME -> list.sortBy { it.name }
+          SortItem.ARTIST -> list.sortBy { it.artist }
+          SortItem.DURATION -> list.sortBy { it.duration }
+          SortItem.SIZE -> list.sortBy { it.size }
+          else -> {}
         }
-
-        SortItem.ARTIST -> {
-          musicList.sortBy { it.artist }
-          musicCategoryList.sortBy { it.artist }
+      } else {
+        when (currentListSort.value) {
+          SortItem.NAME -> list.sortByDescending { it.name }
+          SortItem.ARTIST -> list.sortByDescending { it.artist }
+          SortItem.DURATION -> list.sortByDescending { it.duration }
+          SortItem.SIZE -> list.sortByDescending { it.size }
+          else -> {}
         }
-
-        SortItem.DURATION -> {
-          musicList.sortBy { it.duration }
-          musicCategoryList.sortBy { it.duration }
-        }
-
-        SortItem.SIZE -> {
-          musicList.sortBy { it.size }
-          musicCategoryList.sortBy { it.duration }
-        }
-
-        else -> {}
       }
-    }.also {
-      currentListSort.value = sort
-      it.invokeOnCompletion { updateMediaItemList() }
+    }.invokeOnCompletion {
+      updateMediaItemList(list)
     }
+    return list
   }
 
-  fun sortMusicByAscOrDec() {
-    viewModelScope.launch(Dispatchers.Main) {
-      val dumy = musicList.reversed()
-      val dumy2 = musicCategoryList.reversed()
-      musicList.clear().also { musicList.addAll(dumy) }
-      musicCategoryList.clear().also { musicCategoryList.addAll(dumy2) }
-      updateMediaItemList()
-    }
-  }
-
-  private fun updateMediaItemList() = viewModelScope.launch {
-    val index = musicList.indexOfFirst { it.musicId.toString() == currentMusicState.value.mediaId }
+  private fun updateMediaItemList(list: List<MusicMediaModel>) = viewModelScope.launch {
+    val index = list.indexOfFirst { it.musicId.toString() == currentMusicState.value.mediaId }
     playBackHandler.updateMediaList(index, musicList, currentMusicPosition.value)
   }
 
@@ -104,22 +104,6 @@ class MusicPageViewModel(
   fun pauseMusic() = playBackHandler.pauseMusic()
   fun resumeMusic() = playBackHandler.resumeMusic()
   fun seekToPosition(position: Long) = playBackHandler.seekToPosition(position)
-
-  fun getImageArt(uri: Uri): Bitmap {
-    return runCatching {
-      val mediaMetadataRetriever = MediaMetadataRetriever()
-      mediaMetadataRetriever.setDataSource(myApplication.applicationContext, uri)
-      val byteArray = mediaMetadataRetriever.embeddedPicture
-      val bitmap = BitmapFactory.decodeByteArray(
-        byteArray,
-        0,
-        byteArray!!.size
-      )
-      return Bitmap.createScaledBitmap(bitmap, 300, 300, false)
-    }.getOrElse {
-      myApplication.applicationContext.getDrawable(R.drawable.placeholder_music)!!.toBitmap()
-    }
-  }
 
   fun playMusic(index: Int, musicList: List<MusicMediaModel>) =
     viewModelScope.launch(Dispatchers.Main) {
@@ -139,6 +123,30 @@ class MusicPageViewModel(
             albumMusicMap = musicMediaModel.groupBy { it.album }
           }
         }
+    }
+  }
+
+  fun getImageArt(uri: Uri): ImageBitmap {
+    return runCatching {
+      return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        myApplication.applicationContext.contentResolver.loadThumbnail(
+          uri,
+          Size(250, 250),
+          null
+        ).asImageBitmap()
+      } else {
+        val mediaMetadataRetriever = MediaMetadataRetriever()
+        mediaMetadataRetriever.setDataSource(myApplication.applicationContext, uri)
+        val byteArray = mediaMetadataRetriever.embeddedPicture
+        val bitmap = BitmapFactory.decodeByteArray(
+          byteArray,
+          0,
+          byteArray!!.size
+        )
+        return Bitmap.createScaledBitmap(bitmap, 250, 250, true).asImageBitmap()
+      }
+    }.getOrElse {
+      myApplication.applicationContext.getDrawable(R.drawable.music_wave)!!.toBitmap().asImageBitmap()
     }
   }
 

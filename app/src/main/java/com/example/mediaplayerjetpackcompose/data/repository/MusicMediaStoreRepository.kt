@@ -3,9 +3,16 @@ package com.example.mediaplayerjetpackcompose.data.repository
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.core.graphics.drawable.toBitmap
+import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.model.MusicMediaModel
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +59,6 @@ class MusicMediaStoreRepository : MediaStoreRepositoryImpl<MusicMediaModel> {
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
             id
           )
-
           resultList.add(
             MusicMediaModel(
               musicId = id,

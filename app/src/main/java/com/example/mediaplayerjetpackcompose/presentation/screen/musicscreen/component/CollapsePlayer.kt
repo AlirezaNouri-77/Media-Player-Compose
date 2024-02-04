@@ -40,8 +40,7 @@ fun CollapsePlayer(
     horizontalArrangement = Arrangement.Center,
     modifier = modifier
       .fillMaxWidth()
-      .padding(5.dp)
-      .background(color = Color.Gray, shape = RoundedCornerShape(8.dp))
+      .background(color = Color.Gray, shape = RoundedCornerShape(topEnd = 5.dp, topStart = 5.dp))
       .clickable { onClick.invoke() },
   ) {
     Text(

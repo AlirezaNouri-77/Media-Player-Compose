@@ -1,24 +1,20 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -29,6 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.MusicScreen
+import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.component.BottomSheet
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.player.PlayerScreen
@@ -46,18 +43,19 @@ fun MainScreen(
   val videoPageViewModel: VideoPageViewModel = viewModel(factory = VideoPageViewModel.Factory)
   val musicPageViewModel: MusicPageViewModel = viewModel(factory = MusicPageViewModel.Factory)
 
-  val topBarTitle = when (currentRoute) {
-    NavigationRoute.VideoScreen.route -> "Video"
-    NavigationRoute.MusicScreen.route -> "Music"
-    else -> ""
+  val currentMusicState = musicPageViewModel.currentMusicState.collectAsStateWithLifecycle().value
+  val currentMusicPosition =
+    musicPageViewModel.currentMusicPosition.collectAsStateWithLifecycle().value
+  val artworkImage = remember(currentMusicState) {
+    musicPageViewModel.getImageArt(
+      uri = currentMusicState.metadata.artworkUri ?: Uri.EMPTY,
+    )
   }
 
-  val isDataLoaded = true
-
-  if (isDataLoaded) {
-
-    Scaffold(
-      bottomBar = {
+  Scaffold(
+    contentWindowInsets = WindowInsets(0.dp),
+    bottomBar = {
+      Column {
         if (currentRoute != null && currentRoute != NavigationRoute.PlayerScreen.route) {
           BottomNavigationBar(
             currentRoute = currentRoute,
@@ -66,49 +64,52 @@ fun MainScreen(
             },
           )
         }
-      },
-    ) { paddingValues ->
+      }
+    },
+  ) { paddingValues ->
+    NavController(
+      navHostController = navHostController,
+      musicPageViewModel = musicPageViewModel,
+      videoPageViewModel = videoPageViewModel,
+      padding = paddingValues,
+    )
+  }
 
-      NavController(
-        navHostController = navHostController,
-        musicPageViewModel = musicPageViewModel,
-        videoPageViewModel = videoPageViewModel,
-        padding = paddingValues,
-        modifier = Modifier
-      )
-
-    }
-
-  } else {
-    Column(
-      modifier = Modifier.fillMaxSize(),
-      verticalArrangement = Arrangement.Center,
-      horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-      Text(text = "Simple Media Player", fontSize = 30.sp, fontWeight = FontWeight.Bold)
-      Spacer(modifier = Modifier.height(35.dp))
-      CircularProgressIndicator()
-      Spacer(modifier = Modifier.height(5.dp))
-      Text(text = "Loading")
-    }
+  AnimatedVisibility(
+    visible = musicPageViewModel.showBottomSheet.value,
+    enter = fadeIn() + slideInVertically(
+      animationSpec = tween(300),
+      initialOffsetY = { int -> int / 2 }),
+    exit = slideOutVertically(
+      animationSpec = tween(300),
+      targetOffsetY = { int -> int / 2 }) + fadeOut()
+  ) {
+    BottomSheet(
+      currentMusicState = currentMusicState,
+      artworkImage = artworkImage,
+      currentMusicPosition = currentMusicPosition,
+      onPauseMusic = musicPageViewModel::pauseMusic,
+      onResumeMusic = musicPageViewModel::resumeMusic,
+      onMoveNextMusic = musicPageViewModel::moveToNext,
+      onMovePreviousMusic = musicPageViewModel::moveToPrevious,
+      onSeekTo = { seekTo -> musicPageViewModel.seekToPosition(seekTo) },
+      onDismissed = { musicPageViewModel.showBottomSheet.value = false },
+    )
   }
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavController(
   navHostController: NavHostController,
   musicPageViewModel: MusicPageViewModel,
   videoPageViewModel: VideoPageViewModel,
   padding: PaddingValues,
-  modifier: Modifier,
 ) {
 
   NavHost(
     navController = navHostController,
     startDestination = NavigationRoute.VideoScreen.route,
-    modifier = modifier.padding(padding),
   ) {
     composable(
       NavigationRoute.VideoScreen.route,
@@ -136,6 +137,7 @@ fun NavController(
       VideoPage(
         navHostController = navHostController,
         videoItemList = videoPageViewModel.mediaStoreDataList,
+        paddingValues = padding,
       )
     }
     composable(NavigationRoute.PlayerScreen.route, enterTransition = {
@@ -186,6 +188,7 @@ fun NavController(
     ) {
       MusicScreen(
         musicPageViewModel = musicPageViewModel,
+        paddingValues = padding,
       )
     }
 

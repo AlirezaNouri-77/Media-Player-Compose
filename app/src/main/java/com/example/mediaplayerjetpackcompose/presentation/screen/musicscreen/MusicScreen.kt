@@ -1,28 +1,48 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen
 
-import android.net.Uri
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MediumTopAppBar
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabPosition
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterStart
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.composed
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,62 +55,61 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.mediaplayerjetpackcompose.MusicState
+import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.domain.model.MusicMediaModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.component.BottomSheet
 import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.component.CollapsePlayer
 import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.component.sortBar
 import com.example.mediaplayerjetpackcompose.presentation.screenComponent.MusicMediaItem
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import com.example.mediaplayerjetpackcompose.presentation.screenComponent.TopBarMusic
+import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MusicScreen(
   musicPageViewModel: MusicPageViewModel,
-  scope: CoroutineScope = rememberCoroutineScope(),
-  navController: NavHostController = rememberNavController()
+  paddingValues: PaddingValues,
+  navController: NavHostController = rememberNavController(),
 ) {
+
+  var showSortBar by remember { mutableStateOf(false) }
   val currentMusicState = musicPageViewModel.currentMusicState.collectAsStateWithLifecycle().value
-  val currentMusicPosition =
-    musicPageViewModel.currentMusicPosition.collectAsStateWithLifecycle().value
-  val modalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-  val showBottomSheet = remember { mutableStateOf(false) }
-  val artworkImage = remember(currentMusicState) {
-    musicPageViewModel.getImageArt(currentMusicState.metadata.artworkUri ?: Uri.EMPTY)
-      .asImageBitmap()
-  }
   navController.currentBackStackEntryFlow.collectAsStateWithLifecycle(initialValue = "Home").value
   val currentRoute = navController.currentDestination?.route
 
-  Column(
-    modifier = Modifier.fillMaxSize(),
+
+
+  LaunchedEffect(key1 = showSortBar, block = {
+    delay(10000L)
+    showSortBar = false
+  })
+
+  NavHost(
+    navController = navController,
+    startDestination = "Home",
+    modifier = Modifier.padding(paddingValues)
   ) {
 
-    if (currentRoute == "Home") {
-      Text(
-        text = "Music",
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(20.dp),
-        fontWeight = FontWeight.Bold,
-        fontSize = 32.sp,
-      )
-      CategoryBar(musicPageViewModel = musicPageViewModel)
-    }
+    composable("Home") {
+      AnimatedContent(targetState = musicPageViewModel.currentTabState, label = "") { animatedInt ->
 
-    if (musicPageViewModel.currentTabState == 0) {
-      LazyRow(modifier = Modifier.padding(horizontal = 15.dp)) {
-        sortBar(musicPageViewModel = musicPageViewModel)
-      }
-    }
+        Scaffold(
+          contentWindowInsets = WindowInsets(0.dp),
+          topBar = {
+            TopBarMusic(
+              musicPageViewModel = musicPageViewModel,
+              showSortBar = showSortBar,
+              onSortIconClick = {
+                showSortBar = !showSortBar
+              },
+            )
+          },
+        ) { paddingValue ->
 
-    ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-
-      val (musicList, collapsePlayer) = createRefs()
-
-      NavHost(navController = navController, startDestination = "Home") {
-        composable("Home") {
-          AnimatedContent(targetState = musicPageViewModel.currentTabState, label = "") {
+          ConstraintLayout(
+            modifier = Modifier
+              .fillMaxSize()
+              .padding(paddingValue),
+          ) {
+            val (musicList, collapsePlayer) = createRefs()
 
             LazyColumn(
               Modifier
@@ -103,18 +122,17 @@ fun MusicScreen(
                 },
             ) {
 
-              when (it) {
+              when (animatedInt) {
                 0 -> {
                   itemsIndexed(
                     items = musicPageViewModel.musicList,
                     key = { _, item -> item.musicId },
                   ) { index, item ->
                     MusicMediaItem(
-                      modifier = Modifier.animateItemPlacement(),
                       item = item,
-                      currentMediaID = currentMusicState.mediaId,
+                      currentMediaId = currentMusicState.mediaId,
+                      artworkImage = musicPageViewModel.getImageArt(item.uri),
                       onItemClick = {
-                        showBottomSheet.value = true
                         musicPageViewModel.playMusic(index = index, musicPageViewModel.musicList)
                       },
                     )
@@ -149,87 +167,48 @@ fun MusicScreen(
                   }
                 }
               }
-
             }
+
+            CollapsePlayer(
+              modifier = Modifier.constrainAs(collapsePlayer) {
+                end.linkTo(parent.end)
+                start.linkTo(parent.start)
+                bottom.linkTo(parent.bottom)
+              },
+              currentMusicState = currentMusicState,
+              onClick = { musicPageViewModel.showBottomSheet.value = true },
+              onPauseMusic = musicPageViewModel::pauseMusic,
+              onResumeMusic = musicPageViewModel::resumeMusic,
+            )
+
           }
         }
-        composable(
-          "Category/{CategoryName}",
-          arguments = listOf(
-            navArgument(name = "CategoryName") {
-              type = NavType.StringType
-            },
-          )
-        ) {
-          ArtistAlbumScreen(
-            name = it.arguments!!.getString("CategoryName").toString(),
-            musicState = currentMusicState,
-            musicPageViewModel = musicPageViewModel,
-            onMusicClick = { index, musicList ->
-              musicPageViewModel.playMusic(
-                index = index,
-                musicList
-              )
-            }
-          )
-        }
+
       }
-
-      CollapsePlayer(
-        modifier = Modifier.constrainAs(collapsePlayer) {
-          end.linkTo(parent.end)
-          start.linkTo(parent.start)
-          bottom.linkTo(parent.bottom)
-        },
-        currentMusicState = currentMusicState,
-        onClick = { showBottomSheet.value = true },
-        onPauseMusic = musicPageViewModel::pauseMusic,
-        onResumeMusic = musicPageViewModel::resumeMusic,
-      )
-
     }
-
-    if (showBottomSheet.value) {
-      BottomSheet(
-        sheetState = modalBottomSheetState,
-        currentMusicState = currentMusicState,
-        artworkImage = artworkImage,
-        currentMusicPosition = currentMusicPosition,
-        onPauseMusic = musicPageViewModel::pauseMusic,
-        onResumeMusic = musicPageViewModel::resumeMusic,
-        onMoveNextMusic = musicPageViewModel::moveToNext,
-        onMovePreviousMusic = musicPageViewModel::moveToPrevious,
-        onSeekTo = { musicPageViewModel.seekToPosition(it) },
-        onDismissed = {
-          scope.launch { modalBottomSheetState.hide() }.invokeOnCompletion {
-            if (!modalBottomSheetState.isVisible) showBottomSheet.value = false
-          }
+    composable(
+      "Category/{CategoryName}",
+      arguments = listOf(
+        navArgument(name = "CategoryName") {
+          type = NavType.StringType
         },
       )
+    ) {
+      ArtistAlbumScreen(
+        name = it.arguments!!.getString("CategoryName").toString(),
+        currentMusicState = currentMusicState,
+        musicPageViewModel = musicPageViewModel,
+        onMusicClick = { index, musicList ->
+          musicPageViewModel.playMusic(
+            index = index,
+            musicList
+          )
+        }
+      )
     }
+
   }
 
-}
-
-@Composable
-fun CategoryBar(
-  musicPageViewModel: MusicPageViewModel,
-  tabItemList: List<String> = listOf("Music", "Artist", "Album"),
-) {
-  TabRow(
-    selectedTabIndex = musicPageViewModel.currentTabState,
-    modifier = Modifier.fillMaxWidth(),
-  ) {
-    tabItemList.forEachIndexed { index, string ->
-      Tab(
-        text = { Text(text = string) },
-        selected = musicPageViewModel.currentTabState == index,
-        onClick = {
-          musicPageViewModel.currentTabState = index
-        },
-      )
-    }
-  }
 }
 
 // used for album and artist tabview
@@ -251,16 +230,16 @@ fun FolderStyleMusicItem(
   }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ArtistAlbumScreen(
   name: String,
   musicPageViewModel: MusicPageViewModel,
-  musicState: MusicState,
+  currentMusicState: MusicState,
   onMusicClick: (index: Int, musicList: List<MusicMediaModel>) -> Unit,
 ) {
 
-  musicPageViewModel.musicCategoryList = remember {
+  musicPageViewModel.musicCategoryList = remember(musicPageViewModel.currentTabState) {
     when (musicPageViewModel.currentTabState) {
       1 -> musicPageViewModel.artistsMusicMap[name]!!.toMutableStateList()
       2 -> musicPageViewModel.albumMusicMap[name]!!.toMutableStateList()
@@ -268,37 +247,101 @@ fun ArtistAlbumScreen(
     }
   }
 
-  Column {
-
-    Text(
-      text = name,
-      fontSize = 24.sp,
-      fontWeight = FontWeight.SemiBold,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(15.dp)
-    )
-
-    LazyRow(modifier = Modifier.padding(horizontal = 15.dp)) {
-      sortBar(musicPageViewModel = musicPageViewModel)
+  Scaffold(
+    topBar = {
+      MediumTopAppBar(
+        title = {
+          Text(
+            text = name,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.SemiBold,
+          )
+        },
+        navigationIcon = {
+          Image(
+            imageVector = Icons.Default.KeyboardArrowLeft,
+            contentDescription = "",
+            modifier = Modifier.size(35.dp)
+          )
+        }
+      )
     }
+  ) {
+    Column(modifier = Modifier.padding(it)) {
 
-    LazyColumn(Modifier.fillMaxSize()) {
-      itemsIndexed(
-        items = musicPageViewModel.musicCategoryList,
-        key = { _, item -> item.musicId },
-      ) { index, item ->
-        MusicMediaItem(
-          item = item,
-          currentMediaID = musicState.mediaId,
-          onItemClick = {
-            onMusicClick.invoke(index, musicPageViewModel.musicCategoryList)
+      LazyRow(modifier = Modifier.padding(horizontal = 15.dp)) {
+        sortBar(
+          musicPageViewModel = musicPageViewModel,
+          onSortClick = {
+            musicPageViewModel.currentListSort.value = it
+            musicPageViewModel.sortMusicListByCategory(
+              list = musicPageViewModel.musicCategoryList
+            ).also { resultList ->
+              musicPageViewModel.musicCategoryList =
+                resultList as SnapshotStateList<MusicMediaModel>
+            }
           },
-          modifier = Modifier.animateItemPlacement(),
+          onDec = {
+            musicPageViewModel.isDec.value = !musicPageViewModel.isDec.value
+            musicPageViewModel.sortMusicListByCategory(musicPageViewModel.musicCategoryList)
+              .also { resultList ->
+                musicPageViewModel.musicCategoryList =
+                  resultList as SnapshotStateList<MusicMediaModel>
+              }
+          },
         )
       }
-    }
 
+      LazyColumn(Modifier.fillMaxSize()) {
+        itemsIndexed(
+          items = musicPageViewModel.musicCategoryList,
+          key = { _, item -> item.musicId },
+        ) { index, item ->
+          MusicMediaItem(
+            item = item,
+            currentMediaId = currentMusicState.mediaId,
+            artworkImage = musicPageViewModel.getImageArt(item.uri),
+            onItemClick = {
+              onMusicClick.invoke(index, musicPageViewModel.musicCategoryList)
+            },
+          )
+        }
+      }
+
+    }
   }
 
+
+}
+
+fun Modifier.myCustomTabIndicator(
+  currentTapPosition: TabPosition,
+): Modifier = composed {
+  val currentTabWidth by animateDpAsState(
+    targetValue = currentTapPosition.width,
+    animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing), label = "",
+  )
+  val currentTabIndicator by animateDpAsState(
+    targetValue = currentTapPosition.left,
+    animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing), label = "",
+  )
+  wrapContentSize(CenterStart)
+    .offset(x = currentTabIndicator)
+    .width(currentTabWidth)
+}
+
+@Composable
+fun MyNewIndicator(modifier: Modifier = Modifier) {
+  Column(
+    modifier
+      .fillMaxSize()
+      .padding(5.dp)
+      .background(
+        colorResource(id = R.color.purple_500).copy(alpha = 0.4f),
+        RoundedCornerShape(15.dp),
+      ),
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.Center,
+  ) {
+  }
 }

@@ -1,6 +1,7 @@
 package com.example.mediaplayerjetpackcompose.domain.model
 
 import android.net.Uri
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata

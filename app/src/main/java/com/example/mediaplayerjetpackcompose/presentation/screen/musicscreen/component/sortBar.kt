@@ -20,7 +20,9 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.Sor
 
 @OptIn(ExperimentalFoundationApi::class)
 fun LazyListScope.sortBar(
-  musicPageViewModel: MusicPageViewModel
+  musicPageViewModel: MusicPageViewModel,
+  onSortClick: (sort:SortItem) -> Unit,
+  onDec: () -> Unit,
 ) {
   stickyHeader {
     Text(
@@ -31,23 +33,22 @@ fun LazyListScope.sortBar(
       modifier = Modifier
         .padding(vertical = 2.dp)
         .clickable {
-          musicPageViewModel.isDec.value = !musicPageViewModel.isDec.value
-          musicPageViewModel.sortMusicByAscOrDec()
+          onDec.invoke()
         },
     )
     Spacer(modifier = Modifier.width(15.dp))
   }
-  itemsIndexed(items = SortItem.entries.filter { it != SortItem.NAME }) { _, item ->
+  itemsIndexed(items = SortItem.entries.filter { it != SortItem.NAME }) { _, sort ->
     Text(
-      text = item.sortName,
+      text = sort.sortName,
       fontSize = 16.sp,
       fontWeight = FontWeight.Medium,
       modifier = Modifier
         .clickable {
-          musicPageViewModel.sortMusicListByCategory(item)
+          onSortClick.invoke(if (musicPageViewModel.currentListSort.value==sort) SortItem.NAME else sort)
         }
         .background(
-          color = if (musicPageViewModel.currentListSort.value == item) Color.Gray else Color.White,
+          color = if (musicPageViewModel.currentListSort.value == sort) Color.Gray else Color.White,
           shape = RoundedCornerShape(8.dp),
         )
         .padding(vertical = 2.dp, horizontal = 3.dp),
