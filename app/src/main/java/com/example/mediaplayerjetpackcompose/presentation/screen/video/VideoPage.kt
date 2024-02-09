@@ -16,11 +16,10 @@ import com.example.mediaplayerjetpackcompose.presentation.screenComponent.VideoM
 @Composable
 fun VideoPage(
   navHostController: NavHostController,
-  paddingValues: PaddingValues,
   videoItemList: List<VideoMediaModel>,
 ) {
 
-  Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+  Box(modifier = Modifier.fillMaxSize()) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
       items(items = videoItemList, key = { item -> item.id }) {
         VideoMediaItem(

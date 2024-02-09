@@ -1,16 +1,27 @@
 package com.example.mediaplayerjetpackcompose.data
 
 import android.net.Uri
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import java.text.DecimalFormat
 import java.util.Base64
 import java.util.concurrent.TimeUnit
 
-fun Int.convertMilliSecondToTime(): String {
+fun Int?.convertMilliSecondToTime(): String {
+  if (this == null) return "00:00"
   val hour = TimeUnit.MILLISECONDS.toHours(this.toLong())
   val minute = TimeUnit.MILLISECONDS.toMinutes(this.toLong()) % 60
   val second = TimeUnit.MILLISECONDS.toSeconds(this.toLong()) % 60
-  return String.format("%02d:%02d:%02d", hour, minute, second)
+  return if (hour > 0) {
+    String.format("%02d:%02d:%02d", hour, minute, second)
+  } else {
+    String.format("%2d:%02d", minute, second)
+  }
 }
 
 fun String.encodeStringNavigation(): String {
@@ -21,14 +32,37 @@ fun String.decodeStringNavigation(): Uri {
   return String(Base64.getUrlDecoder().decode(this)).toUri()
 }
 
-fun Int.convertByteToReadableSize(): String {
-  val result: StringBuilder = StringBuilder()
-  if (this >= 1_000_000_000) {
-    result.append(DecimalFormat("##.##").format(this.div(1_000_000_000f)).toString())
-    result.append(" Gb")
+fun Int?.convertToKbit(): String {
+  return this?.div(1000)?.toString()?.plus(" Kbit") ?: "None"
+}
+
+fun String.extractFileExtension(): String {
+  return this.substringAfterLast(".").uppercase()
+}
+
+fun String.removeFileExtension(): String {
+  return this.substringBeforeLast(".")
+}
+
+fun Int.convertByteToReadableSize(): AnnotatedString {
+  val input = this
+  return if (this >= 1_000_000_000) {
+    buildAnnotatedString {
+      withStyle(style = SpanStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium)) {
+        append(DecimalFormat("##.#").format(input.div(1_000_000_000f)).toString())
+      }
+      withStyle(style = SpanStyle(fontSize = 14.sp, fontWeight = FontWeight.Light)) {
+        append("gb")
+      }
+    }
   } else {
-    result.append(DecimalFormat("##.##").format(this.div(1_000_000f)).toString())
-    result.append(" Mg")
+    buildAnnotatedString {
+      withStyle(style = SpanStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium)) {
+        append(DecimalFormat("##.##").format(input.div(1_000_000f)).toString()).toString()
+      }
+      withStyle(style = SpanStyle(fontSize = 12.sp, fontWeight = FontWeight.Light)) {
+        append("mg")
+      }
+    }
   }
-  return result.toString()
 }

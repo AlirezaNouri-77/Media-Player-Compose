@@ -9,6 +9,7 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.graphics.drawable.toBitmap
@@ -40,6 +41,7 @@ class MusicMediaStoreRepository : MediaStoreRepositoryImpl<MusicMediaModel> {
       )?.use { cursor ->
 
         val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
+        val dataPathColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
         val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
         val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
         val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
@@ -49,6 +51,7 @@ class MusicMediaStoreRepository : MediaStoreRepositoryImpl<MusicMediaModel> {
 
         while (cursor.moveToNext()) {
           val id = idColumn.let { cursor.getLong(it) }
+          val dataPath = dataPathColumn.let { cursor.getString(it) }
           val name = nameColumn.let { cursor.getString(it) }
           val duration = durationColumn.let { cursor.getInt(it) }
           val bitrate = bitrateColumn.let { cursor.getInt(it) }
@@ -62,6 +65,7 @@ class MusicMediaStoreRepository : MediaStoreRepositoryImpl<MusicMediaModel> {
           resultList.add(
             MusicMediaModel(
               musicId = id,
+              path = dataPath,
               uri = contentUri,
               name = name,
               duration = duration,
@@ -84,6 +88,7 @@ class MusicMediaStoreRepository : MediaStoreRepositoryImpl<MusicMediaModel> {
 
     val MediaInfoArray = arrayOf(
       MediaStore.Audio.Media._ID,
+      MediaStore.Audio.Media.DATA,
       MediaStore.Audio.Media.DISPLAY_NAME,
       MediaStore.Audio.Media.DURATION,
       MediaStore.Audio.Media.SIZE,

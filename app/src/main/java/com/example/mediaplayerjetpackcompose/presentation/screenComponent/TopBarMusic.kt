@@ -37,44 +37,31 @@ fun TopBarMusic(
   musicPageViewModel: MusicPageViewModel,
   showSortBar: Boolean,
   onSortIconClick: () -> Unit,
+  onTabBarClick: (Int) -> Unit,
 ) {
   Column(Modifier.animateContentSize()) {
-    Row(
-      modifier = Modifier.fillMaxWidth(),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.Absolute.SpaceBetween,
-    ) {
-      Text(
-        text = "Music",
-        modifier = Modifier
-          .padding(10.dp),
-        fontWeight = FontWeight.Bold,
-        fontSize = 30.sp,
-      )
-      Image(
-        painter = painterResource(id = R.drawable.icon_sort),
-        contentDescription = "Sort Icon",
-        modifier = Modifier
-          .padding(10.dp)
-          .size(30.dp)
-          .clickable {
-            onSortIconClick.invoke()
-            // showSortBar = !showSortBar
-          },
-      )
-    }
-    TabBar(musicPageViewModel = musicPageViewModel)
+    TabBar(
+      musicPageViewModel = musicPageViewModel,
+      onTabClick = { onTabBarClick.invoke(it) },
+      onSortIconClick = { onSortIconClick.invoke() },
+    )
     Spacer(modifier = Modifier.height(5.dp))
     AnimatedVisibility(
       visible = showSortBar,
       enter = fadeIn() + slideInVertically(
-        animationSpec = tween(300),
+        animationSpec = tween(100),
         initialOffsetY = { int -> -int / 2 }),
       exit = slideOutVertically(
-        animationSpec = tween(300),
+        animationSpec = tween(100),
         targetOffsetY = { int -> -int / 2 }) + fadeOut(),
     ) {
-      LazyRow(modifier = Modifier.padding(horizontal = 15.dp)) {
+      LazyRow(
+        modifier = Modifier
+          .padding(horizontal = 15.dp)
+          .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+      ) {
         sortBar(
           musicPageViewModel = musicPageViewModel,
           onSortClick = {
@@ -86,7 +73,7 @@ fun TopBarMusic(
                 resultList as SnapshotStateList<MusicMediaModel>
             }
           },
-          onDec = {
+          onDecClick = {
             musicPageViewModel.isDec.value = !musicPageViewModel.isDec.value
             musicPageViewModel.sortMusicListByCategory(
               list = musicPageViewModel.musicList

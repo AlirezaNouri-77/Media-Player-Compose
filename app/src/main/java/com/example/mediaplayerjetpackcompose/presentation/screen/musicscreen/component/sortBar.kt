@@ -5,38 +5,45 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.SortItem
 
 @OptIn(ExperimentalFoundationApi::class)
 fun LazyListScope.sortBar(
   musicPageViewModel: MusicPageViewModel,
-  onSortClick: (sort:SortItem) -> Unit,
-  onDec: () -> Unit,
+  onSortClick: (sort: SortItem) -> Unit,
+  onDecClick: () -> Unit,
 ) {
+
   stickyHeader {
-    Text(
-      text = "Dec",
-      fontSize = 15.sp,
-      fontWeight = FontWeight.Medium,
-      color = if (musicPageViewModel.isDec.value) Color.Black else Color.Black.copy(alpha = 0.5f),
+    Icon(
+      painter = painterResource(
+        id = if ((musicPageViewModel.isDec.value)) {
+          R.drawable.icon_sort_desc
+        } else {
+          R.drawable.icon_sort_asce
+        }
+      ),
+      contentDescription = "",
       modifier = Modifier
-        .padding(vertical = 2.dp)
-        .clickable {
-          onDec.invoke()
-        },
+        .padding(4.dp)
+        .size(20.dp)
+        .clickable { onDecClick.invoke() },
     )
-    Spacer(modifier = Modifier.width(15.dp))
   }
   itemsIndexed(items = SortItem.entries.filter { it != SortItem.NAME }) { _, sort ->
     Text(
@@ -45,7 +52,7 @@ fun LazyListScope.sortBar(
       fontWeight = FontWeight.Medium,
       modifier = Modifier
         .clickable {
-          onSortClick.invoke(if (musicPageViewModel.currentListSort.value==sort) SortItem.NAME else sort)
+          onSortClick.invoke(if (musicPageViewModel.currentListSort.value == sort) SortItem.NAME else sort)
         }
         .background(
           color = if (musicPageViewModel.currentListSort.value == sort) Color.Gray else Color.White,

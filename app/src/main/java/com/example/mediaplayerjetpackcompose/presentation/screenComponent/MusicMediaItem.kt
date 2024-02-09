@@ -2,8 +2,10 @@ package com.example.mediaplayerjetpackcompose.presentation.screenComponent
 
 
 import android.graphics.Bitmap
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.convertByteToReadableSize
 import com.example.mediaplayerjetpackcompose.data.convertMilliSecondToTime
+import com.example.mediaplayerjetpackcompose.data.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.MusicMediaModel
 
 @Composable
@@ -49,13 +52,12 @@ fun MusicMediaItem(
     onClick = { onItemClick.invoke() },
     modifier = Modifier
       .fillMaxWidth(),
-    color = if (currentMediaId == item.musicId.toString()) Color.Gray else Color.White
+    color = if (currentMediaId == item.musicId.toString()) Color.Black.copy(alpha = 0.2f) else Color.White,
   ) {
     Row(
-      modifier = Modifier
-        .padding(vertical = 7.dp, horizontal = 5.dp),
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.Center,
+      modifier = Modifier.padding(all=5.dp),
     ) {
       Image(
         bitmap = artworkImage,
@@ -64,7 +66,7 @@ fun MusicMediaItem(
         alignment = Alignment.Center,
         modifier = Modifier
           .size(60.dp)
-          .background(Color.Black,RoundedCornerShape(10.dp))
+          .background(Color.Black, RoundedCornerShape(10.dp))
           .clip(RoundedCornerShape(10.dp)),
       )
       Spacer(modifier = Modifier.width(10.dp))
@@ -77,7 +79,7 @@ fun MusicMediaItem(
       ) {
         Text(
           modifier = Modifier.fillMaxWidth(),
-          text = item.name,
+          text = item.name.removeFileExtension(),
           fontSize = 16.sp,
           fontWeight = FontWeight.Medium,
           maxLines = 1,
@@ -93,11 +95,6 @@ fun MusicMediaItem(
         )
       }
       Column(Modifier.weight(0.4f)) {
-        Text(
-          text = item.size.convertByteToReadableSize(),
-          modifier = Modifier.fillMaxWidth(),
-          textAlign = TextAlign.End,
-        )
         Text(
           text = item.duration.convertMilliSecondToTime(),
           modifier = Modifier.fillMaxWidth(),

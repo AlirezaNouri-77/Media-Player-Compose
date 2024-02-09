@@ -9,6 +9,7 @@ import androidx.media3.common.MediaMetadata
 data class MusicMediaModel(
   val musicId: Long,
   val uri: Uri,
+  val path: String,
   val name: String,
   val duration: Int,
   val size: Int = 0,
@@ -28,6 +29,8 @@ fun MusicMediaModel.toMediaItem() =
         .setExtras(
           bundleOf(
             "Duration" to this.duration,
+            "Bitrate" to this.bitrate,
+            "Size" to this.size,
           )
         ).setTitle(this.name).build()
     ).build()
