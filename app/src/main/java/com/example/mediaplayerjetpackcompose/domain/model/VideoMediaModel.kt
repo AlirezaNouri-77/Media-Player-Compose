@@ -5,10 +5,10 @@ import android.net.Uri
 import java.util.UUID
 
 data class VideoMediaModel(
-  val uri: Uri = Uri.EMPTY,
-  val name: String = "",
-  val duration: Int = 0,
-  val size: Int = 0,
-  val image: Bitmap? = null,
-  val id: String = UUID.randomUUID().toString(),
+  val uri: Uri,
+  val name: String,
+  val duration: Int,
+  val size: Int,
+  val height: Int,
+  val width: Int,
 )

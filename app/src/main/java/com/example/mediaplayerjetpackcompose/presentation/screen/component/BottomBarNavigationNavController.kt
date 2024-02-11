@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.component
+package com.example.mediaplayerjetpackcompose.presentation.screen.component
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
@@ -8,7 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.mediaplayerjetpackcompose.presentation.screen.NavigationRoute
+import com.example.mediaplayerjetpackcompose.domain.model.navigation.BottomBarNavigationModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.MusicScreen
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPage
@@ -16,17 +16,17 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.player.PlayerScreen
 
 @Composable
-fun BottomNavigationNavController(
+fun BottomBarNavigationNavController(
   navHostController: NavHostController,
   musicPageViewModel: MusicPageViewModel,
   videoPageViewModel: VideoPageViewModel,
 ) {
   NavHost(
     navController = navHostController,
-    startDestination = NavigationRoute.MusicScreen.route,
+    startDestination = BottomBarNavigationModel.MusicScreen.route,
   ) {
     composable(
-      NavigationRoute.VideoScreen.route,
+      BottomBarNavigationModel.VideoScreen.route,
       enterTransition = {
         slideIntoContainer(
           towards = AnimatedContentTransitionScope.SlideDirection.Right, tween(500)
@@ -50,11 +50,11 @@ fun BottomNavigationNavController(
     ) {
       VideoPage(
         navHostController = navHostController,
-        videoItemList = videoPageViewModel.mediaStoreDataList,
+        videoPageViewModel = videoPageViewModel,
       )
     }
     composable(
-      NavigationRoute.PlayerScreen.route, enterTransition = {
+      BottomBarNavigationModel.PlayerScreen.route, enterTransition = {
       slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left, tween(500))
     }, exitTransition = {
       slideOutOfContainer(
@@ -76,13 +76,13 @@ fun BottomNavigationNavController(
         videoUri = it.arguments!!.getString("videoUri").toString(),
         onBackClick = {
           navHostController.popBackStack(
-            NavigationRoute.VideoScreen.route, inclusive = false
+            BottomBarNavigationModel.VideoScreen.route, inclusive = false
           )
         },
       )
     }
     composable(
-      NavigationRoute.MusicScreen.route,
+      BottomBarNavigationModel.MusicScreen.route,
       enterTransition = {
         slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left, tween(500))
       },

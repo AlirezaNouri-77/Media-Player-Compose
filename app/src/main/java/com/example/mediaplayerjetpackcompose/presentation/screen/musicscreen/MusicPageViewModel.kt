@@ -70,7 +70,7 @@ class MusicPageViewModel(
   fun sortMusicListByCategory(
     list: MutableList<MusicMediaModel>
   ): MutableList<MusicMediaModel> {
-    viewModelScope.launch(Dispatchers.IO) {
+    viewModelScope.launch(Dispatchers.Main) {
       if (!isDec.value) {
         when (currentListSort.value) {
           SortItem.NAME -> list.sortBy { it.name }
@@ -94,10 +94,11 @@ class MusicPageViewModel(
     return list
   }
 
-  private fun updateMediaItemList(list: List<MusicMediaModel>) = viewModelScope.launch {
-    val index = list.indexOfFirst { it.musicId.toString() == currentMusicState.value.mediaId }
-    playBackHandler.updateMediaList(index, musicList, currentMusicPosition.value)
-  }
+  private fun updateMediaItemList(list: List<MusicMediaModel>) =
+    viewModelScope.launch(Dispatchers.Main) {
+      val index = list.indexOfFirst { it.musicId.toString() == currentMusicState.value.mediaId }
+      playBackHandler.updateMediaList(index, musicList, currentMusicPosition.value)
+    }
 
   fun moveToNext() = playBackHandler.moveToNext()
   fun moveToPrevious() = playBackHandler.moveToPrevious()
@@ -146,7 +147,8 @@ class MusicPageViewModel(
         return Bitmap.createScaledBitmap(bitmap, 250, 250, true).asImageBitmap()
       }
     }.getOrElse {
-      myApplication.applicationContext.getDrawable(R.drawable.music_wave)!!.toBitmap().asImageBitmap()
+      myApplication.applicationContext.getDrawable(R.drawable.music_wave)!!.toBitmap()
+        .asImageBitmap()
     }
   }
 
@@ -171,5 +173,4 @@ enum class SortItem(var sortName: String) {
   ARTIST("Artist"),
   DURATION("Duration"),
   SIZE("Size"),
-  DATE("Date"),
 }

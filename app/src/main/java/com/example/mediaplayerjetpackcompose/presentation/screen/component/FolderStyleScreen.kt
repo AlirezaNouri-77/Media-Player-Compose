@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.component
+package com.example.mediaplayerjetpackcompose.presentation.screen.component
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable

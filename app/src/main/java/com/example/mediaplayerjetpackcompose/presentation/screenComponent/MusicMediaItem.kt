@@ -57,7 +57,7 @@ fun MusicMediaItem(
     Row(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.Center,
-      modifier = Modifier.padding(all=5.dp),
+      modifier = Modifier.padding(all = 5.dp),
     ) {
       Image(
         bitmap = artworkImage,

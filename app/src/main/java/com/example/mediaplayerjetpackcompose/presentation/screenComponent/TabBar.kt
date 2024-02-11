@@ -1,5 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screenComponent
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,14 +26,16 @@ import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.Constant
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.MusicPageViewModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.component.MyTabIndicator
-import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.component.myCustomTabIndicator
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.MyTabIndicator
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.myCustomTabIndicator
+import com.example.mediaplayerjetpackcompose.presentation.util.NoRippleEffect
 
 
 @Composable
 fun TabBar(
   musicPageViewModel: MusicPageViewModel,
   tabItemList: List<String> = Constant.tabBarListItem,
+  currentTabPosition: Int,
   onTabClick: (Int) -> Unit,
   onSortIconClick: () -> Unit,
 ) {
@@ -54,16 +57,18 @@ fun TabBar(
         fontWeight = FontWeight.Bold,
         fontSize = 36.sp,
       )
-      Image(
-        painter = painterResource(id = R.drawable.icon_sort),
-        contentDescription = "Sort Icon",
-        modifier = Modifier
-          .padding(10.dp)
-          .size(30.dp)
-          .clickable {
-            onSortIconClick.invoke()
-          },
-      )
+      AnimatedVisibility(visible = currentTabPosition == 0) {
+        Image(
+          painter = painterResource(id = R.drawable.icon_sort),
+          contentDescription = "Sort Icon",
+          modifier = Modifier
+            .padding(10.dp)
+            .size(30.dp)
+            .clickable {
+              onSortIconClick.invoke()
+            },
+        )
+      }
     }
     Spacer(modifier = Modifier.height(10.dp))
     TabRow(
@@ -89,6 +94,7 @@ fun TabBar(
             onTabClick.invoke(index)
             musicPageViewModel.currentTabState = index
           },
+          interactionSource = NoRippleEffect
         )
       }
     }

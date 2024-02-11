@@ -29,7 +29,7 @@ class PlayerViewModel(
 
   lateinit var exoPlayer: ExoPlayer
   var onBackPress = mutableStateOf(false)
-  var mediaInformation = mutableStateOf(VideoMediaModel())
+  //var mediaInformation = mutableStateOf(VideoMediaModel())
 
   init {
     initialPlayer()
@@ -38,14 +38,14 @@ class PlayerViewModel(
   @SuppressLint("UnsafeOptInUsageError")
   var deviceOrientation = mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT)
 
-  fun getMediaInformationByUri(uri: Uri) = viewModelScope.launch {
-    mediaStoreRepository.getMediaInformationByUri(mApplicationContext.contentResolver, uri).stateIn(
-      viewModelScope,
-      SharingStarted.WhileSubscribed(5000L), initialValue = VideoMediaModel()
-    ).collectLatest {
-      mediaInformation.value = it
-    }
-  }
+//  fun getMediaInformationByUri(uri: Uri) = viewModelScope.launch {
+//    mediaStoreRepository.getMediaInformationByUri(mApplicationContext.contentResolver, uri).stateIn(
+//      viewModelScope,
+//      SharingStarted.WhileSubscribed(5000L), initialValue = VideoMediaModel()
+//    ).collectLatest {
+//      mediaInformation.value = it
+//    }
+//  }
 
   private fun initialPlayer() {
     exoPlayer = ExoPlayer.Builder(mApplicationContext.applicationContext).build()

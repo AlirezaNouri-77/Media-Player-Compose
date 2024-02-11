@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.component
+package com.example.mediaplayerjetpackcompose.presentation.screen.component
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -82,7 +82,7 @@ fun NowMusicPlaying(
       .pointerInput(Unit) {
         this.detectDragGestures { change, dragAmount ->
           change.changedToUpIgnoreConsumed()
-          if (dragAmount.y > 0f) {
+          if (dragAmount.y > 70f) {
             onDismissed.invoke()
           }
         }
@@ -179,26 +179,17 @@ fun NowMusicPlaying(
           color = Color.White,
         )
         Spacer(modifier = Modifier.height(5.dp))
-        Row {
-          Text(
-            text = currentMusicState.metadata.title?.toString()?.extractFileExtension() ?: "None",
-            fontSize = 14.sp,
-            color = Color.White,
-          )
-          Spacer(modifier = Modifier.width(10.dp))
-          Text(
-            text = currentMusicState.metadata.extras?.getInt("Bitrate")?.convertToKbit().toString(),
-            fontSize = 14.sp,
-            color = Color.White,
-          )
-          Spacer(modifier = Modifier.width(10.dp))
-          Text(
-            text = currentMusicState.metadata.extras?.getInt("Size")
-              ?.convertByteToReadableSize()?.toString() ?: "",
-            fontSize = 14.sp,
-            color = Color.White,
-          )
-        }
+        val songDetail = listOf(
+          currentMusicState.metadata.title?.toString()?.extractFileExtension() ?: "None",
+          currentMusicState.metadata.extras?.getInt("Bitrate")?.convertToKbit().toString(),
+          currentMusicState.metadata.extras?.getInt("Size")?.convertByteToReadableSize()?.toString()
+            ?: ""
+        )
+        Text(
+          text = songDetail.reduce { acc, string -> "$acc, $string" },
+          fontSize = 14.sp,
+          color = Color.White,
+        )
 
       }
 
@@ -219,7 +210,8 @@ fun NowMusicPlaying(
             color = Color.White,
           )
           Text(
-            text = currentMusicState.metadata.extras?.getInt("Duration")?.convertMilliSecondToTime().toString(),
+            text = currentMusicState.metadata.extras?.getInt("Duration")?.convertMilliSecondToTime()
+              .toString(),
             fontSize = 13.sp,
             fontWeight = FontWeight.Normal,
             color = Color.White,

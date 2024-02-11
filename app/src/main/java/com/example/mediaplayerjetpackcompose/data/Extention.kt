@@ -51,8 +51,8 @@ fun Int.convertByteToReadableSize(): AnnotatedString {
       withStyle(style = SpanStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium)) {
         append(DecimalFormat("##.#").format(input.div(1_000_000_000f)).toString())
       }
-      withStyle(style = SpanStyle(fontSize = 14.sp, fontWeight = FontWeight.Light)) {
-        append("gb")
+      withStyle(style = SpanStyle(fontSize = 13.sp, fontWeight = FontWeight.Light)) {
+        append(" gb")
       }
     }
   } else {
@@ -60,8 +60,8 @@ fun Int.convertByteToReadableSize(): AnnotatedString {
       withStyle(style = SpanStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium)) {
         append(DecimalFormat("##.##").format(input.div(1_000_000f)).toString()).toString()
       }
-      withStyle(style = SpanStyle(fontSize = 12.sp, fontWeight = FontWeight.Light)) {
-        append("mg")
+      withStyle(style = SpanStyle(fontSize = 13.sp, fontWeight = FontWeight.Light)) {
+        append(" mg")
       }
     }
   }

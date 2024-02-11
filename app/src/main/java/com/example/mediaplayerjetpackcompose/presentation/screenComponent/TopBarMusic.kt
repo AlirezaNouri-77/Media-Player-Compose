@@ -2,6 +2,9 @@ package com.example.mediaplayerjetpackcompose.presentation.screenComponent
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.EaseOutBounce
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -30,30 +33,32 @@ import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.domain.model.MusicMediaModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.MusicPageViewModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.component.sortBar
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.sortBar
 
 @Composable
 fun TopBarMusic(
   musicPageViewModel: MusicPageViewModel,
   showSortBar: Boolean,
+  currentTabPosition: Int,
   onSortIconClick: () -> Unit,
   onTabBarClick: (Int) -> Unit,
 ) {
-  Column(Modifier.animateContentSize()) {
+  Column {
     TabBar(
       musicPageViewModel = musicPageViewModel,
+      currentTabPosition = currentTabPosition,
       onTabClick = { onTabBarClick.invoke(it) },
       onSortIconClick = { onSortIconClick.invoke() },
     )
     Spacer(modifier = Modifier.height(5.dp))
     AnimatedVisibility(
       visible = showSortBar,
-      enter = fadeIn() + slideInVertically(
-        animationSpec = tween(100),
-        initialOffsetY = { int -> -int / 2 }),
+      enter = fadeIn(tween(300, 100)) + slideInVertically(
+        animationSpec = tween(300),
+        initialOffsetY = { int -> int / 4 }),
       exit = slideOutVertically(
-        animationSpec = tween(100),
-        targetOffsetY = { int -> -int / 2 }) + fadeOut(),
+        animationSpec = tween(300, 100),
+        targetOffsetY = { int -> int / 4 }) + fadeOut(tween(300, 100))
     ) {
       LazyRow(
         modifier = Modifier

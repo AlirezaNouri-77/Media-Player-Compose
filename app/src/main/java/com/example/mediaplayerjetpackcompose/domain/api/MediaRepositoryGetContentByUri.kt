@@ -4,6 +4,6 @@ import android.content.ContentResolver
 import android.net.Uri
 import kotlinx.coroutines.flow.Flow
 
-interface MediaRepositoryGetContentByUri<out T> {
+interface widthMediaRepositoryGetContentByUri<out T> {
   suspend fun getMediaInformationByUri(mContentResolver: ContentResolver, uri: Uri): Flow<T>
 }

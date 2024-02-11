@@ -1,6 +1,7 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.component
+package com.example.mediaplayerjetpackcompose.presentation.screen.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -37,6 +39,7 @@ fun ArtistAlbumPage(
   musicPageViewModel: MusicPageViewModel,
   currentMusicState: MusicState,
   onMusicClick: (index: Int, musicList: List<MusicMediaModel>) -> Unit,
+  onBackClick: () -> Unit,
 ) {
 
   musicPageViewModel.musicCategoryList = remember(musicPageViewModel.currentTabState) {
@@ -58,10 +61,12 @@ fun ArtistAlbumPage(
           )
         },
         navigationIcon = {
-          Image(
+          Icon(
             imageVector = Icons.Default.KeyboardArrowLeft,
             contentDescription = "",
-            modifier = Modifier.size(35.dp)
+            modifier = Modifier
+              .size(35.dp)
+              .clickable { onBackClick.invoke() },
           )
         }
       )

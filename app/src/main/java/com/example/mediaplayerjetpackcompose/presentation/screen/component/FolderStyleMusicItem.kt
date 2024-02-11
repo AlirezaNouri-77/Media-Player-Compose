@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.component
+package com.example.mediaplayerjetpackcompose.presentation.screen.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,10 +22,10 @@ fun FolderStyleMusicItem(
     Column(
       modifier = Modifier
         .fillMaxWidth()
-        .padding(vertical = 7.dp, horizontal = 5.dp),
+        .padding(vertical = 8.dp, horizontal = 4.dp),
     ) {
       Text(text = name, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-      Text(text = musicListSize.toString(), fontSize = 15.sp, fontWeight = FontWeight.Medium)
+      Text(text = "$musicListSize Music", fontSize = 15.sp, fontWeight = FontWeight.Medium)
     }
   }
 }
