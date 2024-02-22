@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,9 +17,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.mediaplayerjetpackcompose.R
 
 
 fun Modifier.myCustomTabIndicator(
@@ -44,9 +42,8 @@ fun MyTabIndicator(modifier: Modifier = Modifier) {
   Column(
     modifier
       .fillMaxSize()
-      .padding(5.dp)
       .background(
-        colorResource(id = R.color.purple_500).copy(alpha = 0.4f),
+        color = Color(0xFF37393a).copy(alpha = 0.5f),
         RoundedCornerShape(15.dp),
       ),
     horizontalAlignment = Alignment.CenterHorizontally,

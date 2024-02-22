@@ -1,8 +1,10 @@
 package com.example.mediaplayerjetpackcompose.presentation.screenComponent
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,14 +14,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -33,27 +39,56 @@ import com.example.mediaplayerjetpackcompose.data.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.extractFileExtension
 import com.example.mediaplayerjetpackcompose.data.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.VideoMediaModel
+import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
+import com.example.mediaplayerjetpackcompose.presentation.screen.video.videoThumbNailsModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun VideoMediaItem(
   item: VideoMediaModel,
-  imageBitmap: ImageBitmap,
-  onItemClick: (VideoMediaModel) -> Unit,
+  videoPageViewModel: VideoPageViewModel,
+  contextColor: Color = MaterialTheme.colorScheme.onPrimary,
+  onItemClick: () -> Unit,
 ) {
+
+  val imageBitmap: MutableState<Bitmap?> = remember {
+    mutableStateOf(null)
+  }
+
+  LaunchedEffect(key1 = item, block = {
+    withContext(Dispatchers.IO) {
+
+      if ((videoPageViewModel.videoThumbnailBitmap.find { it.musicId == item.videoId }?.musicId
+          ?: "") == item.videoId
+      ) {
+        imageBitmap.value = videoPageViewModel.videoThumbnailBitmap.first { it.musicId == item.videoId }.bitmap
+      } else {
+        val bitmap = videoPageViewModel.getVideoThumbNail(item.uri)
+        videoPageViewModel.videoThumbnailBitmap.add(videoThumbNailsModel(bitmap!!, item.videoId))
+        imageBitmap.value = bitmap
+      }
+
+    }
+  })
+
   Surface(
-    onClick = { onItemClick.invoke(item) },
+    onClick = { onItemClick.invoke() },
     modifier = Modifier
       .fillMaxWidth()
-      .padding(5.dp),
+      .padding(horizontal = 10.dp),
+    color = Color.Transparent,
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.Start,
+      modifier = Modifier.padding(5.dp),
     ) {
       ConstraintLayout {
         val (imageArt, duration) = createRefs()
-        Image(
-          bitmap = imageBitmap,
+        Box(
           modifier = Modifier
             .constrainAs(imageArt) {
               top.linkTo(parent.top)
@@ -61,11 +96,28 @@ fun VideoMediaItem(
               end.linkTo(parent.end)
               start.linkTo(parent.start)
             }
+            .background(Color.Black.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
             .size(width = 130.dp, height = 90.dp)
             .clip(RoundedCornerShape(8.dp)),
-          contentScale = ContentScale.FillBounds,
-          contentDescription = "",
-        )
+          contentAlignment = Alignment.Center,
+        ) {
+          if (imageBitmap.value != null) {
+            Image(
+              bitmap = imageBitmap.value!!.asImageBitmap(),
+              modifier = Modifier
+                .size(width = 130.dp, height = 90.dp)
+                .clip(RoundedCornerShape(8.dp)),
+              contentScale = ContentScale.FillBounds,
+              contentDescription = "",
+            )
+          } else {
+            Text(
+              text = "Loading",
+              fontSize = 12.sp,
+            )
+          }
+        }
+
         Text(
           text = item.duration.convertMilliSecondToTime(),
           modifier = Modifier
@@ -86,6 +138,7 @@ fun VideoMediaItem(
           maxLines = 2,
           overflow = TextOverflow.Ellipsis,
           fontSize = 16.sp,
+          color = contextColor,
           fontWeight = FontWeight.Medium,
         )
         Spacer(modifier = Modifier.height(10.dp))
@@ -94,12 +147,13 @@ fun VideoMediaItem(
           item.size.convertByteToReadableSize(),
           item.name.extractFileExtension(),
 
-        )
+          )
         Text(
-          text = detail.reduce{acc, string -> "$acc, $string" }.toString(),
+          text = detail.reduce { acc, string -> "$acc, $string" }.toString(),
           modifier = Modifier.fillMaxWidth(),
           textAlign = TextAlign.Start,
           fontSize = 13.sp,
+          color = contextColor,
           fontWeight = FontWeight.Medium,
         )
       }

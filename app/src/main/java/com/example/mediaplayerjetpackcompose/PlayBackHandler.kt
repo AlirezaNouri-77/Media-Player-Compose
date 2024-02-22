@@ -2,8 +2,8 @@ package com.example.mediaplayerjetpackcompose
 
 import android.content.ComponentName
 import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.media3.common.MediaItem
@@ -11,7 +11,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
-import com.example.mediaplayerjetpackcompose.data.MusicPlayerService
+import com.example.mediaplayerjetpackcompose.data.service.MusicPlayerService
 import com.example.mediaplayerjetpackcompose.domain.model.MusicMediaModel
 import com.example.mediaplayerjetpackcompose.domain.model.toMediaItem
 import com.google.common.util.concurrent.ListenableFuture
@@ -31,9 +31,12 @@ class PlayBackHandler(private var context: Context) {
     initialExoPlayer()
   }
 
+  val currentRepeatMode = mutableIntStateOf(0)
+
   private var factory: ListenableFuture<MediaController>? = null
   var mediaController by mutableStateOf<MediaController?>(null)
     private set
+
   var currentMusicPosition = flow {
     while (currentCoroutineContext().isActive) {
       val position = mediaController?.currentPosition ?: 0L
@@ -42,9 +45,16 @@ class PlayBackHandler(private var context: Context) {
     }
   }
 
-  private var _musicState =
-    MutableStateFlow(MusicState(isPlaying = false, metadata = MediaMetadata.EMPTY, mediaId = ""))
-  var musicState: StateFlow<MusicState> = _musicState.asStateFlow()
+  private var _mediaCurrentState =
+    MutableStateFlow(
+      MediaCurrentState(
+        isPlaying = false,
+        metaData = MediaMetadata.EMPTY,
+        mediaId = "",
+        isBuffering = false
+      )
+    )
+  var mediaCurrentState: StateFlow<MediaCurrentState> = _mediaCurrentState.asStateFlow()
 
   private fun initialExoPlayer() {
     if (factory == null) {
@@ -69,6 +79,13 @@ class PlayBackHandler(private var context: Context) {
   fun pauseMusic() = mediaController?.pause()
   fun seekToPosition(position: Long) = mediaController?.seekTo(position)
 
+  fun setPlayerRepeatMode(repeatMode:Int){
+    currentRepeatMode.intValue = repeatMode
+    mediaController?.let {
+      it.repeatMode = Constant.RepeatModes[currentRepeatMode.intValue]
+    }
+  }
+
   fun playMusic(index: Int, musicList: List<MusicMediaModel>) = mediaController?.let {
     it.setMediaItems(musicList.map(MusicMediaModel::toMediaItem), index, 0L)
     it.playWhenReady
@@ -85,24 +102,38 @@ class PlayBackHandler(private var context: Context) {
 
   private val exoPlayerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
-      _musicState.update { it.copy(isPlaying = isPlaying) }
+      _mediaCurrentState.update { it.copy(isPlaying = isPlaying) }
     }
 
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-      _musicState.update { it.copy(metadata = mediaMetadata) }
+      _mediaCurrentState.update { it.copy(metaData = mediaMetadata) }
     }
 
+
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-      _musicState.update { it.copy(mediaId = mediaItem?.mediaId ?: "") }
+      _mediaCurrentState.update { it.copy(mediaId = mediaItem?.mediaId ?: "") }
     }
 
     override fun onPlaybackStateChanged(playbackState: Int) {
-      if (playbackState == Player.STATE_ENDED) {
-        mediaController?.seekToNextMediaItem()
+      when (playbackState) {
+        Player.STATE_BUFFERING -> {
+          _mediaCurrentState.update { it.copy(isBuffering = true) }
+        }
+
+        Player.STATE_READY -> {
+          _mediaCurrentState.update { it.copy(isBuffering = false) }
+        }
+
+        else -> {}
       }
     }
   }
 
 }
 
-data class MusicState(var isPlaying: Boolean, val metadata: MediaMetadata, val mediaId: String)
+data class MediaCurrentState(
+  var isPlaying: Boolean,
+  val metaData: MediaMetadata,
+  val mediaId: String,
+  val isBuffering: Boolean
+)

@@ -5,19 +5,20 @@ import com.example.mediaplayerjetpackcompose.domain.model.navigation.BottomBarNa
 
 sealed class BottomNavigationItem(
   var title: String,
-  var icon: Int,
+  var iconFilled: Int,
+  var iconOutline: Int,
   var route: BottomBarNavigationModel,
 ) {
-
   data object Video : BottomNavigationItem(
     title = "Video",
-    icon = R.drawable.icon_navigation_video,
+    iconFilled = R.drawable.icon_video_filled,
+    iconOutline = R.drawable.icon_video_outline,
     route = BottomBarNavigationModel.VideoScreen,
   )
-
   data object Music : BottomNavigationItem(
     title = "Music",
-    icon = R.drawable.icon_navigation_music,
+    iconFilled = R.drawable.icon_music_filled,
+    iconOutline = R.drawable.icon_music_outline,
     route = BottomBarNavigationModel.MusicScreen,
   )
 }

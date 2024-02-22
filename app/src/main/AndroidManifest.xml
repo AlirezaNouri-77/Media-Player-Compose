@@ -42,7 +42,7 @@
         </activity>
 
         <service
-            android:name=".data.MusicPlayerService"
+            android:name=".data.service.MusicPlayerService"
             android:exported="true"
             android:foregroundServiceType="mediaPlayback"
             android:permission="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK">

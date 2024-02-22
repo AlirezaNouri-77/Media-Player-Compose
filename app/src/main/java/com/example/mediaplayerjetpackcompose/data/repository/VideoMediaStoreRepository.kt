@@ -2,25 +2,37 @@ package com.example.mediaplayerjetpackcompose.data.repository
 
 import android.content.ContentResolver
 import android.content.ContentUris
+import android.content.Context
+import android.graphics.Bitmap
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Size
+import androidx.core.graphics.drawable.toBitmap
+import com.example.mediaplayerjetpackcompose.Constant
+import com.example.mediaplayerjetpackcompose.R
+import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
+import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreResult
 import com.example.mediaplayerjetpackcompose.domain.model.VideoMediaModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
-class VideoMediaStoreRepository {
-
-  suspend fun getMedia(mContentResolver: ContentResolver): Flow<List<VideoMediaModel>> {
-
+class VideoMediaStoreRepository(
+  private var contentResolver: ContentResolver,
+) : MediaStoreRepositoryImpl<VideoMediaModel> {
+  override suspend fun getMedia(): Flow<MediaStoreResult<out VideoMediaModel>> {
     val mListResult = mutableListOf<VideoMediaModel>()
-
     return flow {
-      mContentResolver.query(
+
+      emit(MediaStoreResult.Loading)
+
+      contentResolver.query(
         uriMedia,
         MediaInfoArray,
         selection,
@@ -29,6 +41,7 @@ class VideoMediaStoreRepository {
       )?.use { cursor ->
 
         val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
+        val mimeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.MIME_TYPE)
         val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)
         val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)
         val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)
@@ -37,6 +50,7 @@ class VideoMediaStoreRepository {
 
         while (cursor.moveToNext()) {
           val id = idColumn.let { cursor.getLong(it) }
+          val mimeType = mimeColumn.let { cursor.getString(it) }
           val name = nameColumn.let { cursor.getString(it) }
           val duration = durationColumn.let { cursor.getInt(it) }
           val size = sizeColumn.let { cursor.getInt(it) }
@@ -49,7 +63,9 @@ class VideoMediaStoreRepository {
 
           mListResult.add(
             VideoMediaModel(
+              videoId = id,
               uri = contentUri,
+              mimeType = mimeType,
               name = name,
               duration = duration,
               size = size,
@@ -61,38 +77,11 @@ class VideoMediaStoreRepository {
         }
       }
 
-      emit(mListResult)
+      emit(MediaStoreResult.Result(mListResult))
 
     }.flowOn(Dispatchers.IO)
 
   }
-
-//  override suspend fun getMediaInformationByUri(
-//    mContentResolver: ContentResolver,
-//    uri: Uri
-//  ): Flow<VideoMediaModel> {
-//
-//    return flow {
-//      mContentResolver.query(uri, null, null, null, null)?.use { cursor ->
-//
-//        val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)
-//
-//        cursor.moveToFirst()
-//
-//        val name = nameColumn.let { cursor.getString(it) }
-//
-//        emit(
-//          VideoMediaModel(
-//            name = name,
-//          )
-//        )
-//
-//      }
-//    }.flowOn(Dispatchers.IO)
-//
-//
-//  }
-
 
   companion object {
 
@@ -100,6 +89,7 @@ class VideoMediaStoreRepository {
       MediaStore.Video.Media._ID,
       MediaStore.Video.Media.DISPLAY_NAME,
       MediaStore.Video.Media.DURATION,
+      MediaStore.Video.Media.MIME_TYPE,
       MediaStore.Video.Media.SIZE,
       MediaStore.Video.Media.HEIGHT,
       MediaStore.Video.Media.WIDTH,

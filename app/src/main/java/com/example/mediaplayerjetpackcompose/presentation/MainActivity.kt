@@ -10,29 +10,41 @@ import android.os.Bundle
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mediaplayerjetpackcompose.data.encodeStringNavigation
 import com.example.mediaplayerjetpackcompose.presentation.screen.MainScreen
 import com.example.mediaplayerjetpackcompose.presentation.screen.NoPermissionPage
-import com.example.mediaplayerjetpackcompose.presentation.screen.video.player.PlayerScreen
+import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.MusicPageViewModel
+import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
+import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPlayerPage
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 class MainActivity : ComponentActivity() {
-
   override fun onCreate(savedInstanceState: Bundle?) {
+    enableEdgeToEdge(
+      statusBarStyle = SystemBarStyle.light(Color.Transparent.toArgb(), Color.Transparent.toArgb()),
+      navigationBarStyle = SystemBarStyle.light(Color.Transparent.toArgb(), Color.Transparent.toArgb())
+    )
     super.onCreate(savedInstanceState)
 
     setContent {
       MediaPlayerJetpackComposeTheme {
-
         val uiState = remember { mutableStateOf(PermissionState.Initial) }
         val permissionsList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
           arrayOf(
@@ -42,8 +54,6 @@ class MainActivity : ComponentActivity() {
         } else {
           arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
-
-        hideStatusBar(this)
 
         if (checkPermission(this)) {
           uiState.value = PermissionState.PermissionIsGrant
@@ -69,8 +79,10 @@ class MainActivity : ComponentActivity() {
             intent?.let { mIntent ->
               if (mIntent.action == Intent.ACTION_VIEW) {
                 val videoUri = mIntent.data.toString().encodeStringNavigation()
-                PlayerScreen(
+                val musicPageViewModel = viewModel<VideoPageViewModel>(factory = VideoPageViewModel.Factory)
+                VideoPlayerPage(
                   videoUri = videoUri,
+                  videoPageViewModel = musicPageViewModel,
                   onBackClick = { this.finishAffinity() })
               } else {
                 MainScreen()
@@ -138,7 +150,6 @@ fun hideStatusBar(context: Context) {
     }
   }
 }
-
 
 enum class PermissionState {
   Initial, PermissionNotGrant, PermissionIsGrant

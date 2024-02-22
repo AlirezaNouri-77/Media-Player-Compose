@@ -55,7 +55,7 @@ fun LazyListScope.sortBar(
           onSortClick.invoke(if (musicPageViewModel.currentListSort.value == sort) SortItem.NAME else sort)
         }
         .background(
-          color = if (musicPageViewModel.currentListSort.value == sort) Color.Gray else Color.White,
+          color = if (musicPageViewModel.currentListSort.value == sort) Color.Gray else Color.Transparent,
           shape = RoundedCornerShape(8.dp),
         )
         .padding(vertical = 2.dp, horizontal = 3.dp),

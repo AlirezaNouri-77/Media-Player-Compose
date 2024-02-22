@@ -5,5 +5,10 @@ import android.content.Context
 import kotlinx.coroutines.flow.Flow
 
 interface MediaStoreRepositoryImpl<out T> {
-  suspend fun getMedia(mContentResolver: ContentResolver, context: Context): Flow<List<T>>
+  suspend fun getMedia(): Flow<MediaStoreResult<out T>>
+}
+sealed class MediaStoreResult<T> {
+  data object Initial : MediaStoreResult<Nothing>()
+  data object Loading : MediaStoreResult<Nothing>()
+  data class Result<T>(var result: List<T>) : MediaStoreResult<T>()
 }

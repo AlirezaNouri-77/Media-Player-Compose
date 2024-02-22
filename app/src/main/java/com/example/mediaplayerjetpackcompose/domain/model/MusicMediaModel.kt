@@ -1,15 +1,20 @@
 package com.example.mediaplayerjetpackcompose.domain.model
 
+import android.graphics.Bitmap
 import android.net.Uri
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.MimeTypes
 
+@Stable
 data class MusicMediaModel(
   val musicId: Long,
   val uri: Uri,
   val path: String,
+  val mimeTypes: String,
   val name: String,
   val duration: Int,
   val size: Int = 0,
@@ -17,6 +22,7 @@ data class MusicMediaModel(
   val bitrate: Int,
   val artist: String,
   val album: String,
+  var artBitmap: Bitmap,
 )
 
 fun MusicMediaModel.toMediaItem() =

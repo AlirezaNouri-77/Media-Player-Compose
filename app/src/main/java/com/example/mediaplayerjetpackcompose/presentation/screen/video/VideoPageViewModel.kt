@@ -1,61 +1,169 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.video
 
-import android.content.ContentResolver
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.media.MediaMetadataRetriever
-import android.media.MediaMetadataRetriever.OPTION_CLOSEST
 import android.net.Uri
 import androidx.annotation.OptIn
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.lifecycle.ViewModel
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.MetadataRetriever
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.AspectRatioFrameLayout
 import com.example.mediaplayerjetpackcompose.ApplicationClass
-import com.example.mediaplayerjetpackcompose.Constant.FRAME_VIDEO
+import com.example.mediaplayerjetpackcompose.MediaCurrentState
+import com.example.mediaplayerjetpackcompose.data.GetMediaArt
 import com.example.mediaplayerjetpackcompose.data.repository.VideoMediaStoreRepository
+import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreResult
 import com.example.mediaplayerjetpackcompose.domain.model.VideoMediaModel
+import com.example.mediaplayerjetpackcompose.domain.model.toMediaItem
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
+@OptIn(UnstableApi::class)
 class VideoPageViewModel(
   private var applicationClass: ApplicationClass,
-  private var contentResolver: ContentResolver,
   private var videoMediaStoreRepository: VideoMediaStoreRepository,
-) : ViewModel() {
+  private var getMediaArt: GetMediaArt,
+) : AndroidViewModel(applicationClass) {
 
+  var exoPlayer: ExoPlayer
   var mediaStoreDataList = mutableStateListOf<VideoMediaModel>()
     private set
+  var videoThumbnailBitmap = mutableStateListOf<videoThumbNailsModel>()
 
   init {
     getVideo()
+    exoPlayer = ExoPlayer.Builder(applicationClass.applicationContext).build()
+    exoPlayer.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT
+    viewModelScope.launch(Dispatchers.Main) {
+      exoPlayer.addListener(
+        object : Player.Listener {
+          override fun onIsPlayingChanged(isPlaying: Boolean) {
+            _currentState.update { it.copy(isPlaying = isPlaying) }
+          }
+
+          override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+            _currentState.update { it.copy(metaData = mediaMetadata) }
+          }
+        },
+      )
+    }
+  }
+
+  @SuppressLint("UnsafeOptInUsageError")
+  var deviceOrientation = mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT)
+
+  private var _currentState = MutableStateFlow(
+    MediaCurrentState(
+      isPlaying = false,
+      mediaId = "",
+      metaData = MediaMetadata.EMPTY,
+      isBuffering = false,
+    )
+  )
+  val currentState: StateFlow<MediaCurrentState> = _currentState.asStateFlow()
+  val currentMediaPosition = flow {
+    while (currentCoroutineContext().isActive) {
+      emit(exoPlayer.currentPosition)
+      delay(1000L)
+    }
+  }
+
+  fun pausePlayer() = exoPlayer.pause()
+
+  suspend fun getVideoThumbNail(uri: Uri): Bitmap? {
+    return getMediaArt.getVideoThumbNail(uri)
+  }
+
+  fun startPlay(index: Int, videoList: List<VideoMediaModel>) {
+    exoPlayer.apply {
+      this.setMediaItems(videoList.map(VideoMediaModel::toMediaItem), index, 0L)
+      this.playWhenReady = true
+      this.prepare()
+      this.play()
+    }
+  }
+
+  fun startPlayFromUri(uri: Uri) {
+    exoPlayer.apply {
+      this.addMediaItem(MediaItem.fromUri(uri))
+      this.playWhenReady = true
+      this.prepare()
+      this.play()
+    }
+  }
+
+  fun resumePlayer() = exoPlayer.play()
+  fun seekToNext() = exoPlayer.seekToNextMediaItem()
+  fun fastForward(position: Long, currentPosition: Long) {
+    exoPlayer.seekTo(currentPosition + position)
+  }
+
+  fun fastRewind(position: Long, currentPosition: Long) {
+    exoPlayer.seekTo(currentPosition - position)
+  }
+
+  fun seekToPrevious() = exoPlayer.seekToPreviousMediaItem()
+  fun seekToPosition(position: Long) {
+    exoPlayer.seekTo(position)
+  }
+
+  fun releasePlayer() = viewModelScope.launch(Dispatchers.Main) {
+    exoPlayer.pause()
+    exoPlayer.clearMediaItems()
+    exoPlayer.release()
+    //onBackPress.value = false
+  }
+
+  fun stopPlayer() = viewModelScope.launch(Dispatchers.Main) {
+    exoPlayer.pause()
+    exoPlayer.clearMediaItems()
+   // onBackPress.value = false
   }
 
   private fun getVideo() {
     viewModelScope.launch {
-      videoMediaStoreRepository.getMedia(mContentResolver = contentResolver).stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000L), initialValue = emptyList()
-      ).collect {
-        mediaStoreDataList.addAll(it)
+      videoMediaStoreRepository.getMedia().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(), initialValue = MediaStoreResult.Initial,
+      ).collect { it ->
+        withContext(Dispatchers.Main) {
+          when (it) {
+            MediaStoreResult.Loading -> {
+
+            }
+
+            is MediaStoreResult.Result -> {
+              mediaStoreDataList.addAll(it.result)
+            }
+
+            else -> {}
+          }
+        }
       }
     }
-  }
-
-  fun getThumbnail(uri: Uri): ImageBitmap? {
-    val mediaMetadataRetriever = MediaMetadataRetriever()
-    mediaMetadataRetriever.setDataSource(applicationClass.applicationContext, uri)
-    return runCatching {
-      mediaMetadataRetriever.getScaledFrameAtTime(FRAME_VIDEO, OPTION_CLOSEST, 150, 150)
-        ?.asImageBitmap()
-    }.getOrNull()
   }
 
   companion object {
@@ -65,13 +173,19 @@ class VideoPageViewModel(
         val savedStateHandle = createSavedStateHandle()
         VideoPageViewModel(
           applicationClass = application,
-          contentResolver = application.contentResolver,
           videoMediaStoreRepository = application.videoMediaStoreRepository,
+          getMediaArt = application.getMediaArt,
         )
       }
     }
+  }
 
+  override fun onCleared() {
+    super.onCleared()
+    exoPlayer.clearMediaItems()
+    exoPlayer.release()
   }
 
 }
 
+data class videoThumbNailsModel(var bitmap: Bitmap, var musicId: Long)

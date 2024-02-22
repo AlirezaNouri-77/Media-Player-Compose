@@ -49,7 +49,7 @@ android {
 dependencies {
   
   val media3Version = "1.2.1"
-  val navVersion = "2.7.6"
+  val navVersion = "2.7.7"
   val lifecycleVersion = "2.7.0"
   val constraintLayout = "1.0.1"
   
@@ -60,7 +60,7 @@ dependencies {
   implementation("androidx.compose.ui:ui")
   implementation("androidx.compose.ui:ui-graphics")
   implementation("androidx.compose.ui:ui-tooling-preview")
-  implementation("androidx.compose.material3:material3")
+  implementation("androidx.compose.material3:material3:1.2.0")
   testImplementation("junit:junit:4.13.2")
   androidTestImplementation("androidx.test.ext:junit:1.1.5")
   androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -80,8 +80,6 @@ dependencies {
   implementation("androidx.navigation:navigation-compose:$navVersion")
   
   implementation("androidx.constraintlayout:constraintlayout-compose:$constraintLayout")
-  
-  implementation("androidx.palette:palette-ktx:1.0.0")
 
-  debugImplementation ("com.squareup.leakcanary:leakcanary-android:3.0-alpha-1")
+
 }

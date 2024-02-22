@@ -22,7 +22,7 @@ fun FolderStyleMusicItem(
     Column(
       modifier = Modifier
         .fillMaxWidth()
-        .padding(vertical = 8.dp, horizontal = 4.dp),
+        .padding(vertical = 6.dp, horizontal = 10.dp),
     ) {
       Text(text = name, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
       Text(text = "$musicListSize Music", fontSize = 15.sp, fontWeight = FontWeight.Medium)

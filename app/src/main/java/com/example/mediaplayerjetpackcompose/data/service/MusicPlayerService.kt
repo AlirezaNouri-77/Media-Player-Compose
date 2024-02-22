@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.data
+package com.example.mediaplayerjetpackcompose.data.service
 
 import android.content.Intent
 import androidx.media3.exoplayer.ExoPlayer

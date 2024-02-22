@@ -8,6 +8,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import java.text.DecimalFormat
 import java.util.Base64
 import java.util.concurrent.TimeUnit
@@ -24,6 +27,22 @@ fun Int?.convertMilliSecondToTime(): String {
   }
 }
 
+suspend inline fun <T>  onMainDispatcher(crossinline action: () -> T): T  {
+  return coroutineScope {
+    withContext(Dispatchers.Main) {
+      action()
+    }
+  }
+}
+
+suspend inline fun <T> onIoDispatcher(crossinline action: () -> T): T {
+  return coroutineScope {
+    withContext(Dispatchers.IO) {
+      action()
+    }
+  }
+}
+
 fun String.encodeStringNavigation(): String {
   return Base64.getUrlEncoder().encodeToString(this.toByteArray())
 }
@@ -33,7 +52,7 @@ fun String.decodeStringNavigation(): Uri {
 }
 
 fun Int?.convertToKbit(): String {
-  return this?.div(1000)?.toString()?.plus(" Kbit") ?: "None"
+  return this?.div(1000)?.toString()?.plus("Kbit") ?: "None"
 }
 
 fun String.extractFileExtension(): String {
@@ -52,7 +71,7 @@ fun Int.convertByteToReadableSize(): AnnotatedString {
         append(DecimalFormat("##.#").format(input.div(1_000_000_000f)).toString())
       }
       withStyle(style = SpanStyle(fontSize = 13.sp, fontWeight = FontWeight.Light)) {
-        append(" gb")
+        append("gb")
       }
     }
   } else {
@@ -61,7 +80,7 @@ fun Int.convertByteToReadableSize(): AnnotatedString {
         append(DecimalFormat("##.##").format(input.div(1_000_000f)).toString()).toString()
       }
       withStyle(style = SpanStyle(fontSize = 13.sp, fontWeight = FontWeight.Light)) {
-        append(" mg")
+        append("mg")
       }
     }
   }
