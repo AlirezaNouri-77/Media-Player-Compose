@@ -1,11 +1,8 @@
-package com.example.mediaplayerjetpackcompose.presentation.screenComponent
+package com.example.mediaplayerjetpackcompose.presentation.screen.music.item
 
 
-import android.graphics.Bitmap
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,30 +14,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.data.convertByteToReadableSize
 import com.example.mediaplayerjetpackcompose.data.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.MusicMediaModel
@@ -50,13 +38,16 @@ fun MusicMediaItem(
   item: MusicMediaModel,
   artworkImage: ImageBitmap,
   currentMediaId: String,
-  contextColor: Color = MaterialTheme.colorScheme.onPrimary,
+  contentColor: Color = MaterialTheme.colorScheme.onPrimary,
   onItemClick: () -> Unit,
 ) {
+
   Box(
     modifier = Modifier
       .fillMaxWidth()
-      .clickable { onItemClick.invoke() }
+      .clickable {
+        onItemClick.invoke()
+      }
       .background(if (currentMediaId == item.musicId.toString()) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f) else Color.Transparent),
   ) {
     Row(
@@ -88,7 +79,7 @@ fun MusicMediaItem(
           fontSize = 16.sp,
           fontWeight = FontWeight.Medium,
           maxLines = 1,
-          color = contextColor,
+          color = contentColor,
           overflow = TextOverflow.Ellipsis,
           softWrap = true
         )
@@ -96,7 +87,7 @@ fun MusicMediaItem(
           modifier = Modifier.fillMaxWidth(),
           text = item.artist,
           fontSize = 16.sp,
-          color = contextColor,
+          color = contentColor,
           fontWeight = FontWeight.Normal,
           maxLines = 1,
         )
@@ -105,7 +96,7 @@ fun MusicMediaItem(
         Text(
           text = item.duration.convertMilliSecondToTime(),
           modifier = Modifier.fillMaxWidth(),
-          color = contextColor,
+          color = contentColor,
           textAlign = TextAlign.End,
         )
       }

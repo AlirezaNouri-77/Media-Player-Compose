@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen.component
+package com.example.mediaplayerjetpackcompose.presentation.screen.component.util
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -19,8 +19,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.MusicPageViewModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.SortItem
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.SortItem
 
 @OptIn(ExperimentalFoundationApi::class)
 fun LazyListScope.sortBar(
@@ -40,10 +40,11 @@ fun LazyListScope.sortBar(
       ),
       contentDescription = "",
       modifier = Modifier
-        .padding(4.dp)
-        .size(20.dp)
+        .padding(5.dp)
+        .size(25.dp)
         .clickable { onDecClick.invoke() },
     )
+    Spacer(modifier = Modifier.width(10.dp))
   }
   itemsIndexed(items = SortItem.entries.filter { it != SortItem.NAME }) { _, sort ->
     Text(
@@ -55,10 +56,10 @@ fun LazyListScope.sortBar(
           onSortClick.invoke(if (musicPageViewModel.currentListSort.value == sort) SortItem.NAME else sort)
         }
         .background(
-          color = if (musicPageViewModel.currentListSort.value == sort) Color.Gray else Color.Transparent,
+          color = if (musicPageViewModel.currentListSort.value == sort) Color(0xFF2A2D2C) else Color.Transparent,
           shape = RoundedCornerShape(8.dp),
         )
-        .padding(vertical = 2.dp, horizontal = 3.dp),
+        .padding(vertical = 4.dp, horizontal = 4.dp),
     )
     Spacer(modifier = Modifier.width(4.dp))
   }

@@ -1,12 +1,6 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen.component
+package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import android.graphics.Bitmap
-import android.util.Log
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,8 +10,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.interaction.Interaction
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,15 +18,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Slider
@@ -43,23 +32,18 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.geometry.center
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
 import androidx.compose.ui.input.pointer.pointerInput
@@ -71,26 +55,19 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.media3.common.Player
-import com.example.mediaplayerjetpackcompose.Constant
-import com.example.mediaplayerjetpackcompose.MediaCurrentState
+import com.example.mediaplayerjetpackcompose.data.Constant
+import com.example.mediaplayerjetpackcompose.data.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.convertByteToReadableSize
 import com.example.mediaplayerjetpackcompose.data.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.convertToKbit
 import com.example.mediaplayerjetpackcompose.data.extractFileExtension
 import com.example.mediaplayerjetpackcompose.data.removeFileExtension
-import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.MusicPageViewModel
-import com.example.mediaplayerjetpackcompose.presentation.util.NoRippleEffect
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.produceIn
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun NowMusicPlaying(
+fun FullMusicPlayer(
   currentMediaCurrentState: MediaCurrentState,
   currentMusicPosition: State<Long>,
   repeatMode: Int,
@@ -119,12 +96,6 @@ fun NowMusicPlaying(
     2 -> R.drawable.icon_repeat_all_24
     else -> -1
   }
-
-  val mCurrentMusicPosition by remember(!sliderInInteraction.value) {
-    derivedStateOf {
-      currentMusicPosition
-    }
-  }.value
 
   Surface(
     modifier = Modifier
@@ -296,7 +267,7 @@ fun NowMusicPlaying(
           horizontalArrangement = Arrangement.Absolute.SpaceBetween,
         ) {
           Text(
-            text = mCurrentMusicPosition.toInt().convertMilliSecondToTime(),
+            text = currentMusicPosition.value.toInt().convertMilliSecondToTime(),
             fontSize = 13.sp,
             fontWeight = FontWeight.Normal,
             color = Color.White,
@@ -310,23 +281,32 @@ fun NowMusicPlaying(
           )
         }
         Slider(
-          value = mCurrentMusicPosition.toFloat(),
+          value = currentMusicPosition.value.toFloat(),
           modifier = Modifier.fillMaxWidth(),
           onValueChange = { value ->
             sliderInInteraction.value = true
             seekPosition.floatValue = value
           },
           onValueChangeFinished = {
-            onSeekTo.invoke(seekPosition.floatValue.toLong())
             sliderInInteraction.value = false
+            onSeekTo.invoke(seekPosition.floatValue.toLong())
           },
-          valueRange = 0f..(currentMediaCurrentState.metaData.extras?.getInt("Duration")?.toFloat() ?: 0f),
+          track = { sliderState ->
+            SliderDefaults.Track(
+              sliderState = sliderState,
+              modifier = Modifier.scale(scaleX = 1f, scaleY = 2.5f),
+              colors = SliderDefaults.colors(
+                activeTrackColor = Color.White,
+                inactiveTrackColor = Color.White.copy(0.5f),
+              ),
+            )
+          },
           colors = SliderDefaults.colors(
             thumbColor = Color.White,
-            activeTrackColor = Color.White,
-            inactiveTrackColor = Color.White.copy(0.6f),
           ),
-        )
+          valueRange = 0f..(currentMediaCurrentState.metaData.extras?.getInt("Duration")?.toFloat() ?: 0f),
+
+          )
         Spacer(modifier = Modifier.height(20.dp))
         Row(
           verticalAlignment = Alignment.CenterVertically,

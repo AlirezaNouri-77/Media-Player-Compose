@@ -1,6 +1,5 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen.component
+package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -8,20 +7,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -36,31 +31,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.MediaCurrentState
+import com.example.mediaplayerjetpackcompose.data.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.removeFileExtension
-import com.example.mediaplayerjetpackcompose.presentation.util.NoRippleEffect
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
-fun CollapsePlayer(
+fun MiniMusicPlayer(
   currentMediaCurrentState: MediaCurrentState,
   currentMusicPosition: State<Long>,
   artworkImage: ImageBitmap,
   modifier: Modifier,
   onClick: () -> Unit,
   onPauseMusic: () -> Unit,
+  onNextMusic: () -> Unit,
+  onPreviewMusic: () -> Unit,
   onResumeMusic: () -> Unit,
 ) {
 
@@ -81,6 +74,7 @@ fun CollapsePlayer(
     modifier = modifier
       .fillMaxWidth(),
   ) {
+
     Column(
       verticalArrangement = Arrangement.Top,
     ) {
@@ -123,21 +117,46 @@ fun CollapsePlayer(
             maxLines = 1,
           )
         }
-        AnimatedContent(
-          targetState = if (currentMediaCurrentState.isPlaying) R.drawable.icon_pause_24 else R.drawable.icon_play_arrow_24,
-          label = "",
-          modifier = Modifier.padding(10.dp)
-        ) { int ->
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.Center,
+        ) {
           Icon(
-            painter = painterResource(id = int),
+            painter = painterResource(id = R.drawable.icon_skip_previous_24),
             contentDescription = "",
             modifier = Modifier
-              .size(35.dp)
+              .size(25.dp)
               .clickable {
-                when (currentMediaCurrentState.isPlaying) {
-                  true -> onPauseMusic.invoke()
-                  false -> onResumeMusic.invoke()
-                }
+                onPreviewMusic.invoke()
+              },
+            tint = MaterialTheme.colorScheme.onPrimary,
+          )
+          AnimatedContent(
+            targetState = if (currentMediaCurrentState.isPlaying) R.drawable.icon_pause_24 else R.drawable.icon_play_arrow_24,
+            label = "",
+            modifier = Modifier.padding(10.dp)
+          ) { int ->
+            Icon(
+              painter = painterResource(id = int),
+              contentDescription = "",
+              modifier = Modifier
+                .size(35.dp)
+                .clickable {
+                  when (currentMediaCurrentState.isPlaying) {
+                    true -> onPauseMusic.invoke()
+                    false -> onResumeMusic.invoke()
+                  }
+                },
+              tint = MaterialTheme.colorScheme.onPrimary,
+            )
+          }
+          Icon(
+            painter = painterResource(id = R.drawable.icon_skip_next_24),
+            contentDescription = "",
+            modifier = Modifier
+              .size(25.dp)
+              .clickable {
+                onNextMusic.invoke()
               },
             tint = MaterialTheme.colorScheme.onPrimary,
           )

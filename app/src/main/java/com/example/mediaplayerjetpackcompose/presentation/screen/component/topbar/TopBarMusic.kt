@@ -1,12 +1,13 @@
-package com.example.mediaplayerjetpackcompose.presentation.screenComponent
+package com.example.mediaplayerjetpackcompose.presentation.screen.component.topbar
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabPosition
 import androidx.compose.material3.TabRow
@@ -38,19 +38,18 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.Constant
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.domain.model.MusicMediaModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.MyTabIndicator
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.myCustomTabIndicator
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.sortBar
-import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.MusicPageViewModel
-import com.example.mediaplayerjetpackcompose.presentation.util.NoRippleEffect
+import com.example.mediaplayerjetpackcompose.domain.model.TabBarPosition
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.MyTabIndicator
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.myCustomTabIndicator
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.sortBar
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
@@ -61,7 +60,7 @@ fun TopBarMusic(
   musicPageViewModel: MusicPageViewModel,
   showSortBar: Boolean,
   showSearch: Boolean,
-  currentTabPosition: Int,
+  currentTabPosition: TabBarPosition,
   onSortIconClick: () -> Unit,
   onSearchIconClick: () -> Unit,
   onTabBarClick: (Int) -> Unit,
@@ -78,52 +77,50 @@ fun TopBarMusic(
       }
   })
 
-  Surface (
-    color = MaterialTheme.colorScheme.primary,
+  Column(
+    Modifier
+      .animateContentSize()
+      .background(color = MaterialTheme.colorScheme.primary)
   ) {
-    Column {
-      TopBarSection(
-        currentTabPosition = currentTabPosition,
-        isSearchSectionShow = !showSearch,
-        contentColor = MaterialTheme.colorScheme.onPrimary,
-        onSortIconClick = { onSortIconClick.invoke() },
-        onSearchIconClick = { onSearchIconClick.invoke() },
+    TopBarSection(
+      currentTabPosition = currentTabPosition,
+      isSearchSectionShow = !showSearch,
+      contentColor = MaterialTheme.colorScheme.onPrimary,
+      onSortIconClick = { onSortIconClick.invoke() },
+    ) { onSearchIconClick.invoke() }
+    AnimatedVisibility(
+      visible = showSearch,
+    ) {
+      SearchSection(
+        textFieldValue.value,
+        onTextFieldChange = {
+          textFieldValue.value = it
+        },
       )
-      AnimatedVisibility(
-        visible = showSearch,
-      ) {
-        SearchSection(
-          textFieldValue.value,
-          onTextFieldChange = {
-            textFieldValue.value = it
-          },
-        )
-      }
-      AnimatedVisibility(
-        visible = !showSearch,
-      ) {
-        TabBarSection(
-          currentTabState = musicPageViewModel.currentTabState,
-          onTabClick = {
-            onTabBarClick.invoke(it)
-            musicPageViewModel.currentTabState = it
-          }
-        )
-      }
-      SortSection(
-        musicPageViewModel = musicPageViewModel,
-        showSortBar = showSortBar,
-      )
-      Spacer(modifier = Modifier.height(10.dp))
     }
+    AnimatedVisibility(
+      visible = !showSearch,
+    ) {
+      TabBarSection(
+        currentTabState = musicPageViewModel.currentTabState,
+        onTabClick = { tabBar, int ->
+          onTabBarClick.invoke(int)
+          musicPageViewModel.currentTabState = tabBar
+        }
+      )
+    }
+    SortSection(
+      musicPageViewModel = musicPageViewModel,
+      showSortBar = showSortBar,
+    )
+    Spacer(modifier = Modifier.height(10.dp))
   }
-
 }
 
 @Composable
 fun TopBarSection(
-  currentTabPosition: Int,
-  contentColor:Color,
+  currentTabPosition: TabBarPosition,
+  contentColor: Color,
   isSearchSectionShow: Boolean,
   onSortIconClick: () -> Unit,
   onSearchIconClick: () -> Unit,
@@ -141,7 +138,7 @@ fun TopBarSection(
       fontWeight = FontWeight.Bold,
       fontSize = 36.sp,
     )
-    AnimatedVisibility(visible = currentTabPosition == 0) {
+    AnimatedVisibility(visible = currentTabPosition == TabBarPosition.MUSIC) {
       Row {
         if (isSearchSectionShow) {
           Icon(
@@ -208,7 +205,7 @@ fun SearchSection(
     colors = TextFieldDefaults.colors(
       focusedContainerColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
       unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f),
-      focusedTextColor = Color.Black,
+      focusedTextColor = MaterialTheme.colorScheme.onPrimary,
       cursorColor = MaterialTheme.colorScheme.onPrimary,
       focusedLabelColor = Color.Transparent,
       focusedIndicatorColor = Color.Transparent,
@@ -225,16 +222,16 @@ private fun SortSection(
 ) {
   AnimatedVisibility(
     visible = showSortBar,
-    enter = fadeIn(tween(300, 100)) + slideInVertically(
-      animationSpec = tween(300),
-      initialOffsetY = { int -> int / 4 }),
+    enter = fadeIn(tween(300, 30)) + slideInVertically(
+      animationSpec = tween(200),
+      initialOffsetY = { int -> int / 2 }),
     exit = slideOutVertically(
-      animationSpec = tween(300, 100),
-      targetOffsetY = { int -> int / 4 }) + fadeOut(tween(300, 100))
+      animationSpec = tween(300),
+      targetOffsetY = { int -> -int / 2 }) + fadeOut(tween(200, 30))
   ) {
     LazyRow(
       modifier = Modifier
-        .padding(horizontal = 15.dp)
+        .padding(vertical = 15.dp)
         .fillMaxWidth(),
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.Center,
@@ -267,36 +264,36 @@ private fun SortSection(
 
 @Composable
 fun TabBarSection(
-  currentTabState: Int,
-  onTabClick: (Int) -> Unit,
+  currentTabState: TabBarPosition,
+  onTabClick: (TabBarPosition, Int) -> Unit,
 ) {
   val indicator = @Composable { tabPosition: List<TabPosition> ->
     MyTabIndicator(
-      Modifier.myCustomTabIndicator(tabPosition[currentTabState])
+      Modifier.myCustomTabIndicator(tabPosition[TabBarPosition.entries.indexOf(currentTabState)])
     )
   }
   TabRow(
-    selectedTabIndex = currentTabState,
+    selectedTabIndex = TabBarPosition.entries.indexOf(TabBarPosition.MUSIC),
     modifier = Modifier
       .fillMaxWidth()
-      .padding(horizontal = 30.dp),
+      .padding(horizontal = 15.dp),
     indicator = indicator,
     contentColor = MaterialTheme.colorScheme.onPrimary,
     containerColor = MaterialTheme.colorScheme.primaryContainer,
     divider = {}
   ) {
-    Constant.tabBarListItem.forEachIndexed { index, string ->
+    TabBarPosition.entries.forEach {
       Tab(
         text = {
           Text(
-            text = string,
+            text = it.enuName,
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
           )
         },
-        selected = currentTabState == index,
+        selected = currentTabState == it,
         onClick = {
-          onTabClick.invoke(index)
+          onTabClick.invoke(it, TabBarPosition.entries.indexOf(currentTabState))
         },
         interactionSource = NoRippleEffect
       )

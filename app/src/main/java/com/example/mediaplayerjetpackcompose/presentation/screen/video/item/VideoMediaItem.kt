@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.presentation.screenComponent
+package com.example.mediaplayerjetpackcompose.presentation.screen.video.item
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
@@ -25,6 +25,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -45,7 +47,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.withContext
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun VideoMediaItem(
   item: VideoMediaModel,
@@ -77,14 +78,13 @@ fun VideoMediaItem(
   Surface(
     onClick = { onItemClick.invoke() },
     modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 10.dp),
+      .fillMaxWidth(),
     color = Color.Transparent,
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.Start,
-      modifier = Modifier.padding(5.dp),
+      modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
     ) {
       ConstraintLayout {
         val (imageArt, duration) = createRefs()
@@ -122,11 +122,17 @@ fun VideoMediaItem(
           text = item.duration.convertMilliSecondToTime(),
           modifier = Modifier
             .constrainAs(duration) {
-              bottom.linkTo(parent.bottom, 7.dp)
-              end.linkTo(parent.end, 7.dp)
+              bottom.linkTo(parent.bottom, 5.dp)
+              end.linkTo(parent.end, 5.dp)
             }
-            .background(Color.Black.copy(alpha = 0.4f), RoundedCornerShape(5.dp)),
-          textAlign = TextAlign.End,
+            .drawBehind {
+              drawRoundRect(
+                color = Color.Black,
+                alpha = 0.5f,
+                size = this.size,
+                cornerRadius = CornerRadius(x = 15f, y = 15f),
+              )
+            },
           fontSize = 14.sp,
           color = Color.White,
         )

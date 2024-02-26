@@ -9,13 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.util.Size
 import androidx.core.graphics.drawable.toBitmap
-import com.example.mediaplayerjetpackcompose.Constant
 import com.example.mediaplayerjetpackcompose.R
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class GetMediaArt(
   private var context: Context,

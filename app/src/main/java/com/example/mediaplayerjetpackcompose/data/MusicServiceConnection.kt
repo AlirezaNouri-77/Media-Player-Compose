@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose
+package com.example.mediaplayerjetpackcompose.data
 
 import android.content.ComponentName
 import android.content.Context
@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 
-class PlayBackHandler(private var context: Context) {
+class MusicServiceConnection(private var context: Context) {
 
   init {
     initialExoPlayer()
@@ -34,8 +34,7 @@ class PlayBackHandler(private var context: Context) {
   val currentRepeatMode = mutableIntStateOf(0)
 
   private var factory: ListenableFuture<MediaController>? = null
-  var mediaController by mutableStateOf<MediaController?>(null)
-    private set
+  private var mediaController by mutableStateOf<MediaController?>(null)
 
   var currentMusicPosition = flow {
     while (currentCoroutineContext().isActive) {
@@ -79,7 +78,7 @@ class PlayBackHandler(private var context: Context) {
   fun pauseMusic() = mediaController?.pause()
   fun seekToPosition(position: Long) = mediaController?.seekTo(position)
 
-  fun setPlayerRepeatMode(repeatMode:Int){
+  fun setPlayerRepeatMode(repeatMode: Int) {
     currentRepeatMode.intValue = repeatMode
     mediaController?.let {
       it.repeatMode = Constant.RepeatModes[currentRepeatMode.intValue]
@@ -99,6 +98,7 @@ class PlayBackHandler(private var context: Context) {
       index,
       startPosition
     )
+
 
   private val exoPlayerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {

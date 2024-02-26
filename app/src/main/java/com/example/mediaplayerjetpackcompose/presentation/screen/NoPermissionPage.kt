@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -55,34 +58,37 @@ fun NoPermissionPage(
     }
   }
 
-  Column(
-    modifier = Modifier
-      .fillMaxSize()
-      .padding(horizontal = 15.dp),
-    verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally,
+  Surface (
+    color = MaterialTheme.colorScheme.primary,
   ) {
-    Text(
-      text = "Simple Media Player",
-      fontSize = 35.sp, fontWeight = FontWeight.Bold,
-    )
-    Spacer(modifier = Modifier.height(90.dp))
-    Image(
-      painter = painterResource(id = R.drawable.warning_icon),
-      contentDescription = "",
-      Modifier.aspectRatio(3f)
-    )
-    Spacer(modifier = Modifier.height(20.dp))
-    Text(
-      text = "This app need to storage permission for Work properly",
-      fontSize = 18.sp
-    )
-    Spacer(modifier = Modifier.height(20.dp))
-    Button(onClick = { openPermissionSetting(context) }) {
-      Text(text = "Go to setting")
+    Column(
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(horizontal = 15.dp),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      Text(
+        text = "Simple Media Player",
+        fontSize = 35.sp, fontWeight = FontWeight.Bold,
+      )
+      Spacer(modifier = Modifier.height(90.dp))
+      Image(
+        painter = painterResource(id = R.drawable.warning_icon),
+        contentDescription = "",
+        Modifier.aspectRatio(3f)
+      )
+      Spacer(modifier = Modifier.height(20.dp))
+      Text(
+        text = "This app need to storage permission for Work properly",
+        fontSize = 18.sp
+      )
+      Spacer(modifier = Modifier.height(20.dp))
+      Button(onClick = { openPermissionSetting(context) }) {
+        Text(text = "Go to setting")
+      }
     }
   }
-
 
 }
 

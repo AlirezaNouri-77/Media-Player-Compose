@@ -4,9 +4,10 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.annotation.OptIn
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -21,8 +22,8 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
-import com.example.mediaplayerjetpackcompose.ApplicationClass
-import com.example.mediaplayerjetpackcompose.MediaCurrentState
+import com.example.mediaplayerjetpackcompose.data.application.ApplicationClass
+import com.example.mediaplayerjetpackcompose.data.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.data.GetMediaArt
 import com.example.mediaplayerjetpackcompose.data.repository.VideoMediaStoreRepository
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreResult
@@ -73,8 +74,7 @@ class VideoPageViewModel(
     }
   }
 
-  @SuppressLint("UnsafeOptInUsageError")
-  var deviceOrientation = mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT)
+  var deviceOrientation by mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT)
 
   private var _currentState = MutableStateFlow(
     MediaCurrentState(
@@ -135,13 +135,11 @@ class VideoPageViewModel(
     exoPlayer.pause()
     exoPlayer.clearMediaItems()
     exoPlayer.release()
-    //onBackPress.value = false
   }
 
   fun stopPlayer() = viewModelScope.launch(Dispatchers.Main) {
     exoPlayer.pause()
     exoPlayer.clearMediaItems()
-   // onBackPress.value = false
   }
 
   private fun getVideo() {
@@ -182,8 +180,7 @@ class VideoPageViewModel(
 
   override fun onCleared() {
     super.onCleared()
-    exoPlayer.clearMediaItems()
-    exoPlayer.release()
+    releasePlayer()
   }
 
 }

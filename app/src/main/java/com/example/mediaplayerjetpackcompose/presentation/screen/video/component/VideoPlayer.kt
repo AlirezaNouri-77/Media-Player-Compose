@@ -1,8 +1,7 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen.video
+package com.example.mediaplayerjetpackcompose.presentation.screen.video.component
 
-import android.app.Activity
-import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.annotation.OptIn
 import androidx.compose.animation.AnimatedContent
@@ -14,7 +13,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,38 +24,36 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -70,31 +69,46 @@ import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.decodeStringNavigation
 import com.example.mediaplayerjetpackcompose.data.removeFileExtension
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.ControlBottom
-import com.example.mediaplayerjetpackcompose.presentation.util.NoRippleEffect
+import com.example.mediaplayerjetpackcompose.domain.model.MiddleScreenVideoPlayerInfoClass
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
+import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.isActive
 
-@kotlin.OptIn(ExperimentalFoundationApi::class)
+@kotlin.OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @OptIn(UnstableApi::class)
 @Composable
-fun VideoPlayerPage(
+fun VideoPlayer(
   videoUri: String,
   videoPageViewModel: VideoPageViewModel,
   lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
-  activity: Activity = LocalContext.current as Activity,
   orientation: Int = LocalConfiguration.current.orientation,
   onBackClick: () -> Unit = {},
 ) {
 
+  var playerSize by remember {
+    mutableStateOf(IntSize.Zero)
+  }
+  var iconResizeMode by remember {
+    mutableIntStateOf(R.drawable.icon_fullscreen_24)
+  }
+  var middleScreenVideoPlayerInfoClassMutableState by remember {
+    mutableStateOf<MiddleScreenVideoPlayerInfoClass>(MiddleScreenVideoPlayerInfoClass.Initial)
+  }
   val currentPosition by videoPageViewModel.currentMediaPosition.collectAsStateWithLifecycle(
     initialValue = 0
   )
+  var playerPadding by remember {
+    mutableStateOf(0.dp)
+  }
   var seekPosition by remember {
     mutableFloatStateOf(0f)
   }
   var onBackPress by remember {
     mutableStateOf(false)
   }
-  var sliderInInteraction by remember {
+  var showInfoMiddleScreen by remember {
     mutableStateOf(false)
   }
   val currentState = videoPageViewModel.currentState.collectAsStateWithLifecycle()
@@ -102,14 +116,20 @@ fun VideoPlayerPage(
     mutableStateOf(false)
   }
 
+  LaunchedEffect(key1 = showInfoMiddleScreen, key2 = seekPosition) {
+    this.ensureActive()
+    delay(1500L)
+    showInfoMiddleScreen = false
+  }
+
   LaunchedEffect(key1 = orientation, block = {
     when (orientation) {
       Configuration.ORIENTATION_LANDSCAPE -> {
-        videoPageViewModel.deviceOrientation.intValue = AspectRatioFrameLayout.RESIZE_MODE_FILL
+        videoPageViewModel.deviceOrientation = AspectRatioFrameLayout.RESIZE_MODE_FIT
       }
 
       else -> {
-        videoPageViewModel.deviceOrientation.intValue = AspectRatioFrameLayout.RESIZE_MODE_FIT
+        videoPageViewModel.deviceOrientation = AspectRatioFrameLayout.RESIZE_MODE_FIT
       }
     }
   })
@@ -154,28 +174,57 @@ fun VideoPlayerPage(
       onDispose {
         videoPageViewModel.stopPlayer()
         onBackClick.invoke()
-        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
       }
     })
 
   AndroidView(
     modifier = Modifier
       .fillMaxSize()
-      .clickable { playerControllerVisibility = !playerControllerVisibility }
-      .systemBarsPadding()
-      .displayCutoutPadding()
+      .pointerInput(null) {
+        detectTapGestures(
+          onTap = {
+            playerControllerVisibility = !playerControllerVisibility
+          },
+          onDoubleTap = { offset ->
+            when {
+              offset.x > playerSize.width / 2 -> {
+                videoPageViewModel.fastForward(15_000, currentPosition)
+                middleScreenVideoPlayerInfoClassMutableState =
+                  MiddleScreenVideoPlayerInfoClass.FastSeek("15", R.drawable.icon_fast_forward_24)
+                showInfoMiddleScreen = true
+              }
+
+              offset.x < playerSize.width / 2 -> {
+                videoPageViewModel.fastRewind(15_000, currentPosition)
+                middleScreenVideoPlayerInfoClassMutableState =
+                  MiddleScreenVideoPlayerInfoClass.FastSeek("15", R.drawable.icon_fast_rewind_24)
+                showInfoMiddleScreen = true
+              }
+            }
+          }
+        )
+      }
+      .onGloballyPositioned { playerSize = it.size }
+      .then(if (playerPadding != 0.dp) Modifier.displayCutoutPadding() else Modifier)
       .background(Color.Transparent),
     factory = {
       PlayerView(it).apply {
-        this.player = videoPageViewModel.exoPlayer
-        this.useController = false
+        player = videoPageViewModel.exoPlayer
+        useController = false
+        resizeMode = videoPageViewModel.deviceOrientation
       }
     },
     update = {
-      it.resizeMode = videoPageViewModel.deviceOrientation.intValue
+      it.resizeMode = videoPageViewModel.deviceOrientation
     }
   )
 
+  MiddleInfoHandler(
+    modifier = Modifier,
+    showInfoMiddleScreen = showInfoMiddleScreen,
+    seekPosition = seekPosition.toLong(),
+    middleScreenVideoPlayerInfoClass = middleScreenVideoPlayerInfoClassMutableState,
+  )
 
   AnimatedVisibility(
     modifier = Modifier.fillMaxSize(),
@@ -187,10 +236,10 @@ fun VideoPlayerPage(
     ConstraintLayout(
       modifier = Modifier
         .fillMaxSize()
-        .systemBarsPadding()
-        .displayCutoutPadding(),
+        .displayCutoutPadding()
+        .systemBarsPadding(),
     ) {
-      val (topSec, bottomSec, seekTo) = createRefs()
+      val (topSec, bottomSec) = createRefs()
 
       Row(
         modifier = Modifier
@@ -201,7 +250,7 @@ fun VideoPlayerPage(
           }
           .background(Color.Transparent)
           .fillMaxWidth()
-          .padding(horizontal = 10.dp)
+          .padding(start = 10.dp, end = 10.dp, top = 15.dp)
           .drawBehind {
             drawRoundRect(
               color = Color.Black,
@@ -238,25 +287,6 @@ fun VideoPlayerPage(
         )
       }
 
-      AnimatedVisibility(
-        visible = sliderInInteraction,
-        enter = fadeIn(),
-        exit = fadeOut()
-      ) {
-        Text(
-          text = seekPosition.toInt().convertMilliSecondToTime(),
-          color = Color.White,
-          modifier = Modifier
-            .constrainAs(seekTo) {
-              start.linkTo(parent.start)
-              end.linkTo(parent.end)
-              top.linkTo(parent.top)
-              bottom.linkTo(parent.bottom)
-            }
-            .background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(15.dp))
-            .padding(15.dp),
-        )
-      }
 
       Column(
         modifier = Modifier
@@ -299,21 +329,29 @@ fun VideoPlayerPage(
         }
         Slider(
           value = currentPosition.toFloat(),
-          onValueChange = {
-            sliderInInteraction = true
-            seekPosition = it
-          },
-          onValueChangeFinished = {
-            sliderInInteraction = false
+          modifier = Modifier
+            .fillMaxWidth(),
+          onValueChange = { value ->
+            showInfoMiddleScreen = true
+            seekPosition = value
+            middleScreenVideoPlayerInfoClassMutableState = MiddleScreenVideoPlayerInfoClass.Seek(seekPosition.toLong())
             videoPageViewModel.seekToPosition(seekPosition.toLong())
           },
           valueRange = 0f..(currentState.value.metaData.extras?.getInt("DURATION")?.toFloat()
             ?: 0f),
-          modifier = Modifier.padding(horizontal = 7.dp),
+          track = { sliderState ->
+            SliderDefaults.Track(
+              sliderState = sliderState,
+              modifier = Modifier.scale(scaleX = 1f, scaleY = 3f),
+              colors = SliderDefaults.colors(
+                activeTrackColor = Color.White,
+                inactiveTrackColor = Color.White.copy(0.5f),
+              ),
+            )
+          },
+          thumb = {},
           colors = SliderDefaults.colors(
             thumbColor = Color.White,
-            activeTrackColor = Color.White,
-            inactiveTrackColor = Color.White.copy(0.6f),
           ),
         )
 
@@ -369,24 +407,89 @@ fun VideoPlayerPage(
               videoPageViewModel.fastForward(position = 15_000L, currentPosition = currentPosition)
             },
           )
-          Spacer(modifier = Modifier.width(10.dp))
-          CenterButton(
-            icon = R.drawable.icon_screen_rotation_alt_24,
-            modifier = Modifier
-              .size(25.dp),
-            onClick = {
-              when (orientation) {
-                Configuration.ORIENTATION_LANDSCAPE -> {
-                  activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+          if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Spacer(modifier = Modifier.width(15.dp))
+            CenterButton(
+              icon = iconResizeMode,
+              modifier = Modifier
+                .size(25.dp),
+              onClick = {
+                if (videoPageViewModel.deviceOrientation == AspectRatioFrameLayout.RESIZE_MODE_FILL) {
+                  videoPageViewModel.deviceOrientation = AspectRatioFrameLayout.RESIZE_MODE_FIT
+                  playerPadding = 0.dp
+                  iconResizeMode = R.drawable.icon_fullscreen_24
+                } else {
+                  videoPageViewModel.deviceOrientation = AspectRatioFrameLayout.RESIZE_MODE_FILL
+                  playerPadding = 0.dp
+                  iconResizeMode = R.drawable.iocn_fullscreen_exit_24
                 }
-
-                Configuration.ORIENTATION_PORTRAIT -> {
-                  activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                }
-              }
-            },
-          )
+              },
+            )
+          }
         }
+      }
+    }
+
+  }
+
+}
+
+@Composable
+fun MiddleInfoHandler(
+  modifier: Modifier,
+  showInfoMiddleScreen: Boolean,
+  seekPosition: Long,
+  middleScreenVideoPlayerInfoClass: MiddleScreenVideoPlayerInfoClass,
+) {
+  AnimatedVisibility(
+    visible = showInfoMiddleScreen,
+    enter = fadeIn(),
+    exit = fadeOut(),
+    modifier = modifier
+  ) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+      var text = ""
+      var icon: Int? = 0
+      when (middleScreenVideoPlayerInfoClass) {
+        is MiddleScreenVideoPlayerInfoClass.FastSeek -> {
+          text = middleScreenVideoPlayerInfoClass.text
+          icon = middleScreenVideoPlayerInfoClass.icon
+        }
+
+        is MiddleScreenVideoPlayerInfoClass.Seek -> {
+          text = seekPosition.toInt().convertMilliSecondToTime()
+          icon = null
+        }
+
+        else -> {}
+      }
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+          .drawBehind {
+            drawRoundRect(
+              Color.Black,
+              size = this.size,
+              alpha = 0.5f,
+              cornerRadius = CornerRadius(x = 25f, y = 25f)
+            )
+          }
+          .padding(5.dp)
+      ) {
+        icon?.let {
+          Icon(
+            painter = painterResource(id = icon), contentDescription = "", Modifier.size(25.dp),
+            tint = Color.White
+          )
+          Spacer(modifier = Modifier.width(10.dp))
+        }
+        Text(
+          text = text,
+          fontSize = 18.sp,
+          fontWeight = FontWeight.SemiBold,
+          color = Color.White,
+        )
       }
     }
   }

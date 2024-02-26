@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.presentation.util
+package com.example.mediaplayerjetpackcompose.presentation.screen.component.util
 
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -10,7 +10,6 @@ object NoRippleEffect : MutableInteractionSource {
     get() = emptyFlow()
 
   override suspend fun emit(interaction: Interaction) {}
-
   override fun tryEmit(interaction: Interaction): Boolean = true
 
 }

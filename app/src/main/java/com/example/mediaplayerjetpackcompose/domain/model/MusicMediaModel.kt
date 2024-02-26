@@ -3,11 +3,9 @@ package com.example.mediaplayerjetpackcompose.domain.model
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import androidx.media3.common.MimeTypes
 
 @Stable
 data class MusicMediaModel(

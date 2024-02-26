@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen.component
+package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,10 +15,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MediumTopAppBar
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -29,14 +30,16 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.MediaCurrentState
+import com.example.mediaplayerjetpackcompose.data.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.domain.model.MusicMediaModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.MusicPageViewModel
-import com.example.mediaplayerjetpackcompose.presentation.screenComponent.MusicMediaItem
+import com.example.mediaplayerjetpackcompose.domain.model.TabBarPosition
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.MusicMediaItem
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.sortBar
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ArtistAlbumPage(
+fun CategoryPage(
   name: String,
   musicPageViewModel: MusicPageViewModel,
   currentMediaCurrentState: MediaCurrentState,
@@ -46,8 +49,8 @@ fun ArtistAlbumPage(
 
   musicPageViewModel.musicCategoryList = remember(musicPageViewModel.currentTabState) {
     when (musicPageViewModel.currentTabState) {
-      1 -> musicPageViewModel.artistsMusicMap[name]!!.toMutableStateList()
-      2 -> musicPageViewModel.albumMusicMap[name]!!.toMutableStateList()
+      TabBarPosition.ARTIST -> musicPageViewModel.artistsMusicMap[name]!!.toMutableStateList()
+      TabBarPosition.ALBUM -> musicPageViewModel.albumMusicMap[name]!!.toMutableStateList()
       else -> emptyList<MusicMediaModel>().toMutableStateList()
     }
   }
@@ -71,14 +74,17 @@ fun ArtistAlbumPage(
               .size(35.dp)
               .clickable { onBackClick.invoke() },
           )
-        }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+          containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
       )
     }
   ) {
     Column(modifier = Modifier.padding(it)) {
       LazyRow(
         modifier = Modifier
-          .padding(horizontal = 15.dp)
+          .padding(vertical = 15.dp)
           .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,

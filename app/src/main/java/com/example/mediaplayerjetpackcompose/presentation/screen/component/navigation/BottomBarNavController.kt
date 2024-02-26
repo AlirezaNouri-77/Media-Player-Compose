@@ -1,46 +1,42 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen.component
+package com.example.mediaplayerjetpackcompose.presentation.screen.component.navigation
 
 import android.app.Activity
 import android.os.Build
-import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.displayCutoutPadding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.mediaplayerjetpackcompose.domain.model.navigation.BottomBarNavigationModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.MusicPageViewModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.musicscreen.MusicScreen
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicScreen
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPlayerPage
+import com.example.mediaplayerjetpackcompose.presentation.screen.video.component.VideoPlayer
 
 @Composable
-fun BottomBarNavigationNavController(
+fun BottomBarNavController(
   navHostController: NavHostController,
   musicPageViewModel: MusicPageViewModel,
   videoPageViewModel: VideoPageViewModel,
 ) {
 
   val window = (LocalContext.current as Activity).window
+  navHostController.currentBackStackEntryFlow.collectAsStateWithLifecycle(initialValue = "Home").value
   val currentRoute = navHostController.currentDestination?.route
 
-  if (currentRoute == BottomBarNavigationModel.PlayerScreen.route) {
+  if (currentRoute == BottomBarNavigationModel.VideoPlayerScreen.route) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       window.insetsController?.apply {
         hide(WindowInsets.Type.statusBars())
@@ -66,56 +62,16 @@ fun BottomBarNavigationNavController(
     composable(
       BottomBarNavigationModel.VideoScreen.route,
       enterTransition = {
-        when (initialState.destination.route) {
-          BottomBarNavigationModel.MusicScreen.route -> {
-            slideIntoContainer(
-              towards = AnimatedContentTransitionScope.SlideDirection.Right, tween(500)
-            )
-          }
-
-          else -> {
-            fadeIn(tween(200))
-          }
-        }
+        fadeIn(tween(200,20))
       },
       exitTransition = {
-        when (initialState.destination.route) {
-          BottomBarNavigationModel.MusicScreen.route -> {
-            slideOutOfContainer(
-              towards = AnimatedContentTransitionScope.SlideDirection.Right, tween(500)
-            )
-          }
-
-          else -> {
-            fadeOut(tween(200))
-          }
-        }
+        fadeOut(tween(200,20))
       },
       popEnterTransition = {
-        when (initialState.destination.route) {
-          BottomBarNavigationModel.MusicScreen.route -> {
-            slideIntoContainer(
-              towards = AnimatedContentTransitionScope.SlideDirection.Right, tween(500)
-            )
-          }
-
-          else -> {
-            fadeIn(tween(200))
-          }
-        }
+        fadeIn(tween(200,20))
       },
       popExitTransition = {
-        when (initialState.destination.route) {
-          BottomBarNavigationModel.MusicScreen.route -> {
-            slideOutOfContainer(
-              towards = AnimatedContentTransitionScope.SlideDirection.Right, tween(500)
-            )
-          }
-
-          else -> {
-            fadeOut(tween(200))
-          }
-        }
+        fadeOut(tween(200,20))
       },
     ) {
       VideoPage(
@@ -123,8 +79,9 @@ fun BottomBarNavigationNavController(
         videoPageViewModel = videoPageViewModel,
       )
     }
+
     composable(
-      BottomBarNavigationModel.PlayerScreen.route,
+      BottomBarNavigationModel.VideoPlayerScreen.route,
       enterTransition = {
         fadeIn(tween(200))
       },
@@ -147,7 +104,7 @@ fun BottomBarNavigationNavController(
       Surface(
         color = Color.Black
       ) {
-        VideoPlayerPage(
+        VideoPlayer(
           videoUri = it.arguments?.getString("videoUri").toString(),
           videoPageViewModel = videoPageViewModel,
           onBackClick = {
@@ -158,23 +115,20 @@ fun BottomBarNavigationNavController(
         )
       }
     }
+
     composable(
       BottomBarNavigationModel.MusicScreen.route,
       enterTransition = {
-        slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left, tween(500))
+        fadeIn(tween(200,20))
       },
       exitTransition = {
-        slideOutOfContainer(
-          towards = AnimatedContentTransitionScope.SlideDirection.Right, tween(500)
-        )
+        fadeOut(tween(200,20))
       },
       popEnterTransition = {
-        slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left, tween(500))
+        fadeIn(tween(200,20))
       },
       popExitTransition = {
-        slideOutOfContainer(
-          towards = AnimatedContentTransitionScope.SlideDirection.Right, tween(500)
-        )
+        fadeOut(tween(200,20))
       },
     ) {
       MusicScreen(

@@ -1,7 +1,8 @@
-package com.example.mediaplayerjetpackcompose
+package com.example.mediaplayerjetpackcompose.data.application
 
 import android.app.Application
 import com.example.mediaplayerjetpackcompose.data.GetMediaArt
+import com.example.mediaplayerjetpackcompose.data.MusicServiceConnection
 import com.example.mediaplayerjetpackcompose.data.repository.MusicMediaStoreRepository
 import com.example.mediaplayerjetpackcompose.data.repository.VideoMediaStoreRepository
 
@@ -10,7 +11,7 @@ class ApplicationClass : Application() {
   lateinit var videoMediaStoreRepository: VideoMediaStoreRepository
   lateinit var musicMediaStoreRepository: MusicMediaStoreRepository
   lateinit var getMediaArt: GetMediaArt
-  lateinit var playBackHandler: PlayBackHandler
+  lateinit var musicServiceConnection: MusicServiceConnection
 
   override fun onCreate() {
     super.onCreate()
@@ -18,7 +19,7 @@ class ApplicationClass : Application() {
     videoMediaStoreRepository = VideoMediaStoreRepository(contentResolver = this.contentResolver)
     musicMediaStoreRepository =
       MusicMediaStoreRepository(contentResolver = this.contentResolver, getMediaArt = getMediaArt)
-    playBackHandler = PlayBackHandler(this)
+    musicServiceConnection = MusicServiceConnection(this)
   }
 
 }

@@ -52,6 +52,7 @@ dependencies {
   val navVersion = "2.7.7"
   val lifecycleVersion = "2.7.0"
   val constraintLayout = "1.0.1"
+  val room_version = "2.6.1"
   
   implementation("androidx.core:core-ktx:1.12.0")
   implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
@@ -81,5 +82,7 @@ dependencies {
   
   implementation("androidx.constraintlayout:constraintlayout-compose:$constraintLayout")
 
+  implementation ("androidx.room:room-runtime:$room_version")
+  annotationProcessor ("androidx.room:room-compiler:$room_version")
 
 }

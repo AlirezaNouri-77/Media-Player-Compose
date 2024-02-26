@@ -27,7 +27,7 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
- // primary = PrimaryLight,
+  // primary = PrimaryLight,
   primaryContainer = PrimaryContainerLight,
   primary = primaryLight,
   onPrimary = onPrimaryLight,
@@ -58,6 +58,7 @@ fun MediaPlayerJetpackComposeTheme(
       val context = LocalContext.current
       if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
     }
+
     darkTheme -> DarkColorScheme
     else -> LightColorScheme
   }

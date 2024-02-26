@@ -2,25 +2,16 @@ package com.example.mediaplayerjetpackcompose.data.repository
 
 import android.content.ContentResolver
 import android.content.ContentUris
-import android.content.Context
-import android.graphics.Bitmap
-import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Size
-import androidx.core.graphics.drawable.toBitmap
-import com.example.mediaplayerjetpackcompose.Constant
-import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreResult
 import com.example.mediaplayerjetpackcompose.domain.model.VideoMediaModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 class VideoMediaStoreRepository(
@@ -102,7 +93,7 @@ class VideoMediaStoreRepository(
     val sortOrder = "${MediaStore.Video.Media.DISPLAY_NAME} ASC"
     val selection = "${MediaStore.Video.Media.DURATION} >= ?"
     val selectionArgs = arrayOf(
-      TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES).toString()
+      TimeUnit.MILLISECONDS.convert(10, TimeUnit.SECONDS).toString()
     )
 
   }

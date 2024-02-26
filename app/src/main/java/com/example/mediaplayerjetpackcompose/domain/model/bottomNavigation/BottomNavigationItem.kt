@@ -15,6 +15,7 @@ sealed class BottomNavigationItem(
     iconOutline = R.drawable.icon_video_outline,
     route = BottomBarNavigationModel.VideoScreen,
   )
+
   data object Music : BottomNavigationItem(
     title = "Music",
     iconFilled = R.drawable.icon_music_filled,
