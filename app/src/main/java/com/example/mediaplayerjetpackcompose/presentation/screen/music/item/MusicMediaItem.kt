@@ -15,6 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,13 +32,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.data.convertMilliSecondToTime
-import com.example.mediaplayerjetpackcompose.data.removeFileExtension
+import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
+import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.MusicMediaModel
 
 @Composable
 fun MusicMediaItem(
   item: MusicMediaModel,
+  isFav: Boolean,
+  showFavBottom:Boolean = true,
   artworkImage: ImageBitmap,
   currentMediaId: String,
   contentColor: Color = MaterialTheme.colorScheme.onPrimary,
@@ -92,15 +97,25 @@ fun MusicMediaItem(
           maxLines = 1,
         )
       }
-      Column(Modifier.weight(0.4f)) {
+      Column(
+        Modifier.weight(0.2f),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+      ) {
         Text(
           text = item.duration.convertMilliSecondToTime(),
-          modifier = Modifier.fillMaxWidth(),
           color = contentColor,
-          textAlign = TextAlign.End,
+          textAlign = TextAlign.Center,
         )
+        if (isFav) {
+          Icon(
+            imageVector = Icons.Default.Favorite,
+            contentDescription = "",
+            modifier = Modifier.size(20.dp),
+            tint = MaterialTheme.colorScheme.onPrimary
+          )
+        }
       }
-
     }
   }
 }

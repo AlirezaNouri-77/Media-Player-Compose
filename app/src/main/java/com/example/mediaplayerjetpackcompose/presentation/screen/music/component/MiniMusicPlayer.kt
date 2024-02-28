@@ -7,7 +7,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,10 +37,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.data.MediaCurrentState
+import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.data.convertMilliSecondToTime
-import com.example.mediaplayerjetpackcompose.data.removeFileExtension
+import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
+import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)

@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabPosition
 import androidx.compose.material3.TabRow
@@ -63,7 +65,6 @@ fun TopBarMusic(
   currentTabPosition: TabBarPosition,
   onSortIconClick: () -> Unit,
   onSearchIconClick: () -> Unit,
-  onTabBarClick: (Int) -> Unit,
 ) {
 
   val textFieldValue = remember {
@@ -103,8 +104,7 @@ fun TopBarMusic(
     ) {
       TabBarSection(
         currentTabState = musicPageViewModel.currentTabState,
-        onTabClick = { tabBar, int ->
-          onTabBarClick.invoke(int)
+        onTabClick = { tabBar, _ ->
           musicPageViewModel.currentTabState = tabBar
         }
       )
@@ -138,7 +138,7 @@ fun TopBarSection(
       fontWeight = FontWeight.Bold,
       fontSize = 36.sp,
     )
-    AnimatedVisibility(visible = currentTabPosition == TabBarPosition.MUSIC) {
+    AnimatedVisibility(visible = currentTabPosition == TabBarPosition.MUSIC, enter = fadeIn(), exit = fadeOut()) {
       Row {
         if (isSearchSectionShow) {
           Icon(
@@ -231,7 +231,7 @@ private fun SortSection(
   ) {
     LazyRow(
       modifier = Modifier
-        .padding(vertical = 15.dp)
+        .padding(vertical = 10.dp)
         .fillMaxWidth(),
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.Center,
@@ -272,11 +272,11 @@ fun TabBarSection(
       Modifier.myCustomTabIndicator(tabPosition[TabBarPosition.entries.indexOf(currentTabState)])
     )
   }
-  TabRow(
+  ScrollableTabRow(
     selectedTabIndex = TabBarPosition.entries.indexOf(TabBarPosition.MUSIC),
     modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 15.dp),
+      .fillMaxWidth(),
+    edgePadding = 10.dp,
     indicator = indicator,
     contentColor = MaterialTheme.colorScheme.onPrimary,
     containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -287,8 +287,8 @@ fun TabBarSection(
         text = {
           Text(
             text = it.enuName,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.SemiBold,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
           )
         },
         selected = currentTabState == it,

@@ -30,7 +30,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.data.MediaCurrentState
+import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.domain.model.MusicMediaModel
 import com.example.mediaplayerjetpackcompose.domain.model.TabBarPosition
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.MusicMediaItem
@@ -49,8 +49,8 @@ fun CategoryPage(
 
   musicPageViewModel.musicCategoryList = remember(musicPageViewModel.currentTabState) {
     when (musicPageViewModel.currentTabState) {
-      TabBarPosition.ARTIST -> musicPageViewModel.artistsMusicMap[name]!!.toMutableStateList()
-      TabBarPosition.ALBUM -> musicPageViewModel.albumMusicMap[name]!!.toMutableStateList()
+      TabBarPosition.ARTIST -> musicPageViewModel.artistsMusicMap.first { it.name == name }.list.toMutableStateList()
+      TabBarPosition.ALBUM -> musicPageViewModel.albumMusicMap.first { it.name == name }.list.toMutableStateList()
       else -> emptyList<MusicMediaModel>().toMutableStateList()
     }
   }
@@ -118,6 +118,7 @@ fun CategoryPage(
         ) { index, item ->
           MusicMediaItem(
             item = item,
+            isFav = false,
             currentMediaId = currentMediaCurrentState.mediaId,
             artworkImage = item.artBitmap.asImageBitmap(),
             onItemClick = {

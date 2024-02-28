@@ -1,7 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.video.component
 
 import android.content.res.Configuration
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.annotation.OptIn
 import androidx.compose.animation.AnimatedContent
@@ -66,15 +65,14 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.data.convertMilliSecondToTime
-import com.example.mediaplayerjetpackcompose.data.decodeStringNavigation
-import com.example.mediaplayerjetpackcompose.data.removeFileExtension
+import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
+import com.example.mediaplayerjetpackcompose.data.util.decodeStringNavigation
+import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.MiddleScreenVideoPlayerInfoClass
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.isActive
 
 @kotlin.OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @OptIn(UnstableApi::class)

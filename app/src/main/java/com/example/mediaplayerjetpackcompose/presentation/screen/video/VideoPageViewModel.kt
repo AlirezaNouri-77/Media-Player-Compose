@@ -1,6 +1,5 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.video
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.annotation.OptIn
@@ -23,8 +22,8 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import com.example.mediaplayerjetpackcompose.data.application.ApplicationClass
-import com.example.mediaplayerjetpackcompose.data.MediaCurrentState
-import com.example.mediaplayerjetpackcompose.data.GetMediaArt
+import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
+import com.example.mediaplayerjetpackcompose.data.util.GetMediaArt
 import com.example.mediaplayerjetpackcompose.data.repository.VideoMediaStoreRepository
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreResult
 import com.example.mediaplayerjetpackcompose.domain.model.VideoMediaModel

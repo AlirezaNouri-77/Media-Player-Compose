@@ -20,8 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.mediaplayerjetpackcompose.data.Constant.permissionsList
-import com.example.mediaplayerjetpackcompose.data.encodeStringNavigation
+import com.example.mediaplayerjetpackcompose.data.util.Constant.permissionsList
+import com.example.mediaplayerjetpackcompose.data.util.encodeStringNavigation
 import com.example.mediaplayerjetpackcompose.presentation.screen.MainScreen
 import com.example.mediaplayerjetpackcompose.presentation.screen.NoPermissionPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel

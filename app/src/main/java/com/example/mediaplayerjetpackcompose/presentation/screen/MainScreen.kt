@@ -97,6 +97,7 @@ fun MainScreen(
 
     FullMusicPlayer(
       currentMediaCurrentState = currentMusicState,
+      favoriteList = musicPageViewModel.favoriteListMediaId,
       artworkImage = artworkImage,
       repeatMode = repeatMode,
       currentMusicPosition = currentMusicPosition,
@@ -107,6 +108,7 @@ fun MainScreen(
       onSeekTo = { seekTo -> musicPageViewModel.seekToPosition(seekTo) },
       onRepeatMode = { repeat -> musicPageViewModel.setRepeatMode(repeat) },
       onDismissed = { musicPageViewModel.showBottomSheet.value = false },
+      onFavoriteToggle = { musicPageViewModel.handleFavoriteSongs(currentMusicState.mediaId) }
     )
 
   }

@@ -36,15 +36,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.example.mediaplayerjetpackcompose.data.convertByteToReadableSize
-import com.example.mediaplayerjetpackcompose.data.convertMilliSecondToTime
-import com.example.mediaplayerjetpackcompose.data.extractFileExtension
-import com.example.mediaplayerjetpackcompose.data.removeFileExtension
+import com.example.mediaplayerjetpackcompose.data.util.convertByteToReadableSize
+import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
+import com.example.mediaplayerjetpackcompose.data.util.extractFileExtension
+import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.VideoMediaModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.videoThumbNailsModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.withContext
 
 @Composable

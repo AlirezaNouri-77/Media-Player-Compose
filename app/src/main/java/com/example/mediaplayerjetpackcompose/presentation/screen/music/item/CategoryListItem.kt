@@ -27,12 +27,12 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun CategoryListItem(
-  albumName: String,
+  categoryName: String,
   artWork: Bitmap?,
   musicListSize: Int,
   onClick: (String) -> Unit,
 ) {
-  Surface(onClick = { onClick.invoke(albumName) }, color = Color.Transparent) {
+  Surface(onClick = { onClick.invoke(categoryName) }, color = Color.Transparent) {
     Row(
       modifier = Modifier
         .fillMaxWidth()
@@ -54,7 +54,7 @@ fun CategoryListItem(
       }
       Spacer(modifier = Modifier.width(10.dp))
       Column {
-        Text(text = albumName, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, maxLines = 2,)
+        Text(text = categoryName, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, maxLines = 2,)
         Text(text = "$musicListSize Music", fontSize = 15.sp, fontWeight = FontWeight.Medium)
       }
     }

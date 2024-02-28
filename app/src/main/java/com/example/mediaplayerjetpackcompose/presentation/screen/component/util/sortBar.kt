@@ -19,13 +19,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
+import com.example.mediaplayerjetpackcompose.domain.model.SortBarModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.SortItem
 
 @OptIn(ExperimentalFoundationApi::class)
 fun LazyListScope.sortBar(
   musicPageViewModel: MusicPageViewModel,
-  onSortClick: (sort: SortItem) -> Unit,
+  onSortClick: (sort: SortBarModel) -> Unit,
   onDecClick: () -> Unit,
 ) {
 
@@ -46,14 +46,14 @@ fun LazyListScope.sortBar(
     )
     Spacer(modifier = Modifier.width(10.dp))
   }
-  itemsIndexed(items = SortItem.entries.filter { it != SortItem.NAME }) { _, sort ->
+  itemsIndexed(items = SortBarModel.entries.filter { it != SortBarModel.NAME }) { _, sort ->
     Text(
       text = sort.sortName,
       fontSize = 16.sp,
       fontWeight = FontWeight.Medium,
       modifier = Modifier
         .clickable {
-          onSortClick.invoke(if (musicPageViewModel.currentListSort.value == sort) SortItem.NAME else sort)
+          onSortClick.invoke(if (musicPageViewModel.currentListSort.value == sort) SortBarModel.NAME else sort)
         }
         .background(
           color = if (musicPageViewModel.currentListSort.value == sort) Color(0xFF2A2D2C) else Color.Transparent,

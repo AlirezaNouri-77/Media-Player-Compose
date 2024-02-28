@@ -43,7 +43,7 @@ fun MyTabIndicator(modifier: Modifier = Modifier) {
     modifier
       .fillMaxSize()
       .background(
-        color = Color(0xFF37393a).copy(alpha = 0.5f),
+        color = Color(0xFF37393a).copy(alpha = 0.3f),
         RoundedCornerShape(15.dp),
       ),
     horizontalAlignment = Alignment.CenterHorizontally,

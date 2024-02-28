@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -35,6 +37,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -55,20 +58,21 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.data.Constant
-import com.example.mediaplayerjetpackcompose.data.MediaCurrentState
+import com.example.mediaplayerjetpackcompose.data.util.Constant
+import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.data.convertByteToReadableSize
-import com.example.mediaplayerjetpackcompose.data.convertMilliSecondToTime
-import com.example.mediaplayerjetpackcompose.data.convertToKbit
-import com.example.mediaplayerjetpackcompose.data.extractFileExtension
-import com.example.mediaplayerjetpackcompose.data.removeFileExtension
+import com.example.mediaplayerjetpackcompose.data.util.convertByteToReadableSize
+import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
+import com.example.mediaplayerjetpackcompose.data.util.convertToKbit
+import com.example.mediaplayerjetpackcompose.data.util.extractFileExtension
+import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun FullMusicPlayer(
   currentMediaCurrentState: MediaCurrentState,
+  favoriteList: SnapshotStateList<String>,
   currentMusicPosition: State<Long>,
   repeatMode: Int,
   artworkImage: Bitmap,
@@ -79,6 +83,7 @@ fun FullMusicPlayer(
   onMovePreviousMusic: () -> Unit,
   onRepeatMode: (Int) -> Unit,
   onSeekTo: (Long) -> Unit,
+  onFavoriteToggle: () -> Unit,
 ) {
 
   val imageSize = remember {
@@ -95,6 +100,11 @@ fun FullMusicPlayer(
     1 -> R.drawable.icon_repeat_one_24
     2 -> R.drawable.icon_repeat_all_24
     else -> -1
+  }
+
+  var favIcon = when (currentMediaCurrentState.mediaId in favoriteList) {
+    true -> Icons.Default.Favorite
+    false -> Icons.Default.FavoriteBorder
   }
 
   Surface(
@@ -242,11 +252,22 @@ fun FullMusicPlayer(
           color = Color.White,
         )
       }
-      Box(
+      Row(
         modifier = Modifier
           .fillMaxWidth()
-          .padding(horizontal = 20.dp), contentAlignment = Alignment.CenterEnd
+          .padding(horizontal = 24.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
       ) {
+        Icon(
+          imageVector = favIcon,
+          contentDescription = "",
+          modifier = Modifier
+            .size(25.dp)
+            .clickable {
+              onFavoriteToggle.invoke()
+            },
+          tint = Color.White,
+        )
         ControlBottom(icon = repeatModeIcon, backgroundColor = Color.Transparent, size = 28.dp) {
           var mRepeatMode = repeatMode
           if (mRepeatMode++ >= Constant.RepeatModes.size.minus(1)) {
@@ -319,7 +340,7 @@ fun FullMusicPlayer(
           ) {
             onMovePreviousMusic.invoke()
           }
-          Spacer(modifier = Modifier.width(25.dp))
+          Spacer(modifier = Modifier.width(35.dp))
           ControlBottom(
             icon = if (currentMediaCurrentState.isPlaying && !currentMediaCurrentState.isBuffering) R.drawable.icon_pause_24 else R.drawable.icon_play_arrow_24,
             radius = 1.5f,
@@ -330,7 +351,7 @@ fun FullMusicPlayer(
               false -> onResumeMusic.invoke()
             }
           }
-          Spacer(modifier = Modifier.width(25.dp))
+          Spacer(modifier = Modifier.width(35.dp))
           ControlBottom(icon = R.drawable.icon_skip_next_24, radius = 1.2f, size = 30.dp) {
             onMoveNextMusic.invoke()
           }

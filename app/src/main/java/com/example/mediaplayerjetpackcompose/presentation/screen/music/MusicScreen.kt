@@ -9,23 +9,22 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -42,32 +41,23 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.mediaplayerjetpackcompose.data.Constant
-import com.example.mediaplayerjetpackcompose.data.MediaCurrentState
+import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.domain.model.TabBarPosition
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.CategoryPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.MiniMusicPlayer
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.MusicMediaItem
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.topbar.TopBarMusic
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.CategoryListItem
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MusicScreen(
   musicPageViewModel: MusicPageViewModel,
-  scope: CoroutineScope = rememberCoroutineScope(),
   density: Density = LocalDensity.current
 ) {
 
   var showSortBar by remember { mutableStateOf(false) }
   var showSearch by remember { mutableStateOf(false) }
-  val pagerState = rememberPagerState(
-    initialPage = 0,
-    pageCount = { Constant.tabBarListItem.size },
-  )
 
   val navController: NavHostController = rememberNavController()
   val currentMusicState = musicPageViewModel.currentMusicState.collectAsStateWithLifecycle().value
@@ -91,8 +81,6 @@ fun MusicScreen(
     modifier = Modifier
       .fillMaxSize(),
   ) {
-
-
     val (musicList, collapsePlayer, loading) = createRefs()
 
     Box(
@@ -118,19 +106,15 @@ fun MusicScreen(
                 currentTabPosition = musicPageViewModel.currentTabState,
                 onSortIconClick = { showSortBar = !showSortBar },
                 onSearchIconClick = { showSearch = !showSearch },
-              ) {
-                scope.launch {
-                  pagerState.animateScrollToPage(it)
-                }
-              }
+              )
             },
           ) { paddingValue ->
 
             MusicList(
               musicPageViewModel = musicPageViewModel,
               currentMusicState = currentMusicState,
-              navController = navController ,
-              paddingValue = paddingValue ,
+              navController = navController,
+              paddingValue = paddingValue,
               bottomPadding = bottomPadding.value,
             )
 
@@ -197,10 +181,10 @@ fun MusicScreen(
 
 @Composable
 fun MusicList(
-  musicPageViewModel:MusicPageViewModel,
+  musicPageViewModel: MusicPageViewModel,
   currentMusicState: MediaCurrentState,
   navController: NavController,
-  paddingValue:PaddingValues,
+  paddingValue: PaddingValues,
   bottomPadding: Dp,
 ) {
   AnimatedContent(
@@ -222,9 +206,9 @@ fun MusicList(
             items = musicPageViewModel.musicList,
             key = { _, item -> item.musicId },
           ) { index, item ->
-
             MusicMediaItem(
               item = item,
+              isFav = item.musicId.toString() in musicPageViewModel.favoriteListMediaId.toList(),
               currentMediaId = currentMusicState.mediaId,
               artworkImage = item.artBitmap.asImageBitmap(),
               onItemClick = {
@@ -234,38 +218,57 @@ fun MusicList(
                 )
               },
             )
+          }
+        }
 
+        TabBarPosition.FAVORITE -> {
+
+          musicPageViewModel.favoriteMusicList =
+            musicPageViewModel.musicList.filter { it.musicId.toString() in musicPageViewModel.favoriteListMediaId }
+
+              .toMutableStateList()
+          itemsIndexed(
+            items = musicPageViewModel.favoriteMusicList,
+            key = { _, item -> item.musicId },
+          ) { index, item ->
+            MusicMediaItem(
+              item = item,
+              isFav = item.musicId.toString() in musicPageViewModel.favoriteListMediaId.toList(),
+              currentMediaId = currentMusicState.mediaId,
+              artworkImage = item.artBitmap.asImageBitmap(),
+              onItemClick = {
+                musicPageViewModel.playMusic(
+                  index = index,
+                  musicPageViewModel.favoriteMusicList
+                )
+              },
+            )
           }
         }
 
         TabBarPosition.ARTIST -> {
-          musicPageViewModel.artistsMusicMap.forEach { (key, list) ->
-            item {
-              CategoryListItem(
-                albumName = key,
-                artWork = null,
-                musicListSize = list.size,
-                onClick = { string ->
-                  navController.navigate("Category/{$string}")
-                },
-              )
-            }
+          items(musicPageViewModel.artistsMusicMap) { item ->
+            CategoryListItem(
+              categoryName = item.name,
+              artWork = null,
+              musicListSize = item.list.size,
+              onClick = { string ->
+                navController.navigate("Category/$string")
+              },
+            )
           }
-
         }
 
         TabBarPosition.ALBUM -> {
-          musicPageViewModel.albumMusicMap.forEach { (key, list) ->
-            item {
-              CategoryListItem(
-                albumName = key,
-                artWork = list.first().artBitmap,
-                musicListSize = list.size,
-                onClick = { string ->
-                  navController.navigate("Category/{$string}")
-                },
-              )
-            }
+          items(musicPageViewModel.albumMusicMap) { item ->
+            CategoryListItem(
+              categoryName = item.name,
+              artWork = item.list.first().artBitmap,
+              musicListSize = item.list.size,
+              onClick = { string ->
+                navController.navigate("Category/$string")
+              },
+            )
           }
         }
 

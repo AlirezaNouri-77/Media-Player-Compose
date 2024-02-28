@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.data
+package com.example.mediaplayerjetpackcompose.data.service
 
 import android.content.ComponentName
 import android.content.Context
@@ -11,7 +11,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
-import com.example.mediaplayerjetpackcompose.data.service.MusicPlayerService
+import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.domain.model.MusicMediaModel
 import com.example.mediaplayerjetpackcompose.domain.model.toMediaItem
 import com.google.common.util.concurrent.ListenableFuture

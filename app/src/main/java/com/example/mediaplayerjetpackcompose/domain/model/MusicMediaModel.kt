@@ -18,7 +18,7 @@ data class MusicMediaModel(
   val size: Int = 0,
   val artworkUri: Uri,
   val bitrate: Int,
-  val artist: String,
+  var artist: String,
   val album: String,
   var artBitmap: Bitmap,
 )
