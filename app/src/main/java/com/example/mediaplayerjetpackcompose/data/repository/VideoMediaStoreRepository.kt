@@ -7,7 +7,7 @@ import android.os.Build
 import android.provider.MediaStore
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreResult
-import com.example.mediaplayerjetpackcompose.domain.model.VideoMediaModel
+import com.example.mediaplayerjetpackcompose.domain.model.VideoModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -16,9 +16,9 @@ import java.util.concurrent.TimeUnit
 
 class VideoMediaStoreRepository(
   private var contentResolver: ContentResolver,
-)  {
-   suspend fun getMedia(): Flow<MediaStoreResult<out VideoMediaModel>> {
-    val mListResult = mutableListOf<VideoMediaModel>()
+): MediaStoreRepositoryImpl<VideoModel>  {
+   override suspend fun getMedia(): Flow<MediaStoreResult<out VideoModel>> {
+    val mListResult = mutableListOf<VideoModel>()
     return flow {
 
       emit(MediaStoreResult.Loading)
@@ -53,7 +53,7 @@ class VideoMediaStoreRepository(
           )
 
           mListResult.add(
-            VideoMediaModel(
+            VideoModel(
               videoId = id,
               uri = contentUri,
               mimeType = mimeType,

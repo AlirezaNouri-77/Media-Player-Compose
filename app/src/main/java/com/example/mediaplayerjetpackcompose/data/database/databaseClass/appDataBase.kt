@@ -16,13 +16,13 @@ abstract class AppDataBase : RoomDatabase() {
     @Volatile
     var INSTANCE: AppDataBase? = null
 
-    fun getInstance(context: Context): AppDataBase {
+    private fun getInstance(context: Context): AppDataBase {
       return INSTANCE ?: synchronized(context) {
         INSTANCE ?: getAppDataBase(context)
       }
     }
 
-    private fun getAppDataBase(context: Context): AppDataBase = Room.databaseBuilder(
+    fun getAppDataBase(context: Context): AppDataBase = Room.databaseBuilder(
       context = context,
       AppDataBase::class.java, "DataBase_MediaPlayer",
     ).build()

@@ -8,12 +8,12 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.util.Size
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
 import com.example.mediaplayerjetpackcompose.R
 
 class GetMediaArt(
   private var context: Context,
-  private var contentResolver: ContentResolver,
 ) {
 
   private val mediaMetadataRetriever = MediaMetadataRetriever()
@@ -21,7 +21,7 @@ class GetMediaArt(
   fun getMusicArt(uri: Uri, width: Int, height: Int): Bitmap {
     return runCatching {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        contentResolver.loadThumbnail(
+        context.contentResolver.loadThumbnail(
           uri,
           Size(width, height),
           null
@@ -36,7 +36,12 @@ class GetMediaArt(
         Bitmap.createScaledBitmap(bitmap, width, height, true)
       }
     }.getOrElse {
-      Bitmap.createScaledBitmap(context.getDrawable(R.drawable.icon_music_350)!!.toBitmap(), width, height, true)
+      Bitmap.createScaledBitmap(
+        AppCompatResources.getDrawable(context, R.drawable.icon_music_350)!!.toBitmap(),
+        width,
+        height,
+        true
+      )
     }
   }
 
@@ -44,7 +49,7 @@ class GetMediaArt(
     return onIoDispatcher {
       runCatching {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-          contentResolver.loadThumbnail(
+          context.contentResolver.loadThumbnail(
             uri,
             Size(Constant.VIDEO_WIDTH, Constant.VIDEO_HEIGHT),
             null

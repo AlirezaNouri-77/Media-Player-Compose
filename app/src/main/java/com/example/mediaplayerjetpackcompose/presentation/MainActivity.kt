@@ -24,13 +24,14 @@ import com.example.mediaplayerjetpackcompose.data.util.Constant.permissionsList
 import com.example.mediaplayerjetpackcompose.data.util.encodeStringNavigation
 import com.example.mediaplayerjetpackcompose.presentation.screen.MainScreen
 import com.example.mediaplayerjetpackcompose.presentation.screen.NoPermissionPage
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.component.VideoPlayer
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
-
     enableEdgeToEdge(
       statusBarStyle = SystemBarStyle.light(Color.Transparent.toArgb(), Color.Transparent.toArgb()),
       navigationBarStyle = SystemBarStyle.light(Color.Transparent.toArgb(), Color.Transparent.toArgb())
@@ -65,10 +66,10 @@ class MainActivity : ComponentActivity() {
             intent?.let { mIntent ->
               if (mIntent.action == Intent.ACTION_VIEW) {
                 val videoUri = mIntent.data.toString().encodeStringNavigation()
-                val musicPageViewModel = viewModel<VideoPageViewModel>(factory = VideoPageViewModel.Factory)
+                val videoPageViewModel:VideoPageViewModel by viewModel()
                 VideoPlayer(
                   videoUri = videoUri,
-                  videoPageViewModel = musicPageViewModel,
+                  videoPageViewModel = videoPageViewModel,
                   onBackClick = { this.finishAffinity() })
               } else {
                 MainScreen()
@@ -126,17 +127,6 @@ fun checkPermission(context: Context): Boolean {
     )
   }
 }
-
-//fun hideStatusBar(context: Context) {
-//  val window = (context as Activity).window
-//  WindowCompat.setDecorFitsSystemWindows(window, false)
-//  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//    window.insetsController?.apply {
-//      hide(WindowInsets.Type.statusBars())
-//      this.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-//    }
-//  }
-//}
 
 fun myPermissionChecker(context: Context, permission: String): Boolean {
   return checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED

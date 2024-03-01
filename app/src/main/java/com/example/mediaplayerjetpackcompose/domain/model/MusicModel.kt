@@ -8,7 +8,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 
 @Stable
-data class MusicMediaModel(
+data class MusicModel(
   val musicId: Long,
   val uri: Uri,
   val path: String,
@@ -23,7 +23,7 @@ data class MusicMediaModel(
   var artBitmap: Bitmap,
 )
 
-fun MusicMediaModel.toMediaItem() =
+fun MusicModel.toMediaItem() =
   MediaItem.Builder().setMediaId(this.musicId.toString()).setUri(this.uri)
     .setMediaMetadata(
       MediaMetadata.Builder()

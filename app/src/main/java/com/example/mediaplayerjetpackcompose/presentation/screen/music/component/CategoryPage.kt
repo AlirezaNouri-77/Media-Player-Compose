@@ -31,7 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
-import com.example.mediaplayerjetpackcompose.domain.model.MusicMediaModel
+import com.example.mediaplayerjetpackcompose.domain.model.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.TabBarPosition
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.MusicMediaItem
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.sortBar
@@ -43,7 +43,7 @@ fun CategoryPage(
   name: String,
   musicPageViewModel: MusicPageViewModel,
   currentMediaCurrentState: MediaCurrentState,
-  onMusicClick: (index: Int, musicList: List<MusicMediaModel>) -> Unit,
+  onMusicClick: (index: Int, musicList: List<MusicModel>) -> Unit,
   onBackClick: () -> Unit,
 ) {
 
@@ -51,7 +51,7 @@ fun CategoryPage(
     when (musicPageViewModel.currentTabState) {
       TabBarPosition.ARTIST -> musicPageViewModel.artistsMusicMap.first { it.name == name }.list.toMutableStateList()
       TabBarPosition.ALBUM -> musicPageViewModel.albumMusicMap.first { it.name == name }.list.toMutableStateList()
-      else -> emptyList<MusicMediaModel>().toMutableStateList()
+      else -> emptyList<MusicModel>().toMutableStateList()
     }
   }
 
@@ -97,7 +97,7 @@ fun CategoryPage(
               list = musicPageViewModel.musicCategoryList
             ).also { resultList ->
               musicPageViewModel.musicCategoryList =
-                resultList as SnapshotStateList<MusicMediaModel>
+                resultList as SnapshotStateList<MusicModel>
             }
           },
           onDecClick = {
@@ -105,7 +105,7 @@ fun CategoryPage(
             musicPageViewModel.sortMusicListByCategory(musicPageViewModel.musicCategoryList)
               .also { resultList ->
                 musicPageViewModel.musicCategoryList =
-                  resultList as SnapshotStateList<MusicMediaModel>
+                  resultList as SnapshotStateList<MusicModel>
               }
           },
         )

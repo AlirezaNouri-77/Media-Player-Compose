@@ -6,21 +6,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.mediaplayerjetpackcompose.data.util.GetMediaArt
+import com.example.mediaplayerjetpackcompose.data.database.dao.DataBaseDao
 import com.example.mediaplayerjetpackcompose.data.service.MusicServiceConnection
-import com.example.mediaplayerjetpackcompose.data.application.ApplicationClass
-import com.example.mediaplayerjetpackcompose.data.database.databaseClass.AppDataBase
+import com.example.mediaplayerjetpackcompose.data.util.GetMediaArt
 import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
 import com.example.mediaplayerjetpackcompose.data.util.onMainDispatcher
-import com.example.mediaplayerjetpackcompose.data.repository.MusicMediaStoreRepository
+import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreResult
+import com.example.mediaplayerjetpackcompose.domain.model.CategoryListModel
 import com.example.mediaplayerjetpackcompose.domain.model.FavoriteModel
-import com.example.mediaplayerjetpackcompose.domain.model.MusicMediaModel
+import com.example.mediaplayerjetpackcompose.domain.model.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.SortBarModel
 import com.example.mediaplayerjetpackcompose.domain.model.TabBarPosition
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,19 +26,18 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class MusicPageViewModel(
-  private var myApplication: ApplicationClass,
-  private var musicMediaStoreRepository: MusicMediaStoreRepository,
-  private var getMediaArt: GetMediaArt,
+  private var musicMediaStoreRepository: MediaStoreRepositoryImpl<MusicModel>,
   private var musicServiceConnection: MusicServiceConnection,
-  private var appDataBase: AppDataBase,
-) : AndroidViewModel(myApplication) {
+  private var getMediaArt: GetMediaArt,
+  private var dataBaseDao: DataBaseDao,
+) : ViewModel() {
 
-  private var originalMusicList = mutableStateListOf<MusicMediaModel>()
-  var musicList = mutableStateListOf<MusicMediaModel>()
-  var musicCategoryList = mutableStateListOf<MusicMediaModel>()
-  var artistsMusicMap = mutableStateListOf<CategoryList>()
-  var albumMusicMap = mutableStateListOf<CategoryList>()
-  var favoriteMusicList = mutableStateListOf<MusicMediaModel>()
+  private var originalMusicList = mutableStateListOf<MusicModel>()
+  var musicList = mutableStateListOf<MusicModel>()
+  var musicCategoryList = mutableStateListOf<MusicModel>()
+  var artistsMusicMap = mutableStateListOf<CategoryListModel>()
+  var albumMusicMap = mutableStateListOf<CategoryListModel>()
+  var favoriteMusicList = mutableStateListOf<MusicModel>()
 
   val currentRepeatMode = musicServiceConnection.currentRepeatMode
   var favoriteListMediaId = mutableStateListOf<String>()
@@ -65,8 +61,8 @@ class MusicPageViewModel(
   }
 
   fun sortMusicListByCategory(
-    list: MutableList<MusicMediaModel>
-  ): MutableList<MusicMediaModel> {
+    list: MutableList<MusicModel>
+  ): MutableList<MusicModel> {
     viewModelScope.launch {
       onMainDispatcher {
         if (!isDec.value) {
@@ -91,7 +87,7 @@ class MusicPageViewModel(
     return list
   }
 
-  private fun updateMediaItemList(list: List<MusicMediaModel>) =
+  private fun updateMediaItemList(list: List<MusicModel>) =
     viewModelScope.launch {
       onMainDispatcher {
         val index = list.indexOfFirst { it.musicId.toString() == currentMusicState.value.mediaId }
@@ -112,9 +108,9 @@ class MusicPageViewModel(
     viewModelScope.launch {
       onIoDispatcher {
         if (mediaId in favoriteListMediaId) {
-          appDataBase.dataBaseDao().deleteFavoriteSong(mediaId)
+          dataBaseDao.deleteFavoriteSong(mediaId)
         } else {
-          appDataBase.dataBaseDao().insertFavoriteSong(FavoriteModel(mediaId = mediaId))
+          dataBaseDao.insertFavoriteSong(FavoriteModel(mediaId = mediaId))
         }
       }
     }
@@ -133,14 +129,14 @@ class MusicPageViewModel(
     }
   }
 
-  fun playMusic(index: Int, musicList: List<MusicMediaModel>) = viewModelScope.launch {
+  fun playMusic(index: Int, musicList: List<MusicModel>) = viewModelScope.launch {
     onMainDispatcher {
       musicServiceConnection.playMusic(index, musicList)
     }
   }
 
   private fun getFavorite() = viewModelScope.launch {
-    appDataBase.dataBaseDao().getAllFaFavoriteSongs()
+    dataBaseDao.getAllFaFavoriteSongs()
       .collectLatest { favoriteList ->
         favoriteListMediaId.clear()
         favoriteListMediaId.addAll(favoriteList.map { it.mediaId }.toSet())
@@ -159,8 +155,8 @@ class MusicPageViewModel(
           is MediaStoreResult.Result -> {
             musicList.addAll(result.result)
             originalMusicList.addAll(result.result)
-            artistsMusicMap.addAll(result.result.groupBy { by -> by.artist }.map { CategoryList(it.key, it.value) })
-            albumMusicMap.addAll(result.result.groupBy { by -> by.album }.map { CategoryList(it.key, it.value) })
+            artistsMusicMap.addAll(result.result.groupBy { by -> by.artist }.map { CategoryListModel(it.key, it.value) })
+            albumMusicMap.addAll(result.result.groupBy { by -> by.album }.map { CategoryListModel(it.key, it.value) })
             isLoading = false
           }
 
@@ -169,25 +165,4 @@ class MusicPageViewModel(
       }
 
   }
-
-  companion object {
-    var Factory: ViewModelProvider.Factory = viewModelFactory {
-      initializer {
-        val application =
-          checkNotNull((this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])) as ApplicationClass
-        MusicPageViewModel(
-          myApplication = application,
-          musicMediaStoreRepository = application.musicMediaStoreRepository,
-          getMediaArt = application.getMediaArt,
-          musicServiceConnection = application.musicServiceConnection,
-          appDataBase = application.appDataBase,
-        )
-      }
-    }
-  }
 }
-
-data class CategoryList(
-  var name: String,
-  var list: List<MusicMediaModel>
-)

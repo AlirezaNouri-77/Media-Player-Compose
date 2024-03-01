@@ -25,12 +25,15 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.bottombar.BottomNavigationBar
+import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @Composable
 fun MainScreen(
   navHostController: NavHostController = rememberNavController(),
-  videoPageViewModel: VideoPageViewModel = viewModel(factory = VideoPageViewModel.Factory),
-  musicPageViewModel: MusicPageViewModel = viewModel(factory = MusicPageViewModel.Factory),
+  musicPageViewModel: MusicPageViewModel = koinViewModel(),
+  videoPageViewModel: VideoPageViewModel = koinViewModel(),
 ) {
 
   navHostController.currentBackStackEntryFlow.collectAsStateWithLifecycle(

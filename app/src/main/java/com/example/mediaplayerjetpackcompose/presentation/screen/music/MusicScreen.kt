@@ -225,8 +225,8 @@ fun MusicList(
 
           musicPageViewModel.favoriteMusicList =
             musicPageViewModel.musicList.filter { it.musicId.toString() in musicPageViewModel.favoriteListMediaId }
-
               .toMutableStateList()
+
           itemsIndexed(
             items = musicPageViewModel.favoriteMusicList,
             key = { _, item -> item.musicId },

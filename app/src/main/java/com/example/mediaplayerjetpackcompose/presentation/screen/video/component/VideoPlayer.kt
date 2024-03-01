@@ -207,7 +207,7 @@ fun VideoPlayer(
       .background(Color.Transparent),
     factory = {
       PlayerView(it).apply {
-        player = videoPageViewModel.exoPlayer
+        player = videoPageViewModel.provideExoPlayer()
         useController = false
         resizeMode = videoPageViewModel.deviceOrientation
       }

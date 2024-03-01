@@ -12,7 +12,7 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.example.mediaplayerjetpackcompose.data.util.Constant
-import com.example.mediaplayerjetpackcompose.domain.model.MusicMediaModel
+import com.example.mediaplayerjetpackcompose.domain.model.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.toMediaItem
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
@@ -85,16 +85,16 @@ class MusicServiceConnection(private var context: Context) {
     }
   }
 
-  fun playMusic(index: Int, musicList: List<MusicMediaModel>) = mediaController?.let {
-    it.setMediaItems(musicList.map(MusicMediaModel::toMediaItem), index, 0L)
+  fun playMusic(index: Int, musicList: List<MusicModel>) = mediaController?.let {
+    it.setMediaItems(musicList.map(MusicModel::toMediaItem), index, 0L)
     it.playWhenReady
     it.prepare()
     it.play()
   }
 
-  fun updateMediaList(index: Int, musicList: List<MusicMediaModel>, startPosition: Long) =
+  fun updateMediaList(index: Int, musicList: List<MusicModel>, startPosition: Long) =
     mediaController?.setMediaItems(
-      musicList.map(MusicMediaModel::toMediaItem),
+      musicList.map(MusicModel::toMediaItem),
       index,
       startPosition
     )

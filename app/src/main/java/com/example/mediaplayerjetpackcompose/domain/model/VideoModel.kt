@@ -7,7 +7,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 
 @Stable
-data class VideoMediaModel(
+data class VideoModel(
   val videoId: Long,
   val uri: Uri,
   val name: String,
@@ -18,7 +18,7 @@ data class VideoMediaModel(
   val width: Int,
 )
 
-fun VideoMediaModel.toMediaItem(): MediaItem {
+fun VideoModel.toMediaItem(): MediaItem {
   return MediaItem.Builder().setUri(this.uri).setMediaId(videoId.toString()).setMediaMetadata(
     MediaMetadata.Builder()
       .setTitle(name)

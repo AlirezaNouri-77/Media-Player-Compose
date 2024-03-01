@@ -8,7 +8,7 @@ import android.provider.MediaStore
 import com.example.mediaplayerjetpackcompose.data.util.GetMediaArt
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreResult
-import com.example.mediaplayerjetpackcompose.domain.model.MusicMediaModel
+import com.example.mediaplayerjetpackcompose.domain.model.MusicModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -18,11 +18,11 @@ import java.util.concurrent.TimeUnit
 class MusicMediaStoreRepository(
   private var contentResolver: ContentResolver,
   private var getMediaArt: GetMediaArt,
-) : MediaStoreRepositoryImpl<MusicMediaModel> {
+) : MediaStoreRepositoryImpl<MusicModel> {
 
-  override suspend fun getMedia(): Flow<MediaStoreResult<out MusicMediaModel>> {
+  override suspend fun getMedia(): Flow<MediaStoreResult<out MusicModel>> {
 
-    val resultList = mutableListOf<MusicMediaModel>()
+    val resultList = mutableListOf<MusicModel>()
     return flow {
 
       emit(MediaStoreResult.Loading)
@@ -62,7 +62,7 @@ class MusicMediaStoreRepository(
               id
             )
             resultList.add(
-              MusicMediaModel(
+              MusicModel(
                 musicId = id,
                 path = dataPath,
                 uri = contentUri,

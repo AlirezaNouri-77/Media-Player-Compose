@@ -7,13 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -21,12 +16,12 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
-import com.example.mediaplayerjetpackcompose.data.application.ApplicationClass
+import com.example.mediaplayerjetpackcompose.data.repository.VideoMediaStoreRepository
 import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.data.util.GetMediaArt
-import com.example.mediaplayerjetpackcompose.data.repository.VideoMediaStoreRepository
+import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreResult
-import com.example.mediaplayerjetpackcompose.domain.model.VideoMediaModel
+import com.example.mediaplayerjetpackcompose.domain.model.VideoModel
 import com.example.mediaplayerjetpackcompose.domain.model.toMediaItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
@@ -44,19 +39,17 @@ import kotlinx.coroutines.withContext
 
 @OptIn(UnstableApi::class)
 class VideoPageViewModel(
-  private var applicationClass: ApplicationClass,
-  private var videoMediaStoreRepository: VideoMediaStoreRepository,
+  private var videoMediaStoreRepository: MediaStoreRepositoryImpl<VideoModel>,
+  private var exoPlayer: ExoPlayer,
   private var getMediaArt: GetMediaArt,
-) : AndroidViewModel(applicationClass) {
+) : ViewModel() {
 
-  var exoPlayer: ExoPlayer
-  var mediaStoreDataList = mutableStateListOf<VideoMediaModel>()
+  var mediaStoreDataList = mutableStateListOf<VideoModel>()
     private set
   var videoThumbnailBitmap = mutableStateListOf<videoThumbNailsModel>()
 
   init {
     getVideo()
-    exoPlayer = ExoPlayer.Builder(applicationClass.applicationContext).build()
     exoPlayer.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT
     viewModelScope.launch(Dispatchers.Main) {
       exoPlayer.addListener(
@@ -93,13 +86,15 @@ class VideoPageViewModel(
 
   fun pausePlayer() = exoPlayer.pause()
 
+  fun provideExoPlayer(): ExoPlayer = exoPlayer
+
   suspend fun getVideoThumbNail(uri: Uri): Bitmap? {
     return getMediaArt.getVideoThumbNail(uri)
   }
 
-  fun startPlay(index: Int, videoList: List<VideoMediaModel>) {
+  fun startPlay(index: Int, videoList: List<VideoModel>) {
     exoPlayer.apply {
-      this.setMediaItems(videoList.map(VideoMediaModel::toMediaItem), index, 0L)
+      this.setMediaItems(videoList.map(VideoModel::toMediaItem), index, 0L)
       this.playWhenReady = true
       this.prepare()
       this.play()
@@ -163,19 +158,19 @@ class VideoPageViewModel(
     }
   }
 
-  companion object {
-    val Factory: ViewModelProvider.Factory = viewModelFactory {
-      initializer {
-        val application = checkNotNull((this[APPLICATION_KEY])) as ApplicationClass
-        val savedStateHandle = createSavedStateHandle()
-        VideoPageViewModel(
-          applicationClass = application,
-          videoMediaStoreRepository = application.videoMediaStoreRepository,
-          getMediaArt = application.getMediaArt,
-        )
-      }
-    }
-  }
+//  companion object {
+//    val Factory: ViewModelProvider.Factory = viewModelFactory {
+//      initializer {
+//        val application = checkNotNull((this[APPLICATION_KEY])) as ApplicationClass
+//        val savedStateHandle = createSavedStateHandle()
+//        VideoPageViewModel(
+//          applicationClass = application,
+//          videoMediaStoreRepository = application.videoMediaStoreRepository,
+//          getMediaArt = application.getMediaArt,
+//        )
+//      }
+//    }
+//  }
 
   override fun onCleared() {
     super.onCleared()

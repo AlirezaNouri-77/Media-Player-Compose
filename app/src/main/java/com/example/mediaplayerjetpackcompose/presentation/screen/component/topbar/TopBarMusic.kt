@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabPosition
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -45,7 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.domain.model.MusicMediaModel
+import com.example.mediaplayerjetpackcompose.domain.model.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.TabBarPosition
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.MyTabIndicator
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
@@ -244,7 +242,7 @@ private fun SortSection(
             list = musicPageViewModel.musicList
           ).also { resultList ->
             musicPageViewModel.musicList =
-              resultList as SnapshotStateList<MusicMediaModel>
+              resultList as SnapshotStateList<MusicModel>
           }
         },
         onDecClick = {
@@ -253,7 +251,7 @@ private fun SortSection(
             list = musicPageViewModel.musicList
           ).also { resultList ->
             musicPageViewModel.musicList =
-              resultList as SnapshotStateList<MusicMediaModel>
+              resultList as SnapshotStateList<MusicModel>
           }
         }
       )
