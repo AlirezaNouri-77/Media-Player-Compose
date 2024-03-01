@@ -5,6 +5,7 @@
 - Media3 Session Service
 - Kotlin
 - Jetpack Compose
+- Koin for DI
 - Navigation
 - Flow
 - Coroutine
