@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,6 +26,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -81,7 +83,7 @@ fun MusicScreen(
     modifier = Modifier
       .fillMaxSize(),
   ) {
-    val (musicList, collapsePlayer, loading) = createRefs()
+    val (musicList, collapsePlayer) = createRefs()
 
     Box(
       modifier = Modifier.constrainAs(musicList) {
@@ -110,13 +112,24 @@ fun MusicScreen(
             },
           ) { paddingValue ->
 
-            MusicList(
-              musicPageViewModel = musicPageViewModel,
-              currentMusicState = currentMusicState,
-              navController = navController,
-              paddingValue = paddingValue,
-              bottomPadding = bottomPadding.value,
-            )
+            if (musicPageViewModel.isLoading) {
+              Box(
+                Modifier
+                  .padding(paddingValue)
+                  .fillMaxSize(),
+                contentAlignment = Alignment.Center
+              ) {
+                Text(text = "Loading")
+              }
+            } else {
+              MusicList(
+                musicPageViewModel = musicPageViewModel,
+                currentMusicState = currentMusicState,
+                navController = navController,
+                paddingValue = paddingValue,
+                bottomPadding = bottomPadding.value,
+              )
+            }
 
           }
         }
@@ -194,6 +207,7 @@ fun MusicList(
       fadeIn(tween(250)).togetherWith(fadeOut(tween(200)))
     }
   ) {
+
     LazyColumn(
       modifier = Modifier
         .fillMaxSize()
@@ -227,23 +241,27 @@ fun MusicList(
             musicPageViewModel.musicList.filter { it.musicId.toString() in musicPageViewModel.favoriteListMediaId }
               .toMutableStateList()
 
-          itemsIndexed(
-            items = musicPageViewModel.favoriteMusicList,
-            key = { _, item -> item.musicId },
-          ) { index, item ->
-            MusicMediaItem(
-              item = item,
-              isFav = item.musicId.toString() in musicPageViewModel.favoriteListMediaId.toList(),
-              currentMediaId = currentMusicState.mediaId,
-              artworkImage = item.artBitmap.asImageBitmap(),
-              onItemClick = {
-                musicPageViewModel.playMusic(
-                  index = index,
-                  musicPageViewModel.favoriteMusicList
-                )
-              },
-            )
+          if (musicPageViewModel.favoriteMusicList.isNotEmpty()) {
+            itemsIndexed(
+              items = musicPageViewModel.favoriteMusicList,
+              key = { _, item -> item.musicId },
+            ) { index, item ->
+              MusicMediaItem(
+                item = item,
+                isFav = item.musicId.toString() in musicPageViewModel.favoriteListMediaId.toList(),
+                currentMediaId = currentMusicState.mediaId,
+                artworkImage = item.artBitmap.asImageBitmap(),
+                onItemClick = {
+                  musicPageViewModel.playMusic(
+                    index = index,
+                    musicPageViewModel.favoriteMusicList
+                  )
+                },
+              )
+            }
           }
+
+
         }
 
         TabBarPosition.ARTIST -> {

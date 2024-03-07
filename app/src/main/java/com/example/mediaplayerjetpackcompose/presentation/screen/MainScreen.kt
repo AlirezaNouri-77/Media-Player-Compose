@@ -13,21 +13,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mediaplayerjetpackcompose.domain.model.navigation.BottomBarNavigationModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.navigation.BottomBarNavController
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.FullMusicPlayer
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.bottombar.BottomNavigationBar
-import org.koin.androidx.compose.getViewModel
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.navigation.BottomBarNavController
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.FullMusicPlayer
+import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import org.koin.androidx.compose.koinViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @Composable
 fun MainScreen(
@@ -36,9 +34,7 @@ fun MainScreen(
   videoPageViewModel: VideoPageViewModel = koinViewModel(),
 ) {
 
-  navHostController.currentBackStackEntryFlow.collectAsStateWithLifecycle(
-    initialValue = BottomBarNavigationModel.MusicScreen
-  ).value
+  navHostController.currentBackStackEntryFlow.collectAsState(BottomBarNavigationModel.MusicScreen).value
   val currentRoute = navHostController.currentDestination?.route
   val currentMusicState = musicPageViewModel.currentMusicState.collectAsStateWithLifecycle().value
   val repeatMode = musicPageViewModel.currentRepeatMode.intValue

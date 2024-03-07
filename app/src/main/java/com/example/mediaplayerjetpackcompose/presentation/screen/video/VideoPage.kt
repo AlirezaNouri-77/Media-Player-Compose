@@ -1,6 +1,5 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.video
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
@@ -18,7 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.mediaplayerjetpackcompose.presentation.screen.EmptyPage
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.EmptyPage
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.LoadingPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.item.VideoMediaItem
 
 @Composable
@@ -42,35 +42,43 @@ fun VideoPage(
     }
   ) {
 
-    Box(
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(it),
-    ) {
-      if (videoPageViewModel.mediaStoreDataList.isNotEmpty()) {
-        LazyColumn(
-          modifier = Modifier.fillMaxSize()
-        ) {
-          itemsIndexed(
-            items = videoPageViewModel.mediaStoreDataList,
-            key = { _, item -> item.videoId },
-          ) { index, videoMediaModel ->
+    if (videoPageViewModel.isLoading) {
+      LoadingPage(
+        modifier = Modifier
+          .fillMaxSize()
+          .padding(it),
+      )
+    } else {
+      Box(
+        modifier = Modifier
+          .fillMaxSize()
+          .padding(it),
+      ) {
+        if (videoPageViewModel.mediaStoreDataList.isNotEmpty()) {
+          LazyColumn(
+            modifier = Modifier.fillMaxSize()
+          ) {
+            itemsIndexed(
+              items = videoPageViewModel.mediaStoreDataList,
+              key = { _, item -> item.videoId },
+            ) { index, videoMediaModel ->
 
-            VideoMediaItem(
-              item = videoMediaModel,
-              videoPageViewModel = videoPageViewModel,
-              onItemClick = {
-                navHostController.navigate("PlayerScreen") {
-                  launchSingleTop = true
-                }
-                videoPageViewModel.startPlay(index, videoPageViewModel.mediaStoreDataList)
-              },
-            )
+              VideoMediaItem(
+                item = videoMediaModel,
+                videoPageViewModel = videoPageViewModel,
+                onItemClick = {
+                  navHostController.navigate("PlayerScreen") {
+                    launchSingleTop = true
+                  }
+                  videoPageViewModel.startPlay(index, videoPageViewModel.mediaStoreDataList)
+                },
+              )
 
+            }
           }
+        } else {
+          EmptyPage()
         }
-      } else {
-        EmptyPage()
       }
     }
 

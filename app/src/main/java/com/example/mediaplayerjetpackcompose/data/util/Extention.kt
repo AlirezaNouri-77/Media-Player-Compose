@@ -27,7 +27,7 @@ fun Int?.convertMilliSecondToTime(): String {
   }
 }
 
-suspend inline fun <T> onMainDispatcher(crossinline action: () -> T): T {
+suspend inline fun <T> onMainDispatcher(crossinline action: suspend () -> T): T {
   return coroutineScope {
     withContext(Dispatchers.Main) {
       action()
@@ -35,7 +35,7 @@ suspend inline fun <T> onMainDispatcher(crossinline action: () -> T): T {
   }
 }
 
-suspend inline fun <T> onIoDispatcher(crossinline action: () -> T): T {
+suspend inline fun <T> onIoDispatcher(crossinline action: suspend () -> T): T {
   return coroutineScope {
     withContext(Dispatchers.IO) {
       action()

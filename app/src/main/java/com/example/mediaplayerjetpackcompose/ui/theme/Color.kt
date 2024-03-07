@@ -8,7 +8,7 @@ val PrimaryContainerDark = Color(0xFF1D201F)
 val primaryDark = Color(0xFF1D201F)
 val primaryLight = Color(0xFFE8EEF2)
 
-val onPrimaryDark = Color.White
+val onPrimaryDark = Color(0xFFFAFAFA)
 val onPrimaryLight = Color.Black
 
 val PurpleGrey80 = Color(0xFFCCC2DC)

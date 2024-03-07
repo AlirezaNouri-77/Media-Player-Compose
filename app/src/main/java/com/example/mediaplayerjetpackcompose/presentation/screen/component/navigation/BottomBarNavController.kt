@@ -4,7 +4,6 @@ import android.app.Activity
 import android.os.Build
 import android.view.WindowInsets
 import android.view.WindowInsetsController
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -62,16 +61,16 @@ fun BottomBarNavController(
     composable(
       BottomBarNavigationModel.VideoScreen.route,
       enterTransition = {
-        fadeIn(tween(200,20))
+        fadeIn(tween(200, 20))
       },
       exitTransition = {
-        fadeOut(tween(200,20))
+        fadeOut(tween(200, 20))
       },
       popEnterTransition = {
-        fadeIn(tween(200,20))
+        fadeIn(tween(200, 20))
       },
       popExitTransition = {
-        fadeOut(tween(200,20))
+        fadeOut(tween(200, 20))
       },
     ) {
       VideoPage(
@@ -119,16 +118,16 @@ fun BottomBarNavController(
     composable(
       BottomBarNavigationModel.MusicScreen.route,
       enterTransition = {
-        fadeIn(tween(200,20))
+        fadeIn(tween(200, 20))
       },
       exitTransition = {
-        fadeOut(tween(200,20))
+        fadeOut(tween(200, 20))
       },
       popEnterTransition = {
-        fadeIn(tween(200,20))
+        fadeIn(tween(200, 20))
       },
       popExitTransition = {
-        fadeOut(tween(200,20))
+        fadeOut(tween(200, 20))
       },
     ) {
       MusicScreen(

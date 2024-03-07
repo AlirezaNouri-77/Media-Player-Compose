@@ -13,19 +13,11 @@ abstract class AppDataBase : RoomDatabase() {
   abstract fun dataBaseDao(): DataBaseDao
 
   companion object {
-    @Volatile
-    var INSTANCE: AppDataBase? = null
-
-    private fun getInstance(context: Context): AppDataBase {
-      return INSTANCE ?: synchronized(context) {
-        INSTANCE ?: getAppDataBase(context)
-      }
-    }
-
     fun getAppDataBase(context: Context): AppDataBase = Room.databaseBuilder(
       context = context,
       AppDataBase::class.java, "DataBase_MediaPlayer",
     ).build()
+
   }
 
 }

@@ -1,11 +1,10 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen
+package com.example.mediaplayerjetpackcompose.presentation.screen.component
 
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

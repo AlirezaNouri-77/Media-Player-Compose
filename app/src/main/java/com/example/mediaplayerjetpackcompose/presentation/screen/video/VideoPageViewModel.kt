@@ -6,6 +6,7 @@ import androidx.annotation.OptIn
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,12 +17,13 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
-import com.example.mediaplayerjetpackcompose.data.repository.VideoMediaStoreRepository
 import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.data.util.GetMediaArt
+import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreResult
 import com.example.mediaplayerjetpackcompose.domain.model.VideoModel
+import com.example.mediaplayerjetpackcompose.domain.model.VideoThumbnailModel
 import com.example.mediaplayerjetpackcompose.domain.model.toMediaItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
@@ -44,9 +46,11 @@ class VideoPageViewModel(
   private var getMediaArt: GetMediaArt,
 ) : ViewModel() {
 
+  var isLoading by mutableStateOf(true)
+  var deviceOrientation by mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT)
   var mediaStoreDataList = mutableStateListOf<VideoModel>()
     private set
-  var videoThumbnailBitmap = mutableStateListOf<videoThumbNailsModel>()
+  var videoThumbnailBitmap = mutableStateListOf<VideoThumbnailModel>()
 
   init {
     getVideo()
@@ -65,8 +69,6 @@ class VideoPageViewModel(
       )
     }
   }
-
-  var deviceOrientation by mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT)
 
   private var _currentState = MutableStateFlow(
     MediaCurrentState(
@@ -89,7 +91,7 @@ class VideoPageViewModel(
   fun provideExoPlayer(): ExoPlayer = exoPlayer
 
   suspend fun getVideoThumbNail(uri: Uri): Bitmap? {
-    return getMediaArt.getVideoThumbNail(uri)
+    return onIoDispatcher { getMediaArt.getVideoThumbNail(uri) }
   }
 
   fun startPlay(index: Int, videoList: List<VideoModel>) {
@@ -140,15 +142,16 @@ class VideoPageViewModel(
     viewModelScope.launch {
       videoMediaStoreRepository.getMedia().stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(), initialValue = MediaStoreResult.Initial,
-      ).collect { it ->
+      ).collect {
         withContext(Dispatchers.Main) {
           when (it) {
             MediaStoreResult.Loading -> {
-
+              isLoading = true
             }
 
             is MediaStoreResult.Result -> {
               mediaStoreDataList.addAll(it.result)
+              isLoading = false
             }
 
             else -> {}
@@ -158,19 +161,6 @@ class VideoPageViewModel(
     }
   }
 
-//  companion object {
-//    val Factory: ViewModelProvider.Factory = viewModelFactory {
-//      initializer {
-//        val application = checkNotNull((this[APPLICATION_KEY])) as ApplicationClass
-//        val savedStateHandle = createSavedStateHandle()
-//        VideoPageViewModel(
-//          applicationClass = application,
-//          videoMediaStoreRepository = application.videoMediaStoreRepository,
-//          getMediaArt = application.getMediaArt,
-//        )
-//      }
-//    }
-//  }
 
   override fun onCleared() {
     super.onCleared()
@@ -179,4 +169,4 @@ class VideoPageViewModel(
 
 }
 
-data class videoThumbNailsModel(var bitmap: Bitmap, var musicId: Long)
+

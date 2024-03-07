@@ -34,10 +34,12 @@ class MusicPageViewModel(
 
   private var originalMusicList = mutableStateListOf<MusicModel>()
   var musicList = mutableStateListOf<MusicModel>()
+  var favoriteMusicList = mutableStateListOf<MusicModel>()
+
   var musicCategoryList = mutableStateListOf<MusicModel>()
   var artistsMusicMap = mutableStateListOf<CategoryListModel>()
   var albumMusicMap = mutableStateListOf<CategoryListModel>()
-  var favoriteMusicList = mutableStateListOf<MusicModel>()
+
 
   val currentRepeatMode = musicServiceConnection.currentRepeatMode
   var favoriteListMediaId = mutableStateListOf<String>()

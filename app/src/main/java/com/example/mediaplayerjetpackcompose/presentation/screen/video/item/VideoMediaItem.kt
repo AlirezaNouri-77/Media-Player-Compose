@@ -33,16 +33,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.mediaplayerjetpackcompose.data.util.convertByteToReadableSize
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.util.extractFileExtension
+import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.VideoModel
+import com.example.mediaplayerjetpackcompose.domain.model.VideoThumbnailModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.video.videoThumbNailsModel
+import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -59,7 +62,7 @@ fun VideoMediaItem(
   }
 
   LaunchedEffect(key1 = item, block = {
-    withContext(Dispatchers.IO) {
+    onIoDispatcher {
 
       if ((videoPageViewModel.videoThumbnailBitmap.find { it.musicId == item.videoId }?.musicId
           ?: "") == item.videoId
@@ -67,7 +70,7 @@ fun VideoMediaItem(
         imageBitmap.value = videoPageViewModel.videoThumbnailBitmap.first { it.musicId == item.videoId }.bitmap
       } else {
         val bitmap = videoPageViewModel.getVideoThumbNail(item.uri)
-        videoPageViewModel.videoThumbnailBitmap.add(videoThumbNailsModel(bitmap!!, item.videoId))
+        videoPageViewModel.videoThumbnailBitmap.add(VideoThumbnailModel(bitmap!!, item.videoId))
         imageBitmap.value = bitmap
       }
 
