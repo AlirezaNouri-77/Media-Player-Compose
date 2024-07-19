@@ -50,7 +50,7 @@ dependencies {
 
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.activity.compose)
-  implementation(libs.androidx.compose.bom)
+  implementation(platform(libs.androidx.compose.bom))
   implementation(libs.androidx.ui)
   implementation(libs.androidx.ui.graphics)
   implementation(libs.androidx.ui.tooling.preview)
@@ -83,4 +83,8 @@ dependencies {
   implementation(libs.koin.android)
   implementation(libs.koin.androidx.compose)
 
+  implementation (libs.composeGlide)
+  implementation(libs.coil.compose)
+  implementation(libs.coil.video)
+  implementation(kotlin("script-runtime"))
 }
