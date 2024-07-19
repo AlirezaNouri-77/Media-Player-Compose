@@ -1,6 +1,5 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen
 
-import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -13,60 +12,53 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.mediaplayerjetpackcompose.domain.model.navigation.BottomBarNavigationModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.bottombar.BottomNavigationBar
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.navigation.BottomBarNavController
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.FullMusicPlayer
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.FullMusicPlayer
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MainScreen(
-  navHostController: NavHostController = rememberNavController(),
   musicPageViewModel: MusicPageViewModel = koinViewModel(),
   videoPageViewModel: VideoPageViewModel = koinViewModel(),
 ) {
 
-  navHostController.currentBackStackEntryFlow.collectAsState(BottomBarNavigationModel.MusicScreen).value
-  val currentRoute = navHostController.currentDestination?.route
+  val navHostController: NavHostController = rememberNavController()
+  val navBackStackEntry by navHostController.currentBackStackEntryAsState()
+
+  val currentRoute = navBackStackEntry?.destination?.route
+
   val currentMusicState = musicPageViewModel.currentMusicState.collectAsStateWithLifecycle().value
   val repeatMode = musicPageViewModel.currentRepeatMode.intValue
-  val currentMusicPosition = musicPageViewModel.currentMusicPosition.collectAsStateWithLifecycle()
-  val artworkImage = remember(currentMusicState) {
-    musicPageViewModel.getImageArt(
-      uri = currentMusicState.metaData.artworkUri ?: Uri.EMPTY,
-    )
-  }
+  val currentMusicPosition = musicPageViewModel.currentMusicPosition.floatValue
 
   Scaffold(
     containerColor = MaterialTheme.colorScheme.primaryContainer,
     bottomBar = {
-      if (currentRoute != null) {
-        AnimatedVisibility(
-          visible = currentRoute != BottomBarNavigationModel.VideoPlayerScreen.route,
-          enter = slideInVertically(
-            tween(durationMillis = 100),
-            initialOffsetY = { int -> int / 2 },
-          ),
-          exit = slideOutVertically(
-            tween(durationMillis = 100),
-            targetOffsetY = { int -> int / 2 },
-          )
-        ) {
-          BottomNavigationBar(
-            currentRoute = currentRoute,
-            onClick = {
-              navHostController.navigate(it)
-            },
-          )
-        }
+      AnimatedVisibility(
+        visible = currentRoute != BottomBarNavigationModel.VideoPlayerScreen.route,
+        enter = slideInVertically(
+          tween(durationMillis = 100),
+          initialOffsetY = { int -> int / 2 },
+        ),
+        exit = slideOutVertically(
+          tween(durationMillis = 100),
+          targetOffsetY = { int -> int / 2 },
+        ),
+      ) {
+        BottomNavigationBar(
+          currentRoute = currentRoute,
+          onClick = navHostController::navigate,
+        )
       }
     },
   ) { paddingValues ->
@@ -83,7 +75,6 @@ fun MainScreen(
     }
   }
 
-
   AnimatedVisibility(
     visible = musicPageViewModel.showBottomSheet.value,
     enter = fadeIn(tween(300, 100)) + slideInVertically(
@@ -95,11 +86,10 @@ fun MainScreen(
   ) {
 
     FullMusicPlayer(
-      currentMediaCurrentState = currentMusicState,
+      currentMediaCurrentState = { currentMusicState },
       favoriteList = musicPageViewModel.favoriteListMediaId,
-      artworkImage = artworkImage,
       repeatMode = repeatMode,
-      currentMusicPosition = currentMusicPosition,
+      currentMusicPosition = { currentMusicPosition.toLong() },
       onPauseMusic = musicPageViewModel::pauseMusic,
       onResumeMusic = musicPageViewModel::resumeMusic,
       onMoveNextMusic = musicPageViewModel::moveToNext,
@@ -107,7 +97,7 @@ fun MainScreen(
       onSeekTo = { seekTo -> musicPageViewModel.seekToPosition(seekTo) },
       onRepeatMode = { repeat -> musicPageViewModel.setRepeatMode(repeat) },
       onDismissed = { musicPageViewModel.showBottomSheet.value = false },
-      onFavoriteToggle = { musicPageViewModel.handleFavoriteSongs(currentMusicState.mediaId) }
+      onFavoriteToggle = { musicPageViewModel.handleFavoriteSongs(currentMusicState.mediaId) },
     )
 
   }

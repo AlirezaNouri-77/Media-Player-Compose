@@ -3,6 +3,7 @@ package com.example.mediaplayerjetpackcompose.presentation.screen.music
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -20,9 +21,11 @@ import com.example.mediaplayerjetpackcompose.domain.model.FavoriteModel
 import com.example.mediaplayerjetpackcompose.domain.model.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.SortBarModel
 import com.example.mediaplayerjetpackcompose.domain.model.TabBarPosition
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class MusicPageViewModel(
@@ -40,7 +43,6 @@ class MusicPageViewModel(
   var artistsMusicMap = mutableStateListOf<CategoryListModel>()
   var albumMusicMap = mutableStateListOf<CategoryListModel>()
 
-
   val currentRepeatMode = musicServiceConnection.currentRepeatMode
   var favoriteListMediaId = mutableStateListOf<String>()
   var isLoading by mutableStateOf(true)
@@ -49,17 +51,25 @@ class MusicPageViewModel(
   var currentTabState by mutableStateOf(TabBarPosition.MUSIC)
   var isDec = mutableStateOf(false)
   var showBottomSheet = mutableStateOf(false)
+  var currentMusicPosition = mutableFloatStateOf(0f)
 
   var currentMusicState = musicServiceConnection.mediaCurrentState
-  var currentMusicPosition = musicServiceConnection.currentMusicPosition.stateIn(
-    viewModelScope,
-    SharingStarted.Eagerly,
-    0L
-  )
 
   init {
     getFavorite()
     getMusic()
+    viewModelScope.launch {
+      onMainDispatcher {
+        while (viewModelScope.isActive) {
+          delay(50L)
+          if (musicServiceConnection.mediaController?.isPlaying == true) {
+            val position = musicServiceConnection.mediaController?.currentPosition ?: 0L
+            currentMusicPosition.floatValue = position.toFloat()
+          }
+        }
+      }
+    }
+
   }
 
   fun sortMusicListByCategory(
@@ -93,16 +103,22 @@ class MusicPageViewModel(
     viewModelScope.launch {
       onMainDispatcher {
         val index = list.indexOfFirst { it.musicId.toString() == currentMusicState.value.mediaId }
-        musicServiceConnection.updateMediaList(index, musicList, currentMusicPosition.value)
+        musicServiceConnection.updateMediaList(index, musicList, currentMusicPosition.floatValue.toLong())
       }
     }
 
-  fun getImageArt(uri: Uri): Bitmap = getMediaArt.getMusicArt(uri, 350, 350)
+  suspend fun getArtWorkThumbnail(uri: Uri): Bitmap = getMediaArt.getMusicArt(uri, 350, 350)
+  fun getDefaultArtWorkThumbnail(): Bitmap = getMediaArt.getDefaultArtWork(350, 350)
+
   fun moveToNext() = musicServiceConnection.moveToNext()
   fun moveToPrevious() = musicServiceConnection.moveToPrevious()
   fun pauseMusic() = musicServiceConnection.pauseMusic()
   fun resumeMusic() = musicServiceConnection.resumeMusic()
-  fun seekToPosition(position: Long) = musicServiceConnection.seekToPosition(position)
+  fun seekToPosition(position: Long) {
+    musicServiceConnection.seekToPosition(position)
+    currentMusicPosition.floatValue = position.toFloat()
+  }
+
   fun setRepeatMode(repeatMode: Int) = musicServiceConnection.setPlayerRepeatMode(repeatMode)
 
 
@@ -140,31 +156,45 @@ class MusicPageViewModel(
   private fun getFavorite() = viewModelScope.launch {
     dataBaseDao.getAllFaFavoriteSongs()
       .collectLatest { favoriteList ->
-        favoriteListMediaId.clear()
-        favoriteListMediaId.addAll(favoriteList.map { it.mediaId }.toSet())
-      }
-  }
-
-  private fun getMusic() = viewModelScope.launch {
-    musicMediaStoreRepository.getMedia()
-      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), MediaStoreResult.Initial)
-      .collect { result ->
-        when (result) {
-          MediaStoreResult.Loading -> {
-            isLoading = true
-          }
-
-          is MediaStoreResult.Result -> {
-            musicList.addAll(result.result)
-            originalMusicList.addAll(result.result)
-            artistsMusicMap.addAll(result.result.groupBy { by -> by.artist }.map { CategoryListModel(it.key, it.value) })
-            albumMusicMap.addAll(result.result.groupBy { by -> by.album }.map { CategoryListModel(it.key, it.value) })
-            isLoading = false
-          }
-
-          else -> {}
+        onIoDispatcher {
+          favoriteListMediaId.clear()
+          favoriteListMediaId.addAll(favoriteList.map { it.mediaId }.toSet())
         }
       }
 
   }
+
+  private fun getMusic() = viewModelScope.launch {
+    onIoDispatcher {
+      musicMediaStoreRepository.getMedia()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), MediaStoreResult.Initial)
+        .collect { result ->
+          when (result) {
+            MediaStoreResult.Loading -> {
+              onMainDispatcher {
+                isLoading = true
+              }
+            }
+
+            is MediaStoreResult.Result -> {
+              onMainDispatcher {
+                musicList.addAll(result.result)
+                originalMusicList.addAll(result.result)
+                artistsMusicMap.addAll(result.result.groupBy { by -> by.artist }
+                  .map { CategoryListModel(it.key, it.value) })
+                albumMusicMap.addAll(result.result.groupBy { by -> by.album }
+                  .map { CategoryListModel(it.key, it.value) })
+                isLoading = false
+              }
+            }
+
+            else -> {}
+          }
+        }
+
+    }
+  }
+
 }
+
+data class MusicThumbnailModel(var bitmap: Bitmap, var musicId: Long)

@@ -65,7 +65,6 @@ fun VideoPage(
 
               VideoMediaItem(
                 item = videoMediaModel,
-                videoPageViewModel = videoPageViewModel,
                 onItemClick = {
                   navHostController.navigate("PlayerScreen") {
                     launchSingleTop = true

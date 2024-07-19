@@ -2,6 +2,7 @@ package com.example.mediaplayerjetpackcompose.data.service
 
 import android.content.ComponentName
 import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -12,18 +13,14 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.example.mediaplayerjetpackcompose.data.util.Constant
+import com.example.mediaplayerjetpackcompose.data.util.toMediaItem
 import com.example.mediaplayerjetpackcompose.domain.model.MusicModel
-import com.example.mediaplayerjetpackcompose.domain.model.toMediaItem
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.isActive
 
 class MusicServiceConnection(private var context: Context) {
 
@@ -34,15 +31,7 @@ class MusicServiceConnection(private var context: Context) {
   val currentRepeatMode = mutableIntStateOf(0)
 
   private var factory: ListenableFuture<MediaController>? = null
-  private var mediaController by mutableStateOf<MediaController?>(null)
-
-  var currentMusicPosition = flow {
-    while (currentCoroutineContext().isActive) {
-      val position = mediaController?.currentPosition ?: 0L
-      emit(position)
-      delay(1000L)
-    }
-  }
+  var mediaController by mutableStateOf<MediaController?>(null)
 
   private var _mediaCurrentState =
     MutableStateFlow(
@@ -50,6 +39,7 @@ class MusicServiceConnection(private var context: Context) {
         isPlaying = false,
         metaData = MediaMetadata.EMPTY,
         mediaId = "",
+        uri = Uri.EMPTY,
         isBuffering = false
       )
     )
@@ -133,6 +123,7 @@ class MusicServiceConnection(private var context: Context) {
 
 data class MediaCurrentState(
   var isPlaying: Boolean,
+  var uri: Uri,
   val metaData: MediaMetadata,
   val mediaId: String,
   val isBuffering: Boolean

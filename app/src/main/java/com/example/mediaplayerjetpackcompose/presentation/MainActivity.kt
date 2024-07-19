@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
             intent?.let { mIntent ->
               if (mIntent.action == Intent.ACTION_VIEW) {
                 val videoUri = mIntent.data.toString().encodeStringNavigation()
-                val videoPageViewModel:VideoPageViewModel by viewModel()
+                val videoPageViewModel: VideoPageViewModel by viewModel()
                 VideoPlayer(
                   videoUri = videoUri,
                   videoPageViewModel = videoPageViewModel,
@@ -115,8 +115,8 @@ fun checkPermission(context: Context): Boolean {
 
   return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 
-    myPermissionChecker(context,Manifest.permission.READ_MEDIA_AUDIO)
-         && myPermissionChecker(context,Manifest.permission.READ_MEDIA_VIDEO)
+    myPermissionChecker(context, Manifest.permission.READ_MEDIA_AUDIO)
+         && myPermissionChecker(context, Manifest.permission.READ_MEDIA_VIDEO)
 
   } else {
     myPermissionChecker(

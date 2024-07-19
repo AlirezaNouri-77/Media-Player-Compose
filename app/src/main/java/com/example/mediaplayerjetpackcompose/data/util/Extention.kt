@@ -8,11 +8,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import androidx.core.os.bundleOf
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
+import com.example.mediaplayerjetpackcompose.domain.model.MusicModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import java.text.DecimalFormat
 import java.util.Base64
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 fun Int?.convertMilliSecondToTime(): String {
@@ -21,15 +26,39 @@ fun Int?.convertMilliSecondToTime(): String {
   val minute = TimeUnit.MILLISECONDS.toMinutes(this.toLong()) % 60
   val second = TimeUnit.MILLISECONDS.toSeconds(this.toLong()) % 60
   return if (hour > 0) {
-    String.format("%02d:%02d:%02d", hour, minute, second)
+    String.format(Locale.ENGLISH, "%02d:%02d:%02d", hour, minute, second)
   } else {
-    String.format("%2d:%02d", minute, second)
+    String.format(Locale.ENGLISH, "%2d:%02d", minute, second, Locale.ENGLISH)
   }
 }
+
+fun MusicModel.toMediaItem() =
+  MediaItem.Builder().setMediaId(this.musicId.toString()).setUri(this.uri)
+    .setMediaMetadata(
+      MediaMetadata.Builder()
+        .setTitle(this.name)
+        .setArtworkUri(artworkUri)
+        .setArtist(this.artist)
+        .setExtras(
+          bundleOf(
+            "Duration" to this.duration,
+            "Bitrate" to this.bitrate,
+            "Size" to this.size,
+          )
+        ).setTitle(this.name).build()
+    ).build()
 
 suspend inline fun <T> onMainDispatcher(crossinline action: suspend () -> T): T {
   return coroutineScope {
     withContext(Dispatchers.Main) {
+      action()
+    }
+  }
+}
+
+suspend inline fun <T> onDefaultDispatcher(crossinline action: suspend () -> T): T {
+  return coroutineScope {
+    withContext(Dispatchers.Default) {
       action()
     }
   }

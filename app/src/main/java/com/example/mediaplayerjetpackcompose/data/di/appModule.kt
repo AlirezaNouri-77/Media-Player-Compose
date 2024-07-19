@@ -25,7 +25,7 @@ var appModule = module {
 
   single { GetMediaArt(androidContext()) }
 
-  single<MediaStoreRepositoryImpl<MusicModel>>(named("musicRepo")) { MusicMediaStoreRepository(androidContext().contentResolver, get()) }
+  single<MediaStoreRepositoryImpl<MusicModel>>(named("musicRepo")) { MusicMediaStoreRepository(androidContext().contentResolver) }
   single<MediaStoreRepositoryImpl<VideoModel>> { VideoMediaStoreRepository(androidContext().contentResolver) }
   single { MusicServiceConnection(androidApplication().applicationContext) }
 

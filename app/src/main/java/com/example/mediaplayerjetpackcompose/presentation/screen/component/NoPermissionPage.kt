@@ -57,7 +57,7 @@ fun NoPermissionPage(
     }
   }
 
-  Surface (
+  Surface(
     color = MaterialTheme.colorScheme.primary,
   ) {
     Column(

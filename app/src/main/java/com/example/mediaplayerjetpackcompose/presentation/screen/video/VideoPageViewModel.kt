@@ -75,6 +75,7 @@ class VideoPageViewModel(
       isPlaying = false,
       mediaId = "",
       metaData = MediaMetadata.EMPTY,
+      uri = Uri.EMPTY,
       isBuffering = false,
     )
   )

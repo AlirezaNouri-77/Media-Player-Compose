@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit
 
 class VideoMediaStoreRepository(
   private var contentResolver: ContentResolver,
-): MediaStoreRepositoryImpl<VideoModel>  {
-   override suspend fun getMedia(): Flow<MediaStoreResult<out VideoModel>> {
+) : MediaStoreRepositoryImpl<VideoModel> {
+  override suspend fun getMedia(): Flow<MediaStoreResult<out VideoModel>> {
     val mListResult = mutableListOf<VideoModel>()
     return flow {
 

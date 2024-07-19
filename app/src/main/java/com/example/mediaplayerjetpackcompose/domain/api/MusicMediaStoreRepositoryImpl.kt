@@ -1,7 +1,5 @@
 package com.example.mediaplayerjetpackcompose.domain.api
 
-import com.example.mediaplayerjetpackcompose.domain.model.FavoriteModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 
 interface MediaStoreRepositoryImpl<out T> {

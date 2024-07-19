@@ -1,17 +1,11 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
+package com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer
 
-import android.graphics.Bitmap
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -33,49 +26,45 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.data.util.Constant
-import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
+import coil.compose.AsyncImage
 import com.example.mediaplayerjetpackcompose.R
+import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
+import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.data.util.convertByteToReadableSize
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.util.convertToKbit
 import com.example.mediaplayerjetpackcompose.data.util.extractFileExtension
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.MediaThumbnail
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun FullMusicPlayer(
-  currentMediaCurrentState: MediaCurrentState,
   favoriteList: SnapshotStateList<String>,
-  currentMusicPosition: State<Long>,
+  currentMediaCurrentState: () -> MediaCurrentState,
   repeatMode: Int,
-  artworkImage: Bitmap,
+  currentMusicPosition: () -> Long,
   onDismissed: () -> Unit,
   onPauseMusic: () -> Unit,
   onResumeMusic: () -> Unit,
@@ -92,17 +81,23 @@ fun FullMusicPlayer(
   val seekPosition = remember {
     mutableFloatStateOf(0f)
   }
-  val sliderInInteraction = remember {
+  var sliderInInteraction by remember {
     mutableStateOf(false)
   }
-  val repeatModeIcon = when (repeatMode) {
-    0 -> R.drawable.icon_repeat_off_24
-    1 -> R.drawable.icon_repeat_one_24
-    2 -> R.drawable.icon_repeat_all_24
-    else -> -1
+  val repeatModeIcon = remember(repeatMode) {
+    when (repeatMode) {
+      0 -> R.drawable.icon_repeat_off_24
+      1 -> R.drawable.icon_repeat_one_24
+      2 -> R.drawable.icon_repeat_all_24
+      else -> -1
+    }
+  }
+  val sliderValue = when (sliderInInteraction) {
+    true -> seekPosition.floatValue
+    false -> currentMusicPosition().toFloat()
   }
 
-  var favIcon = when (currentMediaCurrentState.mediaId in favoriteList) {
+  val favIcon = when (currentMediaCurrentState().mediaId in favoriteList) {
     true -> Icons.Default.Favorite
     false -> Icons.Default.FavoriteBorder
   }
@@ -119,8 +114,8 @@ fun FullMusicPlayer(
         }
       },
   ) {
-    Image(
-      bitmap = artworkImage.asImageBitmap(),
+    AsyncImage(
+      model = currentMediaCurrentState().metaData.artworkUri,
       contentDescription = "",
       Modifier
         .fillMaxSize()
@@ -142,7 +137,6 @@ fun FullMusicPlayer(
       alignment = Alignment.Center,
       contentScale = ContentScale.Crop,
     )
-
     Column(
       verticalArrangement = Arrangement.SpaceEvenly,
       horizontalAlignment = Alignment.CenterHorizontally,
@@ -174,45 +168,7 @@ fun FullMusicPlayer(
         )
       }
 
-      Box(
-        modifier = Modifier
-          .size(330.dp),
-        contentAlignment = Alignment.Center,
-      ) {
-        Image(
-          bitmap = artworkImage.asImageBitmap(),
-          contentDescription = "",
-          modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black, RoundedCornerShape(15.dp))
-            .clip(RoundedCornerShape(15.dp)),
-        )
-
-        androidx.compose.animation.AnimatedVisibility(
-          visible = sliderInInteraction.value,
-          enter = fadeIn(tween(150)),
-          exit = fadeOut(tween(150))
-        ) {
-          Box(
-            modifier = Modifier
-              .fillMaxSize()
-              .background(
-                Color.Black.copy(alpha = 0.5f),
-                RoundedCornerShape(15.dp)
-              ),
-            contentAlignment = Alignment.Center,
-          ) {
-            Text(
-              text = seekPosition.floatValue.toInt().convertMilliSecondToTime(),
-              color = Color.White,
-              fontSize = 24.sp,
-              fontWeight = FontWeight.Bold,
-              modifier = Modifier
-            )
-          }
-        }
-
-      }
+      MediaThumbnail(uri = currentMediaCurrentState().metaData.artworkUri, size = 330.dp)
 
       Column(
         horizontalAlignment = Alignment.Start,
@@ -221,7 +177,7 @@ fun FullMusicPlayer(
           .padding(horizontal = 25.dp),
       ) {
         Text(
-          text = currentMediaCurrentState.metaData.title?.toString()?.removeFileExtension()
+          text = currentMediaCurrentState().metaData.title?.toString()?.removeFileExtension()
             ?: "Nothing Play",
           fontSize = 20.sp,
           fontWeight = FontWeight.SemiBold,
@@ -232,7 +188,7 @@ fun FullMusicPlayer(
         )
         Spacer(modifier = Modifier.height(15.dp))
         Text(
-          text = currentMediaCurrentState.metaData.artist?.toString() ?: "Nothing Play",
+          text = currentMediaCurrentState().metaData.artist?.toString() ?: "Nothing Play",
           fontSize = 21.sp,
           modifier = Modifier
             .basicMarquee(),
@@ -241,9 +197,9 @@ fun FullMusicPlayer(
           color = Color.White,
         )
         val songDetail = listOf(
-          currentMediaCurrentState.metaData.title?.toString()?.extractFileExtension() ?: "None",
-          currentMediaCurrentState.metaData.extras?.getInt("Bitrate")?.convertToKbit() ?: "None",
-          currentMediaCurrentState.metaData.extras?.getInt("Size")?.convertByteToReadableSize()?.toString()
+          currentMediaCurrentState().metaData.title?.toString()?.extractFileExtension() ?: "None",
+          currentMediaCurrentState().metaData.extras?.getInt("Bitrate")?.convertToKbit() ?: "None",
+          currentMediaCurrentState().metaData.extras?.getInt("Size")?.convertByteToReadableSize()?.toString()
             ?: ""
         )
         Text(
@@ -268,7 +224,7 @@ fun FullMusicPlayer(
             },
           tint = Color.White,
         )
-        ControlBottom(icon = repeatModeIcon, backgroundColor = Color.Transparent, size = 28.dp) {
+        PlayerStateControllerButton(icon = repeatModeIcon, backgroundColor = Color.Transparent, size = 28.dp) {
           var mRepeatMode = repeatMode
           if (mRepeatMode++ >= Constant.RepeatModes.size.minus(1)) {
             onRepeatMode.invoke(0)
@@ -288,13 +244,13 @@ fun FullMusicPlayer(
           horizontalArrangement = Arrangement.Absolute.SpaceBetween,
         ) {
           Text(
-            text = currentMusicPosition.value.toInt().convertMilliSecondToTime(),
+            text = currentMusicPosition().toInt().convertMilliSecondToTime(),
             fontSize = 13.sp,
             fontWeight = FontWeight.Normal,
             color = Color.White,
           )
           Text(
-            text = currentMediaCurrentState.metaData.extras?.getInt("Duration")?.convertMilliSecondToTime()
+            text = currentMediaCurrentState().metaData.extras?.getInt("Duration")?.convertMilliSecondToTime()
               .toString(),
             fontSize = 13.sp,
             fontWeight = FontWeight.Normal,
@@ -302,20 +258,20 @@ fun FullMusicPlayer(
           )
         }
         Slider(
-          value = currentMusicPosition.value.toFloat(),
+          value = sliderValue,
           modifier = Modifier.fillMaxWidth(),
           onValueChange = { value ->
-            sliderInInteraction.value = true
             seekPosition.floatValue = value
+            sliderInInteraction = true
           },
           onValueChangeFinished = {
-            sliderInInteraction.value = false
+            sliderInInteraction = false
             onSeekTo.invoke(seekPosition.floatValue.toLong())
           },
           track = { sliderState ->
             SliderDefaults.Track(
               sliderState = sliderState,
-              modifier = Modifier.scale(scaleX = 1f, scaleY = 2.5f),
+              modifier = Modifier.scale(scaleX = 1f, scaleY = 2.2f),
               colors = SliderDefaults.colors(
                 activeTrackColor = Color.White,
                 inactiveTrackColor = Color.White.copy(0.5f),
@@ -325,15 +281,14 @@ fun FullMusicPlayer(
           colors = SliderDefaults.colors(
             thumbColor = Color.White,
           ),
-          valueRange = 0f..(currentMediaCurrentState.metaData.extras?.getInt("Duration")?.toFloat() ?: 0f),
-
-          )
+          valueRange = 0f..(currentMediaCurrentState().metaData.extras?.getInt("Duration")?.toFloat() ?: 0f),
+        )
         Spacer(modifier = Modifier.height(20.dp))
         Row(
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.Center,
         ) {
-          ControlBottom(
+          PlayerStateControllerButton(
             icon = R.drawable.icon_skip_previous_24,
             radius = 1.2f,
             size = 30.dp
@@ -341,51 +296,22 @@ fun FullMusicPlayer(
             onMovePreviousMusic.invoke()
           }
           Spacer(modifier = Modifier.width(35.dp))
-          ControlBottom(
-            icon = if (currentMediaCurrentState.isPlaying && !currentMediaCurrentState.isBuffering) R.drawable.icon_pause_24 else R.drawable.icon_play_arrow_24,
+          PlayerStateControllerButton(
+            icon = if (currentMediaCurrentState().isPlaying && !currentMediaCurrentState().isBuffering) R.drawable.icon_pause_24 else R.drawable.icon_play_arrow_24,
             radius = 1.5f,
             size = 55.dp
           ) {
-            when (currentMediaCurrentState.isPlaying) {
+            when (currentMediaCurrentState().isPlaying) {
               true -> onPauseMusic.invoke()
               false -> onResumeMusic.invoke()
             }
           }
           Spacer(modifier = Modifier.width(35.dp))
-          ControlBottom(icon = R.drawable.icon_skip_next_24, radius = 1.2f, size = 30.dp) {
+          PlayerStateControllerButton(icon = R.drawable.icon_skip_next_24, radius = 1.2f, size = 30.dp) {
             onMoveNextMusic.invoke()
           }
         }
       }
     }
   }
-}
-
-@Composable
-fun ControlBottom(
-  icon: Int,
-  modifier: Modifier = Modifier,
-  backgroundColor: Color = Color.White,
-  backgroundAlpha: Float = 0.2f,
-  radius: Float = 1f,
-  size: Dp,
-  onClick: () -> Unit,
-) {
-  Image(
-    painter = painterResource(id = icon),
-    contentDescription = "",
-    modifier
-      .size(size)
-      .drawBehind {
-        drawCircle(
-          backgroundColor,
-          center = this.center,
-          radius = this.size.minDimension / radius,
-          alpha = backgroundAlpha
-        )
-      }
-      .clickable(interactionSource = NoRippleEffect, indication = null) {
-        onClick.invoke()
-      },
-  )
 }

@@ -2,6 +2,7 @@ package com.example.mediaplayerjetpackcompose.presentation.screen.component.navi
 
 import android.app.Activity
 import android.os.Build
+import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.compose.animation.core.tween
@@ -9,6 +10,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -16,6 +18,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.mediaplayerjetpackcompose.domain.model.navigation.BottomBarNavigationModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
@@ -29,11 +32,11 @@ fun BottomBarNavController(
   navHostController: NavHostController,
   musicPageViewModel: MusicPageViewModel,
   videoPageViewModel: VideoPageViewModel,
+  window: Window = (LocalContext.current as Activity).window
 ) {
 
-  val window = (LocalContext.current as Activity).window
-  navHostController.currentBackStackEntryFlow.collectAsStateWithLifecycle(initialValue = "Home").value
-  val currentRoute = navHostController.currentDestination?.route
+  val navBackStackEntry by navHostController.currentBackStackEntryAsState()
+  val currentRoute = navBackStackEntry?.destination?.route
 
   if (currentRoute == BottomBarNavigationModel.VideoPlayerScreen.route) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

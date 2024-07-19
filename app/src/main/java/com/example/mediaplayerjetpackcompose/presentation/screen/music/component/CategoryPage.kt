@@ -26,16 +26,15 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.domain.model.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.TabBarPosition
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.MusicMediaItem
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.sortBar
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.MusicMediaItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -120,7 +119,6 @@ fun CategoryPage(
             item = item,
             isFav = false,
             currentMediaId = currentMediaCurrentState.mediaId,
-            artworkImage = item.artBitmap.asImageBitmap(),
             onItemClick = {
               onMusicClick.invoke(index, musicPageViewModel.musicCategoryList)
             },
