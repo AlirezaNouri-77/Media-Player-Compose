@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.domain.model
+package com.example.mediaplayerjetpackcompose.domain.model.videoSection
 
 import android.net.Uri
 import androidx.compose.runtime.Stable

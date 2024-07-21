@@ -27,7 +27,7 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPage
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun MainScreen(
+fun RootScreen(
   musicPageViewModel: MusicPageViewModel = koinViewModel(),
   videoPageViewModel: VideoPageViewModel = koinViewModel(),
 ) {

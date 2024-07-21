@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat.checkSelfPermission
 import com.example.mediaplayerjetpackcompose.data.util.Constant.permissionsList
 import com.example.mediaplayerjetpackcompose.data.util.encodeStringNavigation
-import com.example.mediaplayerjetpackcompose.presentation.screen.MainScreen
+import com.example.mediaplayerjetpackcompose.presentation.screen.RootScreen
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.NoPermissionPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.component.VideoPlayer
@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
                   videoPageViewModel = videoPageViewModel,
                   onBackClick = { this.finishAffinity() })
               } else {
-                MainScreen()
+                RootScreen()
               }
             }
           }

@@ -1,6 +1,5 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.video
 
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.compose.runtime.getValue
@@ -18,13 +17,10 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
-import com.example.mediaplayerjetpackcompose.data.util.GetMediaArt
-import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
-import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreResult
-import com.example.mediaplayerjetpackcompose.domain.model.VideoModel
-import com.example.mediaplayerjetpackcompose.domain.model.VideoThumbnailModel
-import com.example.mediaplayerjetpackcompose.domain.model.toMediaItem
+import com.example.mediaplayerjetpackcompose.domain.model.MediaStoreResult
+import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoModel
+import com.example.mediaplayerjetpackcompose.domain.model.videoSection.toMediaItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -43,14 +39,12 @@ import kotlinx.coroutines.withContext
 class VideoPageViewModel(
   private var videoMediaStoreRepository: MediaStoreRepositoryImpl<VideoModel>,
   private var exoPlayer: ExoPlayer,
-  private var getMediaArt: GetMediaArt,
 ) : ViewModel() {
 
   var isLoading by mutableStateOf(true)
   var deviceOrientation by mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT)
   var mediaStoreDataList = mutableStateListOf<VideoModel>()
     private set
-  var videoThumbnailBitmap = mutableStateListOf<VideoThumbnailModel>()
 
   init {
     getVideo()
@@ -91,10 +85,6 @@ class VideoPageViewModel(
 
   fun provideExoPlayer(): ExoPlayer = exoPlayer
 
-  suspend fun getVideoThumbNail(uri: Uri): Bitmap? {
-    return onIoDispatcher { getMediaArt.getVideoThumbNail(uri) }
-  }
-
   fun startPlay(index: Int, videoList: List<VideoModel>) {
     exoPlayer.apply {
       this.setMediaItems(videoList.map(VideoModel::toMediaItem), index, 0L)
@@ -114,7 +104,9 @@ class VideoPageViewModel(
   }
 
   fun resumePlayer() = exoPlayer.play()
+
   fun seekToNext() = exoPlayer.seekToNextMediaItem()
+
   fun fastForward(position: Long, currentPosition: Long) {
     exoPlayer.seekTo(currentPosition + position)
   }
@@ -124,6 +116,7 @@ class VideoPageViewModel(
   }
 
   fun seekToPrevious() = exoPlayer.seekToPreviousMediaItem()
+
   fun seekToPosition(position: Long) {
     exoPlayer.seekTo(position)
   }

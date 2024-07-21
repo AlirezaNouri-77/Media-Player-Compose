@@ -68,7 +68,8 @@ import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.util.decodeStringNavigation
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
-import com.example.mediaplayerjetpackcompose.domain.model.MiddleScreenVideoPlayerInfoClass
+import com.example.mediaplayerjetpackcompose.domain.model.videoSection.FastSeekMode
+import com.example.mediaplayerjetpackcompose.domain.model.videoSection.MiddleVideoPlayerIndicator
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import kotlinx.coroutines.delay
@@ -91,8 +92,8 @@ fun VideoPlayer(
   var iconResizeMode by remember {
     mutableIntStateOf(R.drawable.icon_fullscreen_24)
   }
-  var middleScreenVideoPlayerInfoClassMutableState by remember {
-    mutableStateOf<MiddleScreenVideoPlayerInfoClass>(MiddleScreenVideoPlayerInfoClass.Initial)
+  var middleVideoPlayerIndicatorMutableState by remember {
+    mutableStateOf<MiddleVideoPlayerIndicator>(MiddleVideoPlayerIndicator.Initial)
   }
   val currentPosition by videoPageViewModel.currentMediaPosition.collectAsStateWithLifecycle(
     initialValue = 0
@@ -187,15 +188,15 @@ fun VideoPlayer(
             when {
               offset.x > playerSize.width / 2 -> {
                 videoPageViewModel.fastForward(15_000, currentPosition)
-                middleScreenVideoPlayerInfoClassMutableState =
-                  MiddleScreenVideoPlayerInfoClass.FastSeek("15", R.drawable.icon_fast_forward_24)
+                middleVideoPlayerIndicatorMutableState =
+                  MiddleVideoPlayerIndicator.FastSeek(FastSeekMode.FastForward)
                 showInfoMiddleScreen = true
               }
 
               offset.x < playerSize.width / 2 -> {
                 videoPageViewModel.fastRewind(15_000, currentPosition)
-                middleScreenVideoPlayerInfoClassMutableState =
-                  MiddleScreenVideoPlayerInfoClass.FastSeek("15", R.drawable.icon_fast_rewind_24)
+                middleVideoPlayerIndicatorMutableState =
+                  MiddleVideoPlayerIndicator.FastSeek(FastSeekMode.FastRewind)
                 showInfoMiddleScreen = true
               }
             }
@@ -221,7 +222,7 @@ fun VideoPlayer(
     modifier = Modifier,
     showInfoMiddleScreen = showInfoMiddleScreen,
     seekPosition = seekPosition.toLong(),
-    middleScreenVideoPlayerInfoClass = middleScreenVideoPlayerInfoClassMutableState,
+    middleVideoPlayerIndicator = middleVideoPlayerIndicatorMutableState,
   )
 
   AnimatedVisibility(
@@ -332,7 +333,7 @@ fun VideoPlayer(
           onValueChange = { value ->
             showInfoMiddleScreen = true
             seekPosition = value
-            middleScreenVideoPlayerInfoClassMutableState = MiddleScreenVideoPlayerInfoClass.Seek(seekPosition.toLong())
+            middleVideoPlayerIndicatorMutableState = MiddleVideoPlayerIndicator.Seek(seekPosition.toLong())
             videoPageViewModel.seekToPosition(seekPosition.toLong())
           },
           valueRange = 0f..(currentState.value.metaData.extras?.getInt("DURATION")?.toFloat()
@@ -437,7 +438,7 @@ fun MiddleInfoHandler(
   modifier: Modifier,
   showInfoMiddleScreen: Boolean,
   seekPosition: Long,
-  middleScreenVideoPlayerInfoClass: MiddleScreenVideoPlayerInfoClass,
+  middleVideoPlayerIndicator: MiddleVideoPlayerIndicator,
 ) {
   AnimatedVisibility(
     visible = showInfoMiddleScreen,
@@ -448,13 +449,13 @@ fun MiddleInfoHandler(
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
       var text = ""
       var icon: Int? = 0
-      when (middleScreenVideoPlayerInfoClass) {
-        is MiddleScreenVideoPlayerInfoClass.FastSeek -> {
-          text = middleScreenVideoPlayerInfoClass.text
-          icon = middleScreenVideoPlayerInfoClass.icon
+      when (middleVideoPlayerIndicator) {
+        is MiddleVideoPlayerIndicator.FastSeek -> {
+          text = middleVideoPlayerIndicator.seekMode.message
+          icon = middleVideoPlayerIndicator.seekMode.icon
         }
 
-        is MiddleScreenVideoPlayerInfoClass.Seek -> {
+        is MiddleVideoPlayerIndicator.Seek -> {
           text = seekPosition.toInt().convertMilliSecondToTime()
           icon = null
         }

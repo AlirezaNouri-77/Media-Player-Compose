@@ -33,9 +33,10 @@ fun BottomNavigationBar(
     containerColor = MaterialTheme.colorScheme.primary,
     contentColor = MaterialTheme.colorScheme.onPrimary,
   ) {
+
     bottomNavigationItemList.forEach {
 
-      val iconAlpha = if (currentRoute == it.route.route) 1f else 0.5f
+      val iconAlpha = if (currentRoute == it.route.route) 1f else 0.4f
 
       NavigationBarItem(
         selected = currentRoute == it.route.route,
@@ -44,7 +45,7 @@ fun BottomNavigationBar(
           indicatorColor = Color.Transparent,
         ),
         onClick = {
-          onClick.invoke(it.route.route)
+          if (currentRoute != it.route.route) onClick.invoke(it.route.route)
         },
         icon = {
           Icon(
@@ -59,11 +60,13 @@ fun BottomNavigationBar(
         label = {
           Text(
             text = it.title,
+            modifier = Modifier
+              .graphicsLayer { alpha = iconAlpha },
             color = MaterialTheme.colorScheme.onPrimary,
           )
         }
       )
     }
-  }
 
+  }
 }

@@ -34,7 +34,7 @@ import com.example.mediaplayerjetpackcompose.data.util.convertByteToReadableSize
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.util.extractFileExtension
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
-import com.example.mediaplayerjetpackcompose.domain.model.VideoModel
+import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoModel
 
 @Composable
 fun VideoMediaItem(

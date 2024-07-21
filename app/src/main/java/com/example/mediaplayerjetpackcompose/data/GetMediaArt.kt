@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.data.util
+package com.example.mediaplayerjetpackcompose.data
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -10,6 +10,8 @@ import android.util.Size
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
 import com.example.mediaplayerjetpackcompose.R
+import com.example.mediaplayerjetpackcompose.data.util.Constant
+import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -46,15 +48,6 @@ class GetMediaArt(
       }
     }
 
-  }
-
-  fun getDefaultArtWork(width: Int, height: Int): Bitmap {
-    return Bitmap.createScaledBitmap(
-      AppCompatResources.getDrawable(context, R.drawable.icon_music_note)!!.toBitmap(),
-      width,
-      height,
-      true
-    )
   }
 
   suspend fun getVideoThumbNail(uri: Uri): Bitmap? {

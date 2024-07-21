@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
-import com.example.mediaplayerjetpackcompose.domain.model.TabBarPosition
+import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.TabBarPosition
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.CategoryListItem
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.MusicMediaItem
@@ -95,9 +95,9 @@ fun MusicList(
         TabBarPosition.ARTIST -> {
           items(musicPageViewModel.artistsMusicMap) { item ->
             CategoryListItem(
-              categoryName = item.name,
+              categoryName = item.categoryName,
               //   artWork = null,
-              musicListSize = item.list.size,
+              musicListSize = item.categoryList.size,
               onClick = { string ->
                 navController.navigate("Category/$string")
               },
@@ -108,8 +108,8 @@ fun MusicList(
         TabBarPosition.ALBUM -> {
           items(musicPageViewModel.albumMusicMap) { item ->
             CategoryListItem(
-              categoryName = item.name,
-              musicListSize = item.list.size,
+              categoryName = item.categoryName,
+              musicListSize = item.categoryList.size,
               onClick = { string ->
                 navController.navigate("Category/$string")
               },

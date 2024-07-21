@@ -19,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.domain.model.SortBarModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.SortBarModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 
 @OptIn(ExperimentalFoundationApi::class)

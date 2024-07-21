@@ -5,10 +5,10 @@ import com.example.mediaplayerjetpackcompose.data.database.databaseClass.AppData
 import com.example.mediaplayerjetpackcompose.data.repository.MusicMediaStoreRepository
 import com.example.mediaplayerjetpackcompose.data.repository.VideoMediaStoreRepository
 import com.example.mediaplayerjetpackcompose.data.service.MusicServiceConnection
-import com.example.mediaplayerjetpackcompose.data.util.GetMediaArt
+import com.example.mediaplayerjetpackcompose.data.GetMediaArt
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
-import com.example.mediaplayerjetpackcompose.domain.model.MusicModel
-import com.example.mediaplayerjetpackcompose.domain.model.VideoModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.MusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import org.koin.android.ext.koin.androidApplication
@@ -29,7 +29,7 @@ var appModule = module {
   single<MediaStoreRepositoryImpl<VideoModel>> { VideoMediaStoreRepository(androidContext().contentResolver) }
   single { MusicServiceConnection(androidApplication().applicationContext) }
 
-  viewModel { MusicPageViewModel(get(named("musicRepo")), get(), get(), get()) }
-  viewModel { VideoPageViewModel(get(), get(), get()) }
+  viewModel { MusicPageViewModel(get(named("musicRepo")), get(), get()) }
+  viewModel { VideoPageViewModel(get(), get()) }
 
 }

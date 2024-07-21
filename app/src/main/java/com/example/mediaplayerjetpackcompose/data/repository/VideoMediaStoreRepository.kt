@@ -6,8 +6,8 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
-import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreResult
-import com.example.mediaplayerjetpackcompose.domain.model.VideoModel
+import com.example.mediaplayerjetpackcompose.domain.model.MediaStoreResult
+import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

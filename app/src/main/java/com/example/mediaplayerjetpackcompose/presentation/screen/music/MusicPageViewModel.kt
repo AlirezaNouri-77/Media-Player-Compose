@@ -1,7 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music
 
 import android.graphics.Bitmap
-import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -11,16 +10,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mediaplayerjetpackcompose.data.database.dao.DataBaseDao
 import com.example.mediaplayerjetpackcompose.data.service.MusicServiceConnection
-import com.example.mediaplayerjetpackcompose.data.util.GetMediaArt
 import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
 import com.example.mediaplayerjetpackcompose.data.util.onMainDispatcher
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
-import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreResult
-import com.example.mediaplayerjetpackcompose.domain.model.CategoryListModel
-import com.example.mediaplayerjetpackcompose.domain.model.FavoriteModel
-import com.example.mediaplayerjetpackcompose.domain.model.MusicModel
-import com.example.mediaplayerjetpackcompose.domain.model.SortBarModel
-import com.example.mediaplayerjetpackcompose.domain.model.TabBarPosition
+import com.example.mediaplayerjetpackcompose.domain.model.MediaStoreResult
+import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.CategoryMusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.FavoriteMusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.MusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.SortBarModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.TabBarPosition
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
@@ -31,7 +29,6 @@ import kotlinx.coroutines.launch
 class MusicPageViewModel(
   private var musicMediaStoreRepository: MediaStoreRepositoryImpl<MusicModel>,
   private var musicServiceConnection: MusicServiceConnection,
-  private var getMediaArt: GetMediaArt,
   private var dataBaseDao: DataBaseDao,
 ) : ViewModel() {
 
@@ -40,8 +37,8 @@ class MusicPageViewModel(
   var favoriteMusicList = mutableStateListOf<MusicModel>()
 
   var musicCategoryList = mutableStateListOf<MusicModel>()
-  var artistsMusicMap = mutableStateListOf<CategoryListModel>()
-  var albumMusicMap = mutableStateListOf<CategoryListModel>()
+  var artistsMusicMap = mutableStateListOf<CategoryMusicModel>()
+  var albumMusicMap = mutableStateListOf<CategoryMusicModel>()
 
   val currentRepeatMode = musicServiceConnection.currentRepeatMode
   var favoriteListMediaId = mutableStateListOf<String>()
@@ -107,9 +104,6 @@ class MusicPageViewModel(
       }
     }
 
-  suspend fun getArtWorkThumbnail(uri: Uri): Bitmap = getMediaArt.getMusicArt(uri, 350, 350)
-  fun getDefaultArtWorkThumbnail(): Bitmap = getMediaArt.getDefaultArtWork(350, 350)
-
   fun moveToNext() = musicServiceConnection.moveToNext()
   fun moveToPrevious() = musicServiceConnection.moveToPrevious()
   fun pauseMusic() = musicServiceConnection.pauseMusic()
@@ -128,7 +122,7 @@ class MusicPageViewModel(
         if (mediaId in favoriteListMediaId) {
           dataBaseDao.deleteFavoriteSong(mediaId)
         } else {
-          dataBaseDao.insertFavoriteSong(FavoriteModel(mediaId = mediaId))
+          dataBaseDao.insertFavoriteSong(FavoriteMusicModel(mediaId = mediaId))
         }
       }
     }
@@ -181,9 +175,9 @@ class MusicPageViewModel(
                 musicList.addAll(result.result)
                 originalMusicList.addAll(result.result)
                 artistsMusicMap.addAll(result.result.groupBy { by -> by.artist }
-                  .map { CategoryListModel(it.key, it.value) })
+                  .map { CategoryMusicModel(it.key, it.value) })
                 albumMusicMap.addAll(result.result.groupBy { by -> by.album }
-                  .map { CategoryListModel(it.key, it.value) })
+                  .map { CategoryMusicModel(it.key, it.value) })
                 isLoading = false
               }
             }
