@@ -28,13 +28,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -60,6 +63,7 @@ fun MiniMusicPlayer(
   onResumeMusic: () -> Unit,
 ) {
 
+  var reactCanvasColor = MaterialTheme.colorScheme.onPrimary
   val duration = remember(currentMediaCurrentState().metaData) {
     currentMediaCurrentState().metaData.extras?.getInt("Duration") ?: 0
   }
@@ -69,11 +73,6 @@ fun MiniMusicPlayer(
   val marqueeAnimate = remember(pagerState.isScrollInProgress) {
     if (pagerState.isScrollInProgress) 0 else Int.MAX_VALUE
   }
-  val animateColor = animateColorAsState(
-    targetValue = Color(artworkColorPalette),
-    animationSpec = tween(durationMillis = 200, delayMillis = 50),
-    label = "",
-  )
 
   Card(
     modifier = modifier
@@ -91,32 +90,24 @@ fun MiniMusicPlayer(
       horizontalArrangement = Arrangement.SpaceAround,
       modifier = Modifier
         .fillMaxWidth()
-        .padding(horizontal = 10.dp, vertical = 10.dp),
+        .padding(horizontal = 6.dp, vertical = 5.dp),
     ) {
-      IconButton(
+      ArtworkImage(
         modifier = Modifier
-          .weight(0.2f, false)
-          .size(40.dp),
-        onClick = {
-          when (currentMediaCurrentState().isPlaying) {
-            true -> onPauseMusic.invoke()
-            false -> onResumeMusic.invoke()
-          }
-        },
-      ) {
-        Icon(
-          painter = painterResource(id = playAndPauseIcon),
-          contentDescription = "",
-          tint = MaterialTheme.colorScheme.onPrimary,
-        )
-      }
-
+          .weight(0.2f,false)
+          .size(45.dp)
+          .clip(RoundedCornerShape(8.dp))
+          .background(color = MaterialTheme.colorScheme.primary),
+        inset = 30f,
+        uri = { currentMediaCurrentState().metaData.artworkUri },
+      )
       Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().weight(0.6f),
+        verticalArrangement = Arrangement.spacedBy(5.dp,Alignment.CenterVertically),
+        horizontalAlignment = Alignment.Start,
       ) {
         Box(
           modifier = Modifier
-            .weight(0.8f)
             .fillMaxWidth(),
           contentAlignment = Alignment.Center,
         ) {
@@ -151,22 +142,42 @@ fun MiniMusicPlayer(
             }
           }
         }
+        Box(
+          modifier = Modifier
+            .fillMaxWidth()
+            .height(4.dp)
+            .graphicsLayer {
+              shape = RoundedCornerShape(4.dp)
+              clip = true
+            }
+            .drawBehind {
+              val size = this.size.width
+              val progress = (currentMusicPosition() * size) / duration
+              clipRect(
+                right = progress,
+              ) {
+                this.drawRect(color = reactCanvasColor)
+              }
+            },
+        )
+      }
 
-//        Box(
-//          modifier = Modifier
-//            .fillMaxWidth()
-//            .height(5.dp)
-//            .drawBehind {
-//              val size = this.size.width
-//              val progress = (currentMusicPosition() * size) / duration
-//              clipRect(
-//                right = progress,
-//              ) {
-//                this.drawRect(color = Color.White)
-//              }
-//            },
-//        )
-
+      IconButton(
+        modifier = Modifier
+          .weight(0.2f, false)
+          .size(40.dp),
+        onClick = {
+          when (currentMediaCurrentState().isPlaying) {
+            true -> onPauseMusic.invoke()
+            false -> onResumeMusic.invoke()
+          }
+        },
+      ) {
+        Icon(
+          painter = painterResource(id = playAndPauseIcon),
+          contentDescription = "",
+          tint = MaterialTheme.colorScheme.onPrimary,
+        )
       }
 
     }
