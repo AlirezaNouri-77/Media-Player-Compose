@@ -24,7 +24,7 @@ fun ArtworkImage(
     contentDescription = "",
     contentScale = ContentScale.FillBounds,
     modifier = modifier
-      .background(color = MaterialTheme.colorScheme.primary),
+      .background(color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f)),
     placeholder = forwardingPainterCoil(
       painter = painterResource(id = R.drawable.icon_music_note),
       colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),

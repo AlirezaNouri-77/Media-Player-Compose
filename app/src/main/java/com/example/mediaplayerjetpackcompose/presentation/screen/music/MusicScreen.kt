@@ -147,12 +147,12 @@ fun MusicScreen(
           end.linkTo(parent.end)
           bottom.linkTo(parent.bottom)
         },
-      enter = fadeIn(tween(100)) + slideInVertically(
-        animationSpec = tween(400),
+      enter = fadeIn(tween(300, delayMillis = 90)) + slideInVertically(
+        animationSpec = tween(400, 100),
         initialOffsetY = { int -> int / 4 }),
       exit = slideOutVertically(
         animationSpec = tween(400, 100),
-        targetOffsetY = { int -> int / 4 }) + fadeOut(tween(100))
+        targetOffsetY = { int -> int / 4 }) + fadeOut(tween(300, delayMillis = 90))
     ) {
       MiniMusicPlayer(
         modifier = Modifier.onGloballyPositioned { bottomPadding.value = density.run { it.size.height.toDp() } },

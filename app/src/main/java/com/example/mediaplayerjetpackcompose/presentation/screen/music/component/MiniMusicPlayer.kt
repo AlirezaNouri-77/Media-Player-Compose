@@ -27,6 +27,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
@@ -35,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
+import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.MusicModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
@@ -56,6 +59,7 @@ fun MiniMusicPlayer(
   onMovePreviousMusic: (Boolean) -> Unit,
 ) {
 
+  var backgroundButton = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f)
   val pagerState = rememberPagerState(
     initialPage = currentPagerPage,
     pageCount = { pagerMusicList.size },
@@ -104,15 +108,14 @@ fun MiniMusicPlayer(
         modifier = Modifier
           .weight(0.2f, false)
           .size(45.dp)
-          .clip(RoundedCornerShape(8.dp))
-          .background(color = MaterialTheme.colorScheme.primary),
+          .clip(RoundedCornerShape(5.dp)),
         inset = 30f,
         uri = { currentMediaState().metaData.artworkUri },
       )
       Column(
         modifier = Modifier
           .fillMaxWidth()
-          .weight(0.6f),
+          .weight(0.7f),
         verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.Start,
       ) {
@@ -134,8 +137,7 @@ fun MiniMusicPlayer(
             ) {
               Text(
                 text = pagerMusicList[page].name.removeFileExtension(),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
+                fontSize = 13.sp,
                 modifier = Modifier
                   .fillMaxWidth()
                   .basicMarquee(iterations = marqueeAnimate),
@@ -143,8 +145,7 @@ fun MiniMusicPlayer(
               )
               Text(
                 text = pagerMusicList[page].artist,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Light,
+                fontSize = 12.sp,
                 modifier = Modifier
                   .fillMaxWidth(),
                 maxLines = 1,
@@ -172,21 +173,34 @@ fun MiniMusicPlayer(
         )
       }
 
-      IconButton(
+      Column(
         modifier = Modifier
-          .weight(0.2f, false)
-          .size(40.dp),
-        onClick = {
-          when (currentMediaState().isPlaying) {
-            true -> onPauseMusic.invoke()
-            false -> onResumeMusic.invoke()
-          }
-        },
+          .weight(0.1f),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
       ) {
-        Icon(
-          painter = painterResource(id = playAndPauseIcon),
-          contentDescription = "",
-          tint = MaterialTheme.colorScheme.onPrimary,
+        IconButton(
+          modifier = Modifier
+            .size(50.dp),
+          onClick = {
+            when (currentMediaState().isPlaying) {
+              true -> onPauseMusic.invoke()
+              false -> onResumeMusic.invoke()
+            }
+          },
+        ) {
+          Icon(
+            painter = painterResource(id = playAndPauseIcon),
+            contentDescription = "",
+            tint = MaterialTheme.colorScheme.onPrimary,
+          )
+        }
+        Text(
+          modifier = Modifier,
+          text = currentMusicPosition().toInt().convertMilliSecondToTime(),
+          fontSize = 12.sp,
+          color = MaterialTheme.colorScheme.onPrimary,
+          fontWeight = FontWeight.Medium,
         )
       }
 
