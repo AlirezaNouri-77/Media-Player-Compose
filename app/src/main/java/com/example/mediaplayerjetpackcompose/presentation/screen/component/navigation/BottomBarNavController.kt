@@ -9,7 +9,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,7 +35,6 @@ fun BottomBarNavController(
   navHostController: NavHostController,
   musicPageViewModel: MusicPageViewModel,
   videoPageViewModel: VideoPageViewModel,
-  pagerState: PagerState,
   window: Window = (LocalContext.current as Activity).window
 ) {
 
@@ -142,7 +140,6 @@ fun BottomBarNavController(
     ) {
       MusicScreen(
         musicPageViewModel = musicPageViewModel,
-        pagerState = pagerState,
       )
     }
   }

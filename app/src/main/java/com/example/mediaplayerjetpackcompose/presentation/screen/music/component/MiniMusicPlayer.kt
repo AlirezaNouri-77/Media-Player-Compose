@@ -1,7 +1,5 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
@@ -10,13 +8,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,15 +27,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.ClipOp
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -48,27 +38,45 @@ import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.MusicModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.PagerHandler
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 fun MiniMusicPlayer(
   modifier: Modifier,
   pagerMusicList: List<MusicModel>,
-  currentMediaCurrentState: () -> MediaCurrentState,
+  setCurrentPagerNumber: (Int) -> Unit,
+  currentPagerPage: Int,
+  currentMediaState: () -> MediaCurrentState,
   currentMusicPosition: () -> Long,
-  pagerState: PagerState,
   onClick: () -> Unit,
   onPauseMusic: () -> Unit,
-  artworkColorPalette: Long,
   onResumeMusic: () -> Unit,
+  onMoveNextMusic: () -> Unit,
+  onMovePreviousMusic: (Boolean) -> Unit,
 ) {
 
-  var reactCanvasColor = MaterialTheme.colorScheme.onPrimary
-  val duration = remember(currentMediaCurrentState().metaData) {
-    currentMediaCurrentState().metaData.extras?.getInt("Duration") ?: 0
+  val pagerState = rememberPagerState(
+    initialPage = currentPagerPage,
+    pageCount = { pagerMusicList.size },
+  )
+
+  PagerHandler(
+    currentMediaState = currentMediaState,
+    pagerMusicList = pagerMusicList,
+    currentPagerPage = currentPagerPage,
+    pagerState = pagerState,
+    setCurrentPagerNumber = setCurrentPagerNumber,
+    onMoveNextMusic = onMoveNextMusic,
+    onMovePreviousMusic = onMovePreviousMusic,
+  )
+
+  val reactCanvasColor = MaterialTheme.colorScheme.onPrimary
+  val duration = remember(currentMediaState().metaData) {
+    currentMediaState().metaData.extras?.getInt("Duration") ?: 0
   }
-  val playAndPauseIcon = remember(currentMediaCurrentState().isPlaying) {
-    if (currentMediaCurrentState().isPlaying) R.drawable.icon_pause_24 else R.drawable.icon_play_arrow_24
+  val playAndPauseIcon = remember(currentMediaState().isPlaying) {
+    if (currentMediaState().isPlaying) R.drawable.icon_pause_24 else R.drawable.icon_play_arrow_24
   }
   val marqueeAnimate = remember(pagerState.isScrollInProgress) {
     if (pagerState.isScrollInProgress) 0 else Int.MAX_VALUE
@@ -94,16 +102,18 @@ fun MiniMusicPlayer(
     ) {
       ArtworkImage(
         modifier = Modifier
-          .weight(0.2f,false)
+          .weight(0.2f, false)
           .size(45.dp)
           .clip(RoundedCornerShape(8.dp))
           .background(color = MaterialTheme.colorScheme.primary),
         inset = 30f,
-        uri = { currentMediaCurrentState().metaData.artworkUri },
+        uri = { currentMediaState().metaData.artworkUri },
       )
       Column(
-        modifier = Modifier.fillMaxWidth().weight(0.6f),
-        verticalArrangement = Arrangement.spacedBy(5.dp,Alignment.CenterVertically),
+        modifier = Modifier
+          .fillMaxWidth()
+          .weight(0.6f),
+        verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.Start,
       ) {
         Box(
@@ -167,7 +177,7 @@ fun MiniMusicPlayer(
           .weight(0.2f, false)
           .size(40.dp),
         onClick = {
-          when (currentMediaCurrentState().isPlaying) {
+          when (currentMediaState().isPlaying) {
             true -> onPauseMusic.invoke()
             false -> onResumeMusic.invoke()
           }

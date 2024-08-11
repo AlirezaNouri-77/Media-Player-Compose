@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.MusicModel
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.PagerHandler
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.HeaderSection
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.PagerArtwork
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.SliderSection
@@ -39,21 +40,37 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 @Composable
 fun FullMusicPlayer(
   favoriteList: SnapshotStateList<String>,
-  currentMediaCurrentState: () -> MediaCurrentState,
+  currentMediaState: () -> MediaCurrentState,
   backgroundColorByArtwork: Long,
   repeatMode: Int,
-  pagerState: PagerState,
   currentMusicPosition: () -> Long,
+  currentPagerPage: Int,
   pagerMusicList: List<MusicModel>,
   onBack: () -> Unit,
   onPauseMusic: () -> Unit,
   onResumeMusic: () -> Unit,
   onMoveNextMusic: () -> Unit,
   onMovePreviousMusic: (Boolean) -> Unit,
+  setCurrentPagerNumber: (Int) -> Unit,
   onSeekTo: (Long) -> Unit,
   onRepeatMode: (Int) -> Unit,
   onFavoriteToggle: () -> Unit,
 ) {
+
+  val pagerState = rememberPagerState(
+    initialPage = currentPagerPage,
+    pageCount = { pagerMusicList.size },
+  )
+
+  PagerHandler(
+    currentMediaState = currentMediaState,
+    pagerMusicList = pagerMusicList,
+    currentPagerPage = currentPagerPage,
+    pagerState = pagerState,
+    setCurrentPagerNumber = setCurrentPagerNumber,
+    onMoveNextMusic = onMoveNextMusic,
+    onMovePreviousMusic = onMovePreviousMusic,
+  )
 
   val animateColor =
     animateColorAsState(
@@ -123,7 +140,7 @@ fun FullMusicPlayer(
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 25.dp),
-        currentMediaCurrentState = { currentMediaCurrentState() },
+        currentMediaCurrentState = { currentMediaState() },
       )
       SliderSection(
         modifier = Modifier
@@ -131,7 +148,7 @@ fun FullMusicPlayer(
           .padding(horizontal = 20.dp),
         currentMusicPosition = { currentMusicPosition() },
         seekTo = { onSeekTo.invoke(it) },
-        duration = currentMediaCurrentState().metaData.extras?.getInt("Duration")?.toFloat() ?: 0f
+        duration = currentMediaState().metaData.extras?.getInt("Duration")?.toFloat() ?: 0f
       )
     }
 
@@ -142,7 +159,7 @@ fun FullMusicPlayer(
         bottom.linkTo(parent.bottom)
         top.linkTo(centerRef.bottom)
       },
-      currentMediaCurrentState = currentMediaCurrentState(),
+      currentMediaCurrentState = currentMediaState(),
       favoriteList = favoriteList,
       repeatMode = repeatMode,
       onPauseMusic = { onPauseMusic() },

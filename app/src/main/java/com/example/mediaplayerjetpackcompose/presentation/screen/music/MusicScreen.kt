@@ -6,12 +6,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,11 +38,9 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.MusicList
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MusicScreen(
   musicPageViewModel: MusicPageViewModel,
-  pagerState: PagerState,
   density: Density = LocalDensity.current,
 ) {
 
@@ -160,14 +156,16 @@ fun MusicScreen(
     ) {
       MiniMusicPlayer(
         modifier = Modifier.onGloballyPositioned { bottomPadding.value = density.run { it.size.height.toDp() } },
-        pagerState = pagerState,
         pagerMusicList = musicPageViewModel.pagerItemList,
-        artworkColorPalette = musicPageViewModel.musicArtworkColorPalette,
         onPauseMusic = musicPageViewModel::pauseMusic,
         onResumeMusic = musicPageViewModel::resumeMusic,
-        currentMediaCurrentState = { currentMusicState },
+        currentMediaState = { currentMusicState },
         currentMusicPosition = { musicPageViewModel.currentMusicPosition.floatValue.toLong() },
         onClick = { musicPageViewModel.isFullPlayerShow = true },
+        onMovePreviousMusic = { musicPageViewModel.moveToPrevious(it) },
+        onMoveNextMusic = musicPageViewModel::moveToNext,
+        currentPagerPage = musicPageViewModel.currentPagerPage.intValue,
+        setCurrentPagerNumber = { musicPageViewModel.currentPagerPage.intValue = it }
       )
     }
 

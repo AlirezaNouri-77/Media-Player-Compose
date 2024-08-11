@@ -6,11 +6,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,13 +27,11 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RootScreen(
   musicPageViewModel: MusicPageViewModel = koinViewModel(),
   videoPageViewModel: VideoPageViewModel = koinViewModel(),
 ) {
-
 
   val navHostController: NavHostController = rememberNavController()
   val navBackStackEntry by navHostController.currentBackStackEntryAsState()
@@ -43,37 +39,6 @@ fun RootScreen(
     navBackStackEntry?.destination?.route
   }
   val currentMusicState = musicPageViewModel.currentMusicState.collectAsStateWithLifecycle().value
-
-  val pagerState = rememberPagerState(
-    initialPage = musicPageViewModel.currentPagerPage.intValue,
-    pageCount = { musicPageViewModel.pagerItemList.size },
-  )
-
-  LaunchedEffect(key1 = currentMusicState.mediaId) {
-    val index = musicPageViewModel.pagerItemList.indexOfFirst { it.musicId == currentMusicState.mediaId.toLong() }
-    musicPageViewModel.currentPagerPage.intValue = index
-    pagerState.animateScrollToPage(index, animationSpec = tween(durationMillis = 400))
-  }
-
-  LaunchedEffect(key1 = musicPageViewModel.currentPagerPage.intValue) {
-    if (pagerState.currentPage == musicPageViewModel.currentPagerPage.intValue) return@LaunchedEffect
-    pagerState.animateScrollToPage(
-      musicPageViewModel.currentPagerPage.intValue,
-      animationSpec = tween(durationMillis = 400)
-    )
-  }
-
-  LaunchedEffect(key1 = pagerState.currentPage, key2 = pagerState.isScrollInProgress) {
-    if (pagerState.currentPage == musicPageViewModel.currentPagerPage.intValue) return@LaunchedEffect
-    if (pagerState.currentPage != musicPageViewModel.currentPagerPage.intValue && !pagerState.isScrollInProgress) {
-      if (pagerState.currentPage > musicPageViewModel.currentPagerPage.intValue) {
-        musicPageViewModel.moveToNext()
-      } else if (pagerState.currentPage < musicPageViewModel.currentPagerPage.intValue) {
-        musicPageViewModel.moveToPrevious(true)
-      }
-      musicPageViewModel.currentPagerPage.intValue = pagerState.currentPage
-    }
-  }
 
   LaunchedEffect(key1 = currentMusicState.metaData) {
     musicPageViewModel.getColor(currentMusicState.uri)
@@ -108,7 +73,6 @@ fun RootScreen(
         navHostController = navHostController,
         musicPageViewModel = musicPageViewModel,
         videoPageViewModel = videoPageViewModel,
-        pagerState = pagerState,
       )
     }
   }
@@ -124,12 +88,13 @@ fun RootScreen(
   ) {
 
     FullMusicPlayer(
-      currentMediaCurrentState = { currentMusicState },
+      currentMediaState = { currentMusicState },
       favoriteList = musicPageViewModel.favoriteListMediaId,
       pagerMusicList = musicPageViewModel.pagerItemList,
       backgroundColorByArtwork = musicPageViewModel.musicArtworkColorPalette,
       repeatMode = musicPageViewModel.currentRepeatMode.intValue,
-      pagerState = pagerState,
+      currentPagerPage = musicPageViewModel.currentPagerPage.intValue,
+      setCurrentPagerNumber = { musicPageViewModel.currentPagerPage.intValue = it },
       onPauseMusic = musicPageViewModel::pauseMusic,
       onResumeMusic = musicPageViewModel::resumeMusic,
       onMoveNextMusic = musicPageViewModel::moveToNext,
