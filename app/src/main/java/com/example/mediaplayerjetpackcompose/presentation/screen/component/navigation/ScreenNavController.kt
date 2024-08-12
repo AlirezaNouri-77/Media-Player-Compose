@@ -8,11 +8,12 @@ import android.view.WindowInsetsController
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
@@ -21,7 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import com.example.mediaplayerjetpackcompose.domain.model.navigation.BottomBarNavigationModel
+import com.example.mediaplayerjetpackcompose.domain.model.navigation.NavigationRouteModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicScreen
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPage
@@ -29,9 +30,8 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.component.VideoPlayer
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BottomBarNavController(
+fun ScreenNavController(
   navHostController: NavHostController,
   musicPageViewModel: MusicPageViewModel,
   videoPageViewModel: VideoPageViewModel,
@@ -43,7 +43,7 @@ fun BottomBarNavController(
     navBackStackEntry?.destination?.route
   }
 
-  if (currentRoute == BottomBarNavigationModel.VideoPlayerScreen.route) {
+  if (currentRoute == NavigationRouteModel.VideoPlayerScreen.route) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       window.insetsController?.apply {
         hide(WindowInsets.Type.statusBars())
@@ -62,12 +62,14 @@ fun BottomBarNavController(
   }
 
   NavHost(
+    modifier = Modifier
+      .fillMaxSize(),
     navController = navHostController,
-    startDestination = BottomBarNavigationModel.MusicScreen.route,
+    startDestination = NavigationRouteModel.MusicScreen.route,
   ) {
 
     composable(
-      BottomBarNavigationModel.VideoScreen.route,
+      NavigationRouteModel.VideoScreen.route,
       enterTransition = {
         fadeIn(tween(200, 20))
       },
@@ -84,11 +86,14 @@ fun BottomBarNavController(
       VideoPage(
         navHostController = navHostController,
         videoPageViewModel = videoPageViewModel,
+        onNavigateToMusicScreen = {
+          navHostController.navigate(NavigationRouteModel.MusicScreen.route)
+        }
       )
     }
 
     composable(
-      BottomBarNavigationModel.VideoPlayerScreen.route,
+      NavigationRouteModel.VideoPlayerScreen.route,
       enterTransition = {
         fadeIn(tween(200))
       },
@@ -116,7 +121,7 @@ fun BottomBarNavController(
           videoPageViewModel = videoPageViewModel,
           onBackClick = {
             navHostController.popBackStack(
-              BottomBarNavigationModel.VideoScreen.route, inclusive = false
+              NavigationRouteModel.VideoScreen.route, inclusive = false
             )
           },
         )
@@ -124,7 +129,7 @@ fun BottomBarNavController(
     }
 
     composable(
-      BottomBarNavigationModel.MusicScreen.route,
+      NavigationRouteModel.MusicScreen.route,
       enterTransition = {
         fadeIn(tween(200, 20))
       },
@@ -140,6 +145,9 @@ fun BottomBarNavController(
     ) {
       MusicScreen(
         musicPageViewModel = musicPageViewModel,
+        onNavigateToVideoScreen = {
+          navHostController.navigate(NavigationRouteModel.VideoScreen.route)
+        }
       )
     }
   }

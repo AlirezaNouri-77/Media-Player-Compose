@@ -1,13 +1,12 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -18,10 +17,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -32,15 +31,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.topbar.TopBarMusic
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.Loading
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.CategoryPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.MiniMusicPlayer
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.MusicList
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.TopBarMusic
 import kotlinx.coroutines.delay
 
 @Composable
 fun MusicScreen(
   musicPageViewModel: MusicPageViewModel,
+  onNavigateToVideoScreen: () -> Unit,
   density: Density = LocalDensity.current,
 ) {
 
@@ -50,7 +51,7 @@ fun MusicScreen(
   val navController: NavHostController = rememberNavController()
   val currentMusicState = musicPageViewModel.currentMusicState.collectAsStateWithLifecycle().value
 
-  val bottomPadding = remember {
+  val miniPlayerHeight = remember {
     mutableStateOf(0.dp)
   }
 
@@ -65,79 +66,76 @@ fun MusicScreen(
   ) {
     val (musicList, collapsePlayer) = createRefs()
 
-    Box(
+    NavHost(
       modifier = Modifier.constrainAs(musicList) {
         top.linkTo(parent.top)
         start.linkTo(parent.start)
         end.linkTo(parent.end)
         bottom.linkTo(parent.bottom)
       },
+      navController = navController,
+      startDestination = "Home",
     ) {
-      NavHost(
-        navController = navController,
-        startDestination = "Home",
-      ) {
-        composable("Home") {
-          Scaffold(
-            contentWindowInsets = WindowInsets(0.dp),
-            topBar = {
-              TopBarMusic(
-                musicPageViewModel = musicPageViewModel,
-                showSortBar = showSortBar,
-                showSearch = showSearch,
-                currentTabPosition = musicPageViewModel.currentTabState,
-                onSortIconClick = { showSortBar = !showSortBar },
-                onSearchIconClick = { showSearch = !showSearch },
-              )
-            },
-          ) { paddingValue ->
+      composable("Home") {
+        Scaffold(
+          topBar = {
+            TopBarMusic(
+              musicPageViewModel = musicPageViewModel,
+              showSortBar = showSortBar,
+              showSearch = showSearch,
+              currentTabPosition = musicPageViewModel.currentTabState,
+              onSortIconClick = { showSortBar = !showSortBar },
+              onSearchIconClick = { showSearch = !showSearch },
+              onVideoIconClick = { onNavigateToVideoScreen() },
+            )
+          },
+        ) { paddingValue ->
 
-            if (musicPageViewModel.isLoading) {
-              Box(
-                Modifier
-                  .padding(paddingValue)
-                  .fillMaxSize(),
-                contentAlignment = Alignment.Center
-              ) {
-                Text(text = "Loading")
-              }
+          Crossfade(
+            modifier = Modifier
+              .fillMaxSize()
+              .padding(paddingValue),
+            targetState = musicPageViewModel.isLoading,
+            label = "",
+          ) { target ->
+            if (target) {
+              Loading(modifier = Modifier)
             } else {
               MusicList(
                 musicPageViewModel = musicPageViewModel,
                 currentMusicState = currentMusicState,
                 navController = navController,
-                paddingValue = paddingValue,
-                bottomPadding = bottomPadding.value,
+                bottomPadding = miniPlayerHeight.value,
               )
             }
           }
         }
 
-        composable(
-          "Category/{CategoryName}",
-          arguments = listOf(
-            navArgument(name = "CategoryName") {
-              type = NavType.StringType
-            },
-          )
-        ) {
-          CategoryPage(
-            name = it.arguments!!.getString("CategoryName").toString(),
-            currentMediaCurrentState = currentMusicState,
-            musicPageViewModel = musicPageViewModel,
-            onMusicClick = { index, musicList ->
-              musicPageViewModel.playMusic(
-                index = index,
-                musicList
-              )
-            },
-            onBackClick = navController::popBackStack
-          )
-        }
-
       }
-    }
 
+      composable(
+        "Category/{CategoryName}",
+        arguments = listOf(
+          navArgument(name = "CategoryName") {
+            type = NavType.StringType
+          },
+        )
+      ) {
+        CategoryPage(
+          name = it.arguments!!.getString("CategoryName").toString(),
+          currentMediaCurrentState = currentMusicState,
+          musicPageViewModel = musicPageViewModel,
+          onMusicClick = { index, musicList ->
+            musicPageViewModel.playMusic(
+              index = index,
+              musicList
+            )
+          },
+          onBackClick = navController::popBackStack
+        )
+      }
+
+    }
 
     AnimatedVisibility(
       visible = currentMusicState.mediaId.isNotEmpty(),
@@ -147,15 +145,15 @@ fun MusicScreen(
           end.linkTo(parent.end)
           bottom.linkTo(parent.bottom)
         },
-      enter = fadeIn(tween(300, delayMillis = 90)) + slideInVertically(
+      enter = fadeIn(tween(200, delayMillis = 90)) + slideInVertically(
         animationSpec = tween(400, 100),
         initialOffsetY = { int -> int / 4 }),
       exit = slideOutVertically(
         animationSpec = tween(400, 100),
-        targetOffsetY = { int -> int / 4 }) + fadeOut(tween(300, delayMillis = 90))
+        targetOffsetY = { int -> int / 4 }) + fadeOut(tween(200, delayMillis = 90))
     ) {
       MiniMusicPlayer(
-        modifier = Modifier.onGloballyPositioned { bottomPadding.value = density.run { it.size.height.toDp() } },
+        modifier = Modifier.onGloballyPositioned { miniPlayerHeight.value = density.run { it.size.height.toDp() } },
         pagerMusicList = musicPageViewModel.pagerItemList,
         onPauseMusic = musicPageViewModel::pauseMusic,
         onResumeMusic = musicPageViewModel::resumeMusic,

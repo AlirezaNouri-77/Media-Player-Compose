@@ -1,7 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,8 +9,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,8 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
@@ -59,7 +58,6 @@ fun MiniMusicPlayer(
   onMovePreviousMusic: (Boolean) -> Unit,
 ) {
 
-  var backgroundButton = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f)
   val pagerState = rememberPagerState(
     initialPage = currentPagerPage,
     pageCount = { pagerMusicList.size },
@@ -101,6 +99,7 @@ fun MiniMusicPlayer(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.SpaceAround,
       modifier = Modifier
+        .navigationBarsPadding()
         .fillMaxWidth()
         .padding(horizontal = 6.dp, vertical = 5.dp),
     ) {

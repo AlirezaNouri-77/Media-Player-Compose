@@ -7,7 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun LoadingPage(
+fun Loading(
   modifier: Modifier,
 ) {
   Box(

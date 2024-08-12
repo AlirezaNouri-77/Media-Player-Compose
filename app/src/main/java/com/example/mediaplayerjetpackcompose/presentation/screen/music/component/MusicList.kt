@@ -3,7 +3,6 @@ package com.example.mediaplayerjetpackcompose.presentation.screen.music.componen
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -23,7 +22,6 @@ fun MusicList(
   musicPageViewModel: MusicPageViewModel,
   currentMusicState: MediaCurrentState,
   navController: NavController,
-  paddingValue: PaddingValues,
   bottomPadding: Dp,
 ) {
 
@@ -33,8 +31,7 @@ fun MusicList(
   ) {
     LazyColumn(
       modifier = Modifier
-        .fillMaxSize()
-        .padding(paddingValue),
+        .fillMaxSize(),
       contentPadding = PaddingValues(bottom = bottomPadding),
     ) {
       when (it) {

@@ -76,7 +76,7 @@ class MusicPageViewModel(
     }
   }
 
-  suspend fun getColor(uri: Uri) {
+  suspend fun getColorPaletteFromArtwork(uri: Uri) {
     viewModelScope.launch {
       val bitmap = getMediaArt.getMusicArt(uri)
       onIoDispatcher {

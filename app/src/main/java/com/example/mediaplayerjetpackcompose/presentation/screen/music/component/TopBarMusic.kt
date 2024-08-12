@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen.component.topbar
+package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -12,7 +12,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,7 +20,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
@@ -29,6 +30,8 @@ import androidx.compose.material3.TabPosition
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -63,11 +66,13 @@ fun TopBarMusic(
   currentTabPosition: TabBarPosition,
   onSortIconClick: () -> Unit,
   onSearchIconClick: () -> Unit,
+  onVideoIconClick: () -> Unit,
 ) {
 
   val textFieldValue = remember {
     mutableStateOf("")
   }
+
   LaunchedEffect(key1 = textFieldValue.value, block = {
     snapshotFlow { textFieldValue }
       .debounce(500)
@@ -78,15 +83,19 @@ fun TopBarMusic(
 
   Column(
     Modifier
+      .fillMaxWidth()
       .animateContentSize()
       .background(color = MaterialTheme.colorScheme.primary)
   ) {
+
     TopBarSection(
       currentTabPosition = currentTabPosition,
-      isSearchSectionShow = !showSearch,
-      contentColor = MaterialTheme.colorScheme.onPrimary,
+      isSearchSectionShow = showSearch,
       onSortIconClick = { onSortIconClick.invoke() },
-    ) { onSearchIconClick.invoke() }
+      onVideoIconClick = { onVideoIconClick.invoke() },
+      onSearchIconClick = { onSearchIconClick.invoke() },
+    )
+
     AnimatedVisibility(
       visible = showSearch,
     ) {
@@ -101,7 +110,7 @@ fun TopBarMusic(
       visible = !showSearch,
     ) {
       TabBarSection(
-        currentTabState = musicPageViewModel.currentTabState,
+        currentTabState = currentTabPosition,
         onTabClick = { tabBar, _ ->
           musicPageViewModel.currentTabState = tabBar
         }
@@ -111,62 +120,80 @@ fun TopBarMusic(
       musicPageViewModel = musicPageViewModel,
       showSortBar = showSortBar,
     )
-    Spacer(modifier = Modifier.height(10.dp))
+
   }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarSection(
   currentTabPosition: TabBarPosition,
-  contentColor: Color,
   isSearchSectionShow: Boolean,
   onSortIconClick: () -> Unit,
   onSearchIconClick: () -> Unit,
+  onVideoIconClick: () -> Unit,
 ) {
 
-  Row(
-    modifier = Modifier.fillMaxWidth(),
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.Absolute.SpaceBetween,
-  ) {
-    Text(
-      text = "Music",
-      modifier = Modifier
-        .padding(10.dp),
-      fontWeight = FontWeight.Bold,
-      fontSize = 36.sp,
-    )
-    AnimatedVisibility(visible = currentTabPosition == TabBarPosition.MUSIC, enter = fadeIn(), exit = fadeOut()) {
-      Row {
-        if (isSearchSectionShow) {
-          Icon(
-            painter = painterResource(id = R.drawable.icon_sort),
-            contentDescription = "Sort Icon",
-            modifier = Modifier
-              .padding(10.dp)
-              .size(30.dp)
-              .clickable {
-                onSortIconClick.invoke()
-              },
-            tint = contentColor,
-          )
-        }
-        Icon(
-          painter = painterResource(id = R.drawable.icon_search_24),
-          contentDescription = "Search Icon",
+    TopAppBar(
+      title = {
+        Text(
+          text = "Music",
           modifier = Modifier
-            .padding(10.dp)
-            .size(30.dp)
-            .clickable(
-              interactionSource = NoRippleEffect,
-              indication = null,
-              onClick = { onSearchIconClick.invoke() },
-            ),
-          tint = contentColor,
+            .padding(10.dp),
+          fontWeight = FontWeight.Bold,
+          fontSize = 36.sp,
         )
-      }
-    }
-  }
+      },
+      actions = {
+        AnimatedVisibility(visible = currentTabPosition == TabBarPosition.MUSIC, enter = fadeIn(), exit = fadeOut()) {
+          Row {
+            if (!isSearchSectionShow) {
+              IconButton(
+                modifier = Modifier
+                  .padding(5.dp)
+                  .size(35.dp),
+                onClick = { onVideoIconClick.invoke() },
+              ) {
+                Icon(
+                  painter = painterResource(id = R.drawable.icon_video),
+                  contentDescription = "video Icon",
+                  tint = MaterialTheme.colorScheme.onPrimary,
+                )
+              }
+              IconButton(
+                modifier = Modifier
+                  .padding(5.dp)
+                  .size(35.dp),
+                onClick = { onSortIconClick.invoke() },
+              ) {
+                Icon(
+                  painter = painterResource(id = R.drawable.icon_sort),
+                  contentDescription = "Sort Icon",
+                  tint = MaterialTheme.colorScheme.onPrimary,
+                )
+              }
+            }
+
+            Icon(
+              painter = painterResource(id = R.drawable.icon_search_24),
+              contentDescription = "Search Icon",
+              modifier = Modifier
+                .padding(10.dp)
+                .size(30.dp)
+                .clickable(
+                  interactionSource = NoRippleEffect,
+                  indication = null,
+                  onClick = { onSearchIconClick.invoke() },
+                ),
+              tint = MaterialTheme.colorScheme.onPrimary,
+            )
+          }
+        }
+      },
+      colors = TopAppBarDefaults.topAppBarColors(
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+      )
+    )
 
 }
 

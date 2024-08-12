@@ -6,22 +6,12 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.mediaplayerjetpackcompose.domain.model.navigation.BottomBarNavigationModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.bottombar.BottomNavigationBar
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.navigation.BottomBarNavController
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.navigation.ScreenNavController
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.FullMusicPlayer
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
@@ -34,48 +24,17 @@ fun RootScreen(
 ) {
 
   val navHostController: NavHostController = rememberNavController()
-  val navBackStackEntry by navHostController.currentBackStackEntryAsState()
-  val currentRoute = remember(navBackStackEntry) {
-    navBackStackEntry?.destination?.route
-  }
   val currentMusicState = musicPageViewModel.currentMusicState.collectAsStateWithLifecycle().value
 
   LaunchedEffect(key1 = currentMusicState.metaData) {
-    musicPageViewModel.getColor(currentMusicState.uri)
+    musicPageViewModel.getColorPaletteFromArtwork(currentMusicState.uri)
   }
 
-  Scaffold(
-    bottomBar = {
-      AnimatedVisibility(
-        visible = currentRoute != BottomBarNavigationModel.VideoPlayerScreen.route,
-        enter = slideInVertically(
-          tween(durationMillis = 300),
-          initialOffsetY = { int -> int / 2 },
-        ),
-        exit = slideOutVertically(
-          tween(durationMillis = 300),
-          targetOffsetY = { int -> int / 2 },
-        ),
-      ) {
-        BottomNavigationBar(
-          currentRoute = { currentRoute },
-          onClick = navHostController::navigate,
-        )
-      }
-    },
-  ) { paddingValues ->
-    Box(
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(paddingValues),
-    ) {
-      BottomBarNavController(
-        navHostController = navHostController,
-        musicPageViewModel = musicPageViewModel,
-        videoPageViewModel = videoPageViewModel,
-      )
-    }
-  }
+  ScreenNavController(
+    navHostController = navHostController,
+    musicPageViewModel = musicPageViewModel,
+    videoPageViewModel = videoPageViewModel,
+  )
 
   AnimatedVisibility(
     visible = musicPageViewModel.isFullPlayerShow,

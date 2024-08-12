@@ -8,9 +8,10 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
@@ -75,7 +76,7 @@ fun FullMusicPlayer(
   val animateColor =
     animateColorAsState(
       targetValue = Color(backgroundColorByArtwork),
-      animationSpec = tween(durationMillis = 700, delayMillis = 50),
+      animationSpec = tween(durationMillis = 500, delayMillis = 90),
       label = "",
     )
   val imageSize = remember {
@@ -85,14 +86,14 @@ fun FullMusicPlayer(
   Box(
     modifier = Modifier
       .fillMaxSize()
-      .background(Color.Black),
+      .background(Color.Black)
+      .consumeWindowInsets(WindowInsets(0)),
   )
 
   ConstraintLayout(
     modifier = Modifier
       .fillMaxSize()
       .onGloballyPositioned { imageSize.value = it.size }
-      .navigationBarsPadding()
       .background(
         Brush.verticalGradient(
           colors = listOf(animateColor.value.copy(alpha = 0.8f), animateColor.value.copy(alpha = 0.3f), Color.Black),
