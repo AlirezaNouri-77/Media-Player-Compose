@@ -20,10 +20,11 @@ import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
 import com.example.mediaplayerjetpackcompose.data.util.onMainDispatcher
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.model.MediaStoreResult
+import com.example.mediaplayerjetpackcompose.domain.model.SortState
 import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.CategoryMusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.FavoriteMusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.MusicModel
-import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.SortBarModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.SortTypeModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.TabBarPosition
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
@@ -52,9 +53,8 @@ class MusicPageViewModel(
   var favoriteListMediaId = mutableStateListOf<String>()
   var isLoading by mutableStateOf(true)
 
-  var currentListSort = mutableStateOf(SortBarModel.NAME)
+  var sortState by mutableStateOf(SortState(SortTypeModel.NAME,false))
   var currentTabState by mutableStateOf(TabBarPosition.MUSIC)
-  var isDec = mutableStateOf(false)
 
   var isFullPlayerShow by mutableStateOf(false)
   var currentMusicPosition = mutableFloatStateOf(0f)
@@ -101,19 +101,19 @@ class MusicPageViewModel(
   ): MutableList<MusicModel> {
     viewModelScope.launch {
       onMainDispatcher {
-        if (!isDec.value) {
-          when (currentListSort.value) {
-            SortBarModel.NAME -> list.sortBy { it.name }
-            SortBarModel.ARTIST -> list.sortBy { it.artist }
-            SortBarModel.DURATION -> list.sortBy { it.duration }
-            SortBarModel.SIZE -> list.sortBy { it.size }
+        if (!sortState.isDec) {
+          when (sortState.sortType) {
+            SortTypeModel.NAME -> list.sortBy { it.name }
+            SortTypeModel.ARTIST -> list.sortBy { it.artist }
+            SortTypeModel.DURATION -> list.sortBy { it.duration }
+            SortTypeModel.SIZE -> list.sortBy { it.size }
           }
         } else {
-          when (currentListSort.value) {
-            SortBarModel.NAME -> list.sortByDescending { it.name }
-            SortBarModel.ARTIST -> list.sortByDescending { it.artist }
-            SortBarModel.DURATION -> list.sortByDescending { it.duration }
-            SortBarModel.SIZE -> list.sortByDescending { it.size }
+          when (sortState.sortType) {
+            SortTypeModel.NAME -> list.sortByDescending { it.name }
+            SortTypeModel.ARTIST -> list.sortByDescending { it.artist }
+            SortTypeModel.DURATION -> list.sortByDescending { it.duration }
+            SortTypeModel.SIZE -> list.sortByDescending { it.size }
           }
         }
       }
@@ -127,8 +127,12 @@ class MusicPageViewModel(
   private fun updateMediaItemListAfterSort(list: List<MusicModel>) =
     viewModelScope.launch {
       val index = list.indexOfFirst { it.musicId.toString() == currentMusicState.value.mediaId }
-      currentPagerPage.intValue = index
-      musicServiceConnection.updateMediaList(index, musicList, currentMusicPosition.floatValue.toLong())
+      if (index != -1){
+        currentPagerPage.intValue = index
+        pagerItemList.clear()
+        pagerItemList.addAll(list)
+        musicServiceConnection.updateMediaList(index, musicList, currentMusicPosition.floatValue.toLong())
+      }
     }
 
   fun moveToNext() {

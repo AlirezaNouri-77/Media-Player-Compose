@@ -5,19 +5,29 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TabPosition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 
 fun Modifier.myCustomTabIndicator(
@@ -38,15 +48,20 @@ fun Modifier.myCustomTabIndicator(
 
 @Composable
 fun MyTabIndicator(modifier: Modifier = Modifier) {
-  Column(
+  val lineColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f)
+  Box(
     modifier
       .fillMaxSize()
-      .background(
-        color = Color(0xFF37393a).copy(alpha = 0.3f),
-        RoundedCornerShape(15.dp),
-      ),
-    horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.Center,
-  ) {
-  }
+      .drawWithCache {
+        onDrawBehind {
+          drawLine(
+            color = lineColor,
+            start = Offset(x =  25f, y = this.size.height - 18f),
+            end = Offset(x = this.size.width - 25f , y = this.size.height - 18f),
+            strokeWidth = 6f,
+            cap = StrokeCap.Round,
+          )
+        }
+      }
+  )
 }

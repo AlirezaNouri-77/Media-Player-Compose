@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
+package com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -24,9 +24,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabPosition
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -34,23 +31,31 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bumptech.glide.load.resource.bitmap.UnitBitmapDecoder
 import com.example.mediaplayerjetpackcompose.R
+import com.example.mediaplayerjetpackcompose.domain.model.SortState
 import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.MusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.SortTypeModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.TabBarPosition
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.MyTabIndicator
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.myCustomTabIndicator
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.sortBar
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 import kotlinx.coroutines.FlowPreview
@@ -60,26 +65,31 @@ import kotlinx.coroutines.flow.debounce
 @OptIn(FlowPreview::class)
 @Composable
 fun TopBarMusic(
-  musicPageViewModel: MusicPageViewModel,
-  showSortBar: Boolean,
-  showSearch: Boolean,
   currentTabPosition: TabBarPosition,
-  onSortIconClick: () -> Unit,
-  onSearchIconClick: () -> Unit,
+  onSearch: (String) -> Unit,
   onVideoIconClick: () -> Unit,
+  onSortIconClick: () -> Unit,
+  sortIconOffset: (DpOffset) -> Unit,
+  density: Density,
 ) {
+
+  //var showSortBar by remember { mutableStateOf(false) }
+  var showSearch by remember { mutableStateOf(false) }
 
   val textFieldValue = remember {
     mutableStateOf("")
   }
 
-  LaunchedEffect(key1 = textFieldValue.value, block = {
-    snapshotFlow { textFieldValue }
-      .debounce(500)
-      .collectLatest {
-        musicPageViewModel.searchMusic(it.value)
-      }
-  })
+  LaunchedEffect(
+    key1 = textFieldValue.value,
+    block = {
+      snapshotFlow { textFieldValue }
+        .debounce(500)
+        .collectLatest {
+          onSearch(it.value.trim())
+        }
+    },
+  )
 
   Column(
     Modifier
@@ -91,9 +101,11 @@ fun TopBarMusic(
     TopBarSection(
       currentTabPosition = currentTabPosition,
       isSearchSectionShow = showSearch,
-      onSortIconClick = { onSortIconClick.invoke() },
-      onVideoIconClick = { onVideoIconClick.invoke() },
-      onSearchIconClick = { onSearchIconClick.invoke() },
+      density = density,
+      onVideoIconClick = { onVideoIconClick() },
+      onSearchIconClick = { showSearch = !showSearch },
+      onSortIconClick = { onSortIconClick() },
+      sortIconOffset = { sortIconOffset(it) },
     )
 
     AnimatedVisibility(
@@ -106,20 +118,6 @@ fun TopBarMusic(
         },
       )
     }
-    AnimatedVisibility(
-      visible = !showSearch,
-    ) {
-      TabBarSection(
-        currentTabState = currentTabPosition,
-        onTabClick = { tabBar, _ ->
-          musicPageViewModel.currentTabState = tabBar
-        }
-      )
-    }
-    SortSection(
-      musicPageViewModel = musicPageViewModel,
-      showSortBar = showSortBar,
-    )
 
   }
 }
@@ -132,68 +130,80 @@ fun TopBarSection(
   onSortIconClick: () -> Unit,
   onSearchIconClick: () -> Unit,
   onVideoIconClick: () -> Unit,
+  sortIconOffset: (DpOffset) -> Unit,
+  density: Density,
 ) {
 
-    TopAppBar(
-      title = {
-        Text(
-          text = "Music",
-          modifier = Modifier
-            .padding(10.dp),
-          fontWeight = FontWeight.Bold,
-          fontSize = 36.sp,
-        )
-      },
-      actions = {
-        AnimatedVisibility(visible = currentTabPosition == TabBarPosition.MUSIC, enter = fadeIn(), exit = fadeOut()) {
-          Row {
-            if (!isSearchSectionShow) {
-              IconButton(
-                modifier = Modifier
-                  .padding(5.dp)
-                  .size(35.dp),
-                onClick = { onVideoIconClick.invoke() },
-              ) {
-                Icon(
-                  painter = painterResource(id = R.drawable.icon_video),
-                  contentDescription = "video Icon",
-                  tint = MaterialTheme.colorScheme.onPrimary,
-                )
-              }
-              IconButton(
-                modifier = Modifier
-                  .padding(5.dp)
-                  .size(35.dp),
-                onClick = { onSortIconClick.invoke() },
-              ) {
-                Icon(
-                  painter = painterResource(id = R.drawable.icon_sort),
-                  contentDescription = "Sort Icon",
-                  tint = MaterialTheme.colorScheme.onPrimary,
-                )
-              }
+  TopAppBar(
+    title = {
+      Text(
+        text = "Music",
+        modifier = Modifier
+          .padding(10.dp),
+        fontWeight = FontWeight.Bold,
+        fontSize = 36.sp,
+      )
+    },
+    actions = {
+      AnimatedVisibility(visible = currentTabPosition == TabBarPosition.MUSIC, enter = fadeIn(), exit = fadeOut()) {
+        Row {
+          if (!isSearchSectionShow) {
+            IconButton(
+              modifier = Modifier
+                .padding(5.dp)
+                .size(35.dp),
+              onClick = { onVideoIconClick.invoke() },
+            ) {
+              Icon(
+                painter = painterResource(id = R.drawable.icon_video),
+                contentDescription = "video Icon",
+                tint = MaterialTheme.colorScheme.onPrimary,
+              )
+            }
+            IconButton(
+              modifier = Modifier
+                .padding(5.dp)
+                .size(35.dp)
+                .onGloballyPositioned {
+                  with(density) {
+                    val dpOffset = DpOffset(
+                      x = it.positionInRoot().x.toDp(),
+                      y = it.positionInRoot().y.toDp(),
+                    )
+                    sortIconOffset(dpOffset)
+                  }
+                },
+              onClick = { onSortIconClick.invoke() },
+            ) {
+              Icon(
+                painter = painterResource(id = R.drawable.icon_sort),
+                contentDescription = "Sort Icon",
+                tint = MaterialTheme.colorScheme.onPrimary,
+              )
             }
 
-            Icon(
-              painter = painterResource(id = R.drawable.icon_search_24),
-              contentDescription = "Search Icon",
-              modifier = Modifier
-                .padding(10.dp)
-                .size(30.dp)
-                .clickable(
-                  interactionSource = NoRippleEffect,
-                  indication = null,
-                  onClick = { onSearchIconClick.invoke() },
-                ),
-              tint = MaterialTheme.colorScheme.onPrimary,
-            )
           }
+
+          Icon(
+            painter = painterResource(id = R.drawable.icon_search_24),
+            contentDescription = "Search Icon",
+            modifier = Modifier
+              .padding(10.dp)
+              .size(30.dp)
+              .clickable(
+                interactionSource = NoRippleEffect,
+                indication = null,
+                onClick = { onSearchIconClick.invoke() },
+              ),
+            tint = MaterialTheme.colorScheme.onPrimary,
+          )
         }
-      },
-      colors = TopAppBarDefaults.topAppBarColors(
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-      )
+      }
+    },
+    colors = TopAppBarDefaults.topAppBarColors(
+      containerColor = MaterialTheme.colorScheme.primaryContainer,
     )
+  )
 
 }
 
@@ -242,11 +252,12 @@ fun SearchSection(
 
 @Composable
 private fun SortSection(
-  musicPageViewModel: MusicPageViewModel,
-  showSortBar: Boolean,
+  sortState: SortState,
+  onSortClick: (SortTypeModel) -> Unit,
+  onOrderClick: () -> Unit,
 ) {
   AnimatedVisibility(
-    visible = showSortBar,
+    visible = sortState.isDec,
     enter = fadeIn(tween(300, 30)) + slideInVertically(
       animationSpec = tween(200),
       initialOffsetY = { int -> int / 2 }),
@@ -262,66 +273,11 @@ private fun SortSection(
       horizontalArrangement = Arrangement.Center,
     ) {
       sortBar(
-        musicPageViewModel = musicPageViewModel,
-        onSortClick = {
-          musicPageViewModel.currentListSort.value = it
-          musicPageViewModel.sortMusicListByCategory(
-            list = musicPageViewModel.musicList
-          ).also { resultList ->
-            musicPageViewModel.musicList =
-              resultList as SnapshotStateList<MusicModel>
-          }
-        },
-        onDecClick = {
-          musicPageViewModel.isDec.value = !musicPageViewModel.isDec.value
-          musicPageViewModel.sortMusicListByCategory(
-            list = musicPageViewModel.musicList
-          ).also { resultList ->
-            musicPageViewModel.musicList =
-              resultList as SnapshotStateList<MusicModel>
-          }
-        }
+        sortState = sortState,
+        onSortClick = { onSortClick(it) },
+        onDecClick = { onOrderClick() },
       )
     }
   }
 
-}
-
-@Composable
-fun TabBarSection(
-  currentTabState: TabBarPosition,
-  onTabClick: (TabBarPosition, Int) -> Unit,
-) {
-  val indicator = @Composable { tabPosition: List<TabPosition> ->
-    MyTabIndicator(
-      Modifier.myCustomTabIndicator(tabPosition[TabBarPosition.entries.indexOf(currentTabState)])
-    )
-  }
-  ScrollableTabRow(
-    selectedTabIndex = TabBarPosition.entries.indexOf(TabBarPosition.MUSIC),
-    modifier = Modifier
-      .fillMaxWidth(),
-    edgePadding = 10.dp,
-    indicator = indicator,
-    contentColor = MaterialTheme.colorScheme.onPrimary,
-    containerColor = MaterialTheme.colorScheme.primaryContainer,
-    divider = {}
-  ) {
-    TabBarPosition.entries.forEach {
-      Tab(
-        text = {
-          Text(
-            text = it.enuName,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
-          )
-        },
-        selected = currentTabState == it,
-        onClick = {
-          onTabClick.invoke(it, TabBarPosition.entries.indexOf(currentTabState))
-        },
-        interactionSource = NoRippleEffect
-      )
-    }
-  }
 }

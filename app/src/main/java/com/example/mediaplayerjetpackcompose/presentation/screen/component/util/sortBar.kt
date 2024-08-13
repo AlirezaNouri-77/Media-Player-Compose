@@ -19,20 +19,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.SortBarModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
+import com.example.mediaplayerjetpackcompose.domain.model.SortState
+import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.SortTypeModel
 
 @OptIn(ExperimentalFoundationApi::class)
 fun LazyListScope.sortBar(
-  musicPageViewModel: MusicPageViewModel,
-  onSortClick: (sort: SortBarModel) -> Unit,
+  sortState: SortState,
+  onSortClick: (sortType: SortTypeModel) -> Unit,
   onDecClick: () -> Unit,
 ) {
 
   stickyHeader {
     Icon(
       painter = painterResource(
-        id = if ((musicPageViewModel.isDec.value)) {
+        id = if ((sortState.isDec)) {
           R.drawable.icon_sort_desc
         } else {
           R.drawable.icon_sort_asce
@@ -46,17 +46,17 @@ fun LazyListScope.sortBar(
     )
     Spacer(modifier = Modifier.width(10.dp))
   }
-  itemsIndexed(items = SortBarModel.entries.filter { it != SortBarModel.NAME }) { _, sort ->
+  itemsIndexed(items = SortTypeModel.entries.filter { it != SortTypeModel.NAME }) { _, sort ->
     Text(
       text = sort.sortName,
       fontSize = 16.sp,
       fontWeight = FontWeight.Medium,
       modifier = Modifier
         .clickable {
-          onSortClick.invoke(if (musicPageViewModel.currentListSort.value == sort) SortBarModel.NAME else sort)
+          onSortClick.invoke(if (sortState.sortType == sort) SortTypeModel.NAME else sort)
         }
         .background(
-          color = if (musicPageViewModel.currentListSort.value == sort) Color(0xFF2A2D2C) else Color.Transparent,
+          color = if (sortState.sortType == sort)  Color(0xFF2A2D2C) else Color.Transparent,
           shape = RoundedCornerShape(8.dp),
         )
         .padding(vertical = 4.dp, horizontal = 4.dp),
