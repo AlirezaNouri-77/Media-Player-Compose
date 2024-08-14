@@ -41,12 +41,13 @@ fun MusicMediaItem(
   contentColor: Color = MaterialTheme.colorScheme.onPrimary,
   onItemClick: () -> Unit,
 ) {
+  val isPlayingThisItemColor = if (currentMediaId == item.musicId.toString()) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f) else Color.Transparent
 
   Box(
     modifier = Modifier
       .fillMaxWidth()
       .clickable { onItemClick.invoke() }
-      .background(if (currentMediaId == item.musicId.toString()) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f) else Color.Transparent),
+      .background(color = isPlayingThisItemColor , shape = RoundedCornerShape(20.dp)),
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,

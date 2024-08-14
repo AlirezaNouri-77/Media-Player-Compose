@@ -51,10 +51,7 @@ fun MusicScreen(
   var sortIconOffset by remember { mutableStateOf(DpOffset.Zero) }
   val navController: NavHostController = rememberNavController()
   val currentMusicState = musicPageViewModel.currentMusicState.collectAsStateWithLifecycle().value
-
-  val miniPlayerHeight = remember {
-    mutableStateOf(0.dp)
-  }
+  val miniPlayerHeight = remember { mutableStateOf(0.dp) }
 
   SortDropDownMenu(
     isExpand = showSortBar,
@@ -62,7 +59,7 @@ fun MusicScreen(
     offset = sortIconOffset,
     onDismiss = { showSortBar = false },
     onSortClick = {
-      musicPageViewModel.sortState =  musicPageViewModel.sortState.copy(sortType = it)
+      musicPageViewModel.sortState = musicPageViewModel.sortState.copy(sortType = it)
       musicPageViewModel.sortMusicListByCategory(
         list = musicPageViewModel.musicList
       ).also { resultList ->
@@ -85,11 +82,11 @@ fun MusicScreen(
     modifier = Modifier
       .fillMaxSize(),
   ) {
-    val (musicList, collapsePlayer, tabBar) = createRefs()
+    val (musicList, collapsePlayer) = createRefs()
 
     NavHost(
       modifier = Modifier.constrainAs(musicList) {
-        top.linkTo(tabBar.bottom)
+        top.linkTo(parent.top)
         start.linkTo(parent.start)
         end.linkTo(parent.end)
         bottom.linkTo(parent.bottom)

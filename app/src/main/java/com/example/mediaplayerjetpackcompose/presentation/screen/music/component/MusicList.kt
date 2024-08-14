@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.TabBarPosition
@@ -32,7 +33,7 @@ fun MusicList(
     LazyColumn(
       modifier = Modifier
         .fillMaxSize(),
-      contentPadding = PaddingValues(bottom = bottomPadding),
+      contentPadding = PaddingValues(bottom = bottomPadding, top = 10.dp),
     ) {
       when (it) {
         TabBarPosition.MUSIC -> {

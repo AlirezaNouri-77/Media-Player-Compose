@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -86,11 +85,15 @@ fun MiniMusicPlayer(
 
   Card(
     modifier = modifier
-      .fillMaxWidth(),
+      .fillMaxWidth()
+      .padding(bottom = 10.dp),
     onClick = { onClick.invoke() },
     shape = RoundedCornerShape(topEnd = 25.dp, topStart = 25.dp),
     colors = CardDefaults.cardColors(
       containerColor = MaterialTheme.colorScheme.primaryContainer,
+    ),
+    elevation = CardDefaults.elevatedCardElevation(
+      defaultElevation = 10.dp,
     ),
     interactionSource = NoRippleEffect,
   ) {
@@ -155,6 +158,7 @@ fun MiniMusicPlayer(
         Box(
           modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 6.dp)
             .height(4.dp)
             .graphicsLayer {
               shape = RoundedCornerShape(4.dp)
@@ -163,6 +167,7 @@ fun MiniMusicPlayer(
             .drawBehind {
               val size = this.size.width
               val progress = (currentMusicPosition() * size) / duration
+              drawRoundRect(color = reactCanvasColor.copy(alpha = 0.1f))
               clipRect(
                 right = progress,
               ) {
