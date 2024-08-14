@@ -2,6 +2,8 @@ package com.example.mediaplayerjetpackcompose.presentation.screen.music.componen
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
@@ -9,7 +11,6 @@ import androidx.compose.material3.TabPosition
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,31 +30,36 @@ fun TabBarSection(
       Modifier.myCustomTabIndicator(tabPosition[TabBarPosition.entries.indexOf(currentTabState)])
     )
   }
-  ScrollableTabRow(
-    selectedTabIndex = TabBarPosition.entries.indexOf(TabBarPosition.MUSIC),
-    modifier = modifier
-      .fillMaxWidth()
-      .clip(RoundedCornerShape(bottomEnd = 15.dp, bottomStart = 15.dp)),
-    edgePadding = 10.dp,
-    indicator = indicator,
-    contentColor = MaterialTheme.colorScheme.onPrimary,
-    containerColor = MaterialTheme.colorScheme.primaryContainer,
-    divider = {}
+  Card(
+    modifier
+      .fillMaxWidth(),
+    elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+    shape = RoundedCornerShape(bottomEnd = 25.dp, bottomStart = 25.dp)
   ) {
-    TabBarPosition.entries.forEach {
-      Tab(
-        modifier = Modifier,
-        text = {
-          Text(
-            text = it.enuName,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
-          )
-        },
-        selected = currentTabState == it,
-        onClick = { onTabClick.invoke(it, TabBarPosition.entries.indexOf(currentTabState)) },
-        interactionSource = NoRippleEffect
-      )
+    ScrollableTabRow(
+      selectedTabIndex = TabBarPosition.entries.indexOf(TabBarPosition.MUSIC),
+      edgePadding = 10.dp,
+      indicator = indicator,
+      contentColor = MaterialTheme.colorScheme.onPrimary,
+      containerColor = MaterialTheme.colorScheme.primaryContainer,
+      divider = {}
+    ) {
+      TabBarPosition.entries.forEach {
+        Tab(
+          modifier = Modifier,
+          text = {
+            Text(
+              text = it.enuName,
+              fontSize = 13.sp,
+              fontWeight = FontWeight.Medium,
+            )
+          },
+          selected = currentTabState == it,
+          onClick = { onTabClick.invoke(it, TabBarPosition.entries.indexOf(currentTabState)) },
+          interactionSource = NoRippleEffect
+        )
+      }
     }
   }
+
 }
