@@ -2,7 +2,6 @@
 androidGradlePlugin  = "8.2.0"
 activityCompose = "1.9.0"
 coilCompose = "2.6.0"
-compose = "1.0.0-beta01"
 composeBom = "2024.06.00"
 constraintLayout = "1.0.1"
 coreKtx = "1.13.1"
@@ -54,7 +53,6 @@ androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 coil-video = { module = "io.coil-kt:coil-video", version.ref = "coilCompose" }
-composeGlide = { module = "com.github.bumptech.glide:compose", version.ref = "compose" }
 junit = { module = "junit:junit", version.ref = "junit" }
 
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }

@@ -65,7 +65,7 @@ fun VideoMediaItem(
               end.linkTo(parent.end)
               start.linkTo(parent.start)
             }
-            .size(100.dp, 60.dp)
+            .size(100.dp, 80.dp)
             .clip(RoundedCornerShape(10.dp)),
           model = ImageRequest.Builder(LocalContext.current).data(item.uri).videoFrameMillis(15_000L).build(),
           contentDescription = "",
@@ -94,7 +94,7 @@ fun VideoMediaItem(
       Column {
         Text(
           text = item.name.removeFileExtension(),
-          maxLines = 2,
+          maxLines = 1,
           overflow = TextOverflow.Ellipsis,
           fontSize = 16.sp,
           color = contextColor,
@@ -105,7 +105,6 @@ fun VideoMediaItem(
           item.width.toString() + "x" + item.height.toString(),
           item.size.convertByteToReadableSize(),
           item.name.extractFileExtension(),
-
           )
         Text(
           text = detail.reduce { acc, string -> "$acc, $string" }.toString(),

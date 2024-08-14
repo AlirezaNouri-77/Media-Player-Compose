@@ -83,7 +83,6 @@ dependencies {
   implementation(libs.koin.android)
   implementation(libs.koin.androidx.compose)
 
-  implementation (libs.composeGlide)
   implementation(libs.coil.compose)
   implementation(libs.coil.video)
   implementation(kotlin("script-runtime"))

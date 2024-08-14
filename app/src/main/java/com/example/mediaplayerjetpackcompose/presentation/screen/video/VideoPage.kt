@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -25,6 +26,7 @@ import androidx.navigation.NavHostController
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.EmptyPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.Loading
+import com.example.mediaplayerjetpackcompose.presentation.screen.video.component.TopBarVideo
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.item.VideoMediaItem
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,34 +39,11 @@ fun VideoPage(
 
   Scaffold(
     topBar = {
-      TopAppBar(
-        title = {
-          Text(
-            text = "Videos",
-            modifier = Modifier
-              .fillMaxWidth()
-              .background(MaterialTheme.colorScheme.primaryContainer)
-              .padding(10.dp),
-            fontWeight = FontWeight.Bold,
-            fontSize = 36.sp,
-          )
+      TopBarVideo(
+        onBackClick = {
+          onNavigateToMusicScreen()
         },
-        actions = {
-          IconButton(
-            modifier = Modifier
-              .padding(5.dp)
-              .size(35.dp),
-            onClick = { onNavigateToMusicScreen.invoke() },
-          ) {
-            Icon(
-              painter = painterResource(id = R.drawable.icon_music_note),
-              contentDescription = "video Icon",
-              tint = MaterialTheme.colorScheme.onPrimary,
-            )
-          }
-        }
       )
-
     }
   ) {
 
@@ -82,7 +61,7 @@ fun VideoPage(
       ) {
         if (videoPageViewModel.mediaStoreDataList.isNotEmpty()) {
           LazyColumn(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
           ) {
             itemsIndexed(
               items = videoPageViewModel.mediaStoreDataList,
