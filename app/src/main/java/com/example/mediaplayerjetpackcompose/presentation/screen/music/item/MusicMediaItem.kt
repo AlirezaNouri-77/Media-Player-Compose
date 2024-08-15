@@ -43,7 +43,8 @@ fun MusicMediaItem(
   contentColor: Color = MaterialTheme.colorScheme.onPrimary,
   onItemClick: () -> Unit,
 ) {
-  val isPlayingThisItemColor = if (currentMediaId == item.musicId.toString()) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f) else Color.Transparent
+  val isPlayingThisItemColor =
+    if (currentMediaId == item.musicId.toString()) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f) else Color.Transparent
 
   Box(
     modifier = Modifier

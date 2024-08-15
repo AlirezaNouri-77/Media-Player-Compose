@@ -160,6 +160,7 @@ fun MusicScreen(
               musicList
             )
           },
+          miniPlayerHeight = miniPlayerHeight.value,
           onBackClick = navController::popBackStack
         )
       }
