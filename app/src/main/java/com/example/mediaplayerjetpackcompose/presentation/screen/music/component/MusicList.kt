@@ -51,6 +51,7 @@ fun MusicList(
                   musicPageViewModel.musicList
                 )
               },
+              isPlaying = currentMusicState.isPlaying,
             )
           }
         }
@@ -76,6 +77,7 @@ fun MusicList(
                     musicPageViewModel.favoriteMusicList
                   )
                 },
+                isPlaying = currentMusicState.isPlaying,
               )
             }
           }

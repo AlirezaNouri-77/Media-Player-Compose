@@ -31,11 +31,13 @@ import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.MusicModel
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.WaveForm
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.ArtworkImage
 
 @Composable
 fun MusicMediaItem(
   item: MusicModel,
+  isPlaying: Boolean,
   isFav: Boolean,
   currentMediaId: String,
   contentColor: Color = MaterialTheme.colorScheme.onPrimary,
@@ -47,21 +49,33 @@ fun MusicMediaItem(
     modifier = Modifier
       .fillMaxWidth()
       .clickable { onItemClick.invoke() }
-      .background(color = isPlayingThisItemColor , shape = RoundedCornerShape(20.dp)),
+      .background(color = isPlayingThisItemColor, shape = RoundedCornerShape(20.dp)),
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.Center,
       modifier = Modifier.padding(vertical = 6.dp, horizontal = 10.dp),
     ) {
-      ArtworkImage(
-        uri = { item.artworkUri },
-        modifier = Modifier
-          .size(size = 55.dp)
-          .clip(RoundedCornerShape(8.dp))
-          .background(color = MaterialTheme.colorScheme.primary),
-        inset = 50f,
-      )
+      if (currentMediaId == item.musicId.toString()) {
+        WaveForm(
+          modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(color = MaterialTheme.colorScheme.primary),
+          size = 55.dp,
+          enable = isPlaying,
+          waveColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
+        )
+      } else {
+        ArtworkImage(
+          uri = { item.artworkUri },
+          modifier = Modifier
+            .size(size = 55.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(color = MaterialTheme.colorScheme.primary),
+          inset = 50f,
+        )
+      }
+
       Spacer(modifier = Modifier.width(10.dp))
       Column(
         modifier = Modifier
