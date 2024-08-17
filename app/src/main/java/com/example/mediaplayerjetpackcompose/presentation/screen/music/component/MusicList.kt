@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
+import com.example.mediaplayerjetpackcompose.domain.model.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.TabBarPosition
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.CategoryListItem

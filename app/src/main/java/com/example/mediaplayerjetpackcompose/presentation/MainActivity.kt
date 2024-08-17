@@ -21,7 +21,7 @@ import com.example.mediaplayerjetpackcompose.data.util.encodeStringNavigation
 import com.example.mediaplayerjetpackcompose.presentation.screen.RootScreen
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.NoPermissionPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.video.component.VideoPlayer
+import com.example.mediaplayerjetpackcompose.presentation.screen.video.playerScreen.VideoPlayer
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

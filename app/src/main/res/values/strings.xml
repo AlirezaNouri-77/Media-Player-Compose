@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MediaPlayerJetpackCompose</string>
+    <string name="title_activity_video_player">VideoPlayer</string>
 </resources>

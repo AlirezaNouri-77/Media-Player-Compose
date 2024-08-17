@@ -27,7 +27,7 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicScreen
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.video.component.VideoPlayer
+import com.example.mediaplayerjetpackcompose.presentation.screen.video.playerScreen.VideoPlayer
 
 
 @Composable
@@ -56,7 +56,7 @@ fun ScreenNavController(
       window.insetsController?.apply {
         show(WindowInsets.Type.statusBars())
         show(WindowInsets.Type.systemBars())
-        this.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+    //    this.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
       }
     }
   }

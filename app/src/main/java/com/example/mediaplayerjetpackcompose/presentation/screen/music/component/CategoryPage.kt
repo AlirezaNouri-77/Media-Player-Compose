@@ -30,7 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
+import com.example.mediaplayerjetpackcompose.domain.model.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.TabBarPosition
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel

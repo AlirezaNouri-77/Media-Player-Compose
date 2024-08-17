@@ -3,7 +3,6 @@ package com.example.mediaplayerjetpackcompose.data.service
 import android.content.ComponentName
 import android.content.Context
 import android.net.Uri
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -16,6 +15,7 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.example.mediaplayerjetpackcompose.data.mapper.toMediaItem
 import com.example.mediaplayerjetpackcompose.data.util.Constant
+import com.example.mediaplayerjetpackcompose.domain.model.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.MusicModel
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
@@ -147,12 +147,3 @@ class MusicServiceConnection(
   }
 
 }
-
-@Stable
-data class MediaCurrentState(
-  var isPlaying: Boolean,
-  var uri: Uri,
-  val metaData: MediaMetadata,
-  val mediaId: String,
-  val isBuffering: Boolean,
-)

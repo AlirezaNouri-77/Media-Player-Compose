@@ -44,6 +44,9 @@ android {
       excludes += "/META-INF/{AL2.0,LGPL2.1}"
     }
   }
+  composeOptions {
+    kotlinCompilerExtensionVersion = "1.5.1"
+  }
 }
 
 dependencies {
@@ -55,6 +58,7 @@ dependencies {
   implementation(libs.androidx.ui.graphics)
   implementation(libs.androidx.ui.tooling.preview)
   implementation(libs.androidx.material3)
+  androidTestImplementation(platform(libs.androidx.compose.bom))
   debugImplementation(libs.androidx.ui.tooling)
 
   testImplementation(libs.junit)
