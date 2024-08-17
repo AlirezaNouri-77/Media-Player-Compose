@@ -2,6 +2,7 @@ package com.example.mediaplayerjetpackcompose.presentation.screen.video
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,7 +30,6 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.component.Loadi
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.component.TopBarVideo
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.item.VideoMediaItem
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VideoPage(
   navHostController: NavHostController,
@@ -62,6 +62,7 @@ fun VideoPage(
         if (videoPageViewModel.mediaStoreDataList.isNotEmpty()) {
           LazyColumn(
             modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(top = 4.dp)
           ) {
             itemsIndexed(
               items = videoPageViewModel.mediaStoreDataList,

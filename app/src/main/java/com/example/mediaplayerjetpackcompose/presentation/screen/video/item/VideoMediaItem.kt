@@ -1,5 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.video.item
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,8 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -34,11 +37,11 @@ import com.example.mediaplayerjetpackcompose.data.util.convertByteToReadableSize
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.util.extractFileExtension
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
-import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoModel
+import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoItemModel
 
 @Composable
 fun VideoMediaItem(
-  item: VideoModel,
+  item: VideoItemModel,
   contextColor: Color = MaterialTheme.colorScheme.onPrimary,
   onItemClick: () -> Unit,
 ) {
@@ -58,6 +61,7 @@ fun VideoMediaItem(
         val (imageArt, duration) = createRefs()
 
         AsyncImage(
+          model = ImageRequest.Builder(LocalContext.current).data(item.uri).videoFrameMillis(15_000L).build(),
           modifier = Modifier
             .constrainAs(imageArt) {
               top.linkTo(parent.top)
@@ -65,34 +69,36 @@ fun VideoMediaItem(
               end.linkTo(parent.end)
               start.linkTo(parent.start)
             }
-            .size(100.dp, 80.dp)
+            .size(110.dp, 70.dp)
             .clip(RoundedCornerShape(10.dp)),
-          model = ImageRequest.Builder(LocalContext.current).data(item.uri).videoFrameMillis(15_000L).build(),
+          contentScale = ContentScale.FillBounds,
           contentDescription = "",
         )
-
         Text(
           text = item.duration.convertMilliSecondToTime(),
           modifier = Modifier
             .constrainAs(duration) {
-              bottom.linkTo(parent.bottom, 5.dp)
-              end.linkTo(parent.end, 5.dp)
+              bottom.linkTo(parent.bottom, 3.dp)
+              end.linkTo(parent.end, 3.dp)
             }
-            .drawBehind {
-              drawRoundRect(
-                color = Color.Black,
-                alpha = 0.5f,
-                size = this.size,
-                cornerRadius = CornerRadius(x = 15f, y = 15f),
-              )
+            .drawWithCache {
+              onDrawBehind {
+                drawRoundRect(
+                  color = Color.Black,
+                  alpha = 0.4f,
+                  cornerRadius = CornerRadius(x = 15f, y = 15f),
+                )
+              }
             },
-          fontSize = 14.sp,
+          textAlign = TextAlign.Start,
+          fontSize = 11.sp,
           color = Color.White,
         )
       }
       Spacer(modifier = Modifier.width(10.dp))
       Column {
         Text(
+          modifier = Modifier.fillMaxWidth(),
           text = item.name.removeFileExtension(),
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
@@ -100,7 +106,6 @@ fun VideoMediaItem(
           color = contextColor,
           fontWeight = FontWeight.Medium,
         )
-        Spacer(modifier = Modifier.height(10.dp))
         val detail = listOf(
           item.width.toString() + "x" + item.height.toString(),
           item.size.convertByteToReadableSize(),
@@ -110,8 +115,8 @@ fun VideoMediaItem(
           text = detail.reduce { acc, string -> "$acc, $string" }.toString(),
           modifier = Modifier.fillMaxWidth(),
           textAlign = TextAlign.Start,
-          fontSize = 13.sp,
-          color = contextColor,
+          fontSize = 12.sp,
+          color = contextColor.copy(alpha = 0.6f),
           fontWeight = FontWeight.Medium,
         )
       }

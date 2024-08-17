@@ -16,13 +16,12 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
-import com.example.mediaplayerjetpackcompose.data.service.MediaCurrentState
+import com.example.mediaplayerjetpackcompose.domain.model.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.model.MediaStoreResult
-import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoModel
+import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoItemModel
 import com.example.mediaplayerjetpackcompose.domain.model.videoSection.toMediaItem
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -37,57 +36,59 @@ import kotlinx.coroutines.withContext
 
 @OptIn(UnstableApi::class)
 class VideoPageViewModel(
-  private var videoMediaStoreRepository: MediaStoreRepositoryImpl<VideoModel>,
+  private var videoMediaStoreRepository: MediaStoreRepositoryImpl<VideoItemModel>,
   private var exoPlayer: ExoPlayer,
 ) : ViewModel() {
 
   var isLoading by mutableStateOf(true)
-  var deviceOrientation by mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT)
-  var mediaStoreDataList = mutableStateListOf<VideoModel>()
+
+  var playerResizeMode by mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT)
+
+  var mediaStoreDataList = mutableStateListOf<VideoItemModel>()
     private set
+
+  private var _currentState = MutableStateFlow(MediaCurrentState.Empty)
+  val currentMediaState: StateFlow<MediaCurrentState> = _currentState.asStateFlow()
 
   init {
     getVideo()
     exoPlayer.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT
-    viewModelScope.launch(Dispatchers.Main) {
+    viewModelScope.launch(Dispatchers.IO) {
       exoPlayer.addListener(
         object : Player.Listener {
           override fun onIsPlayingChanged(isPlaying: Boolean) {
-            _currentState.update { it.copy(isPlaying = isPlaying) }
+            viewModelScope.launch {
+              _currentState.update { it.copy(isPlaying = isPlaying) }
+            }
           }
 
           override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-            _currentState.update { it.copy(metaData = mediaMetadata) }
+            viewModelScope.launch {
+              _currentState.update { it.copy(metaData = mediaMetadata) }
+            }
           }
         },
       )
     }
   }
 
-  private var _currentState = MutableStateFlow(
-    MediaCurrentState(
-      isPlaying = false,
-      mediaId = "",
-      metaData = MediaMetadata.EMPTY,
-      uri = Uri.EMPTY,
-      isBuffering = false,
-    )
-  )
-  val currentState: StateFlow<MediaCurrentState> = _currentState.asStateFlow()
   val currentMediaPosition = flow {
-    while (currentCoroutineContext().isActive) {
-      emit(exoPlayer.currentPosition)
-      delay(1000L)
+    while (viewModelScope.isActive) {
+      delay(50L)
+      if (exoPlayer.isPlaying) {
+        val position = exoPlayer.currentPosition
+        emit(position)
+      }
     }
   }
 
   fun pausePlayer() = exoPlayer.pause()
 
-  fun provideExoPlayer(): ExoPlayer = exoPlayer
+  fun getExoPlayer(): ExoPlayer = exoPlayer
 
-  fun startPlay(index: Int, videoList: List<VideoModel>) {
+  fun startPlay(index: Int, videoList: List<VideoItemModel>) {
     exoPlayer.apply {
-      this.setMediaItems(videoList.map(VideoModel::toMediaItem), index, 0L)
+      this.setMediaItems(videoList.map(VideoItemModel::toMediaItem), index, 0L)
       this.playWhenReady = true
       this.prepare()
       this.play()
@@ -135,13 +136,14 @@ class VideoPageViewModel(
   private fun getVideo() {
     viewModelScope.launch {
       videoMediaStoreRepository.getMedia().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(), initialValue = MediaStoreResult.Initial,
+        viewModelScope,
+        SharingStarted.WhileSubscribed(),
+        initialValue = MediaStoreResult.Initial,
       ).collect {
         withContext(Dispatchers.Main) {
           when (it) {
-            MediaStoreResult.Loading -> {
-              isLoading = true
-            }
+
+            MediaStoreResult.Loading -> isLoading = true
 
             is MediaStoreResult.Result -> {
               mediaStoreDataList.addAll(it.result)
@@ -154,7 +156,6 @@ class VideoPageViewModel(
       }
     }
   }
-
 
   override fun onCleared() {
     super.onCleared()
