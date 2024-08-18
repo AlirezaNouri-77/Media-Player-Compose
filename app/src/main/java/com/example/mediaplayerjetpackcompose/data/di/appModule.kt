@@ -31,6 +31,6 @@ var appModule = module {
   single { MusicServiceConnection(androidApplication().applicationContext) }
 
   viewModel { MusicPageViewModel(get(named("musicRepo")), get(), get(), get()) }
-  viewModel { VideoPageViewModel(get(), get()) }
+  viewModel { VideoPageViewModel(get(), get(), get()) }
 
 }

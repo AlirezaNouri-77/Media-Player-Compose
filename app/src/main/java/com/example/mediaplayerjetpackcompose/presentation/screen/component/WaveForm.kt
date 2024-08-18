@@ -88,7 +88,7 @@ fun WaveForm(
       for (index in 1..lineCount) {
         if (index == lineCount || index == 1) continue
         drawLine(
-          color = waveColor,
+          color = waveColor.copy(alpha = 0.7f),
           start = Offset(x = index * (lineWidth + lineSpace), y = halfHeight + animatable[index].value),
           end = Offset(x = index * (lineWidth + lineSpace), y = halfHeight - animatable[index].value),
           strokeWidth = lineWidth,
