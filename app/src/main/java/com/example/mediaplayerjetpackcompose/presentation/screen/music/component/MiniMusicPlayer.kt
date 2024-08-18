@@ -1,6 +1,7 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.MarqueeAnimationMode
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -143,8 +144,7 @@ fun MiniMusicPlayer(
                 fontSize = 13.sp,
                 modifier = Modifier
                   .fillMaxWidth()
-                  .verticalFadeEdge()
-                  .basicMarquee(iterations = marqueeAnimate),
+                  .basicMarquee(iterations = marqueeAnimate, delayMillis = 500),
                 maxLines = 1,
               )
               Text(

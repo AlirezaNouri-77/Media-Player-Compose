@@ -1,6 +1,5 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.component
 
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
@@ -9,7 +8,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 
-@Composable
 fun Modifier.verticalFadeEdge(): Modifier {
   return this.then(
     this
