@@ -1,5 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.video
 
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.compose.runtime.getValue
@@ -16,8 +17,9 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
-import com.example.mediaplayerjetpackcompose.domain.model.MediaCurrentState
+import com.example.mediaplayerjetpackcompose.data.GetMediaArt
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
+import com.example.mediaplayerjetpackcompose.domain.model.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.domain.model.MediaStoreResult
 import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoItemModel
 import com.example.mediaplayerjetpackcompose.domain.model.videoSection.toMediaItem
@@ -32,17 +34,19 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @OptIn(UnstableApi::class)
 class VideoPageViewModel(
   private var videoMediaStoreRepository: MediaStoreRepositoryImpl<VideoItemModel>,
+  private var getMediaArt: GetMediaArt,
   private var exoPlayer: ExoPlayer,
 ) : ViewModel() {
 
   var isLoading by mutableStateOf(true)
 
   var playerResizeMode by mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT)
+
+  var previewSlider = mutableStateOf<Bitmap?>(null)
 
   var mediaStoreDataList = mutableStateListOf<VideoItemModel>()
     private set
@@ -59,6 +63,12 @@ class VideoPageViewModel(
           override fun onIsPlayingChanged(isPlaying: Boolean) {
             viewModelScope.launch {
               _currentState.update { it.copy(isPlaying = isPlaying) }
+            }
+          }
+
+          override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            viewModelScope.launch {
+              _currentState.update { it.copy(uri = mediaItem?.localConfiguration?.uri ?: Uri.EMPTY) }
             }
           }
 
@@ -79,6 +89,13 @@ class VideoPageViewModel(
         val position = exoPlayer.currentPosition
         emit(position)
       }
+    }
+  }
+
+  suspend fun getSliderPreviewThumbnail(position: Long) {
+    if (_currentState.value.uri == Uri.EMPTY) return
+    viewModelScope.launch {
+      previewSlider.value = getMediaArt.getVideoThumbNailFromFrame(_currentState.value.uri, position)
     }
   }
 
@@ -140,7 +157,7 @@ class VideoPageViewModel(
         SharingStarted.WhileSubscribed(),
         initialValue = MediaStoreResult.Initial,
       ).collect {
-        withContext(Dispatchers.Main) {
+        viewModelScope.launch {
           when (it) {
 
             MediaStoreResult.Loading -> isLoading = true

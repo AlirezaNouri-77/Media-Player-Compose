@@ -16,6 +16,7 @@ import androidx.palette.graphics.Palette
 import com.example.mediaplayerjetpackcompose.data.GetMediaArt
 import com.example.mediaplayerjetpackcompose.data.database.dao.DataBaseDao
 import com.example.mediaplayerjetpackcompose.data.service.MusicServiceConnection
+import com.example.mediaplayerjetpackcompose.data.util.onDefaultDispatcher
 import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
 import com.example.mediaplayerjetpackcompose.data.util.onMainDispatcher
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
@@ -53,7 +54,7 @@ class MusicPageViewModel(
   var favoriteListMediaId = mutableStateListOf<String>()
   var isLoading by mutableStateOf(true)
 
-  var sortState by mutableStateOf(SortState(SortTypeModel.NAME,false))
+  var sortState by mutableStateOf(SortState(SortTypeModel.NAME, false))
   var currentTabState by mutableStateOf(TabBarPosition.MUSIC)
 
   var isFullPlayerShow by mutableStateOf(false)
@@ -79,18 +80,21 @@ class MusicPageViewModel(
   suspend fun getColorPaletteFromArtwork(uri: Uri) {
     viewModelScope.launch {
       val bitmap = getMediaArt.getMusicArt(uri)
-      onIoDispatcher {
+      onDefaultDispatcher {
         Palette.from(bitmap).generate { palette ->
           val vibrant = palette?.getVibrantColor(Color.LightGray.toArgb())
           val lightVibrant = palette?.getLightVibrantColor(Color.LightGray.toArgb())
           val lightMuted = palette?.getLightMutedColor(Color.LightGray.toArgb())
-          if (vibrant != null) {
-            musicArtworkColorPalette = vibrant.toLong()
-          } else if (lightVibrant != null) {
-            musicArtworkColorPalette = lightVibrant.toLong()
-          } else if (lightMuted != null) {
-            musicArtworkColorPalette = lightMuted.toLong()
-          } else musicArtworkColorPalette = Color.LightGray.toArgb().toLong()
+          val darkMuted = palette?.getDarkMutedColor(Color.LightGray.toArgb())
+          val darkVibrant = palette?.getDarkVibrantColor(Color.LightGray.toArgb())
+          viewModelScope.launch {
+            musicArtworkColorPalette = vibrant?.toLong()
+              ?: (lightVibrant?.toLong()
+                ?: (lightMuted?.toLong()
+                  ?: (darkMuted?.toLong()
+                    ?: (darkVibrant?.toLong()
+                      ?: Color.LightGray.toArgb().toLong()))))
+          }
         }
       }
     }
@@ -127,7 +131,7 @@ class MusicPageViewModel(
   private fun updateMediaItemListAfterSort(list: List<MusicModel>) =
     viewModelScope.launch {
       val index = list.indexOfFirst { it.musicId.toString() == currentMusicState.value.mediaId }
-      if (index != -1){
+      if (index != -1) {
         currentPagerPage.intValue = index
         pagerItemList.clear()
         pagerItemList.addAll(list)

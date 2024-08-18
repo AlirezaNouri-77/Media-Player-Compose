@@ -1,7 +1,5 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.video.playerScreen.component
 
-import android.util.Log
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,15 +12,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.domain.model.MediaCurrentState
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
-import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
+import com.example.mediaplayerjetpackcompose.domain.model.MediaCurrentState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,8 +24,8 @@ fun PlayerTimeLine(
   modifier: Modifier = Modifier,
   currentState: () -> MediaCurrentState,
   currentMediaPosition: Int,
-  slideValueChange: () -> Unit,
-  slideValueChangeFinished: (Float) -> Unit
+  slideValueChange: (Float) -> Unit,
+  slideValueChangeFinished: () -> Unit,
 ) {
 
   Row(
@@ -53,13 +47,7 @@ fun PlayerTimeLine(
       value = currentMediaPosition.toFloat(),
       modifier = Modifier
         .fillMaxWidth()
-        .weight(0.6f)
-        .pointerInput(Unit) {
-          detectDragGestures { change, dragAmount ->
-            change.consume()
-            Log.d("TAG8787", "PlayerTimeLine: " + dragAmount)
-          }
-        },
+        .weight(0.6f),
       onValueChangeFinished = {
         slideValueChangeFinished()
       },

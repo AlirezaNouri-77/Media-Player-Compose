@@ -36,9 +36,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -67,7 +69,6 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.video.playerScr
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.playerScreen.component.PlayerTimeLine
 import kotlinx.coroutines.delay
 
-
 @kotlin.OptIn(ExperimentalFoundationApi::class)
 @OptIn(UnstableApi::class)
 @Composable
@@ -93,8 +94,11 @@ fun VideoPlayer(
   var controllerLayoutPadding by remember {
     mutableStateOf(PaddingValues(horizontal = 5.dp, vertical = 10.dp))
   }
-  var seekPosition by remember {
+  var sliderValuePosition by remember {
     mutableFloatStateOf(0f)
+  }
+  var isSliderInteraction by remember {
+    mutableStateOf(false)
   }
   var showInfoMiddleScreen by remember {
     mutableStateOf(false)
@@ -104,9 +108,13 @@ fun VideoPlayer(
     mutableStateOf(false)
   }
 
-  LaunchedEffect(key1 = showInfoMiddleScreen, key2 = seekPosition) {
+  LaunchedEffect(key1 = showInfoMiddleScreen, key2 = sliderValuePosition) {
     delay(1500L)
     showInfoMiddleScreen = false
+  }
+
+  LaunchedEffect(key1 = sliderValuePosition) {
+    videoPageViewModel.getSliderPreviewThumbnail(sliderValuePosition.toLong())
   }
 
   LaunchedEffect(
@@ -195,7 +203,7 @@ fun VideoPlayer(
   MiddleInfoHandler(
     modifier = Modifier,
     showInfoMiddleScreen = showInfoMiddleScreen,
-    seekPosition = seekPosition.toLong(),
+    seekPosition = sliderValuePosition.toLong(),
     middleVideoPlayerIndicator = middleVideoPlayerIndicator,
   )
 
@@ -218,7 +226,25 @@ fun VideoPlayer(
           } else Modifier
         ),
     ) {
-      val (topSec, bottomSec) = createRefs()
+      val (topSec, bottomSec, sliderThumbnailPreview) = createRefs()
+
+      if (isSliderInteraction) {
+        if (videoPageViewModel.previewSlider.value != null) {
+          Image(
+            bitmap = videoPageViewModel.previewSlider.value!!.asImageBitmap(),
+            contentDescription = "",
+            modifier = Modifier
+              .size(180.dp)
+              .clip(RoundedCornerShape(10.dp))
+              .constrainAs(sliderThumbnailPreview) {
+                bottom.linkTo(bottomSec.top, margin = 5.dp)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+              },
+          )
+        }
+      }
+
 
       Row(
         modifier = Modifier
@@ -299,11 +325,15 @@ fun VideoPlayer(
               .weight(0.7f),
             currentState = { currentState.value },
             currentMediaPosition = currentPlayerPosition.toInt(),
+            slideValueChangeFinished = {
+              isSliderInteraction = false
+              videoPageViewModel.seekToPosition(sliderValuePosition.toLong())
+            },
             slideValueChange = { slideValue ->
+              middleVideoPlayerIndicator = MiddleVideoPlayerIndicator.Seek(slideValue.toLong())
+              sliderValuePosition = slideValue
               showInfoMiddleScreen = true
-              seekPosition = slideValue
-              middleVideoPlayerIndicator = MiddleVideoPlayerIndicator.Seek(seekPosition.toLong())
-              videoPageViewModel.seekToPosition(slideValue.toLong())
+              isSliderInteraction = true
             },
           )
           if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
