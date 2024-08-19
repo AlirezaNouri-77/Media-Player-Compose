@@ -19,5 +19,5 @@
  
 ### Demo
 video size ~8MB
-پ
+
 https://github.com/user-attachments/assets/8b7741b8-1624-4108-854e-302b6c05c502
