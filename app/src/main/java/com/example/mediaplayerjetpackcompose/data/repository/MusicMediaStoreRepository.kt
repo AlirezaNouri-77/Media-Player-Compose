@@ -7,8 +7,8 @@ import android.os.Build
 import android.provider.MediaStore
 import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
-import com.example.mediaplayerjetpackcompose.domain.model.MediaStoreResult
-import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.MusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.repository.MediaStoreResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import java.util.concurrent.TimeUnit

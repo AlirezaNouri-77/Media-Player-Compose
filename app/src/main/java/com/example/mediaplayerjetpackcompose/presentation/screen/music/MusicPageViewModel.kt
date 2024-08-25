@@ -20,13 +20,13 @@ import com.example.mediaplayerjetpackcompose.data.util.onDefaultDispatcher
 import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
 import com.example.mediaplayerjetpackcompose.data.util.onMainDispatcher
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
-import com.example.mediaplayerjetpackcompose.domain.model.MediaStoreResult
-import com.example.mediaplayerjetpackcompose.domain.model.SortState
-import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.CategoryMusicModel
-import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.FavoriteMusicModel
-import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.MusicModel
-import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.SortTypeModel
-import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.TabBarPosition
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.CategoryMusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.FavoriteMusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.SortTypeModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarPosition
+import com.example.mediaplayerjetpackcompose.domain.model.repository.MediaStoreResult
+import com.example.mediaplayerjetpackcompose.domain.model.share.SortState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
@@ -62,7 +62,7 @@ class MusicPageViewModel(
   var currentPagerPage = mutableIntStateOf(0)
 
   var pagerItemList = musicServiceConnection.pagerList
-  var currentMusicState = musicServiceConnection.mediaCurrentState
+  var currentMusicState = musicServiceConnection.currentMediaState
 
   init {
     getFavorite()

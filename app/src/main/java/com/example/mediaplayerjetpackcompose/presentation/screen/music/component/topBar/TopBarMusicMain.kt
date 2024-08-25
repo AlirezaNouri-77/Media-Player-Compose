@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.TabBarPosition
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarPosition
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest

@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.TabBarPosition
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarPosition
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.MyTabIndicator
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.myCustomTabIndicator

@@ -19,8 +19,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.domain.model.SortState
-import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.SortTypeModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.SortTypeModel
+import com.example.mediaplayerjetpackcompose.domain.model.share.SortState
 
 @Composable
 fun SortDropDownMenu(

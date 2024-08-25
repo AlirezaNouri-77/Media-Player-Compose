@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.domain.model.musicScreen
+package com.example.mediaplayerjetpackcompose.domain.model.musicSection
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

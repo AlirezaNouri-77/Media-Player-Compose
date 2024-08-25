@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.domain.model.navigation
+package com.example.mediaplayerjetpackcompose.domain.model
 
 sealed class NavigationRouteModel(var route: String) {
   data object VideoScreen : NavigationRouteModel("VideoScreen")

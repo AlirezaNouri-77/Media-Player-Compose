@@ -1,7 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.MarqueeAnimationMode
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,11 +36,10 @@ import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
-import com.example.mediaplayerjetpackcompose.domain.model.MediaCurrentState
-import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.MusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.PagerHandler
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.verticalFadeEdge
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
@@ -50,7 +48,7 @@ fun MiniMusicPlayer(
   pagerMusicList: List<MusicModel>,
   setCurrentPagerNumber: (Int) -> Unit,
   currentPagerPage: Int,
-  currentMediaState: () -> MediaCurrentState,
+  currentMediaState: () -> CurrentMediaState,
   currentMusicPosition: () -> Long,
   onClick: () -> Unit,
   onPauseMusic: () -> Unit,

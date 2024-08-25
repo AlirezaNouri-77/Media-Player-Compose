@@ -1,8 +1,10 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 
+import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,13 +28,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.domain.model.MediaCurrentState
-import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.MusicModel
-import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.TabBarPosition
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarPosition
+import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.MusicMediaItem
 
@@ -41,10 +44,11 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.Musi
 fun CategoryPage(
   name: String,
   musicPageViewModel: MusicPageViewModel,
-  currentMediaCurrentState: MediaCurrentState,
+  currentCurrentMediaState: CurrentMediaState,
   onMusicClick: (index: Int, musicList: List<MusicModel>) -> Unit,
   miniPlayerHeight: Dp,
   onBackClick: () -> Unit,
+  orientation: Int = LocalConfiguration.current.orientation,
 ) {
 
   musicPageViewModel.musicCategoryList = remember(musicPageViewModel.currentTabState) {
@@ -93,7 +97,10 @@ fun CategoryPage(
     LazyColumn(
       Modifier
         .fillMaxSize()
-        .padding(innerPadding),
+        .padding(innerPadding)
+        .then(
+          if (orientation == Configuration.ORIENTATION_LANDSCAPE) Modifier.displayCutoutPadding() else Modifier
+        ),
       contentPadding = PaddingValues(top = 10.dp, bottom = miniPlayerHeight)
     ) {
       itemsIndexed(
@@ -103,11 +110,11 @@ fun CategoryPage(
         MusicMediaItem(
           item = item,
           isFav = false,
-          currentMediaId = currentMediaCurrentState.mediaId,
+          currentMediaId = currentCurrentMediaState.mediaId,
           onItemClick = {
             onMusicClick.invoke(index, musicPageViewModel.musicCategoryList)
           },
-          isPlaying = currentMediaCurrentState.isPlaying,
+          isPlaying = currentCurrentMediaState.isPlaying,
         )
       }
     }

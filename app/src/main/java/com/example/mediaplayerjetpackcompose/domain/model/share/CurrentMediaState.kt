@@ -1,11 +1,11 @@
-package com.example.mediaplayerjetpackcompose.domain.model
+package com.example.mediaplayerjetpackcompose.domain.model.share
 
 import android.net.Uri
 import androidx.compose.runtime.Stable
 import androidx.media3.common.MediaMetadata
 
 @Stable
-data class MediaCurrentState(
+data class CurrentMediaState(
   var isPlaying: Boolean,
   var uri: Uri,
   val metaData: MediaMetadata,
@@ -13,7 +13,7 @@ data class MediaCurrentState(
   val isBuffering: Boolean,
 ) {
   companion object {
-    var Empty: MediaCurrentState = MediaCurrentState(
+    var Empty: CurrentMediaState = CurrentMediaState(
       isPlaying = false,
       mediaId = "",
       metaData = MediaMetadata.EMPTY,

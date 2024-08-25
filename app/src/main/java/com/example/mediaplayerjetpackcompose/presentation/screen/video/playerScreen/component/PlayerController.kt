@@ -10,12 +10,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.domain.model.MediaCurrentState
+import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
 
 @Composable
 fun PlayerController(
   modifier: Modifier = Modifier,
-  currentState: () -> MediaCurrentState,
+  currentState: () -> CurrentMediaState,
   onSeekToPrevious: () -> Unit,
   onSeekToNext: () -> Unit,
   onPause: () -> Unit,

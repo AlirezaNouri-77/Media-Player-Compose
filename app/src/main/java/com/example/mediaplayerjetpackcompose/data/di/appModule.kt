@@ -7,7 +7,7 @@ import com.example.mediaplayerjetpackcompose.data.repository.MusicMediaStoreRepo
 import com.example.mediaplayerjetpackcompose.data.repository.VideoMediaStoreRepository
 import com.example.mediaplayerjetpackcompose.data.service.MusicServiceConnection
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
-import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.MusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoItemModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel

@@ -91,7 +91,7 @@ fun SliderSection(
       )
       Slider(
         value = sliderValue,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier,
         onValueChange = { value ->
           seekPosition.floatValue = value
           sliderInInteraction = true

@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.domain.model.musicScreen
+package com.example.mediaplayerjetpackcompose.domain.model.musicSection
 
 enum class SortTypeModel(var sortName: String) {
   NAME("Name"),

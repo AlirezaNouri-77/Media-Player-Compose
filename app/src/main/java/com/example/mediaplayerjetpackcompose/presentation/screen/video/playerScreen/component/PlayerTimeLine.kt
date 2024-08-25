@@ -16,13 +16,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
-import com.example.mediaplayerjetpackcompose.domain.model.MediaCurrentState
+import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerTimeLine(
   modifier: Modifier = Modifier,
-  currentState: () -> MediaCurrentState,
+  currentState: () -> CurrentMediaState,
   currentMediaPosition: Int,
   slideValueChange: (Float) -> Unit,
   slideValueChangeFinished: () -> Unit,

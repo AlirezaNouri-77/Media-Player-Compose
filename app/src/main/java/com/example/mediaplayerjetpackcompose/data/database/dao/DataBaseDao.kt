@@ -3,7 +3,7 @@ package com.example.mediaplayerjetpackcompose.data.database.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.FavoriteMusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.FavoriteMusicModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao

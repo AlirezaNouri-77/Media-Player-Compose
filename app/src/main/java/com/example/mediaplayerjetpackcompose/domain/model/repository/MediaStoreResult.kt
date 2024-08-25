@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.domain.model
+package com.example.mediaplayerjetpackcompose.domain.model.repository
 
 sealed class MediaStoreResult<T> {
   data object Initial : MediaStoreResult<Nothing>()

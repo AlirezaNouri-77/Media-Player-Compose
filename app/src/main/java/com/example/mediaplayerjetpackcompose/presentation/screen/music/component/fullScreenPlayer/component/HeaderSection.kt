@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -29,11 +28,13 @@ fun HeaderSection(
   onBackClick: () -> Unit,
 ) {
   Row(
-    modifier = modifier.padding(vertical = 20.dp, horizontal = 15.dp),
+    modifier = modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.Start,
     verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.SpaceEvenly,
   ) {
     Button(
+      modifier = Modifier
+        .size(40.dp),
       onClick = { onBackClick.invoke() },
       interactionSource = NoRippleEffect,
       colors = ButtonDefaults.buttonColors(
@@ -45,15 +46,13 @@ fun HeaderSection(
       Icon(
         imageVector = Icons.Default.KeyboardArrowDown,
         contentDescription = "",
-        modifier = Modifier
-          .size(40.dp),
         tint = Color.White,
       )
     }
     Spacer(modifier = Modifier.width(30.dp))
     Text(
       text = "Now Playing",
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier,
       fontSize = 16.sp,
       fontWeight = FontWeight.Medium,
       color = Color.White,

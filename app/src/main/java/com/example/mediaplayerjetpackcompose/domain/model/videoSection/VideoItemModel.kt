@@ -2,9 +2,6 @@ package com.example.mediaplayerjetpackcompose.domain.model.videoSection
 
 import android.net.Uri
 import androidx.compose.runtime.Stable
-import androidx.core.os.bundleOf
-import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
 
 @Stable
 data class VideoItemModel(
@@ -16,19 +13,17 @@ data class VideoItemModel(
   val size: Int,
   val height: Int,
   val width: Int,
-)
-
-fun VideoItemModel.toMediaItem(): MediaItem {
-  return MediaItem.Builder().setUri(this.uri).setMediaId(videoId.toString()).setMediaMetadata(
-    MediaMetadata.Builder()
-      .setTitle(name)
-      .setExtras(
-        bundleOf(
-          "DURATION" to this.duration,
-        )
-      )
-      .build()
-  ).build()
+) {
+  companion object {
+    var Empty = VideoItemModel(
+      videoId = 0,
+      uri = Uri.EMPTY,
+      name = "",
+      mimeType = "",
+      duration = 0,
+      size = 0,
+      height = 0,
+      width = 0
+    )
+  }
 }
-
-

@@ -31,7 +31,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.MusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.Loading
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.CategoryPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.MiniMusicPlayer
@@ -85,12 +85,13 @@ fun MusicScreen(
     val (musicList, collapsePlayer) = createRefs()
 
     NavHost(
-      modifier = Modifier.constrainAs(musicList) {
-        top.linkTo(parent.top)
-        start.linkTo(parent.start)
-        end.linkTo(parent.end)
-        bottom.linkTo(parent.bottom)
-      },
+      modifier = Modifier
+        .constrainAs(musicList) {
+          top.linkTo(parent.top)
+          start.linkTo(parent.start)
+          end.linkTo(parent.end)
+          bottom.linkTo(parent.bottom)
+        },
       navController = navController,
       startDestination = "Home",
     ) {
@@ -152,7 +153,7 @@ fun MusicScreen(
       ) {
         CategoryPage(
           name = it.arguments!!.getString("CategoryName").toString(),
-          currentMediaCurrentState = currentMusicState,
+          currentCurrentMediaState = currentMusicState,
           musicPageViewModel = musicPageViewModel,
           onMusicClick = { index, musicList ->
             musicPageViewModel.playMusic(

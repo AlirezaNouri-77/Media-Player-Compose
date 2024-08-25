@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.domain.model.musicScreen
+package com.example.mediaplayerjetpackcompose.domain.model.musicSection
 
 enum class TabBarPosition(val enuName: String) {
   MUSIC("Music"),

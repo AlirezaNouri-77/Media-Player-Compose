@@ -22,7 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import com.example.mediaplayerjetpackcompose.domain.model.navigation.NavigationRouteModel
+import com.example.mediaplayerjetpackcompose.domain.model.NavigationRouteModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicScreen
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPage

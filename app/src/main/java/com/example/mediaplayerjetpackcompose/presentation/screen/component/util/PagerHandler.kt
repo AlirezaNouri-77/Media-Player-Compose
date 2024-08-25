@@ -5,13 +5,13 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import com.example.mediaplayerjetpackcompose.domain.model.MediaCurrentState
-import com.example.mediaplayerjetpackcompose.domain.model.musicScreen.MusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PagerHandler(
-  currentMediaState: () -> MediaCurrentState,
+  currentMediaState: () -> CurrentMediaState,
   pagerMusicList: List<MusicModel>,
   currentPagerPage: Int,
   pagerState: PagerState,

@@ -18,11 +18,11 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import com.example.mediaplayerjetpackcompose.data.GetMediaArt
+import com.example.mediaplayerjetpackcompose.data.mapper.toMediaItem
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
-import com.example.mediaplayerjetpackcompose.domain.model.MediaCurrentState
-import com.example.mediaplayerjetpackcompose.domain.model.MediaStoreResult
+import com.example.mediaplayerjetpackcompose.domain.model.repository.MediaStoreResult
+import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
 import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoItemModel
-import com.example.mediaplayerjetpackcompose.domain.model.videoSection.toMediaItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,8 +51,8 @@ class VideoPageViewModel(
   var mediaStoreDataList = mutableStateListOf<VideoItemModel>()
     private set
 
-  private var _currentState = MutableStateFlow(MediaCurrentState.Empty)
-  val currentMediaState: StateFlow<MediaCurrentState> = _currentState.asStateFlow()
+  private var _currentState = MutableStateFlow(CurrentMediaState.Empty)
+  val currentMediaState: StateFlow<CurrentMediaState> = _currentState.asStateFlow()
 
   init {
     getVideo()
