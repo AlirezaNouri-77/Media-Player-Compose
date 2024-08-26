@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -76,12 +75,11 @@ fun MusicMediaItem(
           inset = 50f,
         )
       }
-
       Spacer(modifier = Modifier.width(10.dp))
       Column(
         modifier = Modifier
-          .weight(1f)
-          .fillMaxHeight(),
+          .fillMaxWidth()
+          .weight(0.8f),
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally,
       ) {
@@ -106,19 +104,20 @@ fun MusicMediaItem(
       }
       Column(
         Modifier.weight(0.2f),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.End,
       ) {
         Text(
+          modifier = Modifier.fillMaxWidth(),
           text = item.duration.convertMilliSecondToTime(),
           color = contentColor,
-          textAlign = TextAlign.Center,
+          textAlign = TextAlign.End,
         )
         if (isFav) {
           Icon(
             imageVector = Icons.Default.Favorite,
             contentDescription = "",
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(15.dp),
             tint = MaterialTheme.colorScheme.onPrimary
           )
         }
