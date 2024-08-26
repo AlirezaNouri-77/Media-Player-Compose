@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.C
@@ -24,6 +25,7 @@ import com.example.mediaplayerjetpackcompose.domain.model.repository.MediaStoreR
 import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
 import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoItemModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -46,7 +48,7 @@ class VideoPageViewModel(
 
   var playerResizeMode by mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT)
 
-  var previewSlider = mutableStateOf<Bitmap?>(null)
+  var previewSlider = mutableStateOf<ImageBitmap?>(null)
 
   var mediaStoreDataList = mutableStateListOf<VideoItemModel>()
     private set

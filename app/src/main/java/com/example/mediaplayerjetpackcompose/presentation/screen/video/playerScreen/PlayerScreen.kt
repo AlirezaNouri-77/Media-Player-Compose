@@ -231,7 +231,7 @@ fun VideoPlayer(
       if (isSliderInteraction) {
         if (videoPageViewModel.previewSlider.value != null) {
           Image(
-            bitmap = videoPageViewModel.previewSlider.value!!.asImageBitmap(),
+            bitmap = videoPageViewModel.previewSlider.value!!,
             contentDescription = "",
             modifier = Modifier
               .size(180.dp)

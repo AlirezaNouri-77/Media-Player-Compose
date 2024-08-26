@@ -9,12 +9,17 @@ import android.net.Uri
 import android.os.Build
 import android.util.Size
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.graphics.drawable.toBitmap
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.data.util.onDefaultDispatcher
 import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
 import com.example.mediaplayerjetpackcompose.data.util.onMainDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.withContext
 
 class GetMediaArt(
   private var context: Context,
@@ -31,7 +36,7 @@ class GetMediaArt(
             null
           )
         } else {
-          val byteArray = mediaMetadataRetriever.embeddedPicture
+          val byteArray = mediaMetadataRetriever.use { it.embeddedPicture }
           val bitmap = BitmapFactory.decodeByteArray(
             byteArray,
             0,
@@ -48,20 +53,22 @@ class GetMediaArt(
         )
       }
     }
-
   }
 
-  suspend fun getVideoThumbNailFromFrame(uri: Uri, position: Long): Bitmap? {
+  @OptIn(ExperimentalCoroutinesApi::class)
+  suspend fun getVideoThumbNailFromFrame(uri: Uri, position: Long): ImageBitmap? {
     val mediaMetadataRetriever = MediaMetadataRetriever()
     mediaMetadataRetriever.setDataSource(context, uri)
-    return onDefaultDispatcher {
+    return withContext(Dispatchers.Default.limitedParallelism(1)) {
       runCatching {
-        mediaMetadataRetriever.getScaledFrameAtTime(
-          position * 1000,
-          OPTION_CLOSEST_SYNC,
-          Constant.VIDEO_WIDTH,
-          Constant.VIDEO_HEIGHT,
-        )
+        mediaMetadataRetriever.use {
+          it.getScaledFrameAtTime(
+            position * 1000,
+            OPTION_CLOSEST_SYNC,
+            Constant.VIDEO_WIDTH,
+            Constant.VIDEO_HEIGHT,
+          )?.asImageBitmap()
+        }
       }.getOrNull()
     }
   }
@@ -77,7 +84,7 @@ class GetMediaArt(
             null
           )
         } else {
-          val byteArray = mediaMetadataRetriever.embeddedPicture
+          val byteArray = mediaMetadataRetriever.use { it.embeddedPicture }
           val bitmap = BitmapFactory.decodeByteArray(
             byteArray,
             0,
