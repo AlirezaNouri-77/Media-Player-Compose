@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.mediaplayerjetpackcompose.domain.model.navigation.MainScreenNavigationModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.EmptyPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.Loading
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.component.TopBarVideo
@@ -58,7 +59,7 @@ fun VideoPage(
               VideoMediaItem(
                 item = videoMediaModel,
                 onItemClick = {
-                  navHostController.navigate("PlayerScreen") {
+                  navHostController.navigate(MainScreenNavigationModel.VideoPlayerScreen("")) {
                     launchSingleTop = true
                   }
                   videoPageViewModel.startPlay(index, videoPageViewModel.mediaStoreDataList)

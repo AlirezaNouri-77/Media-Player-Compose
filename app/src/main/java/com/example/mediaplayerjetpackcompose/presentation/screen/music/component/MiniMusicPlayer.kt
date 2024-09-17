@@ -130,7 +130,7 @@ fun MiniMusicPlayer(
             modifier = Modifier.fillMaxWidth(),
             state = pagerState,
             pageSpacing = 20.dp,
-            beyondBoundsPageCount = 2,
+            beyondViewportPageCount = 2,
             contentPadding = PaddingValues(horizontal = 10.dp)
           ) { page ->
             Column(
@@ -142,7 +142,7 @@ fun MiniMusicPlayer(
                 fontSize = 13.sp,
                 modifier = Modifier
                   .fillMaxWidth()
-                  .basicMarquee(iterations = marqueeAnimate, delayMillis = 500),
+                  .basicMarquee(iterations = marqueeAnimate, initialDelayMillis = 500),
                 maxLines = 1,
               )
               Text(

@@ -1,14 +1,12 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.component.util
 
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PagerHandler(
   currentMediaState: () -> CurrentMediaState,

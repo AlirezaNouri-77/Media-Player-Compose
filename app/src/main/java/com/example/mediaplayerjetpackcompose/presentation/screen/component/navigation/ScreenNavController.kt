@@ -16,13 +16,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.navArgument
-import com.example.mediaplayerjetpackcompose.domain.model.NavigationRouteModel
+import androidx.navigation.toRoute
+import com.example.mediaplayerjetpackcompose.domain.model.navigation.MainScreenNavigationModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicScreen
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPage
@@ -40,10 +40,10 @@ fun ScreenNavController(
 
   val navBackStackEntry by navHostController.currentBackStackEntryAsState()
   val currentRoute = remember(navBackStackEntry) {
-    navBackStackEntry?.destination?.route
+    navBackStackEntry?.destination
   }
 
-  if (currentRoute == NavigationRouteModel.VideoPlayerScreen.route) {
+  if (currentRoute?.hasRoute(MainScreenNavigationModel.VideoPlayerScreen::class) == true) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       window.insetsController?.apply {
         hide(WindowInsets.Type.statusBars())
@@ -65,11 +65,10 @@ fun ScreenNavController(
     modifier = Modifier
       .fillMaxSize(),
     navController = navHostController,
-    startDestination = NavigationRouteModel.MusicScreen.route,
+    startDestination = MainScreenNavigationModel.MusicScreen,
   ) {
 
-    composable(
-      NavigationRouteModel.VideoScreen.route,
+    composable<MainScreenNavigationModel.VideoScreen>(
       enterTransition = {
         fadeIn(tween(200, 20))
       },
@@ -87,13 +86,12 @@ fun ScreenNavController(
         navHostController = navHostController,
         videoPageViewModel = videoPageViewModel,
         onNavigateToMusicScreen = {
-          navHostController.navigate(NavigationRouteModel.MusicScreen.route)
+          navHostController.navigate(MainScreenNavigationModel.MusicScreen)
         }
       )
     }
 
-    composable(
-      NavigationRouteModel.VideoPlayerScreen.route,
+    composable<MainScreenNavigationModel.VideoPlayerScreen>(
       enterTransition = {
         fadeIn(tween(200))
       },
@@ -105,31 +103,25 @@ fun ScreenNavController(
       },
       popExitTransition = {
         fadeOut(tween(200))
-      }, arguments = listOf(
-        navArgument(name = "videoUri") {
-          type = NavType.StringType
-          nullable = true
-          defaultValue = ""
-        },
-      )
-    ) {
+      },
+    ) { backStackEntry ->
       Surface(
         color = Color.Black
       ) {
+        val videoPlayer = backStackEntry.toRoute<MainScreenNavigationModel.VideoPlayerScreen>()
         VideoPlayer(
-          videoUri = it.arguments?.getString("videoUri").toString(),
+          videoUri = videoPlayer.videoUri,
           videoPageViewModel = videoPageViewModel,
           onBackClick = {
             navHostController.popBackStack(
-              NavigationRouteModel.VideoScreen.route, inclusive = false
+              MainScreenNavigationModel.VideoScreen, inclusive = false
             )
           },
         )
       }
     }
 
-    composable(
-      NavigationRouteModel.MusicScreen.route,
+    composable<MainScreenNavigationModel.MusicScreen>(
       enterTransition = {
         fadeIn(tween(200, 20))
       },
@@ -146,7 +138,7 @@ fun ScreenNavController(
       MusicScreen(
         musicPageViewModel = musicPageViewModel,
         onNavigateToVideoScreen = {
-          navHostController.navigate(NavigationRouteModel.VideoScreen.route)
+          navHostController.navigate(MainScreenNavigationModel.VideoScreen)
         }
       )
     }

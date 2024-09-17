@@ -1,5 +1,5 @@
 [versions]
-androidGradlePlugin  = "8.2.0"
+androidGradlePlugin  = "8.6.0"
 activityCompose = "1.9.0"
 coilCompose = "2.6.0"
 composeBom = "2024.06.00"
@@ -9,14 +9,16 @@ espressoCore = "3.6.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 kotlin = "2.0.0"
-androidKsp = "2.0.0-1.0.21"
+androidKsp = "2.0.20-1.0.25"
 koin = "3.5.3"
 lifecycleVersion = "2.7.0"
 material3 = "1.2.1"
 media3 = "1.4.0"
-navVersion = "2.7.7"
+navVersion = "2.8.0"
 paletteKtx = "1.0.0"
 roomVersion = "2.6.1"
+serialization = "1.7.1"
+pluginSerialization = "2.0.20"
 
 [libraries]
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
@@ -43,6 +45,8 @@ androidx-media3-session = { module = "androidx.media3:media3-session", version.r
 
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navVersion" }
 
+jetbrains-kotlinx = {group="org.jetbrains.kotlinx",name="kotlinx-serialization-json", version.ref = "serialization"}
+
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
@@ -59,7 +63,9 @@ koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
 
 [plugins]
+
 android-compose-plugin = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+android-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "pluginSerialization" }
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-ksp = { id = "com.google.devtools.ksp", version.ref = "androidKsp" }

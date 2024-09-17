@@ -1,7 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component
 
 import android.content.res.Configuration
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.ArtworkImage
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PagerArtwork(
   modifier: Modifier = Modifier,
@@ -48,7 +46,7 @@ fun PagerArtwork(
   ) {
     HorizontalPager(
       modifier = pagerModifier,
-      beyondBoundsPageCount = 1,
+      beyondViewportPageCount = 1,
       state = pagerState,
       pageSpacing = 10.dp,
       verticalAlignment = Alignment.CenterVertically,

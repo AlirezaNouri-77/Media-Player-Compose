@@ -26,16 +26,16 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.navigation.MusicNavigationModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.Loading
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.CategoryPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.MiniMusicPlayer
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.MusicList
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.MusicListHandler
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.SortDropDownMenu
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.TabBarSection
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.TopBarMusic
@@ -93,9 +93,9 @@ fun MusicScreen(
           bottom.linkTo(parent.bottom)
         },
       navController = navController,
-      startDestination = "Home",
+      startDestination = MusicNavigationModel.Home,
     ) {
-      composable("Home") {
+      composable<MusicNavigationModel.Home> {
         Scaffold(
           topBar = {
             TopBarMusic(
@@ -129,7 +129,7 @@ fun MusicScreen(
               if (target) {
                 Loading(modifier = Modifier)
               } else {
-                MusicList(
+                MusicListHandler(
                   musicPageViewModel = musicPageViewModel,
                   currentMusicState = currentMusicState,
                   navController = navController,
@@ -143,16 +143,10 @@ fun MusicScreen(
 
       }
 
-      composable(
-        "Category/{CategoryName}",
-        arguments = listOf(
-          navArgument(name = "CategoryName") {
-            type = NavType.StringType
-          },
-        )
-      ) {
+      composable<MusicNavigationModel.Category> { backStackEntry ->
+        val categoryName = backStackEntry.toRoute<MusicNavigationModel.Category>().name
         CategoryPage(
-          name = it.arguments!!.getString("CategoryName").toString(),
+          name = categoryName,
           currentCurrentMediaState = currentMusicState,
           musicPageViewModel = musicPageViewModel,
           onMusicClick = { index, musicList ->

@@ -16,13 +16,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarPosition
+import com.example.mediaplayerjetpackcompose.domain.model.navigation.MusicNavigationModel
 import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.CategoryListItem
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.MusicMediaItem
 
 @Composable
-fun MusicList(
+fun MusicListHandler(
   musicPageViewModel: MusicPageViewModel,
   currentMusicState: CurrentMediaState,
   navController: NavController,
@@ -97,8 +98,8 @@ fun MusicList(
             CategoryListItem(
               categoryName = item.categoryName,
               musicListSize = item.categoryList.size,
-              onClick = { string ->
-                navController.navigate("Category/$string")
+              onClick = { categoryName ->
+                navController.navigate(MusicNavigationModel.Category(categoryName))
               },
             )
           }
@@ -109,8 +110,8 @@ fun MusicList(
             CategoryListItem(
               categoryName = item.categoryName,
               musicListSize = item.categoryList.size,
-              onClick = { string ->
-                navController.navigate("Category/$string")
+              onClick = {categoryName ->
+                navController.navigate(MusicNavigationModel.Category(categoryName))
               },
             )
           }

@@ -1,6 +1,5 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.video
 
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.compose.runtime.getValue
@@ -25,7 +24,6 @@ import com.example.mediaplayerjetpackcompose.domain.model.repository.MediaStoreR
 import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
 import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoItemModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -97,7 +95,7 @@ class VideoPageViewModel(
   suspend fun getSliderPreviewThumbnail(position: Long) {
     if (_currentState.value.uri == Uri.EMPTY) return
     viewModelScope.launch {
-      previewSlider.value = getMediaArt.getVideoThumbNailFromFrame(_currentState.value.uri, position)
+      previewSlider.value = getMediaArt.getVideoThumbNail(_currentState.value.uri, position)
     }
   }
 

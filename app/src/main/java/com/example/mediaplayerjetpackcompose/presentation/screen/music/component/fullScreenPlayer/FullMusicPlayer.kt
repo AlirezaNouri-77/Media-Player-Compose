@@ -3,7 +3,6 @@ package com.example.mediaplayerjetpackcompose.presentation.screen.music.componen
 import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -46,7 +45,6 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.SongDetail
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FullMusicPlayer(
   favoriteList: SnapshotStateList<String>,
