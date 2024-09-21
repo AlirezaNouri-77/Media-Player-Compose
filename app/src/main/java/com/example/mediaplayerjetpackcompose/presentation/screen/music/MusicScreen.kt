@@ -51,7 +51,7 @@ fun MusicScreen(
   var sortIconOffset by remember { mutableStateOf(DpOffset.Zero) }
   val navController: NavHostController = rememberNavController()
   val currentMusicState = musicPageViewModel.currentMusicState.collectAsStateWithLifecycle().value
-  val miniPlayerHeight = remember { mutableStateOf(0.dp) }
+  var miniPlayerHeight by remember { mutableStateOf(0.dp) }
 
   SortDropDownMenu(
     isExpand = showSortBar,
@@ -133,7 +133,7 @@ fun MusicScreen(
                   musicPageViewModel = musicPageViewModel,
                   currentMusicState = currentMusicState,
                   navController = navController,
-                  bottomPadding = miniPlayerHeight.value,
+                  bottomPadding = miniPlayerHeight,
                 )
               }
             }
@@ -155,7 +155,7 @@ fun MusicScreen(
               musicList
             )
           },
-          miniPlayerHeight = miniPlayerHeight.value,
+          miniPlayerHeight = miniPlayerHeight,
           onBackClick = navController::popBackStack
         )
       }
@@ -177,7 +177,7 @@ fun MusicScreen(
         targetOffsetY = { int -> int / 4 }) + fadeOut(tween(200, delayMillis = 90))
     ) {
       MiniMusicPlayer(
-        modifier = Modifier.onGloballyPositioned { miniPlayerHeight.value = density.run { it.size.height.toDp() } },
+        modifier = Modifier.onGloballyPositioned { miniPlayerHeight = density.run { it.size.height.toDp() } },
         pagerMusicList = musicPageViewModel.pagerItemList,
         onPauseMusic = musicPageViewModel::pauseMusic,
         onResumeMusic = musicPageViewModel::resumeMusic,

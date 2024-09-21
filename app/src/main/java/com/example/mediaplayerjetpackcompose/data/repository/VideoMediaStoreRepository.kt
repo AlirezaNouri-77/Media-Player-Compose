@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 class VideoMediaStoreRepository(
   private var contentResolver: ContentResolver,
 ) : MediaStoreRepositoryImpl<VideoItemModel> {
-  override suspend fun getMedia(): Flow<MediaStoreResult<out VideoItemModel>> {
+  override suspend fun getMedia(): Flow<MediaStoreResult<VideoItemModel>> {
     val mListResult = mutableListOf<VideoItemModel>()
     return flow {
 
@@ -68,7 +68,11 @@ class VideoMediaStoreRepository(
         }
       }
 
-      emit(MediaStoreResult.Result(mListResult))
+      if (mListResult.isNotEmpty()) {
+        emit(MediaStoreResult.Result(mListResult))
+      } else {
+        emit(MediaStoreResult.Result(mListResult))
+      }
 
     }.flowOn(Dispatchers.IO)
 
@@ -85,7 +89,7 @@ class VideoMediaStoreRepository(
       MediaStore.Video.Media.HEIGHT,
       MediaStore.Video.Media.WIDTH,
     )
-    var uriMedia = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    var uriMedia: Uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
     } else {
       MediaStore.Video.Media.EXTERNAL_CONTENT_URI

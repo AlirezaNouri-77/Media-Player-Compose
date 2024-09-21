@@ -18,7 +18,7 @@ fun EmptyPage() {
     contentAlignment = Alignment.Center,
   ) {
     Text(
-      text = "Empty :(",
+      text = "Empty",
       fontSize = 24.sp,
       fontWeight = FontWeight.Bold,
       textAlign = TextAlign.Center,

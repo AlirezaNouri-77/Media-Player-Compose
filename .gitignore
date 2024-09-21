@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+*.log
+.kotlin/sessions/kotlin-compiler-9585656910870041564.salive
+.idea/codeStyles/Project.xml

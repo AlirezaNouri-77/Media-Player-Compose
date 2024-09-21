@@ -2,6 +2,7 @@ package com.example.mediaplayerjetpackcompose.data.di
 
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.mediaplayerjetpackcompose.data.GetMediaArt
+import com.example.mediaplayerjetpackcompose.data.GetMediaMetaData
 import com.example.mediaplayerjetpackcompose.data.database.databaseClass.AppDataBase
 import com.example.mediaplayerjetpackcompose.data.repository.MusicMediaStoreRepository
 import com.example.mediaplayerjetpackcompose.data.repository.VideoMediaStoreRepository
@@ -25,12 +26,13 @@ var appModule = module {
   single { GetMediaArt(androidApplication().applicationContext) }
 
   single { GetMediaArt(androidContext()) }
+  single { GetMediaMetaData(get()) }
 
   single<MediaStoreRepositoryImpl<MusicModel>>(named("musicRepo")) { MusicMediaStoreRepository(androidContext().contentResolver) }
   single<MediaStoreRepositoryImpl<VideoItemModel>> { VideoMediaStoreRepository(androidContext().contentResolver) }
   single { MusicServiceConnection(androidApplication().applicationContext) }
 
   viewModel { MusicPageViewModel(get(named("musicRepo")), get(), get(), get()) }
-  viewModel { VideoPageViewModel(get(), get(), get()) }
+  viewModel { VideoPageViewModel(get(), get(), get(), get()) }
 
 }

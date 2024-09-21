@@ -4,5 +4,5 @@ import com.example.mediaplayerjetpackcompose.domain.model.repository.MediaStoreR
 import kotlinx.coroutines.flow.Flow
 
 interface MediaStoreRepositoryImpl<out T> {
-  suspend fun getMedia(): Flow<MediaStoreResult<out T>>
+  suspend fun getMedia(): Flow<MediaStoreResult<T>>
 }

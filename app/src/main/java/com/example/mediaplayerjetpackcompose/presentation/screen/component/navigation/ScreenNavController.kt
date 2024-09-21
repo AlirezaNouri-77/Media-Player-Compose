@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -28,7 +29,6 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicScre
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.playerScreen.VideoPlayer
-
 
 @Composable
 fun ScreenNavController(
@@ -43,6 +43,8 @@ fun ScreenNavController(
     navBackStackEntry?.destination
   }
 
+  val videoUiState = videoPageViewModel.uiState.collectAsStateWithLifecycle()
+
   if (currentRoute?.hasRoute(MainScreenNavigationModel.VideoPlayerScreen::class) == true) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       window.insetsController?.apply {
@@ -56,7 +58,6 @@ fun ScreenNavController(
       window.insetsController?.apply {
         show(WindowInsets.Type.statusBars())
         show(WindowInsets.Type.systemBars())
-    //    this.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
       }
     }
   }
@@ -87,7 +88,8 @@ fun ScreenNavController(
         videoPageViewModel = videoPageViewModel,
         onNavigateToMusicScreen = {
           navHostController.navigate(MainScreenNavigationModel.MusicScreen)
-        }
+        },
+        uiState = { videoUiState },
       )
     }
 

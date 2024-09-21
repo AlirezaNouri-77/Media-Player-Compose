@@ -24,60 +24,57 @@ class MusicMediaStoreRepository(
     return channelFlow {
       onIoDispatcher {
         send(MediaStoreResult.Loading)
+        contentResolver.query(
+          uriMedia,
+          MediaInfoArray,
+          selection,
+          null,
+          null
+        )?.use { cursor ->
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-          contentResolver.query(
-            uriMedia,
-            MediaInfoArray,
-            selection,
-            null,
-            null
-          )?.use { cursor ->
+          val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
+          val mimeTypesColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE)
+          val dataPathColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
+          val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
+          val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
+          val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
+          val bitrateColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.BITRATE)
+          val artistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
+          val albumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
+          val albumId = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
 
-            val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
-            val mimeTypesColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE)
-            val dataPathColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
-            val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
-            val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
-            val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
-            val bitrateColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.BITRATE)
-            val artistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
-            val albumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
-            val albumId = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
-
-            while (cursor.moveToNext()) {
-              val id = idColumn.let { cursor.getLong(it) }
-              val dataPath = dataPathColumn.let { cursor.getString(it) }
-              val mimeType = mimeTypesColumn.let { cursor.getString(it) }
-              val name = nameColumn.let { cursor.getString(it) }
-              val duration = durationColumn.let { cursor.getInt(it) }
-              val bitrate = bitrateColumn.let { cursor.getInt(it) }
-              val size = sizeColumn.let { cursor.getInt(it) }
-              val artist = artistColumn.let { cursor.getString(it) }
-              val album = albumColumn.let { cursor.getString(it) }
-              val albumArtUri = ContentUris.withAppendedId(albumArtPath, albumId.let { cursor.getLong(it) })
-              val contentUri: Uri = ContentUris.withAppendedId(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                id
+          while (cursor.moveToNext()) {
+            val id = idColumn.let { cursor.getLong(it) }
+            val dataPath = dataPathColumn.let { cursor.getString(it) }
+            val mimeType = mimeTypesColumn.let { cursor.getString(it) }
+            val name = nameColumn.let { cursor.getString(it) }
+            val duration = durationColumn.let { cursor.getInt(it) }
+            val bitrate = bitrateColumn.let { cursor.getInt(it) }
+            val size = sizeColumn.let { cursor.getInt(it) }
+            val artist = artistColumn.let { cursor.getString(it) }
+            val album = albumColumn.let { cursor.getString(it) }
+            val albumArtUri = ContentUris.withAppendedId(albumArtPath, albumId.let { cursor.getLong(it) })
+            val contentUri: Uri = ContentUris.withAppendedId(
+              MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+              id
+            )
+            resultList.add(
+              MusicModel(
+                musicId = id,
+                path = dataPath,
+                uri = contentUri,
+                mimeTypes = mimeType,
+                name = name,
+                duration = duration,
+                size = size,
+                artworkUri = albumArtUri,
+                bitrate = bitrate,
+                artist = artist,
+                album = album,
               )
-              resultList.add(
-                MusicModel(
-                  musicId = id,
-                  path = dataPath,
-                  uri = contentUri,
-                  mimeTypes = mimeType,
-                  name = name,
-                  duration = duration,
-                  size = size,
-                  artworkUri = albumArtUri,
-                  bitrate = bitrate,
-                  artist = artist,
-                  album = album,
-                )
-              )
-            }
-
+            )
           }
+
         }
         send(MediaStoreResult.Result(resultList))
       }

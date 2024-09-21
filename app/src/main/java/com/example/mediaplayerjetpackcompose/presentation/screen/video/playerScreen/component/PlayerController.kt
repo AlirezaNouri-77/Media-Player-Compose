@@ -3,14 +3,15 @@ package com.example.mediaplayerjetpackcompose.presentation.screen.video.playerSc
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
+import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 @Composable
 fun PlayerController(
@@ -23,14 +24,14 @@ fun PlayerController(
 ) {
 
   Row(
-    modifier = modifier.fillMaxWidth(),
+    modifier = modifier,
     verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.Center,
+    horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
   ) {
     PlayerControllerButton(
       icon = R.drawable.icon_skip_previous_24,
       modifier = Modifier
-        .size(24.dp),
+        .size(35.dp),
       onClick = {
         onSeekToPrevious()
       },
@@ -41,7 +42,7 @@ fun PlayerController(
     ) {
       PlayerControllerButton(
         icon = it,
-        modifier = Modifier.size(30.dp),
+        modifier = Modifier.size(45.dp),
         onClick = {
           when (currentState().isPlaying) {
             true -> onPause()
@@ -52,11 +53,25 @@ fun PlayerController(
     }
     PlayerControllerButton(
       icon = R.drawable.icon_skip_next_24,
-      modifier = Modifier.size(24.dp),
+      modifier = Modifier.size(35.dp),
       onClick = {
         onSeekToNext()
       },
     )
   }
 
+}
+
+@Preview
+@Composable
+private fun PreviewPlayerController() {
+  MediaPlayerJetpackComposeTheme {
+    PlayerController(
+      currentState = { CurrentMediaState.Empty },
+      onSeekToPrevious = {},
+      onSeekToNext = {},
+      onPause = {},
+      onResume = {}
+    )
+  }
 }
