@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.data.util.convertByteToReadableSize
 import com.example.mediaplayerjetpackcompose.data.util.convertToKbit
 import com.example.mediaplayerjetpackcompose.data.util.extractFileExtension
@@ -38,8 +39,8 @@ fun SongDetail(
     )
     val songDetail = listOf(
       currentCurrentMediaState().metaData.title?.toString()?.extractFileExtension() ?: "None",
-      currentCurrentMediaState().metaData.extras?.getInt("Bitrate")?.convertToKbit() ?: "None",
-      currentCurrentMediaState().metaData.extras?.getInt("Size")?.convertByteToReadableSize()?.toString()
+      currentCurrentMediaState().metaData.extras?.getInt(Constant.BITRATE_KEY)?.convertToKbit() ?: "None",
+      currentCurrentMediaState().metaData.extras?.getInt(Constant.SIZE_KEY)?.convertByteToReadableSize()?.toString()
         ?: ""
     )
     Text(

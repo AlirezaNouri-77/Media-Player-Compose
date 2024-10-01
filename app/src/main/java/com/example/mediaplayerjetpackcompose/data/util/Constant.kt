@@ -12,6 +12,10 @@ object Constant {
     Player.REPEAT_MODE_ALL
   )
 
+  const val DURATION_KEY = "Duration"
+  const val BITRATE_KEY = "Bitrate"
+  const val SIZE_KEY = "Size"
+
   const val VIDEO_WIDTH = 150
   const val VIDEO_HEIGHT = 150
   val permissionsList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

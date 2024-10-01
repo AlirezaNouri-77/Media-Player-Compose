@@ -15,9 +15,6 @@ import androidx.core.graphics.drawable.toBitmap
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.withContext
 
 class GetMediaArt(
   private var context: Context,
@@ -54,9 +51,8 @@ class GetMediaArt(
   }
 
 
-  @OptIn(ExperimentalCoroutinesApi::class)
   suspend fun getVideoThumbNail(uri: Uri, position: Long): ImageBitmap? {
-    return withContext(Dispatchers.Default.limitedParallelism(1)) {
+    return onIoDispatcher {
       val mediaMetadataRetriever = MediaMetadataRetriever().also { it.setDataSource(context, uri) }
       runCatching {
         mediaMetadataRetriever.use {

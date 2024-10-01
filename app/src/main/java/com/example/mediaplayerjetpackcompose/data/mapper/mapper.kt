@@ -3,6 +3,7 @@ package com.example.mediaplayerjetpackcompose.data.mapper
 import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoItemModel
 
@@ -15,9 +16,9 @@ fun MusicModel.toMediaItem() =
         .setArtist(this.artist)
         .setExtras(
           bundleOf(
-            "Duration" to this.duration,
-            "Bitrate" to this.bitrate,
-            "Size" to this.size,
+            Constant.DURATION_KEY to this.duration,
+            Constant.BITRATE_KEY to this.bitrate,
+            Constant.SIZE_KEY to this.size,
           )
         ).setTitle(this.name).build()
     ).build()
@@ -29,7 +30,7 @@ fun VideoItemModel.toMediaItem(): MediaItem {
       .setTitle(name)
       .setExtras(
         bundleOf(
-          "DURATION" to this.duration,
+          Constant.DURATION_KEY to this.duration,
         )
       )
       .build()

@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
+import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
@@ -74,7 +75,7 @@ fun MiniMusicPlayer(
 
   val reactCanvasColor = MaterialTheme.colorScheme.onPrimary
   val duration = remember(currentMediaState().metaData) {
-    currentMediaState().metaData.extras?.getInt("Duration") ?: 0
+    currentMediaState().metaData.extras?.getInt(Constant.DURATION_KEY) ?: 0
   }
   val playAndPauseIcon = remember(currentMediaState().isPlaying) {
     if (currentMediaState().isPlaying) R.drawable.icon_pause_24 else R.drawable.icon_play_arrow_24

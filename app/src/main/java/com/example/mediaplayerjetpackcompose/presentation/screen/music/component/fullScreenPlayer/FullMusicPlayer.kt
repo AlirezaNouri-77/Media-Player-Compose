@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
+import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
@@ -156,7 +157,7 @@ fun FullMusicPlayer(
         .layoutId("slider"),
       currentMusicPosition = { currentMusicPosition() },
       seekTo = { onSeekTo.invoke(it) },
-      duration = currentMediaState().metaData.extras?.getInt("Duration")?.toFloat() ?: 0f
+      duration = currentMediaState().metaData.extras?.getInt(Constant.DURATION_KEY)?.toFloat() ?: 0f
     )
     SongController(
       modifier = Modifier.layoutId("controllerRef"),

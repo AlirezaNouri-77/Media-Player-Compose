@@ -1,18 +1,16 @@
 package com.example.mediaplayerjetpackcompose.data.util
 
-import android.net.Uri
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import java.text.DecimalFormat
-import java.util.Base64
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -44,20 +42,19 @@ suspend inline fun <T> onDefaultDispatcher(crossinline action: suspend () -> T):
   }
 }
 
-suspend inline fun <T> onIoDispatcher(crossinline action: suspend () -> T): T {
+@OptIn(ExperimentalCoroutinesApi::class)
+suspend inline fun <T> onIoDispatcher(limitedParallelism: Int = 0, crossinline action: suspend () -> T): T {
   return coroutineScope {
-    withContext(Dispatchers.IO) {
-      action()
+    if (limitedParallelism > 0) {
+      withContext(Dispatchers.IO.limitedParallelism(limitedParallelism)) {
+        action()
+      }
+    } else {
+      withContext(Dispatchers.IO) {
+        action()
+      }
     }
   }
-}
-
-fun String.encodeStringNavigation(): String {
-  return Base64.getUrlEncoder().encodeToString(this.toByteArray())
-}
-
-fun String.decodeStringNavigation(): Uri {
-  return String(Base64.getUrlDecoder().decode(this)).toUri()
 }
 
 fun Int?.convertToKbit(): String {

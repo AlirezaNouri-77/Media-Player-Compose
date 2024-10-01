@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
@@ -55,7 +56,7 @@ fun PlayerTimeLine(
       onValueChange = { value ->
         slideValueChange(value)
       },
-      valueRange = 0f..(currentState().metaData.extras?.getInt("DURATION")?.toFloat()
+      valueRange = 0f..(currentState().metaData.extras?.getInt(Constant.DURATION_KEY)?.toFloat()
         ?: 0f),
       track = { sliderState ->
         SliderDefaults.Track(
@@ -88,7 +89,7 @@ fun PlayerTimeLine(
         bottom.linkTo(sliderRef.bottom)
         end.linkTo(endGuild)
       },
-      text = (currentState().metaData.extras?.getInt("DURATION") ?: 0f).toInt()
+      text = (currentState().metaData.extras?.getInt(Constant.DURATION_KEY) ?: 0f).toInt()
         .convertMilliSecondToTime(),
       fontSize = 15.sp,
       fontWeight = FontWeight.Medium,
