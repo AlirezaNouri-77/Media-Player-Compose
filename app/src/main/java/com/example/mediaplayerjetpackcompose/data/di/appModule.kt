@@ -1,6 +1,7 @@
 package com.example.mediaplayerjetpackcompose.data.di
 
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.room.Room
 import com.example.mediaplayerjetpackcompose.data.GetMediaArt
 import com.example.mediaplayerjetpackcompose.data.GetMediaMetaData
 import com.example.mediaplayerjetpackcompose.data.database.databaseClass.AppDataBase
@@ -20,7 +21,12 @@ import org.koin.dsl.module
 
 var appModule = module {
 
-  single { AppDataBase.getAppDataBase(androidContext()) }
+  single {
+    Room.databaseBuilder(
+      context = androidApplication().applicationContext,
+      AppDataBase::class.java, "DataBase_MediaPlayer",
+    ).build()
+  }
   single { ExoPlayer.Builder(androidApplication().applicationContext).build() }
   single { get<AppDataBase>().dataBaseDao() }
   single { GetMediaArt(androidApplication().applicationContext) }
