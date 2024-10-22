@@ -104,21 +104,12 @@ class MusicPageViewModel(
     list: MutableList<MusicModel>
   ): MutableList<MusicModel> {
     viewModelScope.launch {
-      onMainDispatcher {
-        if (!sortState.isDec) {
-          when (sortState.sortType) {
-            SortTypeModel.NAME -> list.sortBy { it.name }
-            SortTypeModel.ARTIST -> list.sortBy { it.artist }
-            SortTypeModel.DURATION -> list.sortBy { it.duration }
-            SortTypeModel.SIZE -> list.sortBy { it.size }
-          }
-        } else {
-          when (sortState.sortType) {
-            SortTypeModel.NAME -> list.sortByDescending { it.name }
-            SortTypeModel.ARTIST -> list.sortByDescending { it.artist }
-            SortTypeModel.DURATION -> list.sortByDescending { it.duration }
-            SortTypeModel.SIZE -> list.sortByDescending { it.size }
-          }
+      onDefaultDispatcher {
+        when (sortState.sortType) {
+          SortTypeModel.NAME -> if (sortState.isDec) list.sortByDescending { it.name } else list.sortBy { it.name }
+          SortTypeModel.ARTIST -> if (sortState.isDec) list.sortByDescending { it.artist } else list.sortBy { it.artist }
+          SortTypeModel.DURATION -> if (sortState.isDec) list.sortByDescending { it.duration } else list.sortBy { it.duration }
+          SortTypeModel.SIZE -> if (sortState.isDec) list.sortByDescending { it.size } else list.sortBy { it.size }
         }
       }
     }.invokeOnCompletion {
@@ -131,12 +122,12 @@ class MusicPageViewModel(
   private fun updateMediaItemListAfterSort(list: List<MusicModel>) =
     viewModelScope.launch {
       val index = list.indexOfFirst { it.musicId.toString() == currentMusicState.value.mediaId }
-      if (index != -1) {
-        currentPagerPage.intValue = index
-        pagerItemList.clear()
-        pagerItemList.addAll(list)
-        musicServiceConnection.updateMediaList(index, musicList, currentMusicPosition.floatValue.toLong())
-      }
+      if (index == -1) return@launch
+
+      currentPagerPage.intValue = index
+      pagerItemList.clear()
+      pagerItemList.addAll(list)
+      musicServiceConnection.updateMediaList(index, musicList, currentMusicPosition.floatValue.toLong())
     }
 
   fun moveToNext() {
@@ -179,15 +170,13 @@ class MusicPageViewModel(
   }
 
   fun searchMusic(input: String) = viewModelScope.launch {
-    onIoDispatcher {
-      if (input.isNotEmpty() || input.isNotEmpty()) {
-        musicList.clear()
-          .also {
-            musicList.addAll(originalMusicList.filter { it.name.lowercase().contains(input.lowercase()) })
-          }
-      } else {
-        musicList.clear().also { musicList.addAll(originalMusicList) }
-      }
+    if (input.isNotEmpty() || input.isNotEmpty()) {
+      musicList.clear()
+        .also {
+          musicList.addAll(originalMusicList.filter { it.name.lowercase().contains(input.lowercase()) })
+        }
+    } else {
+      musicList.clear().also { musicList.addAll(originalMusicList) }
     }
   }
 
@@ -201,41 +190,31 @@ class MusicPageViewModel(
   private fun getFavorite() = viewModelScope.launch {
     dataBaseDao.getAllFaFavoriteSongs()
       .collectLatest { favoriteList ->
-        onIoDispatcher {
-          favoriteListMediaId.clear()
-          favoriteListMediaId.addAll(favoriteList.map { it.mediaId }.toSet())
-        }
+        favoriteListMediaId.clear()
+        favoriteListMediaId.addAll(favoriteList.map { it.mediaId }.toSet())
       }
 
   }
 
   private fun getMusic() = viewModelScope.launch {
-    onIoDispatcher {
-      musicMediaStoreRepository.getMedia()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), MediaStoreResult.Initial)
-        .collect { result ->
-          when (result) {
-            MediaStoreResult.Loading -> {
-              onMainDispatcher {
-                isLoading = true
-              }
-            }
+    musicMediaStoreRepository.getMedia()
+      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), MediaStoreResult.Initial)
+      .collect { result ->
+        when (result) {
 
-            is MediaStoreResult.Result -> {
-              onMainDispatcher {
-                musicList.addAll(result.result)
-                originalMusicList.addAll(result.result)
-                artistsMusicMap.addAll(result.result.groupBy { by -> by.artist }
-                  .map { CategoryMusicModel(it.key, it.value) })
-                albumMusicMap.addAll(result.result.groupBy { by -> by.album }
-                  .map { CategoryMusicModel(it.key, it.value) })
-                isLoading = false
-              }
-            }
+          MediaStoreResult.Loading -> isLoading = true
 
-            else -> {}
+          is MediaStoreResult.Result -> {
+            musicList.addAll(result.result)
+            originalMusicList.addAll(result.result)
+            artistsMusicMap.addAll(result.result.groupBy { by -> by.artist }.map { CategoryMusicModel(it.key, it.value) })
+            albumMusicMap.addAll(result.result.groupBy { by -> by.album }.map { CategoryMusicModel(it.key, it.value) })
+            isLoading = false
           }
+
+          else -> {}
         }
+      }
 
     }
   }
