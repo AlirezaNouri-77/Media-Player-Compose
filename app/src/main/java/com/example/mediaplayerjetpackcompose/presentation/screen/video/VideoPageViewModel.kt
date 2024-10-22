@@ -17,7 +17,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
-import com.example.mediaplayerjetpackcompose.data.GetMediaArt
+import com.example.mediaplayerjetpackcompose.data.MediaThumbnailUtil
 import com.example.mediaplayerjetpackcompose.data.GetMediaMetaData
 import com.example.mediaplayerjetpackcompose.data.mapper.toMediaItem
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
@@ -42,7 +42,7 @@ import kotlinx.coroutines.launch
 class VideoPageViewModel(
   private var videoMediaStoreRepository: MediaStoreRepositoryImpl<VideoItemModel>,
   private var getMediaMetaData: GetMediaMetaData,
-  private var getMediaArt: GetMediaArt,
+  private var mediaThumbnailUtil: MediaThumbnailUtil,
   private var exoPlayer: ExoPlayer,
 ) : ViewModel() {
 
@@ -103,7 +103,7 @@ class VideoPageViewModel(
   suspend fun getSliderPreviewThumbnail(position: Long) {
     if (_currentState.value.uri == Uri.EMPTY) return
     viewModelScope.launch {
-      _previewSliderBitmap.emit(getMediaArt.getVideoThumbNail(_currentState.value.uri, position))
+      _previewSliderBitmap.emit(mediaThumbnailUtil.getVideoThumbNail(_currentState.value.uri, position))
     }
   }
 

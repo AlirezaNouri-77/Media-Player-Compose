@@ -6,17 +6,25 @@ import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Build
 import android.util.Size
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.viewModelScope
+import androidx.palette.graphics.Palette
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class GetMediaArt(
+class MediaThumbnailUtil(
   private var context: Context,
 ) {
 
@@ -90,6 +98,26 @@ class GetMediaArt(
     }
   }
 
+  companion object {
+
+    suspend fun getMainColorOfBitmap(bitmap: Bitmap): Int {
+      return withContext(Dispatchers.Default) {
+        val palette = Palette.from(bitmap).generate()
+
+        val vibrant = palette.getVibrantColor(DefaultColorPalette)
+        val lightVibrant = palette.getLightVibrantColor(DefaultColorPalette)
+        val lightMuted = palette.getLightMutedColor(DefaultColorPalette)
+        val darkMuted = palette.getDarkMutedColor(DefaultColorPalette)
+        val darkVibrant = palette.getDarkVibrantColor(DefaultColorPalette)
+        return@withContext listOf(vibrant, lightVibrant, lightMuted, darkVibrant, darkMuted)
+          .filterNot { it == DefaultColorPalette }
+          .firstOrNull() ?: DefaultColorPalette
+      }
+
+    }
+
+    val DefaultColorPalette = Color.LightGray.toArgb()
+  }
 }
 
 

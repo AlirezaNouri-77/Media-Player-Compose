@@ -2,7 +2,7 @@ package com.example.mediaplayerjetpackcompose.data.di
 
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.room.Room
-import com.example.mediaplayerjetpackcompose.data.GetMediaArt
+import com.example.mediaplayerjetpackcompose.data.MediaThumbnailUtil
 import com.example.mediaplayerjetpackcompose.data.GetMediaMetaData
 import com.example.mediaplayerjetpackcompose.data.database.databaseClass.AppDataBase
 import com.example.mediaplayerjetpackcompose.data.repository.MusicMediaStoreRepository
@@ -29,9 +29,9 @@ var appModule = module {
   }
   single { ExoPlayer.Builder(androidApplication().applicationContext).build() }
   single { get<AppDataBase>().dataBaseDao() }
-  single { GetMediaArt(androidApplication().applicationContext) }
+  single { MediaThumbnailUtil(androidApplication().applicationContext) }
 
-  single { GetMediaArt(androidContext()) }
+  single { MediaThumbnailUtil(androidContext()) }
   single { GetMediaMetaData(get()) }
 
   single<MediaStoreRepositoryImpl<MusicModel>>(named("musicRepo")) { MusicMediaStoreRepository(androidContext().contentResolver) }

@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
+import com.example.mediaplayerjetpackcompose.data.MediaThumbnailUtil
 import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
@@ -50,7 +51,7 @@ import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeT
 fun FullMusicPlayer(
   favoriteList: SnapshotStateList<String>,
   currentMediaState: () -> CurrentMediaState,
-  backgroundColorByArtwork: Long,
+  backgroundColorByArtwork: Int,
   repeatMode: Int,
   currentMusicPosition: () -> Long,
   currentPagerPage: Int,
@@ -285,7 +286,7 @@ private fun FullScreenPreview() {
     FullMusicPlayer(
       favoriteList = emptyList<String>().toMutableStateList(),
       currentMediaState = { CurrentMediaState.Empty },
-      backgroundColorByArtwork = Long.MIN_VALUE,
+      backgroundColorByArtwork = MediaThumbnailUtil.DefaultColorPalette,
       repeatMode = 0,
       currentMusicPosition = { 10000L },
       currentPagerPage = 0,

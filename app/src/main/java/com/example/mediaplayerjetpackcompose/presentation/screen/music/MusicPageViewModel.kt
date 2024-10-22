@@ -4,21 +4,16 @@ import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.palette.graphics.Palette
-import com.example.mediaplayerjetpackcompose.data.GetMediaArt
+import com.example.mediaplayerjetpackcompose.data.MediaThumbnailUtil
 import com.example.mediaplayerjetpackcompose.data.database.dao.DataBaseDao
 import com.example.mediaplayerjetpackcompose.data.service.MusicServiceConnection
 import com.example.mediaplayerjetpackcompose.data.util.onDefaultDispatcher
 import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
-import com.example.mediaplayerjetpackcompose.data.util.onMainDispatcher
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.CategoryMusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.FavoriteMusicModel
@@ -36,7 +31,7 @@ class MusicPageViewModel(
   private var musicMediaStoreRepository: MediaStoreRepositoryImpl<MusicModel>,
   private var musicServiceConnection: MusicServiceConnection,
   private var dataBaseDao: DataBaseDao,
-  private var getMediaArt: GetMediaArt,
+  private var mediaThumbnailUtil: MediaThumbnailUtil,
 ) : ViewModel() {
 
   private var originalMusicList = mutableStateListOf<MusicModel>()
@@ -48,7 +43,7 @@ class MusicPageViewModel(
   var artistsMusicMap = mutableStateListOf<CategoryMusicModel>()
   var albumMusicMap = mutableStateListOf<CategoryMusicModel>()
 
-  var musicArtworkColorPalette by mutableLongStateOf(Color.LightGray.toArgb().toLong())
+  var musicArtworkColorPalette by mutableIntStateOf(MediaThumbnailUtil.DefaultColorPalette)
 
   val currentRepeatMode = musicServiceConnection.currentRepeatMode
   var favoriteListMediaId = mutableStateListOf<String>()
@@ -77,26 +72,10 @@ class MusicPageViewModel(
     }
   }
 
-  suspend fun getColorPaletteFromArtwork(uri: Uri) {
+  fun getColorPaletteFromArtwork(uri: Uri) {
     viewModelScope.launch {
-      val bitmap = getMediaArt.getMusicArt(uri)
-      onDefaultDispatcher {
-        Palette.from(bitmap).generate { palette ->
-          val vibrant = palette?.getVibrantColor(Color.LightGray.toArgb())
-          val lightVibrant = palette?.getLightVibrantColor(Color.LightGray.toArgb())
-          val lightMuted = palette?.getLightMutedColor(Color.LightGray.toArgb())
-          val darkMuted = palette?.getDarkMutedColor(Color.LightGray.toArgb())
-          val darkVibrant = palette?.getDarkVibrantColor(Color.LightGray.toArgb())
-          viewModelScope.launch {
-            musicArtworkColorPalette = vibrant?.toLong()
-              ?: (lightVibrant?.toLong()
-                ?: (lightMuted?.toLong()
-                  ?: (darkMuted?.toLong()
-                    ?: (darkVibrant?.toLong()
-                      ?: Color.LightGray.toArgb().toLong()))))
-          }
-        }
-      }
+      val bitmap = mediaThumbnailUtil.getMusicArt(uri)
+      musicArtworkColorPalette = MediaThumbnailUtil.getMainColorOfBitmap(bitmap)
     }
   }
 
@@ -117,7 +96,6 @@ class MusicPageViewModel(
     }
     return list
   }
-
 
   private fun updateMediaItemListAfterSort(list: List<MusicModel>) =
     viewModelScope.launch {
@@ -193,7 +171,6 @@ class MusicPageViewModel(
         favoriteListMediaId.clear()
         favoriteListMediaId.addAll(favoriteList.map { it.mediaId }.toSet())
       }
-
   }
 
   private fun getMusic() = viewModelScope.launch {
@@ -216,7 +193,6 @@ class MusicPageViewModel(
         }
       }
 
-    }
   }
 
 }
