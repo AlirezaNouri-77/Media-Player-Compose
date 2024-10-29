@@ -18,7 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
@@ -38,6 +41,7 @@ import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
+import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.PagerHandler
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.verticalFadeEdge
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.HeaderSection
@@ -45,6 +49,7 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.SliderSection
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.SongController
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.SongDetail
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.decoupledConstraintLayout
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 @Composable
@@ -57,14 +62,8 @@ fun FullMusicPlayer(
   currentPagerPage: Int,
   pagerMusicList: List<MusicModel>,
   onBack: () -> Unit,
-  onPauseMusic: () -> Unit,
-  onResumeMusic: () -> Unit,
-  onMoveNextMusic: () -> Unit,
-  onMovePreviousMusic: (Boolean) -> Unit,
+  onPlayerAction: (action: PlayerActions) -> Unit,
   setCurrentPagerNumber: (Int) -> Unit,
-  onSeekTo: (Long) -> Unit,
-  onRepeatMode: (Int) -> Unit,
-  onFavoriteToggle: () -> Unit,
   orientation: Int = LocalConfiguration.current.orientation,
 ) {
 
@@ -88,28 +87,26 @@ fun FullMusicPlayer(
   )
 
   val animateColor = animateColorAsState(
-      targetValue = Color(backgroundColorByArtwork),
-      animationSpec = tween(durationMillis = 250, delayMillis = 80),
-      label = "",
-    )
-
-  Box(
-    modifier = Modifier
-      .fillMaxSize()
-      .background(Color.Black)
-      .consumeWindowInsets(WindowInsets(0)),
+    targetValue = Color(backgroundColorByArtwork),
+    animationSpec = tween(durationMillis = 250, delayMillis = 80),
+    label = "",
   )
 
   ConstraintLayout(
     modifier = Modifier
       .fillMaxSize()
-      .background(
-        Brush.verticalGradient(
-          0.4f to animateColor.value.copy(alpha = 0.8f),
-          0.7f to animateColor.value.copy(alpha = 0.3f),
-          1f to Color.Black,
-        )
-      )
+      .drawWithCache {
+        onDrawBehind {
+          drawRect(Color.Black)
+          drawRect(
+            Brush.verticalGradient(
+              0.4f to animateColor.value.copy(alpha = 0.8f),
+              0.7f to animateColor.value.copy(alpha = 0.3f),
+              1f to Color.Black,
+            )
+          )
+        }
+      }
       .pointerInput(Unit) {
         this.detectDragGestures { change, dragAmount ->
           change.changedToUpIgnoreConsumed()
@@ -156,7 +153,7 @@ fun FullMusicPlayer(
       modifier = Modifier
         .layoutId("slider"),
       currentMusicPosition = { currentMusicPosition() },
-      seekTo = { onSeekTo.invoke(it) },
+      seekTo = { onPlayerAction(PlayerActions.SeekTo(it)) },
       duration = currentMediaState().metaData.extras?.getInt(Constant.DURATION_KEY)?.toFloat() ?: 0f
     )
     SongController(
@@ -164,120 +161,19 @@ fun FullMusicPlayer(
       currentCurrentMediaState = currentMediaState(),
       favoriteList = favoriteList,
       repeatMode = repeatMode,
-      onPauseMusic = { onPauseMusic() },
-      onResumeMusic = { onResumeMusic() },
-      onMovePreviousMusic = { onMovePreviousMusic(false) },
-      onMoveNextMusic = { onMoveNextMusic() },
-      onRepeatMode = { onRepeatMode(it) },
-      onFavoriteToggle = { onFavoriteToggle() }
+      onPauseMusic = { onPlayerAction(PlayerActions.PausePlayer) },
+      onResumeMusic = { onPlayerAction(PlayerActions.ResumePlayer) },
+      onMovePreviousMusic = { onPlayerAction(PlayerActions.MovePreviousPlayer(false)) },
+      onMoveNextMusic = { onPlayerAction(PlayerActions.MoveNextPlayer) },
+      onRepeatMode = { onPlayerAction(PlayerActions.OnRepeatMode(it)) },
+      onFavoriteToggle = { onPlayerAction(PlayerActions.OnFavoriteToggle(currentMediaState().mediaId)) }
     )
 
   }
 }
 
-private fun decoupledConstraintLayout(
-  orientation:Int,
-): ConstraintSet {
-  return ConstraintSet {
-
-    val headerRef = createRefFor("header")
-
-    val songDetail = createRefFor("songDetail")
-    val slider = createRefFor("slider")
-    val titleRef = createRefFor("titleRef")
-    val controllerRef = createRefFor("controllerRef")
-    val pagerArtWork = createRefFor("pagerArtwork")
-
-    if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-
-      val bottomGuideline = createGuidelineFromBottom(70.dp)
-      val topGuideline = createGuidelineFromTop(50.dp)
-      val startGuideLine = createGuidelineFromStart(10.dp)
-      val endGuideLine = createGuidelineFromEnd(10.dp)
-
-      constrain(headerRef) {
-        top.linkTo(topGuideline)
-        start.linkTo(startGuideLine)
-        end.linkTo(endGuideLine)
-        width = Dimension.fillToConstraints
-      }
-      constrain(pagerArtWork) {
-        top.linkTo(headerRef.bottom, margin = 40.dp)
-        start.linkTo(startGuideLine)
-        end.linkTo(endGuideLine)
-        bottom.linkTo(songDetail.top, margin = 10.dp)
-      }
-      constrain(titleRef) {
-        start.linkTo(parent.start, margin = 20.dp)
-        end.linkTo(parent.end, margin = 20.dp)
-        bottom.linkTo(songDetail.top, margin = 10.dp)
-      }
-      constrain(songDetail) {
-        start.linkTo(parent.start, margin = 20.dp)
-        end.linkTo(parent.end, margin = 20.dp)
-        bottom.linkTo(slider.top, margin = 10.dp)
-        width = Dimension.fillToConstraints
-      }
-      constrain(slider) {
-        start.linkTo(songDetail.start, margin = 10.dp)
-        end.linkTo(songDetail.end, margin = 10.dp)
-        bottom.linkTo(controllerRef.top, margin = 30.dp)
-        width = Dimension.fillToConstraints
-      }
-      constrain(controllerRef) {
-        start.linkTo(parent.start, margin = 10.dp)
-        end.linkTo(parent.end, margin = 10.dp)
-        bottom.linkTo(bottomGuideline)
-      }
-
-    } else {
-
-      val bottomGuideline = createGuidelineFromBottom(20.dp)
-      val topGuideline = createGuidelineFromTop(20.dp)
-      val startGuideLine = createGuidelineFromStart(40.dp)
-      val endGuideLine = createGuidelineFromEnd(40.dp)
-
-      constrain(headerRef) {
-        top.linkTo(topGuideline)
-        start.linkTo(pagerArtWork.end)
-        end.linkTo(endGuideLine)
-        width = Dimension.fillToConstraints
-      }
-      constrain(pagerArtWork) {
-        top.linkTo(parent.top)
-        start.linkTo(startGuideLine)
-        bottom.linkTo(bottomGuideline)
-      }
-      constrain(titleRef) {
-        top.linkTo(headerRef.bottom, margin = 30.dp)
-        start.linkTo(pagerArtWork.end)
-        end.linkTo(endGuideLine)
-        width = Dimension.fillToConstraints
-      }
-      constrain(songDetail) {
-        top.linkTo(titleRef.bottom)
-        start.linkTo(titleRef.start, margin = 10.dp)
-        end.linkTo(titleRef.end)
-        width = Dimension.fillToConstraints
-      }
-      constrain(slider) {
-        top.linkTo(songDetail.bottom, margin = 10.dp)
-        start.linkTo(songDetail.start, margin = 10.dp)
-        end.linkTo(songDetail.end, margin = 10.dp)
-        width = Dimension.fillToConstraints
-      }
-      constrain(controllerRef) {
-        top.linkTo(slider.bottom)
-        start.linkTo(slider.start)
-        end.linkTo(slider.end)
-        bottom.linkTo(pagerArtWork.bottom)
-      }
-
-    }
-  }
-}
-
 @Preview(heightDp = 360, widthDp = 800)
+@Preview(heightDp = 460, widthDp = 1000)
 @Preview()
 @Composable
 private fun FullScreenPreview() {
@@ -291,14 +187,8 @@ private fun FullScreenPreview() {
       currentPagerPage = 0,
       pagerMusicList = listOf(MusicModel.Empty),
       onBack = { /*TODO*/ },
-      onPauseMusic = { /*TODO*/ },
-      onResumeMusic = { /*TODO*/ },
-      onMoveNextMusic = { /*TODO*/ },
-      onMovePreviousMusic = {},
       setCurrentPagerNumber = {},
-      onSeekTo = {},
-      onRepeatMode = {},
-      onFavoriteToggle = {}
+      onPlayerAction = {},
     )
   }
 }

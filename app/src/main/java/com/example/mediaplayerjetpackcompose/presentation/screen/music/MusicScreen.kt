@@ -1,5 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
@@ -7,21 +8,33 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -39,6 +52,8 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.SortDropDownMenu
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.TabBarSection
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.TopBarMusic
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun MusicScreen(
@@ -46,7 +61,6 @@ fun MusicScreen(
   onNavigateToVideoScreen: () -> Unit,
   density: Density = LocalDensity.current,
 ) {
-
   var showSortBar by remember { mutableStateOf(false) }
   var sortIconOffset by remember { mutableStateOf(DpOffset.Zero) }
   val navController: NavHostController = rememberNavController()
@@ -80,7 +94,7 @@ fun MusicScreen(
 
   ConstraintLayout(
     modifier = Modifier
-      .fillMaxSize(),
+      .fillMaxSize()
   ) {
     val (musicList, collapsePlayer) = createRefs()
 
@@ -177,17 +191,14 @@ fun MusicScreen(
         targetOffsetY = { int -> int / 4 }) + fadeOut(tween(200, delayMillis = 90))
     ) {
       MiniMusicPlayer(
+        onClick = { musicPageViewModel.isFullPlayerShow = true },
         modifier = Modifier.onGloballyPositioned { miniPlayerHeight = density.run { it.size.height.toDp() } },
         pagerMusicList = musicPageViewModel.pagerItemList,
-        onPauseMusic = musicPageViewModel::pauseMusic,
-        onResumeMusic = musicPageViewModel::resumeMusic,
         currentMediaState = { currentMusicState },
         currentMusicPosition = { musicPageViewModel.currentMusicPosition.floatValue.toLong() },
-        onClick = { musicPageViewModel.isFullPlayerShow = true },
-        onMovePreviousMusic = { musicPageViewModel.moveToPrevious(it) },
-        onMoveNextMusic = musicPageViewModel::moveToNext,
         currentPagerPage = musicPageViewModel.currentPagerPage.intValue,
-        setCurrentPagerNumber = { musicPageViewModel.currentPagerPage.intValue = it }
+        setCurrentPagerNumber = { musicPageViewModel.currentPagerPage.intValue = it },
+        onPlayerAction = musicPageViewModel::onPlayerAction,
       )
     }
 

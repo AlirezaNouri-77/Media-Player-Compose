@@ -21,9 +21,12 @@ import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicMode
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.SortTypeModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarPosition
 import com.example.mediaplayerjetpackcompose.domain.model.repository.MediaStoreResult
+import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
 import com.example.mediaplayerjetpackcompose.domain.model.share.SortState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -72,6 +75,23 @@ class MusicPageViewModel(
     }
   }
 
+  fun onPlayerAction(action: PlayerActions) {
+    when (action) {
+      PlayerActions.MoveNextPlayer -> moveToNext()
+      PlayerActions.PausePlayer -> pauseMusic()
+      PlayerActions.ResumePlayer -> resumeMusic()
+      is PlayerActions.OnFavoriteToggle -> handleFavoriteSongs(action.mediaId)
+      is PlayerActions.SeekTo -> seekToPosition(action.value)
+      is PlayerActions.OnRepeatMode -> setRepeatMode(action.value)
+      is PlayerActions.MovePreviousPlayer -> moveToPrevious(action.seekToStart)
+      is PlayerActions.OnMoveToIndex -> moveToMediaIndex(index = action.value)
+    }
+  }
+
+  private fun moveToMediaIndex(index: Int) {
+    musicServiceConnection.moveToMediaIndex(index = index)
+  }
+
   fun getColorPaletteFromArtwork(uri: Uri) {
     viewModelScope.launch {
       val bitmap = mediaThumbnailUtil.getMusicArt(uri)
@@ -108,14 +128,14 @@ class MusicPageViewModel(
       musicServiceConnection.updateMediaList(index, musicList, currentMusicPosition.floatValue.toLong())
     }
 
-  fun moveToNext() {
+  private fun moveToNext() {
     if (!musicServiceConnection.hasNextItem()) return
     musicServiceConnection.moveToNext()
     currentMusicPosition.floatValue = 0f
     currentPagerPage.intValue += 1
   }
 
-  fun moveToPrevious(seekToStart: Boolean = false) {
+  private fun moveToPrevious(seekToStart: Boolean = false) {
     if (!musicServiceConnection.hasPreviewItem()) return
     if (currentMusicPosition.floatValue <= 15_000 || seekToStart) {
       musicServiceConnection.moveToPreviousMediaItem()
@@ -124,18 +144,18 @@ class MusicPageViewModel(
     currentMusicPosition.floatValue = 0f
   }
 
-  fun pauseMusic() = musicServiceConnection.pauseMusic()
+  private fun pauseMusic() = musicServiceConnection.pauseMusic()
 
-  fun resumeMusic() = musicServiceConnection.resumeMusic()
+  private fun resumeMusic() = musicServiceConnection.resumeMusic()
 
-  fun seekToPosition(position: Long) {
+  private fun seekToPosition(position: Long) {
     musicServiceConnection.seekToPosition(position)
     currentMusicPosition.floatValue = position.toFloat()
   }
 
-  fun setRepeatMode(repeatMode: Int) = musicServiceConnection.setPlayerRepeatMode(repeatMode)
+  private fun setRepeatMode(repeatMode: Int) = musicServiceConnection.setPlayerRepeatMode(repeatMode)
 
-  fun handleFavoriteSongs(mediaId: String) {
+  private fun handleFavoriteSongs(mediaId: String) {
     viewModelScope.launch {
       onIoDispatcher {
         if (mediaId in favoriteListMediaId) {

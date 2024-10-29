@@ -1,6 +1,5 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,23 +38,20 @@ import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
+import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.PagerHandler
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 fun MiniMusicPlayer(
   modifier: Modifier,
+  onClick: () -> Unit,
   pagerMusicList: List<MusicModel>,
   setCurrentPagerNumber: (Int) -> Unit,
   currentPagerPage: Int,
   currentMediaState: () -> CurrentMediaState,
   currentMusicPosition: () -> Long,
-  onClick: () -> Unit,
-  onPauseMusic: () -> Unit,
-  onResumeMusic: () -> Unit,
-  onMoveNextMusic: () -> Unit,
-  onMovePreviousMusic: (Boolean) -> Unit,
+  onPlayerAction: (action: PlayerActions) -> Unit,
 ) {
 
   val pagerState = rememberPagerState(
@@ -69,8 +65,6 @@ fun MiniMusicPlayer(
     currentPagerPage = currentPagerPage,
     pagerState = pagerState,
     setCurrentPagerNumber = setCurrentPagerNumber,
-    onMoveNextMusic = onMoveNextMusic,
-    onMovePreviousMusic = onMovePreviousMusic,
   )
 
   val reactCanvasColor = MaterialTheme.colorScheme.onPrimary
@@ -189,8 +183,8 @@ fun MiniMusicPlayer(
             .size(50.dp),
           onClick = {
             when (currentMediaState().isPlaying) {
-              true -> onPauseMusic.invoke()
-              false -> onResumeMusic.invoke()
+              true -> onPlayerAction(PlayerActions.PausePlayer)
+              false -> { onPlayerAction(PlayerActions.ResumePlayer) }
             }
           },
         ) {

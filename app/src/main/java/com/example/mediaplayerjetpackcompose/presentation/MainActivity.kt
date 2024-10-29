@@ -18,16 +18,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.core.content.ContextCompat.checkSelfPermission
 import com.example.mediaplayerjetpackcompose.data.util.Constant.permissionsList
-import com.example.mediaplayerjetpackcompose.presentation.screen.RootScreen
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.NoPermissionPage
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.navigation.MusicNavController
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.playerScreen.VideoPlayer
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
@@ -69,7 +64,7 @@ class MainActivity : ComponentActivity() {
                   videoPageViewModel = videoPageViewModel,
                   onBackClick = { this.finishAffinity() })
               } else {
-                RootScreen()
+                MusicNavController()
               }
             }
           }
