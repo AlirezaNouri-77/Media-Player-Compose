@@ -14,9 +14,9 @@ fun PagerHandler(
   currentPagerPage: Int,
   pagerState: PagerState,
   setCurrentPagerNumber: (Int) -> Unit,
-  onMoveNextMusic: () -> Unit,
-  onMovePreviousMusic: (Boolean) -> Unit
+  onMoveToIndex: (Int) -> Unit,
 ) {
+  // when current music track is end and moved to the next music it cause mediaId change and this this execute
   LaunchedEffect(key1 = currentMediaState().mediaId) {
     val index = pagerMusicList.indexOfFirst { it.musicId == currentMediaState().mediaId.toLong() }
     if (currentPagerPage == index && pagerState.isScrollInProgress) return@LaunchedEffect
@@ -35,11 +35,7 @@ fun PagerHandler(
   LaunchedEffect(key1 = pagerState.settledPage, key2 = pagerState.isScrollInProgress) {
     if (pagerState.settledPage == currentPagerPage) return@LaunchedEffect
     if (pagerState.settledPage != currentPagerPage && !pagerState.isScrollInProgress) {
-      if (pagerState.settledPage > currentPagerPage) {
-        onMoveNextMusic()
-      } else if (pagerState.settledPage < currentPagerPage) {
-        onMovePreviousMusic(true)
-      }
+      onMoveToIndex(pagerState.settledPage)
       setCurrentPagerNumber(pagerState.settledPage)
     }
   }

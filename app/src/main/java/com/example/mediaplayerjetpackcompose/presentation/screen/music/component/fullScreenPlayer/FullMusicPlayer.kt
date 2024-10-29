@@ -82,8 +82,7 @@ fun FullMusicPlayer(
     currentPagerPage = currentPagerPage,
     pagerState = pagerState,
     setCurrentPagerNumber = setCurrentPagerNumber,
-    onMoveNextMusic = onMoveNextMusic,
-    onMovePreviousMusic = onMovePreviousMusic,
+    onMoveToIndex = { onPlayerAction(PlayerActions.OnMoveToIndex(it)) },
   )
 
   val animateColor = animateColorAsState(

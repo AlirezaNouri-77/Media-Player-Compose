@@ -65,6 +65,7 @@ fun MiniMusicPlayer(
     currentPagerPage = currentPagerPage,
     pagerState = pagerState,
     setCurrentPagerNumber = setCurrentPagerNumber,
+    onMoveToIndex = { onPlayerAction(PlayerActions.OnMoveToIndex(it)) },
   )
 
   val reactCanvasColor = MaterialTheme.colorScheme.onPrimary

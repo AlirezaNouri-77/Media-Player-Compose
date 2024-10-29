@@ -84,6 +84,8 @@ class MusicServiceConnection(
 
   fun moveToNext() = mediaController?.seekToNext()
 
+  fun moveToMediaIndex(index: Int) = mediaController?.seekTo(index, 0L)
+
   fun moveToPrevious() = mediaController?.seekToPrevious()
 
   fun moveToPreviousMediaItem() = mediaController?.seekToPreviousMediaItem()
