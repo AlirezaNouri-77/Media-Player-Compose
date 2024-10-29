@@ -140,8 +140,7 @@ fun FullMusicPlayer(
         .verticalFadeEdge()
         .basicMarquee()
         .padding(horizontal = titlePadding),
-      text = currentMediaState().metaData.title?.toString()?.removeFileExtension()
-        ?: "Nothing Play",
+      text = currentMediaState().metaData.title?.removeFileExtension() ?: "Nothing Play",
       fontSize = 20.sp,
       fontWeight = FontWeight.SemiBold,
       overflow = TextOverflow.Visible,

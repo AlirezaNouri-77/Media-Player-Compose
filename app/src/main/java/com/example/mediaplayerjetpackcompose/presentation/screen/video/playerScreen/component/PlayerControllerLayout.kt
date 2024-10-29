@@ -171,7 +171,7 @@ fun PlayerControllerLayout(
             },
         )
         Text(
-          text = currentPlayerState().metaData.title.toString().removeFileExtension(),
+          text = currentPlayerState().metaData.title?.removeFileExtension() ?: "-",
           fontSize = 16.sp,
           fontWeight = FontWeight.Medium,
           color = Color.White,

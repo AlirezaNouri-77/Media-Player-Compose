@@ -14,11 +14,13 @@ import java.text.DecimalFormat
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-fun Int?.convertMilliSecondToTime(): String {
+inline fun <T : Number?> T.convertMilliSecondToTime(): String {
   if (this == null) return "00:00"
-  val hour = TimeUnit.MILLISECONDS.toHours(this.toLong())
-  val minute = TimeUnit.MILLISECONDS.toMinutes(this.toLong()) % 60
-  val second = TimeUnit.MILLISECONDS.toSeconds(this.toLong()) % 60
+  val input = this.toLong()
+
+  val hour = TimeUnit.MILLISECONDS.toHours(input)
+  val minute = TimeUnit.MILLISECONDS.toMinutes(input) % 60
+  val second = TimeUnit.MILLISECONDS.toSeconds(input) % 60
   return if (hour > 0) {
     String.format(Locale.ENGLISH, "%02d:%02d:%02d", hour, minute, second)
   } else {
@@ -57,21 +59,22 @@ suspend inline fun <T> onIoDispatcher(limitedParallelism: Int = 0, crossinline a
   }
 }
 
-fun Int?.convertToKbit(): String {
-  return this?.div(1000)?.toString()?.plus("Kbit") ?: "None"
+fun Int?.convertToKbps(): String {
+  return this?.div(1000)?.toString()?.plus("Kbps") ?: "None"
 }
 
 fun String.extractFileExtension(): String {
   return this.substringAfterLast(".").uppercase()
 }
 
-fun String.removeFileExtension(): String {
-  return this.substringBeforeLast(".")
+fun CharSequence.removeFileExtension(): String {
+  val input = this.toString()
+  return input.substringBeforeLast(".")
 }
 
-fun Int.convertByteToReadableSize(): AnnotatedString {
-  val input = this
-  return if (this >= 1_000_000_000) {
+fun <T : Number?> T.convertByteToReadableSize(): String {
+  val input = this?.toInt() ?: 0
+  return if (input >= 1_000_000_000) {
     buildAnnotatedString {
       withStyle(style = SpanStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium)) {
         append(DecimalFormat("##.#").format(input.div(1_000_000_000f)).toString())
@@ -79,7 +82,7 @@ fun Int.convertByteToReadableSize(): AnnotatedString {
       withStyle(style = SpanStyle(fontSize = 13.sp, fontWeight = FontWeight.Light)) {
         append("gb")
       }
-    }
+    }.toString()
   } else {
     buildAnnotatedString {
       withStyle(style = SpanStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium)) {
@@ -88,6 +91,6 @@ fun Int.convertByteToReadableSize(): AnnotatedString {
       withStyle(style = SpanStyle(fontSize = 13.sp, fontWeight = FontWeight.Light)) {
         append("mg")
       }
-    }
+    }.toString()
   }
 }
