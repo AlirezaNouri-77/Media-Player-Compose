@@ -11,22 +11,19 @@ fun decoupledConstraintLayout(
   return ConstraintSet {
 
     val headerRef = createRefFor("header")
-
     val songDetail = createRefFor("songDetail")
     val slider = createRefFor("slider")
-    val titleRef = createRefFor("titleRef")
     val controllerRef = createRefFor("controllerRef")
     val pagerArtWork = createRefFor("pagerArtwork")
 
     if (orientation == Configuration.ORIENTATION_PORTRAIT) {
 
       val bottomGuideline = createGuidelineFromBottom(70.dp)
-      val topGuideline = createGuidelineFromTop(50.dp)
       val startGuideLine = createGuidelineFromStart(10.dp)
       val endGuideLine = createGuidelineFromEnd(10.dp)
 
       constrain(headerRef) {
-        top.linkTo(topGuideline)
+        top.linkTo(parent.top, margin = 5.dp)
         start.linkTo(startGuideLine)
         end.linkTo(endGuideLine)
         width = Dimension.fillToConstraints
@@ -35,11 +32,6 @@ fun decoupledConstraintLayout(
         top.linkTo(headerRef.bottom, margin = 40.dp)
         start.linkTo(startGuideLine)
         end.linkTo(endGuideLine)
-        bottom.linkTo(songDetail.top, margin = 10.dp)
-      }
-      constrain(titleRef) {
-        start.linkTo(parent.start, margin = 20.dp)
-        end.linkTo(parent.end, margin = 20.dp)
         bottom.linkTo(songDetail.top, margin = 10.dp)
       }
       constrain(songDetail) {
@@ -62,9 +54,8 @@ fun decoupledConstraintLayout(
 
     } else {
 
-      val bottomGuideline = createGuidelineFromBottom(20.dp)
-      val topGuideline = createGuidelineFromTop(20.dp)
-      val startGuideLine = createGuidelineFromStart(30.dp)
+      val bottomGuideline = createGuidelineFromBottom(0.2f)
+      val topGuideline = createGuidelineFromTop(40.dp)
       val endGuideLine = createGuidelineFromEnd(40.dp)
 
       constrain(headerRef) {
@@ -75,33 +66,25 @@ fun decoupledConstraintLayout(
       }
       constrain(pagerArtWork) {
         top.linkTo(parent.top)
-        start.linkTo(startGuideLine)
+        start.linkTo(parent.start, margin = 5.dp)
         bottom.linkTo(parent.bottom)
       }
-      constrain(titleRef) {
-        top.linkTo(headerRef.bottom, margin = 30.dp)
-        start.linkTo(pagerArtWork.end)
-        end.linkTo(endGuideLine)
-        width = Dimension.fillToConstraints
-      }
       constrain(songDetail) {
-        top.linkTo(titleRef.bottom)
-        start.linkTo(titleRef.start, margin = 10.dp)
-        end.linkTo(titleRef.end)
+        start.linkTo(slider.start, margin = 10.dp)
+        end.linkTo(slider.end)
+        bottom.linkTo(slider.top)
         width = Dimension.fillToConstraints
       }
       constrain(slider) {
-        top.linkTo(songDetail.bottom, margin = 10.dp)
-        start.linkTo(songDetail.start, margin = 10.dp)
-        end.linkTo(songDetail.end, margin = 10.dp)
+        start.linkTo(pagerArtWork.end, margin = 30.dp)
+        end.linkTo(parent.end, margin = 30.dp)
         bottom.linkTo(controllerRef.top)
         width = Dimension.fillToConstraints
       }
       constrain(controllerRef) {
-        top.linkTo(slider.bottom)
-        start.linkTo(slider.start)
-        end.linkTo(slider.end)
-        bottom.linkTo(parent.bottom, margin = 15.dp)
+        start.linkTo(pagerArtWork.end)
+        end.linkTo(parent.end)
+        bottom.linkTo(bottomGuideline)
       }
 
     }

@@ -129,7 +129,7 @@ fun SliderSection(
       verticalAlignment = Alignment.CenterVertically,
     ) {
       Text(
-        text = currentMusicPosition().toInt().convertMilliSecondToTime(),
+        text = sliderValue.convertMilliSecondToTime(),
         fontSize = 13.sp,
         fontWeight = FontWeight.Normal,
         color = Color.White,

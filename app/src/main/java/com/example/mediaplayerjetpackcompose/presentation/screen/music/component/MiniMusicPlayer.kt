@@ -36,7 +36,7 @@ import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.PagerThumbnailModel
 import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
 import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
@@ -46,7 +46,7 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.
 fun MiniMusicPlayer(
   modifier: Modifier,
   onClick: () -> Unit,
-  pagerMusicList: List<MusicModel>,
+  pagerMusicList: List<PagerThumbnailModel>,
   setCurrentPagerNumber: (Int) -> Unit,
   currentPagerPage: Int,
   currentMediaState: () -> CurrentMediaState,
@@ -81,8 +81,7 @@ fun MiniMusicPlayer(
 
   Card(
     modifier = modifier
-      .fillMaxWidth()
-      .padding(bottom = 10.dp),
+      .fillMaxWidth(),
     onClick = { onClick.invoke() },
     shape = RoundedCornerShape(topEnd = 25.dp, topStart = 25.dp),
     colors = CardDefaults.cardColors(
@@ -107,7 +106,8 @@ fun MiniMusicPlayer(
           .weight(0.2f, false)
           .size(45.dp)
           .clip(RoundedCornerShape(5.dp)),
-        inset = 30f,
+        horizontalInset = 30f,
+        verticalInset = 30f,
         uri = { currentMediaState().metaData.artworkUri },
       )
       Column(
@@ -185,7 +185,7 @@ fun MiniMusicPlayer(
           onClick = {
             when (currentMediaState().isPlaying) {
               true -> onPlayerAction(PlayerActions.PausePlayer)
-              false -> { onPlayerAction(PlayerActions.ResumePlayer) }
+              false -> onPlayerAction(PlayerActions.ResumePlayer)
             }
           },
         ) {
@@ -197,7 +197,7 @@ fun MiniMusicPlayer(
         }
         Text(
           modifier = Modifier,
-          text = currentMusicPosition().toInt().convertMilliSecondToTime(),
+          text = currentMusicPosition().convertMilliSecondToTime(),
           fontSize = 12.sp,
           color = MaterialTheme.colorScheme.onPrimary,
           fontWeight = FontWeight.Medium,

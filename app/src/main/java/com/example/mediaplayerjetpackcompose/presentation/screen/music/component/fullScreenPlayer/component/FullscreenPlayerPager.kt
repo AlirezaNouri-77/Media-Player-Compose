@@ -14,18 +14,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.PagerThumbnailModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.ArtworkImage
 
 @Composable
-fun PagerArtwork(
+fun FullscreenPlayerPager(
   modifier: Modifier = Modifier,
-  musicList: List<MusicModel>,
+  pagerItem: SnapshotStateList<PagerThumbnailModel>,
   pagerState: PagerState,
   orientation: Int = LocalConfiguration.current.orientation,
 ) {
@@ -57,8 +58,9 @@ fun PagerArtwork(
           .padding(horizontal = 20.dp, vertical = 10.dp)
           .clip(RoundedCornerShape(15.dp))
           .background(color = MaterialTheme.colorScheme.primary),
-        uri = { musicList[page].artworkUri },
-        inset = 140f ,
+        uri = { pagerItem[page].uri },
+        horizontalInset = 420f ,
+        verticalInset = 350f ,
       )
     }
   }
