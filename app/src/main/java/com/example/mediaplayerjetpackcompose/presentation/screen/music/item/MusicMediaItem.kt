@@ -72,7 +72,8 @@ fun MusicMediaItem(
             .size(size = 55.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(color = MaterialTheme.colorScheme.primary),
-          inset = 50f,
+          verticalInset = 50f,
+          horizontalInset = 50f,
         )
       }
       Spacer(modifier = Modifier.width(10.dp))

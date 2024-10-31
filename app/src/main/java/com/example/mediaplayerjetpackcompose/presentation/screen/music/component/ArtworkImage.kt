@@ -2,9 +2,11 @@ package com.example.mediaplayerjetpackcompose.presentation.screen.music.componen
 
 import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.layout.ContentScale
@@ -17,19 +19,26 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.
 fun ArtworkImage(
   modifier: Modifier = Modifier,
   uri: () -> Uri?,
-  inset: Float,
+  verticalInset: Float,
+  horizontalInset: Float,
 ) {
+
+  val isDark = isSystemInDarkTheme()
+  val imageBackgroundAlpha = remember(isSystemInDarkTheme()) {
+    if (isDark) Color.DarkGray else Color.Black
+  }
+
   AsyncImage(
     model = uri(),
     contentDescription = "",
     contentScale = ContentScale.FillBounds,
     modifier = modifier
-      .background(color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f)),
+      .background(color = imageBackgroundAlpha),
     placeholder = forwardingPainterCoil(
       painter = painterResource(id = R.drawable.icon_music_note),
-      colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+      colorFilter = ColorFilter.tint(Color.White),
       onDraw = { info ->
-        inset(inset, inset) {
+        inset(horizontal = horizontalInset, vertical = verticalInset) {
           with(info.painter) {
             draw(size, info.alpha, info.colorFilter)
           }
@@ -38,9 +47,9 @@ fun ArtworkImage(
     ),
     error = forwardingPainterCoil(
       painter = painterResource(id = R.drawable.icon_music_note),
-      colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+      colorFilter = ColorFilter.tint(Color.White),
       onDraw = { info ->
-        inset(inset, inset) {
+        inset(horizontal = horizontalInset, vertical = verticalInset) {
           with(info.painter) {
             draw(size, info.alpha, info.colorFilter)
           }
