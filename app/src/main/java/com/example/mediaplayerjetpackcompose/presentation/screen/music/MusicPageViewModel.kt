@@ -18,15 +18,15 @@ import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.CategoryMusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.FavoriteMusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.PagerThumbnailModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.SortTypeModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarPosition
 import com.example.mediaplayerjetpackcompose.domain.model.repository.MediaStoreResult
 import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
 import com.example.mediaplayerjetpackcompose.domain.model.share.SortState
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -59,7 +59,8 @@ class MusicPageViewModel(
   var currentMusicPosition = mutableFloatStateOf(0f)
   var currentPagerPage = mutableIntStateOf(0)
 
-  var pagerItemList = musicServiceConnection.pagerList
+  var pagerItemList = mutableStateListOf<PagerThumbnailModel>()
+
   var currentMusicState = musicServiceConnection.currentMediaState
 
   init {
@@ -89,6 +90,7 @@ class MusicPageViewModel(
   }
 
   private fun moveToMediaIndex(index: Int) {
+    currentMusicPosition.floatValue = 0f
     musicServiceConnection.moveToMediaIndex(index = index)
   }
 
@@ -118,14 +120,19 @@ class MusicPageViewModel(
   }
 
   private fun updateMediaItemListAfterSort(list: List<MusicModel>) =
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.Default) {
       val index = list.indexOfFirst { it.musicId.toString() == currentMusicState.value.mediaId }
       if (index == -1) return@launch
 
-      currentPagerPage.intValue = index
-      pagerItemList.clear()
-      pagerItemList.addAll(list)
-      musicServiceConnection.updateMediaList(index, musicList, currentMusicPosition.floatValue.toLong())
+      val pagerItem =
+        list.map { PagerThumbnailModel(uri = it.artworkUri, musicId = it.musicId, name = it.name, artist = it.artist) }
+
+      viewModelScope.launch {
+        currentPagerPage.intValue = index
+        pagerItemList.clear()
+        pagerItemList.addAll(pagerItem)
+        musicServiceConnection.updateMediaList(index, musicList, currentMusicPosition.floatValue.toLong())
+      }
     }
 
   private fun moveToNext() {
@@ -180,13 +187,15 @@ class MusicPageViewModel(
 
   fun playMusic(index: Int, musicList: List<MusicModel>) = viewModelScope.launch {
     currentPagerPage.intValue = index
-    musicServiceConnection.pagerList.clear()
-    musicServiceConnection.pagerList.addAll(musicList)
+    val pagerItem = musicList.map { PagerThumbnailModel(uri = it.artworkUri, musicId = it.musicId, name = it.name, artist = it.artist) }
+    pagerItemList.clear()
+    pagerItemList.addAll(pagerItem)
     musicServiceConnection.playMusic(index, musicList)
   }
 
   private fun getFavorite() = viewModelScope.launch {
     dataBaseDao.getAllFaFavoriteSongs()
+      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
       .collectLatest { favoriteList ->
         favoriteListMediaId.clear()
         favoriteListMediaId.addAll(favoriteList.map { it.mediaId }.toSet())
@@ -202,11 +211,28 @@ class MusicPageViewModel(
           MediaStoreResult.Loading -> isLoading = true
 
           is MediaStoreResult.Result -> {
-            musicList.addAll(result.result)
-            originalMusicList.addAll(result.result)
-            artistsMusicMap.addAll(result.result.groupBy { by -> by.artist }.map { CategoryMusicModel(it.key, it.value) })
-            albumMusicMap.addAll(result.result.groupBy { by -> by.album }.map { CategoryMusicModel(it.key, it.value) })
-            isLoading = false
+            viewModelScope.launch(Dispatchers.Default) {
+              val mainList = result.result
+              val pagerItem =
+                result.result.map { PagerThumbnailModel(uri = it.artworkUri, musicId = it.musicId, name = it.name, artist = it.artist) }
+              val artistItem = result.result.groupBy { by -> by.artist }.map { CategoryMusicModel(it.key, it.value) }
+              val albumItem = result.result.groupBy { by -> by.album }.map { CategoryMusicModel(it.key, it.value) }
+              val currentPagerIndex = if (currentMusicState.value.mediaId.isNotEmpty()) {
+                mainList.indexOfFirst { it.musicId == currentMusicState.value.mediaId.toLong() }
+              } else 0
+
+              viewModelScope.launch {
+                musicList.addAll(mainList)
+                pagerItemList.addAll(pagerItem)
+                originalMusicList.addAll(mainList)
+                artistsMusicMap.addAll(artistItem)
+                albumMusicMap.addAll(albumItem)
+                currentPagerPage.intValue = currentPagerIndex
+                isLoading = false
+              }
+            }
+
+
           }
 
           else -> {}

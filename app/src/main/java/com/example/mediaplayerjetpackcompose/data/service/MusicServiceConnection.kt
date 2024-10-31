@@ -5,7 +5,6 @@ import android.content.Context
 import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.media3.common.MediaItem
@@ -31,7 +30,7 @@ class MusicServiceConnection(
   private var context: Context,
 ) {
 
-  private var _CurrentMediaState =
+  private var _currentMediaState =
     MutableStateFlow(
       CurrentMediaState(
         isPlaying = false,
@@ -41,10 +40,9 @@ class MusicServiceConnection(
         isBuffering = false,
       )
     )
-  var currentMediaState: StateFlow<CurrentMediaState> = _CurrentMediaState.asStateFlow()
+  var currentMediaState: StateFlow<CurrentMediaState> = _currentMediaState.asStateFlow()
 
   val currentRepeatMode = mutableIntStateOf(0)
-  var pagerList = mutableStateListOf<MusicModel>()
 
   private var factory: ListenableFuture<MediaController>? = null
   private var mediaController by mutableStateOf<MediaController?>(null)
@@ -123,15 +121,15 @@ class MusicServiceConnection(
 
   private val exoPlayerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
-      _CurrentMediaState.update { it.copy(isPlaying = isPlaying) }
+      _currentMediaState.update { it.copy(isPlaying = isPlaying) }
     }
 
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-      _CurrentMediaState.update { it.copy(metaData = mediaMetadata) }
+      _currentMediaState.update { it.copy(metaData = mediaMetadata) }
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-      _CurrentMediaState.update {
+      _currentMediaState.update {
         it.copy(
           mediaId = mediaItem?.mediaId ?: "",
           uri = mediaItem?.localConfiguration?.uri ?: Uri.EMPTY
@@ -141,8 +139,8 @@ class MusicServiceConnection(
 
     override fun onPlaybackStateChanged(playbackState: Int) {
       when (playbackState) {
-        Player.STATE_BUFFERING -> _CurrentMediaState.update { it.copy(isBuffering = true) }
-        Player.STATE_READY -> _CurrentMediaState.update { it.copy(isBuffering = false) }
+        Player.STATE_BUFFERING -> _currentMediaState.update { it.copy(isBuffering = true) }
+        Player.STATE_READY -> _currentMediaState.update { it.copy(isBuffering = false) }
         else -> {}
       }
     }

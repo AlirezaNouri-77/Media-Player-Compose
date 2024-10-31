@@ -1,6 +1,5 @@
 package com.example.mediaplayerjetpackcompose.data.util
 
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
