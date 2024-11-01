@@ -1,5 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +38,7 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.component.Loadi
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.CategoryPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.MiniMusicPlayer
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.MusicListHandler
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.FullMusicPlayer
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.SortDropDownMenu
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.TabBarSection
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.TopBarMusic
@@ -50,7 +53,18 @@ fun MusicScreen(
   var sortIconOffset by remember { mutableStateOf(DpOffset.Zero) }
   val navController: NavHostController = rememberNavController()
   val currentMusicState = musicPageViewModel.currentMusicState.collectAsStateWithLifecycle().value
+
   var miniPlayerHeight by remember { mutableStateOf(0.dp) }
+
+  LaunchedEffect(key1 = currentMusicState.metaData) {
+    musicPageViewModel.getColorPaletteFromArtwork(currentMusicState.uri)
+  }
+
+  BackHandler {
+    if (musicPageViewModel.isFullPlayerShow){
+      musicPageViewModel.isFullPlayerShow = false
+    }
+  }
 
   SortDropDownMenu(
     isExpand = showSortBar,
@@ -162,7 +176,7 @@ fun MusicScreen(
     }
 
     AnimatedVisibility(
-      visible = currentMusicState.mediaId.isNotEmpty(),
+      visible = currentMusicState.mediaId.isNotEmpty() && !musicPageViewModel.isFullPlayerShow,
       modifier = Modifier.constrainAs(collapsePlayer) {
         start.linkTo(parent.start)
         end.linkTo(parent.end)
@@ -183,6 +197,29 @@ fun MusicScreen(
         currentMusicPosition = { musicPageViewModel.currentMusicPosition.floatValue.toLong() },
         currentPagerPage = musicPageViewModel.currentPagerPage.intValue,
         setCurrentPagerNumber = { musicPageViewModel.currentPagerPage.intValue = it },
+        onPlayerAction = musicPageViewModel::onPlayerAction,
+      )
+    }
+
+    AnimatedVisibility(
+      visible = musicPageViewModel.isFullPlayerShow,
+      enter = fadeIn(tween(300, 100)) + slideInVertically(
+        animationSpec = tween(350),
+        initialOffsetY = { int -> int / 4 }),
+      exit = slideOutVertically(
+        animationSpec = tween(300, 100),
+        targetOffsetY = { int -> int / 4 }) + fadeOut(tween(350, 50))
+    ) {
+      FullMusicPlayer(
+        currentMediaState = { currentMusicState },
+        favoriteList = musicPageViewModel.favoriteListMediaId,
+        pagerMusicList = musicPageViewModel.pagerItemList,
+        backgroundColorByArtwork = musicPageViewModel.musicArtworkColorPalette,
+        repeatMode = musicPageViewModel.currentRepeatMode.intValue,
+        currentPagerPage = musicPageViewModel.currentPagerPage.intValue,
+        setCurrentPagerNumber = { musicPageViewModel.currentPagerPage.intValue = it },
+        onBack = { musicPageViewModel.isFullPlayerShow = false },
+        currentMusicPosition = { musicPageViewModel.currentMusicPosition.floatValue.toLong() },
         onPlayerAction = musicPageViewModel::onPlayerAction,
       )
     }
