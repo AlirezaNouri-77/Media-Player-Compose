@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -56,26 +57,29 @@ fun MusicMediaItem(
       horizontalArrangement = Arrangement.Center,
       modifier = Modifier.padding(vertical = 6.dp, horizontal = 10.dp),
     ) {
-      if (currentMediaId == item.musicId.toString()) {
-        WaveForm(
-          modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
-            .background(color = MaterialTheme.colorScheme.primary),
-          size = 55.dp,
-          enable = isPlaying,
-          waveColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
-        )
-      } else {
+      Box(contentAlignment = Alignment.Center){
         ArtworkImage(
           uri = { item.artworkUri },
           modifier = Modifier
             .size(size = 55.dp)
             .clip(RoundedCornerShape(8.dp))
+            .then(if (currentMediaId == item.musicId.toString()) Modifier.blur(5.dp) else Modifier)
             .background(color = MaterialTheme.colorScheme.primary),
           verticalInset = 50f,
           horizontalInset = 50f,
         )
+        if (currentMediaId == item.musicId.toString()) {
+          WaveForm(
+            modifier = Modifier
+              .clip(RoundedCornerShape(8.dp))
+              .background(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
+            size = 55.dp,
+            enable = isPlaying,
+            waveColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
+          )
+        }
       }
+
       Spacer(modifier = Modifier.width(10.dp))
       Column(
         modifier = Modifier
