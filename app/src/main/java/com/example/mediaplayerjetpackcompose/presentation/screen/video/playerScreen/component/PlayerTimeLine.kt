@@ -8,16 +8,18 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,17 +60,31 @@ fun PlayerTimeLine(
       },
       valueRange = 0f..(currentState().metaData.extras?.getInt(Constant.DURATION_KEY)?.toFloat()
         ?: 0f),
+
       track = { sliderState ->
         SliderDefaults.Track(
           sliderState = sliderState,
-          modifier = Modifier.scale(scaleX = 1f, scaleY = 2.5f),
+          modifier = Modifier.graphicsLayer {
+            scaleY = 0.6f
+          },
+          drawStopIndicator = {},
           colors = SliderDefaults.colors(
-            activeTrackColor = Color.White,
-            inactiveTrackColor = Color.White.copy(0.5f),
+            activeTrackColor = Color.White.copy(alpha = 0.9f),
+            inactiveTrackColor = Color.White.copy(alpha = 0.6f),
           ),
+          thumbTrackGapSize = 4.dp,
+          trackInsideCornerSize = 2.dp,
         )
       },
-      thumb = {},
+      thumb = {
+        SliderDefaults.Thumb(
+          thumbSize = DpSize(width = 4.dp, height = 25.dp),
+          interactionSource = NoRippleEffect,
+          colors = SliderDefaults.colors(
+            thumbColor = Color.White,
+          ),
+        )
+      }
     )
 
     Text(
