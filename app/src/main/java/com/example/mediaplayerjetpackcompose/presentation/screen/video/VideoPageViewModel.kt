@@ -17,14 +17,17 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
-import com.example.mediaplayerjetpackcompose.data.MediaThumbnailUtil
 import com.example.mediaplayerjetpackcompose.data.GetMediaMetaData
+import com.example.mediaplayerjetpackcompose.data.MediaThumbnailUtil
 import com.example.mediaplayerjetpackcompose.data.mapper.toMediaItem
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.model.repository.MediaStoreResult
 import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
 import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoItemModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +35,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
@@ -48,19 +53,18 @@ class VideoPageViewModel(
 
   var playerResizeMode by mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT)
 
-  var mediaStoreDataList = mutableStateListOf<VideoItemModel>()
-    private set
-
   private var _uiState = MutableStateFlow<MediaStoreResult<VideoItemModel>>(MediaStoreResult.Loading)
   var uiState = _uiState
     .onStart { getVideo() }
     .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), MediaStoreResult.Loading)
 
-  private var _previewSliderBitmap = MutableSharedFlow<ImageBitmap?>()
-  var previewSliderBitmap = _previewSliderBitmap.asSharedFlow()
+  private var _previewSliderBitmap = Channel<ImageBitmap?>(onBufferOverflow = BufferOverflow.DROP_OLDEST)
+  var previewSliderBitmap = _previewSliderBitmap.consumeAsFlow()
 
   private var _currentPlayerPosition = MutableStateFlow(0L)
   var currentPlayerPosition = _currentPlayerPosition.asStateFlow()
+
+  private var getThumbnailJob: Job? = null
 
   private var _currentState = MutableStateFlow(CurrentMediaState.Empty)
   val currentMediaState: StateFlow<CurrentMediaState> = _currentState.asStateFlow()
@@ -100,10 +104,12 @@ class VideoPageViewModel(
     }
   }
 
-  suspend fun getSliderPreviewThumbnail(position: Long) {
+  fun getSliderPreviewThumbnail(position: Long) {
     if (_currentState.value.uri == Uri.EMPTY) return
-    viewModelScope.launch {
-      _previewSliderBitmap.emit(mediaThumbnailUtil.getVideoThumbNail(_currentState.value.uri, position))
+    getThumbnailJob?.cancel()
+    getThumbnailJob = viewModelScope.launch {
+      val thumbnailBitmap = mediaThumbnailUtil.getVideoThumbNail(_currentState.value.uri, position)
+      _previewSliderBitmap.send(thumbnailBitmap)
     }
   }
 
@@ -136,32 +142,32 @@ class VideoPageViewModel(
     }
   }
 
-  fun resumePlayer() = exoPlayer.play()
+  fun resumePlayer() = viewModelScope.launch { exoPlayer.play() }
 
-  fun seekToNext() = exoPlayer.seekToNextMediaItem()
+  fun seekToNext() = viewModelScope.launch { exoPlayer.seekToNextMediaItem() }
 
-  fun fastForward(position: Long, currentPosition: Long) {
+  fun fastForward(position: Long, currentPosition: Long) = viewModelScope.launch {
     exoPlayer.seekTo(currentPosition + position)
   }
 
-  fun fastRewind(position: Long, currentPosition: Long) {
+  fun fastRewind(position: Long, currentPosition: Long) = viewModelScope.launch {
     exoPlayer.seekTo(currentPosition - position)
   }
 
   fun seekToPrevious() = exoPlayer.seekToPreviousMediaItem()
 
-  fun seekToPosition(position: Long) {
+  fun seekToPosition(position: Long) = viewModelScope.launch {
     exoPlayer.seekTo(position)
     _currentPlayerPosition.value = position
   }
 
-  fun releasePlayer() = viewModelScope.launch(Dispatchers.Main) {
+  fun releasePlayer() = viewModelScope.launch {
     exoPlayer.pause()
     exoPlayer.clearMediaItems()
     exoPlayer.release()
   }
 
-  fun stopPlayer() = viewModelScope.launch(Dispatchers.Main) {
+  fun stopPlayer() = viewModelScope.launch {
     exoPlayer.pause()
     exoPlayer.clearMediaItems()
   }
@@ -169,14 +175,7 @@ class VideoPageViewModel(
   private fun getVideo() {
     viewModelScope.launch {
       videoMediaStoreRepository.getMedia().collect {
-        viewModelScope.launch {
-          Log.d("TAG5124", "getVideo: " + it)
-          _uiState.value = it
-          when (it) {
-            is MediaStoreResult.Result -> mediaStoreDataList.addAll(it.result)
-            else -> {}
-          }
-        }
+        _uiState.value = it
       }
     }
   }

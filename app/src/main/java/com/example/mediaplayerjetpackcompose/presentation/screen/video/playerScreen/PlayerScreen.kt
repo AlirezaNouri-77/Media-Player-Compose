@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -36,9 +37,14 @@ import com.example.mediaplayerjetpackcompose.domain.model.videoSection.MiddleVid
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.playerScreen.component.MiddleInfoHandler
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.playerScreen.component.PlayerControllerLayout
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @OptIn(UnstableApi::class)
+@kotlin.OptIn(FlowPreview::class)
 @Composable
 fun VideoPlayer(
   videoUri: String,
@@ -77,7 +83,13 @@ fun VideoPlayer(
   }
 
   LaunchedEffect(key1 = sliderValuePosition) {
-    videoPageViewModel.getSliderPreviewThumbnail(sliderValuePosition.toLong())
+    snapshotFlow {
+      sliderValuePosition
+    }.debounce(100L)
+      .distinctUntilChanged()
+      .collectLatest {
+        videoPageViewModel.getSliderPreviewThumbnail(sliderValuePosition.toLong())
+      }
   }
 
   LaunchedEffect(
