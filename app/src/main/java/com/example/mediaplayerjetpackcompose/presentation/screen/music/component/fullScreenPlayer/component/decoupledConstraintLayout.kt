@@ -35,14 +35,14 @@ fun decoupledConstraintLayout(
         bottom.linkTo(songDetail.top, margin = 10.dp)
       }
       constrain(songDetail) {
-        start.linkTo(parent.start, margin = 20.dp)
-        end.linkTo(parent.end, margin = 20.dp)
+        start.linkTo(parent.start, margin = 25.dp)
+        end.linkTo(parent.end, margin = 25.dp)
         bottom.linkTo(slider.top, margin = 10.dp)
         width = Dimension.fillToConstraints
       }
       constrain(slider) {
-        start.linkTo(songDetail.start, margin = 10.dp)
-        end.linkTo(songDetail.end, margin = 10.dp)
+        start.linkTo(songDetail.start)
+        end.linkTo(songDetail.end)
         bottom.linkTo(controllerRef.top, margin = 30.dp)
         width = Dimension.fillToConstraints
       }
