@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mediaplayerjetpackcompose.data.MediaThumbnailUtil
 import com.example.mediaplayerjetpackcompose.data.database.dao.DataBaseDao
+import com.example.mediaplayerjetpackcompose.data.mapper.toMediaItem
 import com.example.mediaplayerjetpackcompose.data.service.MusicServiceConnection
 import com.example.mediaplayerjetpackcompose.data.util.onDefaultDispatcher
 import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
@@ -48,7 +49,7 @@ class MusicPageViewModel(
 
   var musicArtworkColorPalette by mutableIntStateOf(MediaThumbnailUtil.DefaultColorPalette)
 
-  val currentRepeatMode = musicServiceConnection.currentRepeatMode
+  val currentRepeatMode = mutableIntStateOf(0)
   var favoriteListMediaId = mutableStateListOf<String>()
   var isLoading by mutableStateOf(true)
 
@@ -66,10 +67,11 @@ class MusicPageViewModel(
   init {
     getFavorite()
     getMusic()
+    currentRepeatMode.intValue = musicServiceConnection.mediaController?.repeatMode ?: 0
     viewModelScope.launch {
       musicServiceConnection
-        .musicPosition()
-        .stateIn(this, SharingStarted.WhileSubscribed(), 0L)
+        .musicPosition
+        .stateIn(this, SharingStarted.Eagerly, 0L)
         .collectLatest {
           currentMusicPosition.floatValue = it.toFloat()
         }
@@ -91,7 +93,7 @@ class MusicPageViewModel(
 
   private fun moveToMediaIndex(index: Int) {
     currentMusicPosition.floatValue = 0f
-    musicServiceConnection.moveToMediaIndex(index = index)
+    musicServiceConnection.mediaController?.seekTo(index, 0L)
   }
 
   fun getColorPaletteFromArtwork(uri: Uri) {
@@ -131,36 +133,45 @@ class MusicPageViewModel(
         currentPagerPage.intValue = index
         pagerItemList.clear()
         pagerItemList.addAll(pagerItem)
-        musicServiceConnection.updateMediaList(index, musicList, currentMusicPosition.floatValue.toLong())
+        musicServiceConnection.mediaController?.setMediaItems(
+          musicList.map(MusicModel::toMediaItem), index, currentMusicPosition.floatValue.toLong()
+        )
       }
     }
 
   private fun moveToNext() {
-    if (!musicServiceConnection.hasNextItem()) return
-    musicServiceConnection.moveToNext()
+    val hasNextItem = musicServiceConnection.mediaController?.hasNextMediaItem() ?: false
+    if (!hasNextItem) return
+
+    musicServiceConnection.mediaController?.seekToNext()
     currentMusicPosition.floatValue = 0f
     currentPagerPage.intValue += 1
   }
 
   private fun moveToPrevious(seekToStart: Boolean = false) {
-    if (!musicServiceConnection.hasPreviewItem()) return
+    val hasPreviewItem = musicServiceConnection.mediaController?.hasNextMediaItem() ?: false
+    if (!hasPreviewItem) return
+
     if (currentMusicPosition.floatValue <= 15_000 || seekToStart) {
-      musicServiceConnection.moveToPreviousMediaItem()
+      musicServiceConnection.mediaController?.seekToPreviousMediaItem()
       currentPagerPage.intValue -= 1
-    } else musicServiceConnection.moveToPrevious()
+    } else musicServiceConnection.mediaController?.seekToPrevious()
     currentMusicPosition.floatValue = 0f
   }
 
-  private fun pauseMusic() = musicServiceConnection.pauseMusic()
+  private fun pauseMusic() = musicServiceConnection.mediaController?.pause()
 
-  private fun resumeMusic() = musicServiceConnection.resumeMusic()
+  private fun resumeMusic() = musicServiceConnection.mediaController?.play()
 
   private fun seekToPosition(position: Long) {
-    musicServiceConnection.seekToPosition(position)
+    musicServiceConnection.mediaController?.seekTo(position)
     currentMusicPosition.floatValue = position.toFloat()
   }
 
-  private fun setRepeatMode(repeatMode: Int) = musicServiceConnection.setPlayerRepeatMode(repeatMode)
+  private fun setRepeatMode(repeatMode: Int) {
+    currentRepeatMode.intValue = repeatMode
+    musicServiceConnection.mediaController?.repeatMode = repeatMode
+  }
 
   private fun handleFavoriteSongs(mediaId: String) {
     viewModelScope.launch {
@@ -174,23 +185,35 @@ class MusicPageViewModel(
     }
   }
 
-  fun searchMusic(input: String) = viewModelScope.launch {
+  fun searchMusic(input: String) = viewModelScope.launch(Dispatchers.Default) {
     if (input.isNotEmpty() || input.isNotEmpty()) {
-      musicList.clear()
-        .also {
-          musicList.addAll(originalMusicList.filter { it.name.lowercase().contains(input.lowercase()) })
-        }
+      val filteredList = originalMusicList.filter { it.name.lowercase().contains(input.lowercase()) }
+      viewModelScope.launch {
+        musicList.clear()
+        musicList.addAll(filteredList)
+      }
     } else {
-      musicList.clear().also { musicList.addAll(originalMusicList) }
+      viewModelScope.launch {
+        musicList.clear()
+        musicList.addAll(originalMusicList)
+      }
     }
   }
 
-  fun playMusic(index: Int, musicList: List<MusicModel>) = viewModelScope.launch {
-    currentPagerPage.intValue = index
+  fun playMusic(index: Int, musicList: List<MusicModel>) = viewModelScope.launch(Dispatchers.Default) {
     val pagerItem = musicList.map { PagerThumbnailModel(uri = it.artworkUri, musicId = it.musicId, name = it.name, artist = it.artist) }
-    pagerItemList.clear()
-    pagerItemList.addAll(pagerItem)
-    musicServiceConnection.playMusic(index, musicList)
+    val musicItem = musicList.map(MusicModel::toMediaItem)
+    viewModelScope.launch {
+      pagerItemList.clear()
+      pagerItemList.addAll(pagerItem)
+      currentPagerPage.intValue = index
+      musicServiceConnection.mediaController?.run {
+        setMediaItems(musicItem, index, 0L)
+        playWhenReady
+        prepare()
+        play()
+      }
+    }
   }
 
   private fun getFavorite() = viewModelScope.launch {

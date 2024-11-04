@@ -107,7 +107,7 @@ fun SongController(
       size = 24.dp,
       contentDescription = "RepeatMode",
       onClick = {
-        if (repeatMode == Constant.RepeatModes.lastIndex) {
+        if (repeatMode == Constant.RepeatModes.entries.toMutableList().lastIndex) {
           onRepeatMode.invoke(0)
         } else {
           onRepeatMode.invoke(repeatMode + 1)

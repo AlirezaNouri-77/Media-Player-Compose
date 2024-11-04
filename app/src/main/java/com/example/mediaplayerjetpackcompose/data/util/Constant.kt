@@ -6,10 +6,10 @@ import androidx.media3.common.Player
 
 object Constant {
 
-  val RepeatModes = listOf(
-    Player.REPEAT_MODE_OFF,
-    Player.REPEAT_MODE_ONE,
-    Player.REPEAT_MODE_ALL
+  val RepeatModes = mapOf(
+    0 to Player.REPEAT_MODE_OFF,
+    1 to Player.REPEAT_MODE_ONE,
+    2 to Player.REPEAT_MODE_ALL
   )
 
   const val DURATION_KEY = "Duration"
