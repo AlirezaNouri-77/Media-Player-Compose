@@ -21,7 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.PagerThumbnailModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.ArtworkImage
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.ThumbnailImage
 
 @Composable
 fun FullscreenPlayerPager(
@@ -35,9 +35,9 @@ fun FullscreenPlayerPager(
     if (orientation == Configuration.ORIENTATION_PORTRAIT) {
       Modifier
         .fillMaxWidth()
-        .height(350.dp)
+        .height(380.dp)
     } else {
-      Modifier.size(240.dp)
+      Modifier.size(250.dp)
     }
   }
 
@@ -52,15 +52,13 @@ fun FullscreenPlayerPager(
       pageSpacing = 10.dp,
       verticalAlignment = Alignment.CenterVertically,
     ) { page ->
-      ArtworkImage(
+      ThumbnailImage(
         modifier = Modifier
           .fillMaxSize()
-          .padding(horizontal = 20.dp, vertical = 10.dp)
-          .clip(RoundedCornerShape(15.dp))
+          .padding(horizontal = 12.dp, vertical = 10.dp)
+          .clip(RoundedCornerShape(8.dp))
           .background(color = MaterialTheme.colorScheme.primary),
-        uri = { pagerItem[page].uri },
-        horizontalInset = 420f ,
-        verticalInset = 350f ,
+        uri = pagerItem[page].uri,
       )
     }
   }

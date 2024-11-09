@@ -32,7 +32,7 @@ import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.WaveForm
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.ArtworkImage
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.ThumbnailImage
 
 @Composable
 fun MusicMediaItem(
@@ -57,16 +57,14 @@ fun MusicMediaItem(
       horizontalArrangement = Arrangement.Center,
       modifier = Modifier.padding(vertical = 6.dp, horizontal = 10.dp),
     ) {
-      Box(contentAlignment = Alignment.Center){
-        ArtworkImage(
-          uri = { item.artworkUri },
+      Box(contentAlignment = Alignment.Center) {
+        ThumbnailImage(
+          uri = item.artworkUri,
           modifier = Modifier
             .size(size = 55.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(5.dp))
             .then(if (currentMediaId == item.musicId.toString()) Modifier.blur(5.dp) else Modifier)
             .background(color = MaterialTheme.colorScheme.primary),
-          verticalInset = 50f,
-          horizontalInset = 50f,
         )
         if (currentMediaId == item.musicId.toString()) {
           WaveForm(

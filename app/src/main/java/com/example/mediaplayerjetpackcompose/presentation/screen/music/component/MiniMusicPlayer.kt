@@ -101,14 +101,12 @@ fun MiniMusicPlayer(
         .fillMaxWidth()
         .padding(horizontal = 6.dp, vertical = 5.dp),
     ) {
-      ArtworkImage(
+      ThumbnailImage(
         modifier = Modifier
           .weight(0.2f, false)
-          .size(45.dp)
+          .size(55.dp)
           .clip(RoundedCornerShape(5.dp)),
-        horizontalInset = 30f,
-        verticalInset = 30f,
-        uri = { currentMediaState().metaData.artworkUri },
+        uri = currentMediaState().metaData.artworkUri,
       )
       Column(
         modifier = Modifier
