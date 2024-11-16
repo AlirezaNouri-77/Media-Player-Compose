@@ -53,6 +53,8 @@ fun MusicScreen(
   var sortIconOffset by remember { mutableStateOf(DpOffset.Zero) }
   val navController: NavHostController = rememberNavController()
   val currentMusicState = musicPageViewModel.currentMusicState.collectAsStateWithLifecycle().value
+  val favoriteMusicMediaIdList = musicPageViewModel.favoriteMusic.collectAsStateWithLifecycle().value.map { it.mediaId }
+  val currentMusicPosition = musicPageViewModel.currentMusicPosition.collectAsStateWithLifecycle().value
 
   var miniPlayerHeight by remember { mutableStateOf(0.dp) }
 
@@ -112,7 +114,6 @@ fun MusicScreen(
         Scaffold(
           topBar = {
             TopBarMusic(
-              density = density,
               currentTabPosition = musicPageViewModel.currentTabState,
               onVideoIconClick = { onNavigateToVideoScreen() },
               onSearch = { musicPageViewModel.searchMusic(it) },
@@ -147,6 +148,7 @@ fun MusicScreen(
                   currentMusicState = currentMusicState,
                   navController = navController,
                   bottomPadding = miniPlayerHeight,
+                  favoriteMusicMediaIdList = favoriteMusicMediaIdList,
                 )
               }
             }
@@ -194,7 +196,7 @@ fun MusicScreen(
         modifier = Modifier.onGloballyPositioned { miniPlayerHeight = density.run { it.size.height.toDp() } },
         pagerMusicList = musicPageViewModel.pagerItemList,
         currentMediaState = { currentMusicState },
-        currentMusicPosition = { musicPageViewModel.currentMusicPosition.floatValue.toLong() },
+        currentMusicPosition = { currentMusicPosition },
         currentPagerPage = musicPageViewModel.currentPagerPage.intValue,
         setCurrentPagerNumber = { musicPageViewModel.currentPagerPage.intValue = it },
         onPlayerAction = musicPageViewModel::onPlayerAction,
@@ -212,14 +214,14 @@ fun MusicScreen(
     ) {
       FullMusicPlayer(
         currentMediaState = { currentMusicState },
-        favoriteList = musicPageViewModel.favoriteListMediaId,
+        favoriteList = favoriteMusicMediaIdList,
         pagerMusicList = musicPageViewModel.pagerItemList,
         backgroundColorByArtwork = musicPageViewModel.musicArtworkColorPalette,
-        repeatMode = musicPageViewModel.currentRepeatMode.intValue,
+        repeatMode = currentMusicState.repeatMode,
         currentPagerPage = musicPageViewModel.currentPagerPage.intValue,
         setCurrentPagerNumber = { musicPageViewModel.currentPagerPage.intValue = it },
         onBack = { musicPageViewModel.isFullPlayerShow = false },
-        currentMusicPosition = { musicPageViewModel.currentMusicPosition.floatValue.toLong() },
+        currentMusicPosition = { currentMusicPosition },
         onPlayerAction = musicPageViewModel::onPlayerAction,
       )
     }

@@ -9,11 +9,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarPosition
 import com.example.mediaplayerjetpackcompose.domain.model.navigation.MusicNavigationModel
@@ -27,9 +29,15 @@ fun MusicListHandler(
   musicPageViewModel: MusicPageViewModel,
   currentMusicState: CurrentMediaState,
   navController: NavController,
+  favoriteMusicMediaIdList: List<String>,
   bottomPadding: Dp,
   orientation: Int = LocalConfiguration.current.orientation,
 ) {
+
+  val favoriteMusicData = remember(favoriteMusicMediaIdList.size) {
+    musicPageViewModel.musicList.filter { musicModel -> musicModel.musicId.toString() in favoriteMusicMediaIdList }
+      .toMutableStateList()
+  }
 
   Crossfade(
     targetState = musicPageViewModel.currentTabState,
@@ -51,7 +59,7 @@ fun MusicListHandler(
           ) { index, item ->
             MusicMediaItem(
               item = item,
-              isFav = item.musicId.toString() in musicPageViewModel.favoriteListMediaId.toList(),
+              isFav = item.musicId.toString() in favoriteMusicMediaIdList,
               currentMediaId = currentMusicState.mediaId,
               onItemClick = {
                 musicPageViewModel.playMusic(
@@ -66,23 +74,20 @@ fun MusicListHandler(
 
         TabBarPosition.FAVORITE -> {
 
-          musicPageViewModel.favoriteMusicList =
-            musicPageViewModel.musicList.filter { it.musicId.toString() in musicPageViewModel.favoriteListMediaId }
-              .toMutableStateList()
 
-          if (musicPageViewModel.favoriteMusicList.isNotEmpty()) {
+          if (favoriteMusicData.isNotEmpty()) {
             itemsIndexed(
-              items = musicPageViewModel.favoriteMusicList,
+              items = favoriteMusicData,
               key = { _, item -> item.musicId },
             ) { index, item ->
               MusicMediaItem(
                 item = item,
-                isFav = item.musicId.toString() in musicPageViewModel.favoriteListMediaId.toList(),
+                isFav = item.musicId.toString() in favoriteMusicMediaIdList,
                 currentMediaId = currentMusicState.mediaId,
                 onItemClick = {
                   musicPageViewModel.playMusic(
                     index = index,
-                    musicPageViewModel.favoriteMusicList
+                    musicList = favoriteMusicData
                   )
                 },
                 isPlaying = currentMusicState.isPlaying,
@@ -110,7 +115,7 @@ fun MusicListHandler(
             CategoryListItem(
               categoryName = item.categoryName,
               musicListSize = item.categoryList.size,
-              onClick = {categoryName ->
+              onClick = { categoryName ->
                 navController.navigate(MusicNavigationModel.Category(categoryName))
               },
             )
