@@ -29,7 +29,7 @@ fun WaveForm(
   modifier: Modifier = Modifier,
   enable: Boolean = true,
   size: Dp = 35.dp,
-  waveColor:Color = Color.Black,
+  waveColor:Color = Color.White,
   density: Density = LocalDensity.current,
 ) {
 

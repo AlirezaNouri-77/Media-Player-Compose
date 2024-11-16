@@ -1,5 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.item
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
@@ -33,6 +35,7 @@ import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.WaveForm
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.ThumbnailImage
+import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 @Composable
 fun MusicMediaItem(
@@ -69,11 +72,10 @@ fun MusicMediaItem(
         if (currentMediaId == item.musicId.toString()) {
           WaveForm(
             modifier = Modifier
-              .clip(RoundedCornerShape(8.dp))
-              .background(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
+              .clip(RoundedCornerShape(5.dp))
+              .background(color = Color.Black.copy(alpha = 0.4f)),
             size = 55.dp,
             enable = isPlaying,
-            waveColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
           )
         }
       }
@@ -107,7 +109,7 @@ fun MusicMediaItem(
       }
       Column(
         Modifier.weight(0.2f),
-        verticalArrangement = Arrangement.SpaceBetween,
+        verticalArrangement = Arrangement.spacedBy(5.dp),
         horizontalAlignment = Alignment.End,
       ) {
         Text(
@@ -126,5 +128,31 @@ fun MusicMediaItem(
         }
       }
     }
+  }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewMusicMediaItem() {
+  MediaPlayerJetpackComposeTheme {
+    MusicMediaItem(
+      item = MusicModel(
+        musicId = 9586,
+        uri = Uri.EMPTY,
+        path = "",
+        mimeTypes = "",
+        name = "Example Music",
+        duration = 1000000,
+        size = 1233300,
+        artworkUri = Uri.EMPTY,
+        bitrate = 1280000,
+        artist = "Example Artist",
+        album = "Example"
+      ),
+      isPlaying = false,
+      isFav = true,
+      currentMediaId = "",
+      onItemClick = {}
+    )
   }
 }

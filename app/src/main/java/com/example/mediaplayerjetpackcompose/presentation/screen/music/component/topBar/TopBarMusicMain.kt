@@ -26,8 +26,10 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -35,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarPosition
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
+import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
@@ -47,7 +50,7 @@ fun TopBarMusic(
   onVideoIconClick: () -> Unit,
   onSortIconClick: () -> Unit,
   sortIconOffset: (DpOffset) -> Unit,
-  density: Density,
+  density: Density = LocalDensity.current,
 ) {
 
   var showSearch by remember { mutableStateOf(false) }
@@ -157,5 +160,19 @@ fun TopBarMusic(
     )
   )
 
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewTopBarMusic() {
+  MediaPlayerJetpackComposeTheme {
+    TopBarMusic(
+      currentTabPosition = TabBarPosition.MUSIC,
+      onSearch = {},
+      onVideoIconClick = {},
+      onSortIconClick = {},
+      sortIconOffset = {},
+    )
+  }
 }
 

@@ -14,7 +14,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -32,8 +31,8 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.
 @Composable
 fun SongController(
   modifier: Modifier = Modifier,
-  currentCurrentMediaState: CurrentMediaState,
-  favoriteList: SnapshotStateList<String>,
+  currentMediaState: CurrentMediaState,
+  favoriteList: List<String>,
   repeatMode: Int,
   onMovePreviousMusic: () -> Unit,
   onPauseMusic: () -> Unit,
@@ -51,7 +50,7 @@ fun SongController(
       else -> -1
     }
   }
-  val favIcon = when (currentCurrentMediaState.mediaId in favoriteList) {
+  val favIcon = when (currentMediaState.mediaId in favoriteList) {
     true -> Icons.Default.Favorite
     false -> Icons.Default.FavoriteBorder
   }
@@ -84,11 +83,11 @@ fun SongController(
           )
         }
         .padding(horizontal = 10.dp),
-      icon = if (currentCurrentMediaState.isPlaying && !currentCurrentMediaState.isBuffering) R.drawable.icon_pause_24 else R.drawable.icon_play_arrow_24,
+      icon = if (currentMediaState.isPlaying || currentMediaState.isBuffering) R.drawable.icon_pause_24 else R.drawable.icon_play_arrow_24,
       size = 55.dp,
       contentDescription = "Play and Pause",
       onClick = {
-        when (currentCurrentMediaState.isPlaying) {
+        when (currentMediaState.isPlaying) {
           true -> onPauseMusic.invoke()
           false -> onResumeMusic.invoke()
         }

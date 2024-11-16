@@ -90,7 +90,6 @@ fun MusicNavController(
         onNavigateToMusicScreen = {
           navHostController.navigate(MainScreenNavigationModel.MusicScreen)
         },
-      //  uiState = { videoUiState },
       )
     }
 

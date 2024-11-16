@@ -41,7 +41,7 @@ fun FullMusicPlayer(
   currentPagerPage: Int,
   currentMediaState: () -> CurrentMediaState,
   currentMusicPosition: () -> Long,
-  favoriteList: SnapshotStateList<String>,
+  favoriteList: List<String>,
   pagerMusicList: SnapshotStateList<PagerThumbnailModel>,
   onBack: () -> Unit,
   onPlayerAction: (action: PlayerActions) -> Unit,
@@ -123,7 +123,7 @@ fun FullMusicPlayer(
     )
     SongController(
       modifier = Modifier.layoutId("controllerRef"),
-      currentCurrentMediaState = currentMediaState(),
+      currentMediaState = currentMediaState(),
       favoriteList = favoriteList,
       repeatMode = repeatMode,
       onPauseMusic = { onPlayerAction(PlayerActions.PausePlayer) },

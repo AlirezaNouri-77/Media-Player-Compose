@@ -6,7 +6,7 @@ import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 
 fun decoupledConstraintLayout(
-  orientation:Int,
+  orientation: Int,
 ): ConstraintSet {
   return ConstraintSet {
 
@@ -18,9 +18,10 @@ fun decoupledConstraintLayout(
 
     if (orientation == Configuration.ORIENTATION_PORTRAIT) {
 
-      val bottomGuideline = createGuidelineFromBottom(70.dp)
-      val startGuideLine = createGuidelineFromStart(10.dp)
-      val endGuideLine = createGuidelineFromEnd(10.dp)
+      val topGuideline = createGuidelineFromTop(0.15f)
+      val bottomGuideline = createGuidelineFromBottom(0.08f)
+      val startGuideLine = createGuidelineFromStart(15.dp)
+      val endGuideLine = createGuidelineFromEnd(15.dp)
 
       constrain(headerRef) {
         top.linkTo(parent.top, margin = 5.dp)
@@ -29,26 +30,27 @@ fun decoupledConstraintLayout(
         width = Dimension.fillToConstraints
       }
       constrain(pagerArtWork) {
-        top.linkTo(headerRef.bottom, margin = 40.dp)
+        top.linkTo(topGuideline)
         start.linkTo(startGuideLine)
         end.linkTo(endGuideLine)
         bottom.linkTo(songDetail.top, margin = 10.dp)
       }
       constrain(songDetail) {
-        start.linkTo(parent.start, margin = 25.dp)
-        end.linkTo(parent.end, margin = 25.dp)
-        bottom.linkTo(slider.top, margin = 10.dp)
+        top.linkTo(pagerArtWork.bottom)
+        start.linkTo(startGuideLine)
+        end.linkTo(endGuideLine)
+        bottom.linkTo(slider.top)
         width = Dimension.fillToConstraints
       }
       constrain(slider) {
-        start.linkTo(songDetail.start)
-        end.linkTo(songDetail.end)
-        bottom.linkTo(controllerRef.top, margin = 30.dp)
+        start.linkTo(startGuideLine)
+        end.linkTo(endGuideLine)
+        bottom.linkTo(controllerRef.top, margin = 20.dp)
         width = Dimension.fillToConstraints
       }
       constrain(controllerRef) {
-        start.linkTo(parent.start, margin = 10.dp)
-        end.linkTo(parent.end, margin = 10.dp)
+        start.linkTo(startGuideLine, margin = 10.dp)
+        end.linkTo(endGuideLine, margin = 10.dp)
         bottom.linkTo(bottomGuideline)
       }
 
