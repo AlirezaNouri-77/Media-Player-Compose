@@ -11,6 +11,7 @@ data class CurrentMediaState(
   val metaData: MediaMetadata,
   val mediaId: String,
   val isBuffering: Boolean,
+  val repeatMode: Int,
 ) {
   companion object {
     var Empty: CurrentMediaState = CurrentMediaState(
@@ -19,6 +20,7 @@ data class CurrentMediaState(
       metaData = MediaMetadata.EMPTY,
       uri = Uri.EMPTY,
       isBuffering = false,
+      repeatMode = 0,
     )
   }
 }
