@@ -5,25 +5,24 @@ import android.content.ContentUris
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.repository.MediaStoreResult
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.flowOn
 import java.util.concurrent.TimeUnit
 
 class MusicMediaStoreRepository(
   private var contentResolver: ContentResolver,
 ) : MediaStoreRepositoryImpl<MusicModel> {
 
-  override suspend fun getMedia(): Flow<MediaStoreResult<out MusicModel>> {
-
-    val resultList = mutableListOf<MusicModel>()
-
+  override suspend fun getMedia(): Flow<MediaStoreResult<MusicModel>> {
     return channelFlow {
-      onIoDispatcher {
-        send(MediaStoreResult.Loading)
+      send(MediaStoreResult.Loading)
+
+      val resultList = buildList {
         contentResolver.query(
           uriMedia,
           MediaInfoArray,
@@ -42,6 +41,7 @@ class MusicMediaStoreRepository(
           val artistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
           val albumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
           val albumId = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
+          val folderNameColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.BUCKET_DISPLAY_NAME)
 
           while (cursor.moveToNext()) {
             val id = idColumn.let { cursor.getLong(it) }
@@ -53,12 +53,13 @@ class MusicMediaStoreRepository(
             val size = sizeColumn.let { cursor.getInt(it) }
             val artist = artistColumn.let { cursor.getString(it) }
             val album = albumColumn.let { cursor.getString(it) }
+            val folderName = folderNameColumn.let { cursor.getString(it) }
             val albumArtUri = ContentUris.withAppendedId(albumArtPath, albumId.let { cursor.getLong(it) })
             val contentUri: Uri = ContentUris.withAppendedId(
               MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
               id
             )
-            resultList.add(
+            add(
               MusicModel(
                 musicId = id,
                 path = dataPath,
@@ -71,14 +72,16 @@ class MusicMediaStoreRepository(
                 bitrate = bitrate,
                 artist = artist,
                 album = album,
+                folderName = folderName,
               )
             )
           }
-
         }
-        send(MediaStoreResult.Result(resultList))
       }
-    }
+
+      send(MediaStoreResult.Result(resultList))
+
+    }.flowOn(Dispatchers.IO)
   }
 
   companion object {
@@ -88,6 +91,7 @@ class MusicMediaStoreRepository(
       MediaStore.Audio.Media.MIME_TYPE,
       MediaStore.Audio.Media.DATA,
       MediaStore.Audio.Media.DISPLAY_NAME,
+      MediaStore.Audio.Media.BUCKET_DISPLAY_NAME,
       MediaStore.Audio.Media.DURATION,
       MediaStore.Audio.Media.SIZE,
       MediaStore.Audio.Media.BITRATE,

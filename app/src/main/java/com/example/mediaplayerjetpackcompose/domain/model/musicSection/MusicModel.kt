@@ -16,6 +16,7 @@ data class MusicModel(
   val bitrate: Int,
   var artist: String,
   val album: String,
+  val folderName: String,
 ) {
   companion object {
     var Empty = MusicModel(
@@ -30,6 +31,7 @@ data class MusicModel(
       bitrate = 0,
       artist = "",
       album = "",
+      folderName = "",
     )
   }
 }

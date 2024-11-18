@@ -46,9 +46,9 @@ class MusicPageViewModel(
 
   var musicList = mutableStateListOf<MusicModel>()
 
-  var musicCategoryList = mutableStateListOf<MusicModel>()
   var artistsMusicMap = mutableStateListOf<CategoryMusicModel>()
   var albumMusicMap = mutableStateListOf<CategoryMusicModel>()
+  var folderMusicMap = mutableStateListOf<CategoryMusicModel>()
 
   var musicArtworkColorPalette by mutableIntStateOf(MediaThumbnailUtil.DefaultColorPalette)
 
@@ -247,6 +247,7 @@ class MusicPageViewModel(
                 result.result.map { PagerThumbnailModel(uri = it.artworkUri, musicId = it.musicId, name = it.name, artist = it.artist) }
               val artistItem = result.result.groupBy { by -> by.artist }.map { CategoryMusicModel(it.key, it.value) }
               val albumItem = result.result.groupBy { by -> by.album }.map { CategoryMusicModel(it.key, it.value) }
+              val folderItem = result.result.groupBy { by -> by.folderName }.map { CategoryMusicModel(it.key, it.value) }
               val currentPagerIndex = if (currentMusicState.value.mediaId.isNotEmpty()) {
                 mainList.indexOfFirst { it.musicId == currentMusicState.value.mediaId.toLong() }
               } else 0
@@ -258,6 +259,7 @@ class MusicPageViewModel(
                 originalMusicList.addAll(mainList)
                 artistsMusicMap.addAll(artistItem)
                 albumMusicMap.addAll(albumItem)
+                folderMusicMap.addAll(folderItem)
                 isLoading = false
               }
             }

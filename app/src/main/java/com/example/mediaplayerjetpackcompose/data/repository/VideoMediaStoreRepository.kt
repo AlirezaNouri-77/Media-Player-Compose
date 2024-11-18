@@ -19,61 +19,58 @@ class VideoMediaStoreRepository(
   private var contentResolver: ContentResolver,
 ) : MediaStoreRepositoryImpl<VideoItemModel> {
   override suspend fun getMedia(): Flow<MediaStoreResult<VideoItemModel>> {
-    val mListResult = mutableListOf<VideoItemModel>()
     return flow {
-
       emit(MediaStoreResult.Loading)
 
-      contentResolver.query(
-        uriMedia,
-        MediaInfoArray,
-        selection,
-        selectionArgs,
-        sortOrder
-      )?.use { cursor ->
+      val resultList = buildList {
 
-        val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
-        val mimeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.MIME_TYPE)
-        val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)
-        val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)
-        val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)
-        val heightColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.HEIGHT)
-        val widthColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.WIDTH)
+        contentResolver.query(
+          uriMedia,
+          MediaInfoArray,
+          selection,
+          selectionArgs,
+          sortOrder
+        )?.use { cursor ->
 
-        while (cursor.moveToNext()) {
-          val id = idColumn.let { cursor.getLong(it) }
-          val mimeType = mimeColumn.let { cursor.getString(it) }
-          val name = nameColumn.let { cursor.getString(it) }
-          val duration = durationColumn.let { cursor.getInt(it) }
-          val size = sizeColumn.let { cursor.getInt(it) }
-          val height = heightColumn.let { cursor.getInt(it) }
-          val width = widthColumn.let { cursor.getInt(it) }
-          val contentUri: Uri = ContentUris.withAppendedId(
-            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-            id
-          )
+          val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
+          val mimeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.MIME_TYPE)
+          val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)
+          val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)
+          val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)
+          val heightColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.HEIGHT)
+          val widthColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.WIDTH)
 
-          mListResult.add(
-            VideoItemModel(
-              videoId = id,
-              uri = contentUri,
-              mimeType = mimeType,
-              name = name,
-              duration = duration,
-              size = size,
-              height = height,
-              width = width,
+          while (cursor.moveToNext()) {
+            val id = idColumn.let { cursor.getLong(it) }
+            val mimeType = mimeColumn.let { cursor.getString(it) }
+            val name = nameColumn.let { cursor.getString(it) }
+            val duration = durationColumn.let { cursor.getInt(it) }
+            val size = sizeColumn.let { cursor.getInt(it) }
+            val height = heightColumn.let { cursor.getInt(it) }
+            val width = widthColumn.let { cursor.getInt(it) }
+            val contentUri: Uri = ContentUris.withAppendedId(
+              MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+              id
             )
-          )
 
+            add(
+              VideoItemModel(
+                videoId = id,
+                uri = contentUri,
+                mimeType = mimeType,
+                name = name,
+                duration = duration,
+                size = size,
+                height = height,
+                width = width,
+              )
+            )
+
+          }
         }
       }
 
-      if (mListResult.isNotEmpty()) {
-        emit(MediaStoreResult.Result(mListResult))
-      } else {
-        emit(MediaStoreResult.Result(mListResult))
-      }
+      emit(MediaStoreResult.Result(resultList))
 
     }.flowOn(Dispatchers.IO)
 
