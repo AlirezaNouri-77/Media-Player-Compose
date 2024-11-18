@@ -2,6 +2,7 @@ package com.example.mediaplayerjetpackcompose.presentation.screen.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,7 +23,7 @@ fun EmptyPage() {
       fontSize = 24.sp,
       fontWeight = FontWeight.Bold,
       textAlign = TextAlign.Center,
-      color = Color.Black.copy(alpha = 0.5f),
+      color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
     )
   }
 }

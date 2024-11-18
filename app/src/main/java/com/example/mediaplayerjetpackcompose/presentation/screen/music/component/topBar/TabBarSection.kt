@@ -39,7 +39,7 @@ fun TabBarSection(
   ) {
     ScrollableTabRow(
       selectedTabIndex = TabBarPosition.entries.indexOf(TabBarPosition.MUSIC),
-      edgePadding = 10.dp,
+      edgePadding = 30.dp,
       indicator = indicator,
       contentColor = MaterialTheme.colorScheme.onPrimary,
       containerColor = MaterialTheme.colorScheme.primaryContainer,

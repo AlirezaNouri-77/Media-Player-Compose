@@ -12,6 +12,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -32,44 +33,48 @@ class MainActivity : ComponentActivity() {
 
     setContent {
       MediaPlayerJetpackComposeTheme {
-        val uiState = remember { mutableStateOf(PermissionState.Initial) }
+        Surface {
 
-        if (checkPermission(this)) {
-          uiState.value = PermissionState.PermissionIsGrant
-        }
+          val uiState = remember { mutableStateOf(PermissionState.Initial) }
 
-        PermissionHandler(
-          context = this,
-          onGrant = { uiState.value = PermissionState.PermissionIsGrant },
-          notGrant = { uiState.value = PermissionState.PermissionNotGrant },
-          permissionsList = permissionsList,
-        )
-
-        when (uiState.value) {
-          PermissionState.PermissionNotGrant -> {
-            NoPermissionPage(
-              onGrant = {
-                uiState.value = PermissionState.PermissionIsGrant
-              }
-            )
+          if (checkPermission(this)) {
+            uiState.value = PermissionState.PermissionIsGrant
           }
 
-          PermissionState.PermissionIsGrant -> {
-            intent?.let { mIntent ->
-              if (mIntent.action == Intent.ACTION_VIEW) {
-                val videoUri = mIntent.data ?: Uri.EMPTY
-                val videoPageViewModel: VideoPageViewModel = koinViewModel()
-                VideoPlayer(
-                  videoUri = videoUri.toString(),
-                  videoPageViewModel = videoPageViewModel,
-                  onBackClick = { this.finishAffinity() })
-              } else {
-                MusicNavController()
+          PermissionHandler(
+            context = this,
+            onGrant = { uiState.value = PermissionState.PermissionIsGrant },
+            notGrant = { uiState.value = PermissionState.PermissionNotGrant },
+            permissionsList = permissionsList,
+          )
+
+          when (uiState.value) {
+            PermissionState.PermissionNotGrant -> {
+              NoPermissionPage(
+                onGrant = {
+                  uiState.value = PermissionState.PermissionIsGrant
+                }
+              )
+            }
+
+            PermissionState.PermissionIsGrant -> {
+              intent?.let { mIntent ->
+                if (mIntent.action == Intent.ACTION_VIEW) {
+                  val videoUri = mIntent.data ?: Uri.EMPTY
+                  val videoPageViewModel: VideoPageViewModel = koinViewModel()
+                  VideoPlayer(
+                    videoUri = videoUri.toString(),
+                    videoPageViewModel = videoPageViewModel,
+                    onBackClick = { this.finishAffinity() })
+                } else {
+                  MusicNavController()
+                }
               }
             }
+
+            else -> {}
           }
 
-          else -> {}
         }
 
       }
@@ -77,7 +82,6 @@ class MainActivity : ComponentActivity() {
     }
 
   }
-
 }
 
 @Composable

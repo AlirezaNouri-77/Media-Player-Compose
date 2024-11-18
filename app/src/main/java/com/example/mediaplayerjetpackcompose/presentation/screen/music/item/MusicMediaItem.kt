@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
@@ -147,7 +148,8 @@ private fun PreviewMusicMediaItem() {
         artworkUri = Uri.EMPTY,
         bitrate = 1280000,
         artist = "Example Artist",
-        album = "Example"
+        album = "Example",
+        folderName = "",
       ),
       isPlaying = false,
       isFav = true,

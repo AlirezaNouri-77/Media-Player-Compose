@@ -33,8 +33,8 @@ fun SortDropDownMenu(
   onOrderClick: () -> Unit,
 ) {
 
-  val orderIcon by remember(sortState.isDec) {
-    mutableIntStateOf(if (sortState.isDec) R.drawable.icon_sort_desc else R.drawable.icon_sort_asce)
+  val orderIcon = remember(sortState.isDec) {
+    if (sortState.isDec) R.drawable.icon_sort_desc else R.drawable.icon_sort_asce
   }
 
   Box(

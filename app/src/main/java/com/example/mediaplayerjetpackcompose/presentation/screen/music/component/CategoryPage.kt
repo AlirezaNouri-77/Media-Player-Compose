@@ -24,8 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
@@ -33,30 +31,20 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarPosition
 import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.MusicMediaItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryPage(
   name: String,
-  musicPageViewModel: MusicPageViewModel,
+  itemList:List<MusicModel>,
   currentCurrentMediaState: CurrentMediaState,
-  onMusicClick: (index: Int, musicList: List<MusicModel>) -> Unit,
+  onMusicClick: (index: Int) -> Unit,
   miniPlayerHeight: Dp,
   onBackClick: () -> Unit,
   orientation: Int = LocalConfiguration.current.orientation,
 ) {
-
-  musicPageViewModel.musicCategoryList = remember(musicPageViewModel.currentTabState) {
-    when (musicPageViewModel.currentTabState) {
-      TabBarPosition.ARTIST -> musicPageViewModel.artistsMusicMap.first { it.categoryName == name }.categoryList.toMutableStateList()
-      TabBarPosition.ALBUM -> musicPageViewModel.albumMusicMap.first { it.categoryName == name }.categoryList.toMutableStateList()
-      else -> emptyList<MusicModel>().toMutableStateList()
-    }
-  }
 
   Scaffold(
     topBar = {
@@ -103,7 +91,7 @@ fun CategoryPage(
       contentPadding = PaddingValues(top = 10.dp, bottom = miniPlayerHeight)
     ) {
       itemsIndexed(
-        items = musicPageViewModel.musicCategoryList,
+        items = itemList,
         key = { _, item -> item.musicId },
       ) { index, item ->
         MusicMediaItem(
@@ -111,7 +99,7 @@ fun CategoryPage(
           isFav = false,
           currentMediaId = currentCurrentMediaState.mediaId,
           onItemClick = {
-            onMusicClick.invoke(index, musicPageViewModel.musicCategoryList)
+            onMusicClick.invoke(index)
           },
           isPlaying = currentCurrentMediaState.isPlaying,
         )

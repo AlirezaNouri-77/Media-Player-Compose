@@ -33,6 +33,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarPosition
 import com.example.mediaplayerjetpackcompose.domain.model.navigation.MusicNavigationModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.Loading
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.CategoryPage
@@ -63,7 +64,7 @@ fun MusicScreen(
   }
 
   BackHandler {
-    if (musicPageViewModel.isFullPlayerShow){
+    if (musicPageViewModel.isFullPlayerShow) {
       musicPageViewModel.isFullPlayerShow = false
     }
   }
@@ -160,14 +161,24 @@ fun MusicScreen(
 
       composable<MusicNavigationModel.Category> { backStackEntry ->
         val categoryName = backStackEntry.toRoute<MusicNavigationModel.Category>().name
+
+        val itemList = remember(categoryName) {
+          when (musicPageViewModel.currentTabState) {
+            TabBarPosition.ARTIST -> musicPageViewModel.artistsMusicMap.first { it.categoryName == categoryName }.categoryList
+            TabBarPosition.ALBUM -> musicPageViewModel.albumMusicMap.first { it.categoryName == categoryName }.categoryList
+            TabBarPosition.Folder -> musicPageViewModel.folderMusicMap.first { it.categoryName == categoryName }.categoryList
+            else -> emptyList()
+          }
+        }
+
         CategoryPage(
           name = categoryName,
+          itemList = itemList,
           currentCurrentMediaState = currentMusicState,
-          musicPageViewModel = musicPageViewModel,
-          onMusicClick = { index, musicList ->
+          onMusicClick = { index ->
             musicPageViewModel.playMusic(
               index = index,
-              musicList
+              musicList = itemList,
             )
           },
           miniPlayerHeight = miniPlayerHeight,
