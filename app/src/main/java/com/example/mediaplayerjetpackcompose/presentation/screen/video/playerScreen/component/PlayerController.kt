@@ -37,7 +37,7 @@ fun PlayerController(
       },
     )
     AnimatedContent(
-      targetState = if (currentState().isPlaying) R.drawable.icon_pause_24 else R.drawable.icon_play_arrow_24,
+      targetState = if (currentState().isPlaying || currentState().isBuffering) R.drawable.icon_pause_24 else R.drawable.icon_play_arrow_24,
       label = "",
     ) {
       PlayerControllerButton(

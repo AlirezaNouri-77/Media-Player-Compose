@@ -59,7 +59,7 @@ class VideoPageViewModel(
     .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), MediaStoreResult.Loading)
 
   private var _previewSliderBitmap = Channel<ImageBitmap?>(onBufferOverflow = BufferOverflow.DROP_OLDEST)
-  var previewSliderBitmap = _previewSliderBitmap.consumeAsFlow()
+  var previewSliderBitmap = _previewSliderBitmap.receiveAsFlow()
 
   private var _currentPlayerPosition = MutableStateFlow(0L)
   var currentPlayerPosition = _currentPlayerPosition.asStateFlow()
@@ -85,6 +85,14 @@ class VideoPageViewModel(
           override fun onIsPlayingChanged(isPlaying: Boolean) {
             viewModelScope.launch {
               _currentState.update { it.copy(isPlaying = isPlaying) }
+            }
+          }
+
+          override fun onPlaybackStateChanged(playbackState: Int) {
+            when (playbackState) {
+              Player.STATE_BUFFERING -> _currentState.update { it.copy(isBuffering = true) }
+              Player.STATE_READY -> _currentState.update { it.copy(isBuffering = false) }
+              else -> {}
             }
           }
 
