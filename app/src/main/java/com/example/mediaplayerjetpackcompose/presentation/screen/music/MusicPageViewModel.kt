@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mediaplayerjetpackcompose.data.DeviceVolumeManager
 import com.example.mediaplayerjetpackcompose.data.MediaThumbnailUtil
 import com.example.mediaplayerjetpackcompose.data.database.dao.DataBaseDao
 import com.example.mediaplayerjetpackcompose.data.mapper.toMediaItem
@@ -40,6 +41,7 @@ class MusicPageViewModel(
   private var musicServiceConnection: MusicServiceConnection,
   private var dataBaseDao: DataBaseDao,
   private var mediaThumbnailUtil: MediaThumbnailUtil,
+  private var deviceVolumeManager: DeviceVolumeManager,
 ) : ViewModel() {
 
   private var originalMusicList = mutableStateListOf<MusicModel>()
@@ -92,6 +94,12 @@ class MusicPageViewModel(
         0L
       )
 
+  var currentDeviceVolume = deviceVolumeManager.volumeChangeListener.stateIn(
+    viewModelScope,
+    SharingStarted.Eagerly,
+    0,
+  )
+
   init {
     getMusic()
   }
@@ -108,6 +116,12 @@ class MusicPageViewModel(
       is PlayerActions.OnMoveToIndex -> moveToMediaIndex(index = action.value)
     }
   }
+
+  fun setDeviceVolume(volume: Float) {
+    deviceVolumeManager.setVolume(volume)
+  }
+
+  fun getMaxDeviceVolume(): Int = deviceVolumeManager.getMaxVolume()
 
   private fun moveToMediaIndex(index: Int) {
     _currentMusicPosition.update { 0 }

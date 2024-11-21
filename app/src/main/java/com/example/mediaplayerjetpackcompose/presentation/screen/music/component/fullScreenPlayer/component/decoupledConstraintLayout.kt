@@ -15,11 +15,12 @@ fun decoupledConstraintLayout(
     val slider = createRefFor("slider")
     val controllerRef = createRefFor("controllerRef")
     val pagerArtWork = createRefFor("pagerArtwork")
+    val volumeSlider = createRefFor("volumeSlider")
 
     if (orientation == Configuration.ORIENTATION_PORTRAIT) {
 
       val topGuideline = createGuidelineFromTop(0.15f)
-      val bottomGuideline = createGuidelineFromBottom(0.08f)
+      val bottomGuideline = createGuidelineFromBottom(0.06f)
       val startGuideLine = createGuidelineFromStart(15.dp)
       val endGuideLine = createGuidelineFromEnd(15.dp)
 
@@ -39,24 +40,31 @@ fun decoupledConstraintLayout(
         top.linkTo(pagerArtWork.bottom)
         start.linkTo(startGuideLine)
         end.linkTo(endGuideLine)
-        bottom.linkTo(slider.top)
+        bottom.linkTo(slider.top, margin = 25.dp)
         width = Dimension.fillToConstraints
       }
       constrain(slider) {
         start.linkTo(startGuideLine)
         end.linkTo(endGuideLine)
-        bottom.linkTo(controllerRef.top, margin = 20.dp)
+        bottom.linkTo(controllerRef.top, margin = 10.dp)
         width = Dimension.fillToConstraints
+        height = Dimension.wrapContent
       }
       constrain(controllerRef) {
         start.linkTo(startGuideLine, margin = 10.dp)
         end.linkTo(endGuideLine, margin = 10.dp)
+        bottom.linkTo(volumeSlider.top, margin = 10.dp)
+      }
+
+      constrain(volumeSlider) {
+        start.linkTo(controllerRef.start)
+        end.linkTo(controllerRef.end)
         bottom.linkTo(bottomGuideline)
       }
 
     } else {
 
-      val bottomGuideline = createGuidelineFromBottom(0.2f)
+      val bottomGuideline = createGuidelineFromBottom(30.dp)
       val topGuideline = createGuidelineFromTop(40.dp)
       val endGuideLine = createGuidelineFromEnd(40.dp)
 
@@ -86,9 +94,15 @@ fun decoupledConstraintLayout(
       constrain(controllerRef) {
         start.linkTo(pagerArtWork.end)
         end.linkTo(parent.end)
-        bottom.linkTo(bottomGuideline)
+        bottom.linkTo(volumeSlider.top, margin = 15.dp)
       }
 
+      constrain(volumeSlider) {
+        start.linkTo(controllerRef.start)
+        end.linkTo(controllerRef.end)
+        bottom.linkTo(bottomGuideline)
+        width = Dimension.fillToConstraints
+      }
     }
   }
 }

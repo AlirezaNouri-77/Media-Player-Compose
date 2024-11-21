@@ -1,7 +1,9 @@
 package com.example.mediaplayerjetpackcompose.data.di
 
+import android.content.Context
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.room.Room
+import com.example.mediaplayerjetpackcompose.data.DeviceVolumeManager
 import com.example.mediaplayerjetpackcompose.data.GetMediaMetaData
 import com.example.mediaplayerjetpackcompose.data.MediaThumbnailUtil
 import com.example.mediaplayerjetpackcompose.data.database.databaseClass.AppDataBase
@@ -31,6 +33,8 @@ var appModule = module {
   single { get<AppDataBase>().dataBaseDao() }
   single { MediaThumbnailUtil(androidApplication().applicationContext) }
 
+  single { DeviceVolumeManager(androidApplication().applicationContext) }
+
   single { MediaThumbnailUtil(androidContext()) }
   single { GetMediaMetaData(get()) }
 
@@ -38,7 +42,7 @@ var appModule = module {
   single<MediaStoreRepositoryImpl<VideoItemModel>> { VideoMediaStoreRepository(androidContext().contentResolver) }
   single { MusicServiceConnection(androidApplication().applicationContext) }
 
-  viewModel { MusicPageViewModel(get(named("musicRepo")), get(), get(), get()) }
+  viewModel { MusicPageViewModel(get(named("musicRepo")), get(), get(), get(), get()) }
   viewModel { VideoPageViewModel(get(), get(), get(), get()) }
 
 }

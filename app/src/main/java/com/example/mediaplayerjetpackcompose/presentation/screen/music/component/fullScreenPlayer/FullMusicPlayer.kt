@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
@@ -31,6 +32,7 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.SliderSection
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.SongController
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.SongDetail
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.VolumeController
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.decoupledConstraintLayout
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
@@ -47,6 +49,9 @@ fun FullMusicPlayer(
   onPlayerAction: (action: PlayerActions) -> Unit,
   setCurrentPagerNumber: (Int) -> Unit,
   orientation: Int = LocalConfiguration.current.orientation,
+  maxDeviceVolume: Int,
+  currentVolume: Int,
+  onVolumeChange: (Float) -> Unit,
 ) {
 
   val pagerState = rememberPagerState(
@@ -56,8 +61,8 @@ fun FullMusicPlayer(
 
   PagerHandler(
     currentMediaState = currentMediaState,
-    pagerMusicList = pagerMusicList,
-    currentPagerPage = currentPagerPage,
+    pagerMusicList = { pagerMusicList },
+    currentPagerPage = { currentPagerPage },
     pagerState = pagerState,
     setCurrentPagerNumber = setCurrentPagerNumber,
     onMoveToIndex = { onPlayerAction(PlayerActions.OnMoveToIndex(it)) },
@@ -133,7 +138,14 @@ fun FullMusicPlayer(
       onRepeatMode = { onPlayerAction(PlayerActions.OnRepeatMode(it)) },
       onFavoriteToggle = { onPlayerAction(PlayerActions.OnFavoriteToggle(currentMediaState().mediaId)) }
     )
-
+    VolumeController(
+      modifier = Modifier.layoutId("volumeSlider"),
+      maxDeviceVolume = maxDeviceVolume,
+      currentVolume = currentVolume,
+      onVolumeChange = {
+        onVolumeChange(it)
+      }
+    )
   }
 }
 
@@ -151,9 +163,12 @@ private fun FullScreenPreview() {
       currentMusicPosition = { 10000L },
       currentPagerPage = 0,
       pagerMusicList = emptyList<PagerThumbnailModel>().toMutableStateList(),
-      onBack = { /*TODO*/ },
+      onBack = {},
       setCurrentPagerNumber = {},
       onPlayerAction = {},
+      maxDeviceVolume = 10,
+      currentVolume = 2,
+      onVolumeChange = {}
     )
   }
 }
