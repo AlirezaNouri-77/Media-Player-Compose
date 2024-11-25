@@ -9,44 +9,58 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.PagerThumbnailModel
+import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
+import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.PagerHandler
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.ThumbnailImage
 
 @Composable
 fun FullscreenPlayerPager(
   modifier: Modifier = Modifier,
-  pagerItem: SnapshotStateList<PagerThumbnailModel>,
-  pagerState: PagerState,
+  pagerItem: List<PagerThumbnailModel>,
+  currentMediaState: CurrentMediaState,
+  onPlayerAction: (action: PlayerActions) -> Unit,
+  setCurrentPagerNumber: (Int) -> Unit,
+  currentPagerPage: Int,
   orientation: Int = LocalConfiguration.current.orientation,
 ) {
 
-  val pagerModifier = remember(orientation) {
-    if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-      Modifier
-        .fillMaxWidth()
-        .height(380.dp)
-    } else {
-      Modifier.size(250.dp)
-    }
-  }
+  val pagerState = rememberPagerState(
+    initialPage = currentPagerPage,
+    pageCount = { pagerItem.size },
+  )
+
+  PagerHandler(
+    currentMediaState = { currentMediaState },
+    pagerMusicList = { pagerItem },
+    currentPagerPage = { currentPagerPage },
+    pagerState = pagerState,
+    setCurrentPagerNumber = setCurrentPagerNumber,
+    onMoveToIndex = { onPlayerAction(PlayerActions.OnMoveToIndex(it)) },
+  )
 
   Box(
     modifier = modifier,
     contentAlignment = Alignment.Center,
   ) {
     HorizontalPager(
-      modifier = pagerModifier,
+      modifier =  if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+        Modifier
+          .fillMaxWidth()
+          .height(360.dp)
+      } else {
+        Modifier.size(250.dp)
+      },
       beyondViewportPageCount = 1,
       state = pagerState,
       pageSpacing = 10.dp,
