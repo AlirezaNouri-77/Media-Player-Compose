@@ -94,11 +94,14 @@ class MusicPageViewModel(
         0L
       )
 
-  var currentDeviceVolume = deviceVolumeManager.volumeChangeListener.stateIn(
-    viewModelScope,
-    SharingStarted.Eagerly,
-    0,
-  )
+  var currentDeviceVolume = deviceVolumeManager.currentMusicLevelVolume
+    .onStart {
+      deviceVolumeManager.registerContentObserver()
+    }.stateIn(
+      viewModelScope,
+      SharingStarted.Eagerly,
+      0,
+    )
 
   init {
     getMusic()
@@ -284,6 +287,11 @@ class MusicPageViewModel(
         }
       }
 
+  }
+
+  override fun onCleared() {
+    super.onCleared()
+    deviceVolumeManager.unRegisterContentObserver()
   }
 
 }

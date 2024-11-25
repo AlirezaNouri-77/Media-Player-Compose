@@ -56,6 +56,7 @@ fun MusicScreen(
   val currentMusicState = musicPageViewModel.currentMusicState.collectAsStateWithLifecycle().value
   val favoriteMusicMediaIdList = musicPageViewModel.favoriteMusic.collectAsStateWithLifecycle().value.map { it.mediaId }
   val currentMusicPosition = musicPageViewModel.currentMusicPosition.collectAsStateWithLifecycle().value
+  val currentDeviceVolume = musicPageViewModel.currentDeviceVolume.collectAsStateWithLifecycle().value
 
   var miniPlayerHeight by remember { mutableStateOf(0.dp) }
 
@@ -230,10 +231,13 @@ fun MusicScreen(
         backgroundColorByArtwork = musicPageViewModel.musicArtworkColorPalette,
         repeatMode = currentMusicState.repeatMode,
         currentPagerPage = musicPageViewModel.currentPagerPage.intValue,
+        currentVolume = currentDeviceVolume,
         setCurrentPagerNumber = { musicPageViewModel.currentPagerPage.intValue = it },
         onBack = { musicPageViewModel.isFullPlayerShow = false },
         currentMusicPosition = { currentMusicPosition },
         onPlayerAction = musicPageViewModel::onPlayerAction,
+        onVolumeChange = { musicPageViewModel.setDeviceVolume(it) },
+        maxDeviceVolume = musicPageViewModel.getMaxDeviceVolume(),
       )
     }
 
