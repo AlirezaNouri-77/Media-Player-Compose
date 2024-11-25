@@ -11,6 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -30,7 +31,7 @@ import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeT
 @Composable
 fun SongController(
   modifier: Modifier = Modifier,
-  currentMediaState: CurrentMediaState,
+  currentMediaState: () -> CurrentMediaState,
   favoriteList: List<String>,
   repeatMode: Int,
   onMovePreviousMusic: () -> Unit,
@@ -41,9 +42,11 @@ fun SongController(
   onFavoriteToggle: () -> Unit,
 ) {
 
-  val favIcon = when (currentMediaState.mediaId in favoriteList) {
-    true -> Icons.Default.Favorite
-    false -> Icons.Default.FavoriteBorder
+  val favIcon = remember(currentMediaState().mediaId) {
+    when (currentMediaState().mediaId in favoriteList) {
+      true -> Icons.Default.Favorite
+      false -> Icons.Default.FavoriteBorder
+    }
   }
 
   Row(
@@ -74,11 +77,11 @@ fun SongController(
           )
         }
         .padding(horizontal = 5.dp),
-      icon = if (currentMediaState.isPlaying) R.drawable.icon_pause_24 else R.drawable.icon_play_arrow_24,
+      icon = if (currentMediaState().isPlaying) R.drawable.icon_pause_24 else R.drawable.icon_play_arrow_24,
       size = 55.dp,
       contentDescription = "Play and Pause",
       onClick = {
-        when (currentMediaState.isPlaying) {
+        when (currentMediaState().isPlaying) {
           true -> onPauseMusic.invoke()
           false -> onResumeMusic.invoke()
         }
@@ -153,7 +156,7 @@ private fun Preview() {
   MediaPlayerJetpackComposeTheme {
     SongController(
       modifier = Modifier,
-      currentMediaState = CurrentMediaState.Empty,
+      currentMediaState = { CurrentMediaState.Empty },
       favoriteList = emptyList(),
       repeatMode = 0,
       onMovePreviousMusic = {},
@@ -161,7 +164,7 @@ private fun Preview() {
       onResumeMusic = {},
       onMoveNextMusic = {},
       onRepeatMode = {},
-      onFavoriteToggle ={},
+      onFavoriteToggle = {},
     )
   }
 }

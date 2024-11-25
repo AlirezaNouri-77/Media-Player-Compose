@@ -98,10 +98,10 @@ fun decoupledConstraintLayout(
       }
 
       constrain(volumeSlider) {
-        start.linkTo(controllerRef.start)
-        end.linkTo(controllerRef.end)
+        start.linkTo(slider.start)
+        end.linkTo(slider.end)
         bottom.linkTo(bottomGuideline)
-        width = Dimension.fillToConstraints
+        width = Dimension.preferredWrapContent
       }
     }
   }

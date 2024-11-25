@@ -111,7 +111,7 @@ fun FullMusicPlayer(
     )
     SongController(
       modifier = Modifier.layoutId("controllerRef"),
-      currentMediaState = currentMediaState(),
+      currentMediaState = { currentMediaState() },
       favoriteList = favoriteList,
       repeatMode = repeatMode,
       onPauseMusic = { onPlayerAction(PlayerActions.PausePlayer) },
