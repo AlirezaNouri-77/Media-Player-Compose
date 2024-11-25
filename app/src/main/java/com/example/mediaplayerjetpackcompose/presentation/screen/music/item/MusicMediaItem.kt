@@ -30,7 +30,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
@@ -47,14 +46,15 @@ fun MusicMediaItem(
   contentColor: Color = MaterialTheme.colorScheme.onPrimary,
   onItemClick: () -> Unit,
 ) {
-  val isPlayingThisItemColor =
-    if (currentMediaId == item.musicId.toString()) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f) else Color.Transparent
 
   Box(
     modifier = Modifier
       .fillMaxWidth()
       .clickable { onItemClick.invoke() }
-      .background(color = isPlayingThisItemColor, shape = RoundedCornerShape(20.dp)),
+      .background(
+        color = if (currentMediaId == item.musicId.toString()) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f) else Color.Transparent,
+        shape = RoundedCornerShape(20.dp)
+      ),
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
@@ -124,7 +124,7 @@ fun MusicMediaItem(
             imageVector = Icons.Default.Favorite,
             contentDescription = "",
             modifier = Modifier.size(15.dp),
-            tint = MaterialTheme.colorScheme.onPrimary
+            tint = contentColor,
           )
         }
       }

@@ -65,16 +65,16 @@ class MusicServiceConnection(
 
   private val exoPlayerListener = object : Player.Listener {
 
-    override fun onIsPlayingChanged(isPlaying: Boolean) {
-      _currentMediaState.update { it.copy(isPlaying = isPlaying) }
-    }
-
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
       _currentMediaState.update { it.copy(metaData = mediaMetadata) }
     }
 
     override fun onRepeatModeChanged(repeatMode: Int) {
       _currentMediaState.update { it.copy(repeatMode = repeatMode) }
+    }
+
+    override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+      _currentMediaState.update { it.copy(isPlaying = playWhenReady) }
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {

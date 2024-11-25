@@ -1,9 +1,9 @@
 package com.example.mediaplayerjetpackcompose.domain.model.musicSection
 
 import android.net.Uri
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.Immutable
 
-@Stable
+@Immutable
 data class MusicModel(
   val musicId: Long,
   val uri: Uri,

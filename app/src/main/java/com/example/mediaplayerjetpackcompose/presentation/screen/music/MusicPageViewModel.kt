@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MusicPageViewModel(
   private var musicMediaStoreRepository: MediaStoreRepositoryImpl<MusicModel>,
@@ -128,7 +129,12 @@ class MusicPageViewModel(
 
   private fun moveToMediaIndex(index: Int) {
     _currentMusicPosition.update { 0 }
-    musicServiceConnection.mediaController?.seekTo(index, 0L)
+
+    musicServiceConnection.mediaController?.apply {
+      seekTo(index, 0L)
+      prepare()
+      play()
+    }
   }
 
   fun getColorPaletteFromArtwork(uri: Uri) {
@@ -150,26 +156,24 @@ class MusicPageViewModel(
           SortTypeModel.SIZE -> if (sortState.isDec) list.sortByDescending { it.size } else list.sortBy { it.size }
         }
       }
-    }.invokeOnCompletion {
       updateMediaItemListAfterSort(list)
     }
     return list
   }
 
-  private fun updateMediaItemListAfterSort(list: List<MusicModel>) =
-    viewModelScope.launch(Dispatchers.Default) {
+  private suspend fun updateMediaItemListAfterSort(list: List<MusicModel>) =
+    withContext(Dispatchers.Default) {
       val index = list.indexOfFirst { it.musicId.toString() == currentMusicState.value.mediaId }
-      if (index == -1) return@launch
 
       val pagerItem =
         list.map { PagerThumbnailModel(uri = it.artworkUri, musicId = it.musicId, name = it.name, artist = it.artist) }
 
       viewModelScope.launch {
-        currentPagerPage.intValue = index
+        currentPagerPage.intValue = if (index == -1) 0 else index
         pagerItemList.clear()
         pagerItemList.addAll(pagerItem)
         musicServiceConnection.mediaController?.setMediaItems(
-          musicList.map(MusicModel::toMediaItem), index, _currentMusicPosition.value
+          musicList.map(MusicModel::toMediaItem), if (index == -1) -1 else index, _currentMusicPosition.value
         )
       }
     }
@@ -177,8 +181,11 @@ class MusicPageViewModel(
   private fun moveToNext() {
     val hasNextItem = musicServiceConnection.mediaController?.hasNextMediaItem() ?: false
     if (!hasNextItem) return
-
-    musicServiceConnection.mediaController?.seekToNext()
+    musicServiceConnection.mediaController?.apply {
+      seekToNext()
+      prepare()
+      play()
+    }
     _currentMusicPosition.update { 0 }
     currentPagerPage.intValue += 1
   }
@@ -188,9 +195,17 @@ class MusicPageViewModel(
     if (!hasPreviewItem) return
 
     if (_currentMusicPosition.value <= 15_000 || seekToStart) {
-      musicServiceConnection.mediaController?.seekToPreviousMediaItem()
+      musicServiceConnection.mediaController?.apply {
+        seekToPreviousMediaItem()
+        prepare()
+        play()
+      }
       currentPagerPage.intValue -= 1
-    } else musicServiceConnection.mediaController?.seekToPrevious()
+    } else musicServiceConnection.mediaController?.apply {
+      seekToPrevious()
+      prepare()
+      play()
+    }
     _currentMusicPosition.update { 0 }
   }
 
@@ -243,7 +258,6 @@ class MusicPageViewModel(
       currentPagerPage.intValue = index
       musicServiceConnection.mediaController?.run {
         setMediaItems(musicItem, index, 0L)
-        playWhenReady
         prepare()
         play()
       }

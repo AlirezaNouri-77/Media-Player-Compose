@@ -10,31 +10,31 @@ import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaStat
 @Composable
 fun PagerHandler(
   currentMediaState: () -> CurrentMediaState,
-  pagerMusicList: List<PagerThumbnailModel>,
-  currentPagerPage: Int,
+  pagerMusicList: () -> List<PagerThumbnailModel>,
+  currentPagerPage: () -> Int,
   pagerState: PagerState,
   setCurrentPagerNumber: (Int) -> Unit,
   onMoveToIndex: (Int) -> Unit,
 ) {
   // when current music track is end and moved to the next music it cause mediaId change and this this execute
   LaunchedEffect(key1 = currentMediaState().mediaId) {
-    val index = pagerMusicList.indexOfFirst { it.musicId == currentMediaState().mediaId.toLong() }
-    if (currentPagerPage == index && pagerState.isScrollInProgress) return@LaunchedEffect
+    val index = pagerMusicList().indexOfFirst { it.musicId == currentMediaState().mediaId.toLong() }
+    if (currentPagerPage() == index && pagerState.isScrollInProgress) return@LaunchedEffect
     setCurrentPagerNumber(index)
     pagerState.animateScrollToPage(index, animationSpec = tween(durationMillis = 300))
   }
 
-  LaunchedEffect(key1 = currentPagerPage) {
-    if (pagerState.settledPage == currentPagerPage && pagerState.isScrollInProgress) return@LaunchedEffect
+  LaunchedEffect(key1 = currentPagerPage()) {
+    if (pagerState.settledPage == currentPagerPage() && pagerState.isScrollInProgress) return@LaunchedEffect
     pagerState.animateScrollToPage(
-      currentPagerPage,
+      currentPagerPage() ,
       animationSpec = tween(durationMillis = 300)
     )
   }
 
   LaunchedEffect(key1 = pagerState.settledPage, key2 = pagerState.isScrollInProgress) {
-    if (pagerState.settledPage == currentPagerPage) return@LaunchedEffect
-    if (pagerState.settledPage != currentPagerPage && !pagerState.isScrollInProgress) {
+    if (pagerState.settledPage == currentPagerPage() ) return@LaunchedEffect
+    if (pagerState.settledPage != currentPagerPage()  && !pagerState.isScrollInProgress) {
       onMoveToIndex(pagerState.settledPage)
       setCurrentPagerNumber(pagerState.settledPage)
     }

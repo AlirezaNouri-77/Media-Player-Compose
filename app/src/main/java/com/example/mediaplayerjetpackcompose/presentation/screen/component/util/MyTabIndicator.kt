@@ -24,11 +24,11 @@ fun Modifier.myCustomTabIndicator(
 ): Modifier = composed {
   val currentTabWidth by animateDpAsState(
     targetValue = currentTapPosition.width,
-    animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing), label = "",
+    animationSpec = tween(durationMillis = 150, easing = FastOutSlowInEasing), label = "",
   )
   val currentTabIndicator by animateDpAsState(
     targetValue = currentTapPosition.left,
-    animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing), label = "",
+    animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing), label = "",
   )
   wrapContentSize(Alignment.CenterStart)
     .offset(x = currentTabIndicator)
@@ -45,9 +45,9 @@ fun MyTabIndicator(modifier: Modifier = Modifier) {
         onDrawBehind {
           drawLine(
             color = lineColor,
-            start = Offset(x =  25f, y = this.size.height - 18f),
-            end = Offset(x = this.size.width - 25f , y = this.size.height - 18f),
-            strokeWidth = 6f,
+            start = Offset(x = 25f, y = this.size.height - 24f),
+            end = Offset(x = this.size.width - 25f, y = this.size.height - 24f),
+            strokeWidth = 7f,
             cap = StrokeCap.Round,
           )
         }

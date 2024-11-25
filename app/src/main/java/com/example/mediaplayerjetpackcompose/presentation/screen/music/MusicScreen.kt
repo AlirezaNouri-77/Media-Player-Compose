@@ -148,9 +148,9 @@ fun MusicScreen(
                 MusicListHandler(
                   musicPageViewModel = musicPageViewModel,
                   currentMusicState = currentMusicState,
-                  navController = navController,
                   bottomPadding = miniPlayerHeight,
                   favoriteMusicMediaIdList = favoriteMusicMediaIdList,
+                  navigateTo = { navController.navigate(it) },
                 )
               }
             }
@@ -225,17 +225,17 @@ fun MusicScreen(
         targetOffsetY = { int -> int / 4 }) + fadeOut(tween(350, 50))
     ) {
       FullMusicPlayer(
-        currentMediaState = { currentMusicState },
         favoriteList = favoriteMusicMediaIdList,
         pagerMusicList = musicPageViewModel.pagerItemList,
         backgroundColorByArtwork = musicPageViewModel.musicArtworkColorPalette,
         repeatMode = currentMusicState.repeatMode,
         currentPagerPage = musicPageViewModel.currentPagerPage.intValue,
+        onPlayerAction = musicPageViewModel::onPlayerAction,
         currentVolume = currentDeviceVolume,
+        currentMediaState = { currentMusicState },
         setCurrentPagerNumber = { musicPageViewModel.currentPagerPage.intValue = it },
         onBack = { musicPageViewModel.isFullPlayerShow = false },
         currentMusicPosition = { currentMusicPosition },
-        onPlayerAction = musicPageViewModel::onPlayerAction,
         onVolumeChange = { musicPageViewModel.setDeviceVolume(it) },
         maxDeviceVolume = musicPageViewModel.getMaxDeviceVolume(),
       )

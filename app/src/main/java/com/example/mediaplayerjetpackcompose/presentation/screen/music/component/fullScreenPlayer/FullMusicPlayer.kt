@@ -6,11 +6,7 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
@@ -26,7 +22,6 @@ import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.PagerThumbnailModel
 import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
 import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.PagerHandler
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.FullscreenPlayerPager
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.HeaderSection
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.SliderSection
@@ -35,7 +30,6 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.VolumeController
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.decoupledConstraintLayout
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
-
 @Composable
 fun FullMusicPlayer(
   backgroundColorByArtwork: Int,
@@ -44,7 +38,7 @@ fun FullMusicPlayer(
   currentMediaState: () -> CurrentMediaState,
   currentMusicPosition: () -> Long,
   favoriteList: List<String>,
-  pagerMusicList: SnapshotStateList<PagerThumbnailModel>,
+  pagerMusicList: List<PagerThumbnailModel>,
   onBack: () -> Unit,
   onPlayerAction: (action: PlayerActions) -> Unit,
   setCurrentPagerNumber: (Int) -> Unit,
@@ -53,20 +47,6 @@ fun FullMusicPlayer(
   currentVolume: Int,
   onVolumeChange: (Float) -> Unit,
 ) {
-
-  val pagerState = rememberPagerState(
-    initialPage = currentPagerPage,
-    pageCount = { pagerMusicList.size },
-  )
-
-  PagerHandler(
-    currentMediaState = currentMediaState,
-    pagerMusicList = { pagerMusicList },
-    currentPagerPage = { currentPagerPage },
-    pagerState = pagerState,
-    setCurrentPagerNumber = setCurrentPagerNumber,
-    onMoveToIndex = { onPlayerAction(PlayerActions.OnMoveToIndex(it)) },
-  )
 
   val animateColor = animateColorAsState(
     targetValue = Color(backgroundColorByArtwork),
@@ -112,7 +92,10 @@ fun FullMusicPlayer(
       modifier = Modifier
         .layoutId("pagerArtwork"),
       pagerItem = pagerMusicList,
-      pagerState = pagerState,
+      currentMediaState = currentMediaState(),
+      onPlayerAction = { onPlayerAction(it) },
+      setCurrentPagerNumber = { setCurrentPagerNumber(it) },
+      currentPagerPage = currentPagerPage,
     )
     SongDetail(
       modifier = Modifier
@@ -156,13 +139,13 @@ fun FullMusicPlayer(
 private fun FullScreenPreview() {
   MediaPlayerJetpackComposeTheme {
     FullMusicPlayer(
-      favoriteList = emptyList<String>().toMutableStateList(),
+      favoriteList = emptyList(),
       currentMediaState = { CurrentMediaState.Empty },
       backgroundColorByArtwork = MediaThumbnailUtil.DefaultColorPalette,
       repeatMode = 0,
       currentMusicPosition = { 10000L },
       currentPagerPage = 0,
-      pagerMusicList = emptyList<PagerThumbnailModel>().toMutableStateList(),
+      pagerMusicList = emptyList(),
       onBack = {},
       setCurrentPagerNumber = {},
       onPlayerAction = {},

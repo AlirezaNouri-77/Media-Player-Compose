@@ -1,7 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -45,18 +44,18 @@ fun TabBarSection(
       containerColor = MaterialTheme.colorScheme.primaryContainer,
       divider = {}
     ) {
-      TabBarPosition.entries.forEach {
+      TabBarPosition.entries.forEachIndexed { index, item ->
         Tab(
           modifier = Modifier,
           text = {
             Text(
-              text = it.enuName,
-              fontSize = 13.sp,
+              text = item.enuName,
+              fontSize = if (currentTabState.id == index) 15.sp else 10.sp,
               fontWeight = FontWeight.Medium,
             )
           },
-          selected = currentTabState == it,
-          onClick = { onTabClick.invoke(it, TabBarPosition.entries.indexOf(currentTabState)) },
+          selected = currentTabState == item,
+          onClick = { onTabClick.invoke(item, TabBarPosition.entries.indexOf(currentTabState)) },
           interactionSource = NoRippleEffect
         )
       }

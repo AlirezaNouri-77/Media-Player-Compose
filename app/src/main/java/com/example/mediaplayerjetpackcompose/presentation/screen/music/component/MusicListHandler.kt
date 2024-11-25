@@ -1,7 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,12 +12,10 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarPosition
 import com.example.mediaplayerjetpackcompose.domain.model.navigation.MusicNavigationModel
 import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
@@ -31,18 +28,13 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.Musi
 fun MusicListHandler(
   musicPageViewModel: MusicPageViewModel,
   currentMusicState: CurrentMediaState,
-  navController: NavController,
+  navigateTo: (MusicNavigationModel) -> Unit,
   favoriteMusicMediaIdList: List<String>,
   bottomPadding: Dp,
   orientation: Int = LocalConfiguration.current.orientation,
 ) {
 
   val pagerState = rememberPagerState(pageCount = { TabBarPosition.entries.size })
-
-  val favoriteMusicList = remember(favoriteMusicMediaIdList.size) {
-    musicPageViewModel.musicList.filter { musicModel -> musicModel.musicId.toString() in favoriteMusicMediaIdList }
-      .toMutableStateList()
-  }
 
   LaunchedEffect(pagerState.settledPage) {
     musicPageViewModel.currentTabState = when (pagerState.currentPage) {
@@ -61,14 +53,17 @@ fun MusicListHandler(
 
   HorizontalPager(
     state = pagerState,
+    key = { it },
   ) { page ->
 
     when (page) {
       0, 4 -> {
-        val listItem = when (page) {
-          0 -> musicPageViewModel.musicList
-          4 -> favoriteMusicList
-          else -> emptyList()
+        val listItem = remember(page) {
+          when (page) {
+            0 -> musicPageViewModel.musicList
+            4 -> musicPageViewModel.musicList.filter { musicModel -> musicModel.musicId.toString() in favoriteMusicMediaIdList }
+            else -> emptyList()
+          }
         }
 
         if (listItem.isNotEmpty()) {
@@ -105,11 +100,13 @@ fun MusicListHandler(
       }
 
       1, 2, 3 -> {
-        val listItem = when (page) {
-          1 -> musicPageViewModel.artistsMusicMap
-          2 -> musicPageViewModel.albumMusicMap
-          3 -> musicPageViewModel.folderMusicMap
-          else -> emptyList()
+        val listItem = remember(page) {
+          when (page) {
+            1 -> musicPageViewModel.artistsMusicMap
+            2 -> musicPageViewModel.albumMusicMap
+            3 -> musicPageViewModel.folderMusicMap
+            else -> emptyList()
+          }
         }
 
         if (listItem.isNotEmpty()) {
@@ -129,7 +126,7 @@ fun MusicListHandler(
                 categoryName = item.categoryName,
                 musicListSize = item.categoryList.size,
                 onClick = { categoryName ->
-                  navController.navigate(MusicNavigationModel.Category(categoryName))
+                  navigateTo(MusicNavigationModel.Category(categoryName))
                 },
               )
             }

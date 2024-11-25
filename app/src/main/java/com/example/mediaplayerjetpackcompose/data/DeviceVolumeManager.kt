@@ -3,7 +3,6 @@ package com.example.mediaplayerjetpackcompose.data
 import android.content.Context
 import android.database.ContentObserver
 import android.media.AudioManager
-import android.util.Log
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

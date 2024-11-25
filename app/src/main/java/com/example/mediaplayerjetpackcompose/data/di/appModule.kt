@@ -1,6 +1,5 @@
 package com.example.mediaplayerjetpackcompose.data.di
 
-import android.content.Context
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.room.Room
 import com.example.mediaplayerjetpackcompose.data.DeviceVolumeManager
