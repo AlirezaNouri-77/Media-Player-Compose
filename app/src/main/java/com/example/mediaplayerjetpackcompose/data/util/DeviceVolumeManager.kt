@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.data
+package com.example.mediaplayerjetpackcompose.data.util
 
 import android.content.Context
 import android.database.ContentObserver

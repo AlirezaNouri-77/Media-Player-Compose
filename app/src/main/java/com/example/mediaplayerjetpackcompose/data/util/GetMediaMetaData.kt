@@ -1,10 +1,9 @@
-package com.example.mediaplayerjetpackcompose.data
+package com.example.mediaplayerjetpackcompose.data.util
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
 import com.example.mediaplayerjetpackcompose.domain.api.MetaDataRetrieverImpl
 import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoItemModel
 

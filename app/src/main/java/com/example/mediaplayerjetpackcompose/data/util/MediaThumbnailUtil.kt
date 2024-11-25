@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.data
+package com.example.mediaplayerjetpackcompose.data.util
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -16,9 +16,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.drawable.toBitmap
 import androidx.palette.graphics.Palette
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.data.util.Constant
-import com.example.mediaplayerjetpackcompose.data.util.onDefaultDispatcher
-import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

@@ -8,8 +8,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mediaplayerjetpackcompose.data.DeviceVolumeManager
-import com.example.mediaplayerjetpackcompose.data.MediaThumbnailUtil
+import com.example.mediaplayerjetpackcompose.data.util.DeviceVolumeManager
+import com.example.mediaplayerjetpackcompose.data.util.MediaThumbnailUtil
 import com.example.mediaplayerjetpackcompose.data.database.dao.DataBaseDao
 import com.example.mediaplayerjetpackcompose.data.mapper.toMediaItem
 import com.example.mediaplayerjetpackcompose.data.service.MusicServiceConnection
