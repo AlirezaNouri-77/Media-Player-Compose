@@ -5,6 +5,7 @@ import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -67,7 +68,7 @@ fun VolumeController(
     Slider(
       value = currentVolume.toFloat() / maxDeviceVolume,
       modifier = Modifier
-        .width(260.dp),
+        .fillMaxWidth(0.7f),
       onValueChange = { value ->
         onVolumeChange(value * maxDeviceVolume)
       },
