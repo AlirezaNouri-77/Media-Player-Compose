@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -40,7 +39,6 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.MiniMusicPlayer
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.MusicListHandler
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.FullMusicPlayer
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.SortDropDownMenu
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.TabBarSection
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.TopBarMusic
 
@@ -51,7 +49,6 @@ fun MusicScreen(
   density: Density = LocalDensity.current,
 ) {
   var showSortBar by remember { mutableStateOf(false) }
-  var sortIconOffset by remember { mutableStateOf(DpOffset.Zero) }
   val navController: NavHostController = rememberNavController()
   val currentMusicState = musicPageViewModel.currentMusicState.collectAsStateWithLifecycle().value
   val favoriteMusicMediaIdList = musicPageViewModel.favoriteMusic.collectAsStateWithLifecycle().value.map { it.mediaId }
@@ -69,31 +66,6 @@ fun MusicScreen(
       musicPageViewModel.isFullPlayerShow = false
     }
   }
-
-  SortDropDownMenu(
-    isExpand = showSortBar,
-    sortState = musicPageViewModel.sortState,
-    offset = sortIconOffset,
-    onDismiss = { showSortBar = false },
-    onSortClick = {
-      musicPageViewModel.sortState = musicPageViewModel.sortState.copy(sortType = it)
-      musicPageViewModel.sortMusicListByCategory(
-        list = musicPageViewModel.musicList
-      ).also { resultList ->
-        musicPageViewModel.musicList =
-          resultList as SnapshotStateList<MusicModel>
-      }
-    },
-    onOrderClick = {
-      musicPageViewModel.sortState =
-        musicPageViewModel.sortState.copy(isDec = !musicPageViewModel.sortState.isDec)
-      musicPageViewModel.sortMusicListByCategory(
-        list = musicPageViewModel.musicList
-      ).also { resultList ->
-        musicPageViewModel.musicList = resultList as SnapshotStateList<MusicModel>
-      }
-    },
-  )
 
   ConstraintLayout(
     modifier = Modifier
@@ -120,7 +92,27 @@ fun MusicScreen(
               onVideoIconClick = { onNavigateToVideoScreen() },
               onSearch = { musicPageViewModel.searchMusic(it) },
               onSortIconClick = { showSortBar = true },
-              sortIconOffset = { sortIconOffset = it },
+              isDropDownMenuSortExpand = showSortBar,
+              sortState = { musicPageViewModel.sortState },
+              onDismiss = { showSortBar = false },
+              onSortClick = {
+                musicPageViewModel.sortState = musicPageViewModel.sortState.copy(sortType = it)
+                musicPageViewModel.sortMusicListByCategory(
+                  list = musicPageViewModel.musicList
+                ).also { resultList ->
+                  musicPageViewModel.musicList =
+                    resultList as SnapshotStateList<MusicModel>
+                }
+              },
+              onOrderClick = {
+                musicPageViewModel.sortState =
+                  musicPageViewModel.sortState.copy(isDec = !musicPageViewModel.sortState.isDec)
+                musicPageViewModel.sortMusicListByCategory(
+                  list = musicPageViewModel.musicList
+                ).also { resultList ->
+                  musicPageViewModel.musicList = resultList as SnapshotStateList<MusicModel>
+                }
+              },
             )
           },
         ) { paddingValue ->

@@ -5,10 +5,12 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,20 +25,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.SortTypeModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarPosition
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
+import com.example.mediaplayerjetpackcompose.domain.model.share.SortState
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
@@ -45,12 +44,16 @@ import kotlinx.coroutines.flow.debounce
 @OptIn(FlowPreview::class, ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarMusic(
+  modifier: Modifier = Modifier,
   currentTabPosition: TabBarPosition,
   onSearch: (String) -> Unit,
   onVideoIconClick: () -> Unit,
   onSortIconClick: () -> Unit,
-  sortIconOffset: (DpOffset) -> Unit,
-  density: Density = LocalDensity.current,
+  isDropDownMenuSortExpand: Boolean,
+  onDismiss: () -> Unit,
+  sortState: () -> SortState,
+  onSortClick: (SortTypeModel) -> Unit,
+  onOrderClick: () -> Unit,
 ) {
 
   var showSearch by remember { mutableStateOf(false) }
@@ -68,13 +71,13 @@ fun TopBarMusic(
   )
 
   TopAppBar(
+    modifier = modifier,
     title = {
       Text(
         text = "Music",
-        modifier = Modifier
-          .padding(10.dp),
+        modifier = Modifier,
         fontWeight = FontWeight.Bold,
-        fontSize = 36.sp,
+        fontSize = 38.sp,
       )
     },
     actions = {
@@ -100,57 +103,56 @@ fun TopBarMusic(
           enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
           exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it }),
         ) {
-          Row {
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+          ){
             if (!showSearch) {
               IconButton(
-                modifier = Modifier
-                  .padding(5.dp)
-                  .size(35.dp),
                 onClick = { onVideoIconClick.invoke() },
               ) {
                 Icon(
+                  modifier = Modifier.size(24.dp),
                   painter = painterResource(id = R.drawable.icon_video),
                   contentDescription = "video Icon",
                   tint = MaterialTheme.colorScheme.onPrimary,
                 )
               }
-              IconButton(
+              Box(
                 modifier = Modifier
-                  .padding(5.dp)
-                  .size(35.dp)
-                  .onGloballyPositioned {
-                    with(density) {
-                      val dpOffset = DpOffset(
-                        x = it.positionInRoot().x.toDp(),
-                        y = it.positionInRoot().y.toDp(),
-                      )
-                      sortIconOffset(dpOffset)
-                    }
-                  },
-                onClick = { onSortIconClick.invoke() },
+                  .wrapContentSize(Alignment.TopEnd)
               ) {
-                Icon(
-                  painter = painterResource(id = R.drawable.icon_sort),
-                  contentDescription = "Sort Icon",
-                  tint = MaterialTheme.colorScheme.onPrimary,
+                IconButton(
+                  onClick = { onSortIconClick.invoke() },
+                ) {
+                  Icon(
+                    modifier = Modifier.size(24.dp),
+                    painter = painterResource(id = R.drawable.icon_sort),
+                    contentDescription = "Sort Icon",
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                  )
+                }
+                SortDropDownMenu(
+                  isExpand = isDropDownMenuSortExpand,
+                  onDismiss = { onDismiss() },
+                  sortState = sortState(),
+                  onSortClick = { onSortClick(it) },
+                  onOrderClick = { onOrderClick() }
                 )
               }
-
             }
 
-            Icon(
-              painter = painterResource(id = R.drawable.icon_search_24),
-              contentDescription = "Search Icon",
-              modifier = Modifier
-                .padding(10.dp)
-                .size(30.dp)
-                .clickable(
-                  interactionSource = NoRippleEffect,
-                  indication = null,
-                  onClick = { showSearch = true },
-                ),
-              tint = MaterialTheme.colorScheme.onPrimary,
-            )
+            IconButton(
+              onClick = { showSearch = true },
+            ) {
+              Icon(
+                painter = painterResource(id = R.drawable.icon_search_24),
+                contentDescription = "Search Icon",
+                modifier = Modifier
+                  .size(24.dp),
+                tint = MaterialTheme.colorScheme.onPrimary,
+              )
+            }
           }
         }
       }
@@ -171,7 +173,16 @@ private fun PreviewTopBarMusic() {
       onSearch = {},
       onVideoIconClick = {},
       onSortIconClick = {},
-      sortIconOffset = {},
+      isDropDownMenuSortExpand = false,
+      onDismiss = {},
+      sortState = {
+        SortState(
+          SortTypeModel.SIZE,
+          false,
+        )
+      },
+      onSortClick = {},
+      onOrderClick = {},
     )
   }
 }
