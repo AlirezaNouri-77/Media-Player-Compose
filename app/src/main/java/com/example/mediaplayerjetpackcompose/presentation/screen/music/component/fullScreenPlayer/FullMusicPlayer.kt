@@ -17,8 +17,8 @@ import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.example.mediaplayerjetpackcompose.data.util.MediaThumbnailUtil
 import com.example.mediaplayerjetpackcompose.data.util.Constant
+import com.example.mediaplayerjetpackcompose.data.util.MediaThumbnailUtil
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.PagerThumbnailModel
 import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
 import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
@@ -30,6 +30,7 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.VolumeController
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.decoupledConstraintLayout
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
+
 @Composable
 fun FullMusicPlayer(
   backgroundColorByArtwork: Int,
@@ -124,7 +125,7 @@ fun FullMusicPlayer(
     VolumeController(
       modifier = Modifier.layoutId("volumeSlider"),
       maxDeviceVolume = maxDeviceVolume,
-      currentVolume = currentVolume,
+      currentVolume = { currentVolume },
       onVolumeChange = {
         onVolumeChange(it)
       }

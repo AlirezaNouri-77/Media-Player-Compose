@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.util.Constant
@@ -42,7 +42,7 @@ fun SongController(
   onFavoriteToggle: () -> Unit,
 ) {
 
-  val favIcon = remember(currentMediaState().mediaId) {
+  val favIcon = remember(favoriteList.size) {
     when (currentMediaState().mediaId in favoriteList) {
       true -> Icons.Default.Favorite
       false -> Icons.Default.FavoriteBorder
@@ -56,13 +56,13 @@ fun SongController(
   ) {
     ButtonOfFullScreenPlayer(
       icon = favIcon,
-      size = 24.dp,
+      size = DpSize(24.dp, 24.dp),
       contentDescription = "Fav Music",
       onClick = { onFavoriteToggle.invoke() },
     )
     ButtonOfFullScreenPlayer(
-      icon = R.drawable.icon_skip_previous_24,
-      size = 40.dp,
+      icon = R.drawable.icon_previous,
+      size = DpSize(26.dp, 26.dp),
       contentDescription = "Next",
       onClick = {
         onMovePreviousMusic.invoke()
@@ -73,12 +73,12 @@ fun SongController(
         .drawBehind {
           drawRoundRect(
             color = Color.White.copy(alpha = 0.3f),
-            cornerRadius = CornerRadius(x = 40f),
+            cornerRadius = CornerRadius(x = 30f),
           )
         }
-        .padding(horizontal = 5.dp),
-      icon = if (currentMediaState().isPlaying) R.drawable.icon_pause_24 else R.drawable.icon_play_arrow_24,
-      size = 55.dp,
+        .padding(horizontal = 7.dp),
+      icon = if (currentMediaState().isPlaying) R.drawable.icon_pause else R.drawable.icon_play,
+      size = DpSize(37.dp, 42.dp),
       contentDescription = "Play and Pause",
       onClick = {
         when (currentMediaState().isPlaying) {
@@ -88,8 +88,8 @@ fun SongController(
       }
     )
     ButtonOfFullScreenPlayer(
-      icon = R.drawable.icon_skip_next_24,
-      size = 40.dp,
+      icon = R.drawable.icon_next,
+      size = DpSize(26.dp, 26.dp),
       contentDescription = "Next",
       onClick = {
         onMoveNextMusic.invoke()
@@ -97,12 +97,12 @@ fun SongController(
     )
     ButtonOfFullScreenPlayer(
       icon = when (repeatMode) {
-        0 -> R.drawable.icon_repeat_off_24
-        1 -> R.drawable.icon_repeat_one_24
-        2 -> R.drawable.icon_repeat_all_24
+        0 -> R.drawable.icon_repeat_off
+        1 -> R.drawable.icon_repeat_once
+        2 -> R.drawable.icon_repeat_all
         else -> -1
       },
-      size = 24.dp,
+      size = DpSize(24.dp, 24.dp),
       contentDescription = "RepeatMode",
       onClick = {
         if (repeatMode == Constant.RepeatModes.entries.toMutableList().lastIndex) {
@@ -120,12 +120,12 @@ fun SongController(
 private fun ButtonOfFullScreenPlayer(
   modifier: Modifier = Modifier,
   icon: Any,
-  size: Dp,
+  size: DpSize,
   contentDescription: String,
   onClick: () -> Unit,
 ) {
   IconButton(
-    modifier = modifier.size(size),
+    modifier = modifier,
     onClick = { onClick.invoke() },
     interactionSource = NoRippleEffect,
     colors = IconButtonDefaults.iconButtonColors(

@@ -15,9 +15,9 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
+import com.example.mediaplayerjetpackcompose.data.mapper.toMediaItem
 import com.example.mediaplayerjetpackcompose.data.util.GetMediaMetaData
 import com.example.mediaplayerjetpackcompose.data.util.MediaThumbnailUtil
-import com.example.mediaplayerjetpackcompose.data.mapper.toMediaItem
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.model.repository.MediaStoreResult
 import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState

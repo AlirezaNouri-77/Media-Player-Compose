@@ -26,23 +26,23 @@ fun PlayerController(
   Row(
     modifier = modifier,
     verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
+    horizontalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterHorizontally),
   ) {
     PlayerControllerButton(
-      icon = R.drawable.icon_skip_previous_24,
+      icon = R.drawable.icon_previous,
       modifier = Modifier
-        .size(35.dp),
+        .size(25.dp),
       onClick = {
         onSeekToPrevious()
       },
     )
     AnimatedContent(
-      targetState = if (currentState().isPlaying || currentState().isBuffering) R.drawable.icon_pause_24 else R.drawable.icon_play_arrow_24,
+      targetState = if (currentState().isPlaying || currentState().isBuffering) R.drawable.icon_pause else R.drawable.icon_play,
       label = "",
     ) {
       PlayerControllerButton(
         icon = it,
-        modifier = Modifier.size(45.dp),
+        modifier = Modifier.size(30.dp),
         onClick = {
           when (currentState().isPlaying) {
             true -> onPause()
@@ -52,8 +52,8 @@ fun PlayerController(
       )
     }
     PlayerControllerButton(
-      icon = R.drawable.icon_skip_next_24,
-      modifier = Modifier.size(35.dp),
+      icon = R.drawable.icon_next,
+      modifier = Modifier.size(25.dp),
       onClick = {
         onSeekToNext()
       },

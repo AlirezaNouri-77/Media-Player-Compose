@@ -69,12 +69,7 @@ fun MiniMusicPlayer(
   )
 
   val reactCanvasColor = MaterialTheme.colorScheme.onPrimary
-  val duration = remember(currentMediaState().metaData) {
-    currentMediaState().metaData.extras?.getInt(Constant.DURATION_KEY) ?: 0
-  }
-  val playAndPauseIcon = remember(currentMediaState().isPlaying) {
-    if (currentMediaState().isPlaying) R.drawable.icon_pause_24 else R.drawable.icon_play_arrow_24
-  }
+
   val marqueeAnimate = remember(pagerState.isScrollInProgress) {
     if (pagerState.isScrollInProgress) 0 else Int.MAX_VALUE
   }
@@ -160,7 +155,7 @@ fun MiniMusicPlayer(
             }
             .drawBehind {
               val size = this.size.width
-              val progress = (currentMusicPosition() * size) / duration
+              val progress = (currentMusicPosition() * size) / (currentMediaState().metaData.extras?.getInt(Constant.DURATION_KEY) ?: 0)
               drawRoundRect(color = reactCanvasColor.copy(alpha = 0.1f))
               clipRect(
                 right = progress,
@@ -178,17 +173,18 @@ fun MiniMusicPlayer(
         horizontalAlignment = Alignment.CenterHorizontally,
       ) {
         IconButton(
-          modifier = Modifier
-            .size(50.dp),
+          modifier = Modifier.padding(7.dp),
           onClick = {
             when (currentMediaState().isPlaying) {
               true -> onPlayerAction(PlayerActions.PausePlayer)
               false -> onPlayerAction(PlayerActions.ResumePlayer)
             }
           },
+          interactionSource = NoRippleEffect,
         ) {
           Icon(
-            painter = painterResource(id = playAndPauseIcon),
+            modifier = Modifier.size(22.dp),
+            painter = painterResource(id = if (currentMediaState().isPlaying) R.drawable.icon_pause else R.drawable.icon_play),
             contentDescription = "",
             tint = MaterialTheme.colorScheme.onPrimary,
           )
