@@ -38,7 +38,7 @@ fun SortDropDownMenu(
     SortTypeModel.entries.forEachIndexed { _, sortBarModel ->
       DropdownMenuItem(
         modifier = Modifier.background(
-          if (sortState.sortType == sortBarModel) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f) else Color.Transparent,
+          if (sortState.sortType == sortBarModel) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f) else Color.Transparent,
           shape = RoundedCornerShape(10.dp),
         ),
         text = {

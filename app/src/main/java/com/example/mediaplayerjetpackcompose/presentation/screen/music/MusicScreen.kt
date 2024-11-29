@@ -17,8 +17,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -41,6 +43,8 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.FullMusicPlayer
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.TabBarSection
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.TopBarMusic
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun MusicScreen(
@@ -48,12 +52,14 @@ fun MusicScreen(
   onNavigateToVideoScreen: () -> Unit,
   density: Density = LocalDensity.current,
 ) {
+
   var showSortBar by remember { mutableStateOf(false) }
   val navController: NavHostController = rememberNavController()
   val currentMusicState = musicPageViewModel.currentMusicState.collectAsStateWithLifecycle().value
   val favoriteMusicMediaIdList = musicPageViewModel.favoriteMusic.collectAsStateWithLifecycle().value.map { it.mediaId }
   val currentMusicPosition = musicPageViewModel.currentMusicPosition.collectAsStateWithLifecycle().value
   val currentDeviceVolume = musicPageViewModel.currentDeviceVolume.collectAsStateWithLifecycle().value
+  val sortState = musicPageViewModel.sortState.collectAsStateWithLifecycle().value
 
   var miniPlayerHeight by remember { mutableStateOf(0.dp) }
 
@@ -93,25 +99,15 @@ fun MusicScreen(
               onSearch = { musicPageViewModel.searchMusic(it) },
               onSortIconClick = { showSortBar = true },
               isDropDownMenuSortExpand = showSortBar,
-              sortState = { musicPageViewModel.sortState },
+              sortState = { sortState },
               onDismiss = { showSortBar = false },
               onSortClick = {
-                musicPageViewModel.sortState = musicPageViewModel.sortState.copy(sortType = it)
-                musicPageViewModel.sortMusicListByCategory(
-                  list = musicPageViewModel.musicList
-                ).also { resultList ->
-                  musicPageViewModel.musicList =
-                    resultList as SnapshotStateList<MusicModel>
-                }
+                musicPageViewModel.updateSortType(it)
+                musicPageViewModel.sortMusicListByCategory(list = musicPageViewModel.musicList)
               },
               onOrderClick = {
-                musicPageViewModel.sortState =
-                  musicPageViewModel.sortState.copy(isDec = !musicPageViewModel.sortState.isDec)
-                musicPageViewModel.sortMusicListByCategory(
-                  list = musicPageViewModel.musicList
-                ).also { resultList ->
-                  musicPageViewModel.musicList = resultList as SnapshotStateList<MusicModel>
-                }
+                musicPageViewModel.updateSortIsDec(!sortState.isDec)
+                musicPageViewModel.sortMusicListByCategory(list = musicPageViewModel.musicList)
               },
             )
           },

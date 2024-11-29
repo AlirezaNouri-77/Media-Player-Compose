@@ -1,6 +1,7 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -8,13 +9,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mediaplayerjetpackcompose.data.util.DeviceVolumeManager
-import com.example.mediaplayerjetpackcompose.data.util.MediaThumbnailUtil
 import com.example.mediaplayerjetpackcompose.data.database.dao.DataBaseDao
 import com.example.mediaplayerjetpackcompose.data.mapper.toMediaItem
 import com.example.mediaplayerjetpackcompose.data.service.MusicServiceConnection
-import com.example.mediaplayerjetpackcompose.data.util.onDefaultDispatcher
-import com.example.mediaplayerjetpackcompose.data.util.onIoDispatcher
+import com.example.mediaplayerjetpackcompose.data.util.DeviceVolumeManager
+import com.example.mediaplayerjetpackcompose.data.util.MediaThumbnailUtil
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.CategoryMusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.FavoriteMusicModel
@@ -29,6 +28,7 @@ import com.example.mediaplayerjetpackcompose.domain.model.share.SortState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -55,9 +55,6 @@ class MusicPageViewModel(
 
   var musicArtworkColorPalette by mutableIntStateOf(MediaThumbnailUtil.DefaultColorPalette)
 
-  var isLoading by mutableStateOf(true)
-
-  var sortState by mutableStateOf(SortState(SortTypeModel.NAME, false))
   var currentTabState by mutableStateOf(TabBarPosition.MUSIC)
 
   var isFullPlayerShow by mutableStateOf(false)
@@ -65,6 +62,11 @@ class MusicPageViewModel(
   var currentPagerPage = mutableIntStateOf(0)
 
   var pagerItemList = mutableStateListOf<PagerThumbnailModel>()
+
+  var isLoading by mutableStateOf(true)
+
+  private var _sortSate = MutableStateFlow(SortState(SortTypeModel.NAME, false))
+  var sortState = _sortSate.asStateFlow()
 
   var currentMusicState = musicServiceConnection.currentMediaState
     .stateIn(
@@ -123,9 +125,11 @@ class MusicPageViewModel(
     }
   }
 
-  fun setDeviceVolume(volume: Float) {
-    deviceVolumeManager.setVolume(volume)
-  }
+  fun updateSortType(input: SortTypeModel) = _sortSate.update { it.copy(sortType = input) }
+
+  fun updateSortIsDec(input: Boolean) = _sortSate.update { it.copy(isDec = input) }
+
+  fun setDeviceVolume(volume: Float) = deviceVolumeManager.setVolume(volume)
 
   fun getMaxDeviceVolume(): Int = deviceVolumeManager.getMaxVolume()
 
@@ -148,37 +152,41 @@ class MusicPageViewModel(
 
   fun sortMusicListByCategory(
     list: MutableList<MusicModel>
-  ): MutableList<MusicModel> {
+  ) {
     viewModelScope.launch {
-      onDefaultDispatcher {
-        when (sortState.sortType) {
-          SortTypeModel.NAME -> if (sortState.isDec) list.sortByDescending { it.name } else list.sortBy { it.name }
-          SortTypeModel.ARTIST -> if (sortState.isDec) list.sortByDescending { it.artist } else list.sortBy { it.artist }
-          SortTypeModel.DURATION -> if (sortState.isDec) list.sortByDescending { it.duration } else list.sortBy { it.duration }
-          SortTypeModel.SIZE -> if (sortState.isDec) list.sortByDescending { it.size } else list.sortBy { it.size }
+
+      withContext(Dispatchers.Default) {
+
+        val resultSortedList = when (_sortSate.value.sortType) {
+          SortTypeModel.NAME -> if (_sortSate.value.isDec) list.sortedByDescending { it.name } else list.sortedBy { it.name }
+          SortTypeModel.ARTIST -> if (_sortSate.value.isDec) list.sortedByDescending { it.artist } else list.sortedBy { it.artist }
+          SortTypeModel.DURATION -> if (_sortSate.value.isDec) list.sortedByDescending { it.duration } else list.sortedBy { it.duration }
+          SortTypeModel.SIZE -> if (_sortSate.value.isDec) list.sortedByDescending { it.size } else list.sortedBy { it.size }
         }
+
+        val currentMediaIndex = resultSortedList.indexOfFirst { it.musicId.toString() == currentMusicState.value.mediaId }
+        val pagerItem =
+          resultSortedList.map { PagerThumbnailModel(uri = it.artworkUri, musicId = it.musicId, name = it.name, artist = it.artist) }
+        val mediaItems = resultSortedList.map(MusicModel::toMediaItem)
+
+        withContext(Dispatchers.Main.immediate) {
+          currentPagerPage.intValue = if (currentMediaIndex == -1) 0 else currentMediaIndex
+          pagerItemList.apply {
+            clear()
+            addAll(pagerItem)
+          }
+          musicList.apply {
+            clear()
+            addAll(resultSortedList)
+          }
+          musicServiceConnection.mediaController?.setMediaItems(
+            mediaItems, currentMediaIndex, _currentMusicPosition.value
+          )
+        }
+
       }
-      updateMediaItemListAfterSort(list)
     }
-    return list
   }
-
-  private suspend fun updateMediaItemListAfterSort(list: List<MusicModel>) =
-    withContext(Dispatchers.Default) {
-      val index = list.indexOfFirst { it.musicId.toString() == currentMusicState.value.mediaId }
-
-      val pagerItem =
-        list.map { PagerThumbnailModel(uri = it.artworkUri, musicId = it.musicId, name = it.name, artist = it.artist) }
-
-      viewModelScope.launch {
-        currentPagerPage.intValue = if (index == -1) 0 else index
-        pagerItemList.clear()
-        pagerItemList.addAll(pagerItem)
-        musicServiceConnection.mediaController?.setMediaItems(
-          musicList.map(MusicModel::toMediaItem), if (index == -1) -1 else index, _currentMusicPosition.value
-        )
-      }
-    }
 
   private fun moveToNext() {
     val hasNextItem = musicServiceConnection.mediaController?.hasNextMediaItem() ?: false
@@ -225,13 +233,12 @@ class MusicPageViewModel(
   }
 
   private fun handleFavoriteSongs(mediaId: String) {
-    viewModelScope.launch {
-      onIoDispatcher {
-        if (mediaId in favoriteMusic.value.map { it.mediaId }) {
-          dataBaseDao.deleteFavoriteSong(mediaId)
-        } else {
-          dataBaseDao.insertFavoriteSong(FavoriteMusicModel(mediaId = mediaId))
-        }
+    viewModelScope.launch(Dispatchers.IO) {
+      val isMediaIdInDatabase = favoriteMusic.value.firstOrNull { it.mediaId == mediaId }
+      if (isMediaIdInDatabase != null) {
+        dataBaseDao.deleteFavoriteSong(mediaId)
+      } else {
+        dataBaseDao.insertFavoriteSong(FavoriteMusicModel(mediaId = mediaId))
       }
     }
   }
