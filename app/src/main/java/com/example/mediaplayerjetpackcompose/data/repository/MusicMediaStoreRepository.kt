@@ -28,7 +28,7 @@ class MusicMediaStoreRepository(
           MediaInfoArray,
           selection,
           null,
-          null
+          sortOrder,
         )?.use { cursor ->
 
           val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
