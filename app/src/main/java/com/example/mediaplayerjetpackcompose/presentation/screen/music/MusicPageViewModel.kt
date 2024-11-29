@@ -98,7 +98,9 @@ class MusicPageViewModel(
   var currentDeviceVolume = deviceVolumeManager.currentMusicLevelVolume
     .onStart {
       deviceVolumeManager.registerContentObserver()
-    }.stateIn(
+      deviceVolumeManager.setInitialVolume()
+    }
+    .stateIn(
       viewModelScope,
       SharingStarted.Eagerly,
       0,

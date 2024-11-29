@@ -3,12 +3,15 @@ package com.example.mediaplayerjetpackcompose.data.util
 import android.content.Context
 import android.database.ContentObserver
 import android.media.AudioManager
+import android.util.Log
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 
@@ -21,8 +24,8 @@ class DeviceVolumeManager(
 
   private var previews = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
 
-  private var _currentMusicLevelVolume = MutableStateFlow(0)
-  var currentMusicLevelVolume = _currentMusicLevelVolume.asStateFlow()
+  private var _currentMusicLevelVolume = MutableSharedFlow<Int>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+  var currentMusicLevelVolume = _currentMusicLevelVolume.asSharedFlow()
 
   // Another way for listen volume change by flow if we don't want to using contentObserver
   var volumeChangeListener: Flow<Int> = flow {
@@ -40,21 +43,24 @@ class DeviceVolumeManager(
     super.onChange(selfChange)
     val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
     if (currentVolume != previews) {
-      _currentMusicLevelVolume.update { currentVolume }
+      _currentMusicLevelVolume.tryEmit(currentVolume)
       previews = currentVolume
     }
   }
 
   fun setVolume(input: Float) {
     previews = input.toInt()
-    _currentMusicLevelVolume.value = input.toInt()
+    _currentMusicLevelVolume.tryEmit(input.toInt())
     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, input.coerceIn(0f..maxVolume.toFloat()).toInt(), 0)
   }
 
   fun getMaxVolume() = maxVolume
 
+  fun setInitialVolume(){
+    _currentMusicLevelVolume.tryEmit(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC))
+  }
+
   fun registerContentObserver() {
-    _currentMusicLevelVolume.update { audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) }
     context.contentResolver.registerContentObserver(
       android.provider.Settings.System.CONTENT_URI, true, this
     )
