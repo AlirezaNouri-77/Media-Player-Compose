@@ -64,6 +64,16 @@ class VideoPageViewModel(
   private var _currentState = MutableStateFlow(CurrentMediaState.Empty)
   val currentMediaState: StateFlow<CurrentMediaState> = _currentState.asStateFlow()
 
+  private var _currentPlayerPosition = MutableStateFlow(0L)
+  var currentPlayerPosition = _currentPlayerPosition
+    .onStart {
+      getCurrentMediaPosition()
+    }.stateIn(
+      viewModelScope,
+      SharingStarted.WhileSubscribed(5_000L),
+      0
+    )
+
   init {
     exoPlayer.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT
     viewModelScope.launch {
@@ -141,6 +151,15 @@ class VideoPageViewModel(
           this.prepare()
           this.play()
         }
+      }
+    }
+  }
+
+  private suspend fun getCurrentMediaPosition() {
+    while (currentCoroutineContext().isActive) {
+      delay(50L)
+      if (exoPlayer.isPlaying) {
+        _currentPlayerPosition.value = exoPlayer.currentPosition
       }
     }
   }
