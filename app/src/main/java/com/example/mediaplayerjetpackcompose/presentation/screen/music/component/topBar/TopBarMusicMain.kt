@@ -1,6 +1,9 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -8,7 +11,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -71,22 +74,36 @@ fun TopBarMusic(
   )
 
   TopAppBar(
-    modifier = modifier,
+    modifier = modifier.fillMaxWidth(),
     title = {
-      Text(
-        text = "Music",
-        modifier = Modifier,
-        fontWeight = FontWeight.Bold,
-        fontSize = 38.sp,
-      )
+      AnimatedVisibility(
+        visible = !showSearch,
+        enter = fadeIn(tween(100, 360, LinearEasing)) + slideInHorizontally(tween(150, 360)) { it / 2 },
+        exit = fadeOut(tween(80)),
+        label = "Title AnimatedVisibility"
+      ) {
+        Text(
+          text = "Music",
+          modifier = Modifier,
+          fontWeight = FontWeight.Bold,
+          fontSize = 38.sp,
+        )
+      }
     },
     actions = {
-      AnimatedVisibility(visible = currentTabPosition == TabBarPosition.MUSIC, enter = fadeIn(), exit = fadeOut()) {
+
+      AnimatedVisibility(
+        visible = currentTabPosition == TabBarPosition.MUSIC,
+        exit = fadeOut(),
+        enter = fadeIn(),
+        label = "Actions AnimatedVisibility"
+      ) {
 
         AnimatedVisibility(
           visible = showSearch,
-          enter = fadeIn(),
-          exit = fadeOut(),
+          enter = slideInHorizontally(tween(150, 80, LinearEasing)) { it * 2 },
+          exit = slideOutHorizontally(tween(150, 80, LinearEasing)) { it * 2 },
+          label = "Search AnimatedVisibility"
         ) {
           SearchSection(
             textFieldValue.value,
@@ -100,14 +117,19 @@ fun TopBarMusic(
 
         AnimatedVisibility(
           visible = !showSearch,
-          enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
-          exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it }),
+          enter = fadeIn(tween(100, 360, LinearEasing)) + slideInHorizontally(tween(150, 360)) { -it },
+          exit = slideOutHorizontally(tween(50, 0, FastOutLinearInEasing)) { -it },
+          label = "ActionRow AnimatedVisibility"
         ) {
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-          ){
-            if (!showSearch) {
+          Box(
+            modifier = Modifier,
+            contentAlignment = Alignment.Center,
+          ) {
+            Row(
+              modifier = Modifier,
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.Center
+            ) {
               IconButton(
                 onClick = { onVideoIconClick.invoke() },
               ) {
@@ -140,18 +162,17 @@ fun TopBarMusic(
                   onOrderClick = { onOrderClick() }
                 )
               }
-            }
-
-            IconButton(
-              onClick = { showSearch = true },
-            ) {
-              Icon(
-                painter = painterResource(id = R.drawable.icon_search_24),
-                contentDescription = "Search Icon",
-                modifier = Modifier
-                  .size(24.dp),
-                tint = MaterialTheme.colorScheme.onPrimary,
-              )
+              IconButton(
+                onClick = { showSearch = true },
+              ) {
+                Icon(
+                  painter = painterResource(id = R.drawable.icon_search_24),
+                  contentDescription = "Search Icon",
+                  modifier = Modifier
+                    .size(24.dp),
+                  tint = MaterialTheme.colorScheme.onPrimary,
+                )
+              }
             }
           }
         }
@@ -164,7 +185,7 @@ fun TopBarMusic(
 
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, apiLevel = 34)
 @Composable
 private fun PreviewTopBarMusic() {
   MediaPlayerJetpackComposeTheme {
