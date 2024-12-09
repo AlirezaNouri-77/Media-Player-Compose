@@ -17,10 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -33,7 +30,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarPosition
 import com.example.mediaplayerjetpackcompose.domain.model.navigation.MusicNavigationModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.Loading
@@ -43,8 +39,6 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.FullMusicPlayer
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.TabBarSection
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.TopBarMusic
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun MusicScreen(
@@ -55,11 +49,12 @@ fun MusicScreen(
 
   var showSortBar by remember { mutableStateOf(false) }
   val navController: NavHostController = rememberNavController()
-  val currentMusicState = musicPageViewModel.currentMusicState.collectAsStateWithLifecycle().value
-  val favoriteMusicMediaIdList = musicPageViewModel.favoriteMusic.collectAsStateWithLifecycle().value.map { it.mediaId }
-  val currentMusicPosition = musicPageViewModel.currentMusicPosition.collectAsStateWithLifecycle().value
-  val currentDeviceVolume = musicPageViewModel.currentDeviceVolume.collectAsStateWithLifecycle().value
-  val sortState = musicPageViewModel.sortState.collectAsStateWithLifecycle().value
+
+  val currentMusicState by musicPageViewModel.currentMusicState.collectAsStateWithLifecycle()
+  val favoriteMusicMediaIdList by musicPageViewModel.favoriteMusic.collectAsStateWithLifecycle()
+  val currentMusicPosition by musicPageViewModel.currentMusicPosition.collectAsStateWithLifecycle()
+  val currentDeviceVolume by musicPageViewModel.currentDeviceVolume.collectAsStateWithLifecycle()
+  val sortState by musicPageViewModel.sortState.collectAsStateWithLifecycle()
 
   var miniPlayerHeight by remember { mutableStateOf(0.dp) }
 
@@ -137,7 +132,7 @@ fun MusicScreen(
                   musicPageViewModel = musicPageViewModel,
                   currentMusicState = currentMusicState,
                   bottomPadding = miniPlayerHeight,
-                  favoriteMusicMediaIdList = favoriteMusicMediaIdList,
+                  favoriteMusicMediaIdList = favoriteMusicMediaIdList.map { it.mediaId },
                   navigateTo = { navController.navigate(it) },
                 )
               }
@@ -213,7 +208,7 @@ fun MusicScreen(
         targetOffsetY = { int -> int / 4 }) + fadeOut(tween(350, 50))
     ) {
       FullMusicPlayer(
-        favoriteList = favoriteMusicMediaIdList,
+        favoriteList = favoriteMusicMediaIdList.map { it.mediaId },
         pagerMusicList = musicPageViewModel.pagerItemList,
         backgroundColorByArtwork = musicPageViewModel.musicArtworkColorPalette,
         repeatMode = currentMusicState.repeatMode,

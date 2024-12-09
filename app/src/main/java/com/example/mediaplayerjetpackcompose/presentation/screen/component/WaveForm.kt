@@ -11,14 +11,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -29,7 +32,7 @@ fun WaveForm(
   modifier: Modifier = Modifier,
   enable: Boolean = true,
   size: Dp = 35.dp,
-  waveColor:Color = Color.White,
+  waveColor: Color = Color.White,
   density: Density = LocalDensity.current,
 ) {
 
@@ -69,8 +72,10 @@ fun WaveForm(
       (1..lineCount).forEachIndexed { index, _ ->
         animatable[index].stop()
         launch(Dispatchers.Main.immediate) {
+          animatable[index].stop()
           animatable[index].animateTo(
             targetValue = 0f,
+            animationSpec = tween(150, 80)
           )
         }
       }
@@ -81,6 +86,7 @@ fun WaveForm(
   Box(
     modifier = modifier
       .size(size),
+    contentAlignment = Alignment.Center,
   ) {
 
     Canvas(modifier = Modifier.size(size)) {
@@ -96,7 +102,14 @@ fun WaveForm(
         )
       }
     }
-
   }
 
+}
+
+@Preview
+@Composable
+private fun Preview() {
+  MediaPlayerJetpackComposeTheme {
+    WaveForm(size = 65.dp)
+  }
 }
