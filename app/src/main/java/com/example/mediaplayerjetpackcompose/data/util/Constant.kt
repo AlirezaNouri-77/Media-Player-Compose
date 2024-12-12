@@ -23,6 +23,7 @@ object Constant {
       Manifest.permission.READ_MEDIA_VIDEO,
       Manifest.permission.READ_MEDIA_AUDIO,
     )
+  const val API_29_Q_ANDROID_10 =  Build.VERSION_CODES.Q
   } else {
     arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
   }

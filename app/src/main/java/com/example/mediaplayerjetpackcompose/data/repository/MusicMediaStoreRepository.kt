@@ -5,6 +5,7 @@ import android.content.ContentUris
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.repository.MediaStoreResult
@@ -37,7 +38,7 @@ class MusicMediaStoreRepository(
           val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
           val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
           val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
-          val bitrateColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.BITRATE)
+          val bitrateColumn = if (Build.VERSION.SDK_INT >= Constant.API_30_R_ANDROID_11) cursor.getColumnIndex(MediaStore.Audio.Media.BITRATE) else 0
           val artistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
           val albumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
           val albumId = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
@@ -49,7 +50,7 @@ class MusicMediaStoreRepository(
             val mimeType = mimeTypesColumn.let { cursor.getString(it) }
             val name = nameColumn.let { cursor.getString(it) }
             val duration = durationColumn.let { cursor.getInt(it) }
-            val bitrate = bitrateColumn.let { cursor.getInt(it) }
+            val bitrate = if (Build.VERSION.SDK_INT >= Constant.API_30_R_ANDROID_11) bitrateColumn.let { cursor.getInt(it) } else 0
             val size = sizeColumn.let { cursor.getInt(it) }
             val artist = artistColumn.let { cursor.getString(it) }
             val album = albumColumn.let { cursor.getString(it) }
@@ -76,6 +77,7 @@ class MusicMediaStoreRepository(
               )
             )
           }
+
         }
       }
 
@@ -86,27 +88,32 @@ class MusicMediaStoreRepository(
 
   companion object {
 
-    val MediaInfoArray = arrayOf(
-      MediaStore.Audio.Media._ID,
-      MediaStore.Audio.Media.MIME_TYPE,
-      MediaStore.Audio.Media.DATA,
-      MediaStore.Audio.Media.DISPLAY_NAME,
-      MediaStore.Audio.Media.BUCKET_DISPLAY_NAME,
-      MediaStore.Audio.Media.DURATION,
-      MediaStore.Audio.Media.SIZE,
-      MediaStore.Audio.Media.BITRATE,
-      MediaStore.Audio.Media.ALBUM,
-      MediaStore.Audio.Media.ARTIST,
-      MediaStore.Audio.Media.ALBUM_ID,
-    )
+    var MediaInfoArray = buildList<String> {
+      addAll(
+        arrayOf(
+          MediaStore.Audio.Media._ID,
+          MediaStore.Audio.Media.MIME_TYPE,
+          MediaStore.Audio.Media.DATA,
+          MediaStore.Audio.Media.DISPLAY_NAME,
+          MediaStore.Audio.Media.BUCKET_DISPLAY_NAME,
+          MediaStore.Audio.Media.DURATION,
+          MediaStore.Audio.Media.SIZE,
+          MediaStore.Audio.Media.ALBUM,
+          MediaStore.Audio.Media.ARTIST,
+          MediaStore.Audio.Media.ALBUM_ID,
+        )
+      )
+      if (Build.VERSION.SDK_INT >= Constant.API_30_R_ANDROID_11) {
+        add(MediaStore.Audio.Media.BITRATE)
+      }
+    }.toTypedArray()
 
     val albumArtPath: Uri = Uri.parse("content://media/external/audio/albumart")
-    var uriMedia: Uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    var uriMedia: Uri = if (Build.VERSION.SDK_INT >= Constant.API_29_Q_ANDROID_10) {
       MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
     } else {
       MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
     }
-
     val sortOrder = "${MediaStore.Downloads.DISPLAY_NAME} ASC"
     var selection = MediaStore.Audio.Media.IS_MUSIC + " !=0"
     val selectionArgs = arrayOf(
