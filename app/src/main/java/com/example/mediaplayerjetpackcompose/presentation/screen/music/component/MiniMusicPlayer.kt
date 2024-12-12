@@ -1,5 +1,7 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 
+import android.content.res.Configuration
+import android.net.Uri
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,6 +33,7 @@ import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
@@ -41,6 +45,7 @@ import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaStat
 import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.PagerHandler
+import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 @Composable
 fun MiniMusicPlayer(
@@ -144,60 +149,93 @@ fun MiniMusicPlayer(
             }
           }
         }
-        Box(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 6.dp)
-            .height(4.dp)
-            .graphicsLayer {
-              shape = RoundedCornerShape(4.dp)
-              clip = true
-            }
-            .drawBehind {
-              val size = this.size.width
-              val progress = (currentMusicPosition() * size) / (currentMediaState().metaData.extras?.getInt(Constant.DURATION_KEY) ?: 0)
-              drawRoundRect(color = reactCanvasColor.copy(alpha = 0.1f))
-              clipRect(
-                right = progress,
-              ) {
-                this.drawRect(color = reactCanvasColor)
-              }
-            },
-        )
-      }
-
-      Column(
-        modifier = Modifier
-          .weight(0.1f),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-      ) {
-        IconButton(
-          modifier = Modifier.padding(7.dp),
-          onClick = {
-            when (currentMediaState().isPlaying) {
-              true -> onPlayerAction(PlayerActions.PausePlayer)
-              false -> onPlayerAction(PlayerActions.ResumePlayer)
-            }
-          },
-          interactionSource = NoRippleEffect,
+        Row(
+          modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterHorizontally),
         ) {
-          Icon(
-            modifier = Modifier.size(22.dp),
-            painter = painterResource(id = if (currentMediaState().isPlaying) R.drawable.icon_pause else R.drawable.icon_play),
-            contentDescription = "",
-            tint = MaterialTheme.colorScheme.onPrimary,
+          Text(
+            modifier = Modifier,
+            text = currentMusicPosition().convertMilliSecondToTime(),
+            fontSize = 11.sp,
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontWeight = FontWeight.Medium,
+          )
+          Box(
+            modifier = Modifier
+              .fillMaxWidth()
+              .weight(0.8f)
+              .height(4.dp)
+              .graphicsLayer {
+                shape = RoundedCornerShape(4.dp)
+                clip = true
+              }
+              .drawBehind {
+                val size = this.size.width
+                val progress = (currentMusicPosition() * size) / (currentMediaState().metaData.extras?.getInt(Constant.DURATION_KEY) ?: 0)
+                drawRoundRect(color = reactCanvasColor.copy(alpha = 0.1f))
+                clipRect(
+                  right = progress,
+                ) {
+                  this.drawRect(color = reactCanvasColor)
+                }
+              },
+          )
+          Text(
+            modifier = Modifier,
+            text = currentMediaState().metaData.extras?.getInt(Constant.DURATION_KEY).convertMilliSecondToTime(),
+            fontSize = 11.sp,
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontWeight = FontWeight.Medium,
           )
         }
-        Text(
-          modifier = Modifier,
-          text = currentMusicPosition().convertMilliSecondToTime(),
-          fontSize = 12.sp,
-          color = MaterialTheme.colorScheme.onPrimary,
-          fontWeight = FontWeight.Medium,
+      }
+
+      IconButton(
+        modifier = Modifier.weight(0.1f).padding(7.dp),
+        onClick = {
+          when (currentMediaState().isPlaying) {
+            true -> onPlayerAction(PlayerActions.PausePlayer)
+            false -> onPlayerAction(PlayerActions.ResumePlayer)
+          }
+        },
+        interactionSource = NoRippleEffect,
+      ) {
+        Icon(
+          modifier = Modifier.size(22.dp),
+          painter = painterResource(id = if (currentMediaState().isPlaying) R.drawable.icon_pause else R.drawable.icon_play),
+          contentDescription = "",
+          tint = MaterialTheme.colorScheme.onPrimary,
         )
       }
 
     }
+  }
+}
+
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL)
+@Composable
+private fun Preview() {
+  var list = listOf<PagerThumbnailModel>(
+    PagerThumbnailModel(
+      uri = Uri.EMPTY,
+      musicId = 0,
+      name = "ExampleName.mp3",
+      artist = "Example Artist",
+    ),
+  )
+  MediaPlayerJetpackComposeTheme {
+    MiniMusicPlayer(
+      onClick = {},
+      pagerMusicList = list,
+      setCurrentPagerNumber = {},
+      currentPagerPage = 0,
+      currentMediaState = { CurrentMediaState.Empty },
+      currentMusicPosition = { 50_000L },
+      onPlayerAction = {},
+      modifier = Modifier,
+    )
   }
 }
