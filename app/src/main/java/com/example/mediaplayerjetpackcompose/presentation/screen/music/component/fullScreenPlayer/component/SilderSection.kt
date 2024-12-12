@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -23,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -85,7 +87,9 @@ fun SliderSection(
       track = { sliderState ->
         SliderDefaults.Track(
           sliderState = sliderState,
-          modifier = modifier.height(sliderTrackHeight),
+          modifier = modifier
+            .height(sliderTrackHeight)
+            .clip(RoundedCornerShape(10.dp)),
           colors = SliderDefaults.colors(
             activeTrackColor = Color.White,
             inactiveTrackColor = Color.White.copy(alpha = 0.2f),
@@ -125,11 +129,20 @@ fun SliderSection(
 @Composable
 private fun Preview() {
   MediaPlayerJetpackComposeTheme {
-    SliderSection(
-      modifier = Modifier,
-      currentMusicPosition = { 50000 },
-      seekTo = {},
-      duration = 100000f,
-    )
+    Column {
+      SliderSection(
+        modifier = Modifier,
+        currentMusicPosition = { 100000 },
+        seekTo = {},
+        duration = 100000f,
+      )
+      SliderSection(
+        modifier = Modifier,
+        currentMusicPosition = { 1000 },
+        seekTo = {},
+        duration = 100000f,
+      )
+
+    }
   }
 }
