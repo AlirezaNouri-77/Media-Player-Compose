@@ -272,7 +272,7 @@ class MusicPageViewModel(
     }
   }
 
-  private fun getMusic() = viewModelScope.launch {
+  fun getMusic() = viewModelScope.launch {
     musicMediaStoreRepository.getMedia()
       .collect { result ->
         when (result) {
