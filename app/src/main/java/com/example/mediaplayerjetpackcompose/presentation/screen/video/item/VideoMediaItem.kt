@@ -1,6 +1,10 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.video.item
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,22 +23,27 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import coil.request.videoFrameMillis
+import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.util.convertByteToReadableSize
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.util.extractFileExtension
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoItemModel
+import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 @Composable
 fun VideoMediaItem(
@@ -57,8 +66,10 @@ fun VideoMediaItem(
       ConstraintLayout {
         val (imageArt, duration) = createRefs()
 
-        AsyncImage(
+        SubcomposeAsyncImage(
           model = ImageRequest.Builder(LocalContext.current).data(item.uri).videoFrameMillis(15_000L).build(),
+          contentDescription = "",
+          contentScale = ContentScale.FillBounds,
           modifier = Modifier
             .constrainAs(imageArt) {
               top.linkTo(parent.top)
@@ -68,8 +79,18 @@ fun VideoMediaItem(
             }
             .size(110.dp, 70.dp)
             .clip(RoundedCornerShape(10.dp)),
-          contentScale = ContentScale.FillBounds,
-          contentDescription = "",
+          loading = {
+            Box(
+              contentAlignment = Alignment.Center,
+              modifier = Modifier.background(color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f)),
+            ) {
+              Image(
+                painter = painterResource(R.drawable.icon_video),
+                colorFilter = ColorFilter.tint(Color.White),
+                contentDescription = ""
+              )
+            }
+          },
         )
         Text(
           text = item.duration.convertMilliSecondToTime(),
@@ -107,17 +128,31 @@ fun VideoMediaItem(
           item.width.toString() + "x" + item.height.toString(),
           item.size.convertByteToReadableSize(),
           item.name.extractFileExtension(),
-          )
+        )
         Text(
           text = detail.reduce { acc, string -> "$acc, $string" }.toString(),
           modifier = Modifier.fillMaxWidth(),
           textAlign = TextAlign.Start,
           fontSize = 12.sp,
           color = contextColor.copy(alpha = 0.6f),
-          fontWeight = FontWeight.Medium,
         )
       }
     }
   }
 
+}
+
+@Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun Preview() {
+  MediaPlayerJetpackComposeTheme {
+    Box(modifier = Modifier.background(MaterialTheme.colorScheme.primary)) {
+      VideoMediaItem(
+        item = VideoItemModel.Dummy,
+        contextColor = MaterialTheme.colorScheme.onPrimary,
+        onItemClick = {},
+      )
+    }
+  }
 }

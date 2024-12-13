@@ -25,5 +25,15 @@ data class VideoItemModel(
       height = 0,
       width = 0
     )
+    var Dummy = VideoItemModel(
+      videoId = 0,
+      uri = Uri.EMPTY,
+      name = "Example Video Name.mp4",
+      mimeType = "",
+      duration = 341_000,
+      size = 220_000,
+      height = 1920,
+      width = 1080,
+    )
   }
 }

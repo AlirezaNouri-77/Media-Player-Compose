@@ -59,6 +59,7 @@ suspend inline fun <T> onIoDispatcher(limitedParallelism: Int = 0, crossinline a
 }
 
 fun Int?.convertToKbps(): String {
+  if (this==0) return ""
   return this?.div(1000)?.toString()?.plus("Kbps") ?: "None"
 }
 

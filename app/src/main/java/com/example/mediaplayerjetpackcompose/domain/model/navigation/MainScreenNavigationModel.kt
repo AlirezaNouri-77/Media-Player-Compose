@@ -8,5 +8,5 @@ sealed interface MainScreenNavigationModel {
   @Serializable
   data object MusicScreen : MainScreenNavigationModel
   @Serializable
-  data class VideoPlayerScreen(var videoUri:String) : MainScreenNavigationModel
+  data class VideoPlayerScreen(var videoUri:String="") : MainScreenNavigationModel
 }
