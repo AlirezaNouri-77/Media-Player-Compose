@@ -194,7 +194,7 @@ class VideoPageViewModel(
     exoPlayer.clearMediaItems()
   }
 
-  private fun getVideo() {
+  fun getVideo() {
     viewModelScope.launch {
       videoMediaStoreRepository.getMedia().collect {
         _uiState.value = it

@@ -9,20 +9,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun EmptyPage() {
+fun EmptyPage(
+  modifier: Modifier = Modifier,
+  message: String = "Empty",
+  textSize: TextUnit = 24.sp,
+  textAlpha: Float = 0.5f
+) {
   Box(
-    modifier = Modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize(),
     contentAlignment = Alignment.Center,
   ) {
     Text(
-      text = "Empty",
-      fontSize = 24.sp,
+      text = message,
+      fontSize = textSize,
       fontWeight = FontWeight.Bold,
       textAlign = TextAlign.Center,
-      color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
+      color = MaterialTheme.colorScheme.onPrimary.copy(alpha = textAlpha),
     )
   }
 }

@@ -1,6 +1,9 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.video.component
 
+import android.content.Context
+import android.os.Build
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -9,6 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -18,15 +22,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
+import com.example.mediaplayerjetpackcompose.data.util.Constant
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.isPermissionGrant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarVideo(
   modifier: Modifier = Modifier,
   onBackClick: () -> Unit,
+  onSelectVideo: () -> Unit,
+  context: Context,
 ) {
 
   ElevatedCard(
+    modifier = modifier,
     shape = RoundedCornerShape(bottomStart = 25.dp, bottomEnd = 25.dp),
     elevation = CardDefaults.cardElevation(
       defaultElevation = 10.dp,
@@ -51,6 +60,19 @@ fun TopBarVideo(
             painter = painterResource(id = R.drawable.icon_back_24),
             contentDescription = "",
           )
+        }
+      },
+      actions = {
+        if (Build.VERSION.SDK_INT >= Constant.API_34_UPSIDE_DOWN_CAKE_ANDROID_14 && !context.isPermissionGrant(android.Manifest.permission.READ_MEDIA_VIDEO)) {
+          TextButton(
+            modifier = Modifier
+              .wrapContentWidth(),
+            onClick = {
+              onSelectVideo()
+            },
+          ) {
+            Text(text = "Select Videos", fontSize = 14.sp, color = MaterialTheme.colorScheme.onPrimary)
+          }
         }
       },
       colors = TopAppBarDefaults.topAppBarColors(

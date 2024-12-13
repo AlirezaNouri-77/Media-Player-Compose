@@ -69,7 +69,12 @@ class VideoMediaStoreRepository(
         }
       }
 
-      emit(MediaStoreResult.Result(resultList))
+      if (resultList.isEmpty()){
+        emit(MediaStoreResult.Empty)
+      }else {
+        emit(MediaStoreResult.Result(resultList))
+      }
+
 
     }.flowOn(Dispatchers.IO)
 
