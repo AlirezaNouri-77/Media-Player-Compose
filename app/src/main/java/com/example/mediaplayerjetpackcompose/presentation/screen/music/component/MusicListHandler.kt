@@ -1,8 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,7 +29,6 @@ fun MusicListHandler(
   navigateTo: (MusicNavigationModel) -> Unit,
   favoriteMusicMediaIdList: List<String>,
   bottomPadding: Dp,
-  orientation: Int = LocalConfiguration.current.orientation,
 ) {
 
   val pagerState = rememberPagerState(pageCount = { TabBarPosition.entries.size })
@@ -69,10 +66,7 @@ fun MusicListHandler(
         if (listItem.isNotEmpty()) {
           LazyColumn(
             modifier = Modifier
-              .fillMaxSize()
-              .then(
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE) Modifier.displayCutoutPadding() else Modifier
-              ),
+              .fillMaxSize(),
             contentPadding = PaddingValues(bottom = bottomPadding, top = 10.dp),
           ) {
             itemsIndexed(
@@ -112,10 +106,7 @@ fun MusicListHandler(
         if (listItem.isNotEmpty()) {
           LazyColumn(
             modifier = Modifier
-              .fillMaxSize()
-              .then(
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE) Modifier.displayCutoutPadding() else Modifier
-              ),
+              .fillMaxSize(),
             contentPadding = PaddingValues(bottom = bottomPadding, top = 10.dp),
           ) {
             items(

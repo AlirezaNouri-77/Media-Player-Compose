@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.internal.filterList
 
 class MusicPageViewModel(
   private var musicMediaStoreRepository: MediaStoreRepositoryImpl<MusicModel>,
@@ -47,6 +48,8 @@ class MusicPageViewModel(
   private var originalMusicList = mutableStateListOf<MusicModel>()
 
   var musicList = mutableStateListOf<MusicModel>()
+
+  var searchList = mutableStateListOf<MusicModel>()
 
   var artistsMusicMap = mutableStateListOf<CategoryMusicModel>()
   var albumMusicMap = mutableStateListOf<CategoryMusicModel>()
@@ -243,16 +246,16 @@ class MusicPageViewModel(
   }
 
   fun searchMusic(input: String) = viewModelScope.launch(Dispatchers.Default) {
-    if (input.isNotEmpty() || input.isNotEmpty()) {
-      val filteredList = originalMusicList.filter { it.name.lowercase().contains(input.lowercase()) }
+    if (input.isNotEmpty() || input.isNotBlank()) {
+      val filteredList = originalMusicList.filterList { name.lowercase().contains(input.lowercase()) }
       viewModelScope.launch {
-        musicList.clear()
-        musicList.addAll(filteredList)
+        searchList.clear()
+        searchList.addAll(filteredList)
       }
     } else {
       viewModelScope.launch {
-        musicList.clear()
-        musicList.addAll(originalMusicList)
+        searchList.clear()
+        searchList.addAll(originalMusicList)
       }
     }
   }

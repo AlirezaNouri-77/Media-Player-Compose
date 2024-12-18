@@ -1,9 +1,7 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 
-import android.content.res.Configuration
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,7 +23,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -43,7 +40,6 @@ fun CategoryPage(
   onMusicClick: (index: Int) -> Unit,
   miniPlayerHeight: Dp,
   onBackClick: () -> Unit,
-  orientation: Int = LocalConfiguration.current.orientation,
 ) {
 
   Scaffold(
@@ -84,10 +80,7 @@ fun CategoryPage(
     LazyColumn(
       Modifier
         .fillMaxSize()
-        .padding(innerPadding)
-        .then(
-          if (orientation == Configuration.ORIENTATION_LANDSCAPE) Modifier.displayCutoutPadding() else Modifier
-        ),
+        .padding(innerPadding),
       contentPadding = PaddingValues(top = 10.dp, bottom = miniPlayerHeight)
     ) {
       itemsIndexed(

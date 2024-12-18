@@ -15,7 +15,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.mediaplayerjetpackcompose.R
@@ -25,7 +30,17 @@ fun SearchSection(
   textFieldValue: String,
   onTextFieldChange: (String) -> Unit,
   onDismiss: () -> Unit,
+  onKeyboardFocusChange: (Boolean) -> Unit,
 ) {
+
+  var focusRequester = remember {
+    FocusRequester()
+  }
+
+  LaunchedEffect(Unit) {
+    focusRequester.requestFocus()
+  }
+
   OutlinedTextField(
     value = textFieldValue,
     onValueChange = { value ->
@@ -34,7 +49,11 @@ fun SearchSection(
     modifier = Modifier
       .fillMaxWidth()
       .height(50.dp)
-      .padding(horizontal = 15.dp),
+      .padding(horizontal = 15.dp)
+      .focusRequester(focusRequester)
+      .onFocusChanged {
+        onKeyboardFocusChange(it.isFocused)
+      },
     singleLine = true,
     maxLines = 1,
     placeholder = {

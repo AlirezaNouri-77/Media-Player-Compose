@@ -26,6 +26,7 @@
         tools:targetApi="tiramisu">
         <activity
             android:name=".presentation.MainActivity"
+            android:windowSoftInputMode="adjustResize"
             android:configChanges="orientation|screenSize|layoutDirection"
             android:exported="true"
             android:launchMode="singleTop"

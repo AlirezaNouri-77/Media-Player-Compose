@@ -23,10 +23,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,14 +51,16 @@ fun TopBarMusic(
   onVideoIconClick: () -> Unit,
   onSortIconClick: () -> Unit,
   isDropDownMenuSortExpand: Boolean,
+  isSearchShow: () -> Boolean,
   onDismiss: () -> Unit,
   sortState: () -> SortState,
   onSortClick: (SortTypeModel) -> Unit,
   onOrderClick: () -> Unit,
+  onKeyboardFocusChange: (Boolean) -> Unit,
+  onSearchClick: (Boolean) -> Unit,
 ) {
 
-  var showSearch by remember { mutableStateOf(false) }
-  val textFieldValue = remember { mutableStateOf("") }
+  val textFieldValue = rememberSaveable { mutableStateOf("") }
 
   LaunchedEffect(
     key1 = textFieldValue.value,
@@ -77,7 +77,7 @@ fun TopBarMusic(
     modifier = modifier.fillMaxWidth(),
     title = {
       AnimatedVisibility(
-        visible = !showSearch,
+        visible = !isSearchShow(),
         enter = fadeIn(tween(100, 360, LinearEasing)) + slideInHorizontally(tween(150, 360)) { it / 2 },
         exit = fadeOut(tween(80)),
         label = "Title AnimatedVisibility"
@@ -100,7 +100,7 @@ fun TopBarMusic(
       ) {
 
         AnimatedVisibility(
-          visible = showSearch,
+          visible = isSearchShow(),
           enter = slideInHorizontally(tween(150, 80, LinearEasing)) { it * 2 },
           exit = slideOutHorizontally(tween(150, 80, LinearEasing)) { it * 2 },
           label = "Search AnimatedVisibility"
@@ -109,14 +109,16 @@ fun TopBarMusic(
             textFieldValue.value,
             onTextFieldChange = { textFieldValue.value = it },
             onDismiss = {
-              textFieldValue.value = ""
-              showSearch = false
+              onSearchClick(false)
+            },
+            onKeyboardFocusChange = {
+              onKeyboardFocusChange(it)
             },
           )
         }
 
         AnimatedVisibility(
-          visible = !showSearch,
+          visible = !isSearchShow(),
           enter = fadeIn(tween(100, 360, LinearEasing)) + slideInHorizontally(tween(150, 360)) { -it },
           exit = slideOutHorizontally(tween(50, 0, FastOutLinearInEasing)) { -it },
           label = "ActionRow AnimatedVisibility"
@@ -163,7 +165,7 @@ fun TopBarMusic(
                 )
               }
               IconButton(
-                onClick = { showSearch = true },
+                onClick = { onSearchClick(true) },
               ) {
                 Icon(
                   painter = painterResource(id = R.drawable.icon_search_24),
@@ -204,6 +206,9 @@ private fun PreviewTopBarMusic() {
       },
       onSortClick = {},
       onOrderClick = {},
+      onKeyboardFocusChange = {},
+      isSearchShow = { false },
+      onSearchClick = {},
     )
   }
 }
