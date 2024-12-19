@@ -41,7 +41,7 @@ import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.PagerThumbnailModel
-import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
+import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
 import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.PagerHandler
@@ -54,7 +54,7 @@ fun MiniMusicPlayer(
   pagerMusicList: List<PagerThumbnailModel>,
   setCurrentPagerNumber: (Int) -> Unit,
   currentPagerPage: Int,
-  currentMediaState: () -> CurrentMediaState,
+  mediaPlayerState: () -> MediaPlayerState,
   currentMusicPosition: () -> Long,
   onPlayerAction: (action: PlayerActions) -> Unit,
 ) {
@@ -65,7 +65,7 @@ fun MiniMusicPlayer(
   )
 
   PagerHandler(
-    currentMediaState = currentMediaState,
+    mediaPlayerState = mediaPlayerState,
     pagerMusicList = { pagerMusicList },
     currentPagerPage = { currentPagerPage },
     pagerState = pagerState,
@@ -106,7 +106,7 @@ fun MiniMusicPlayer(
           .weight(0.2f, false)
           .size(55.dp)
           .clip(RoundedCornerShape(5.dp)),
-        uri = currentMediaState().metaData.artworkUri,
+        uri = mediaPlayerState().metaData.artworkUri,
       )
       Column(
         modifier = Modifier
@@ -172,7 +172,7 @@ fun MiniMusicPlayer(
               }
               .drawBehind {
                 val size = this.size.width
-                val progress = (currentMusicPosition() * size) / (currentMediaState().metaData.extras?.getInt(Constant.DURATION_KEY) ?: 0)
+                val progress = (currentMusicPosition() * size) / (mediaPlayerState().metaData.extras?.getInt(Constant.DURATION_KEY) ?: 0)
                 drawRoundRect(color = reactCanvasColor.copy(alpha = 0.1f))
                 clipRect(
                   right = progress,
@@ -183,7 +183,7 @@ fun MiniMusicPlayer(
           )
           Text(
             modifier = Modifier,
-            text = currentMediaState().metaData.extras?.getInt(Constant.DURATION_KEY).convertMilliSecondToTime(),
+            text = mediaPlayerState().metaData.extras?.getInt(Constant.DURATION_KEY).convertMilliSecondToTime(),
             fontSize = 11.sp,
             color = MaterialTheme.colorScheme.onPrimary,
             fontWeight = FontWeight.Medium,
@@ -194,7 +194,7 @@ fun MiniMusicPlayer(
       IconButton(
         modifier = Modifier.weight(0.1f).padding(7.dp),
         onClick = {
-          when (currentMediaState().isPlaying) {
+          when (mediaPlayerState().isPlaying) {
             true -> onPlayerAction(PlayerActions.PausePlayer)
             false -> onPlayerAction(PlayerActions.ResumePlayer)
           }
@@ -203,7 +203,7 @@ fun MiniMusicPlayer(
       ) {
         Icon(
           modifier = Modifier.size(22.dp),
-          painter = painterResource(id = if (currentMediaState().isPlaying) R.drawable.icon_pause else R.drawable.icon_play),
+          painter = painterResource(id = if (mediaPlayerState().isPlaying) R.drawable.icon_pause else R.drawable.icon_play),
           contentDescription = "",
           tint = MaterialTheme.colorScheme.onPrimary,
         )
@@ -232,7 +232,7 @@ private fun Preview() {
       pagerMusicList = list,
       setCurrentPagerNumber = {},
       currentPagerPage = 0,
-      currentMediaState = { CurrentMediaState.Empty },
+      mediaPlayerState = { MediaPlayerState.Empty },
       currentMusicPosition = { 50_000L },
       onPlayerAction = {},
       modifier = Modifier,

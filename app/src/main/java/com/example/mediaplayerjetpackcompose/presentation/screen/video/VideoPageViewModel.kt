@@ -20,17 +20,18 @@ import com.example.mediaplayerjetpackcompose.data.util.GetMediaMetaData
 import com.example.mediaplayerjetpackcompose.data.util.MediaThumbnailUtil
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.model.repository.MediaStoreResult
-import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
+import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
 import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoItemModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -56,13 +57,11 @@ class VideoPageViewModel(
   private var _previewSliderBitmap = Channel<ImageBitmap?>(onBufferOverflow = BufferOverflow.DROP_OLDEST)
   var previewSliderBitmap = _previewSliderBitmap.receiveAsFlow()
 
-  private var _currentPlayerPosition = MutableStateFlow(0L)
-  var currentPlayerPosition = _currentPlayerPosition.asStateFlow()
-
   private var getThumbnailJob: Job? = null
+  private var currentPlayerPositionJob: Job? = null
 
-  private var _currentState = MutableStateFlow(CurrentMediaState.Empty)
-  val currentMediaState: StateFlow<CurrentMediaState> = _currentState.asStateFlow()
+  private var _currentState = MutableStateFlow(MediaPlayerState.Empty)
+  val mediaPlayerState: StateFlow<MediaPlayerState> = _currentState.asStateFlow()
 
   private var _currentPlayerPosition = MutableStateFlow(0L)
   var currentPlayerPosition = _currentPlayerPosition
@@ -72,49 +71,40 @@ class VideoPageViewModel(
       viewModelScope,
       SharingStarted.WhileSubscribed(5_000L),
       0
-    )
+    ).onCompletion {
+      currentPlayerPositionJob?.cancel()
+    }
 
   init {
     exoPlayer.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT
-    viewModelScope.launch {
-      while (viewModelScope.isActive) {
-        delay(50L)
-        if (exoPlayer.isPlaying) {
-          _currentPlayerPosition.value = exoPlayer.currentPosition
+    exoPlayer.addListener(
+      object : Player.Listener {
+
+        override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+          _currentState.update { it.copy(isPlaying = playWhenReady) }
         }
-      }
-    }
-    viewModelScope.launch(Dispatchers.IO) {
-      exoPlayer.addListener(
-        object : Player.Listener {
-          override fun onIsPlayingChanged(isPlaying: Boolean) {
-            viewModelScope.launch {
-              _currentState.update { it.copy(isPlaying = isPlaying) }
-            }
-          }
 
-          override fun onPlaybackStateChanged(playbackState: Int) {
-            when (playbackState) {
-              Player.STATE_BUFFERING -> _currentState.update { it.copy(isBuffering = true) }
-              Player.STATE_READY -> _currentState.update { it.copy(isBuffering = false) }
-              else -> {}
-            }
+        override fun onPlaybackStateChanged(playbackState: Int) {
+          when (playbackState) {
+            Player.STATE_BUFFERING -> _currentState.update { it.copy(isBuffering = true) }
+            Player.STATE_READY -> _currentState.update { it.copy(isBuffering = false) }
+            else -> {}
           }
+        }
 
-          override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-            viewModelScope.launch {
-              _currentState.update { it.copy(uri = mediaItem?.localConfiguration?.uri ?: Uri.EMPTY) }
-            }
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+          viewModelScope.launch {
+            _currentState.update { it.copy(uri = mediaItem?.localConfiguration?.uri ?: Uri.EMPTY) }
           }
+        }
 
-          override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-            viewModelScope.launch {
-              _currentState.update { it.copy(metaData = mediaMetadata) }
-            }
+        override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+          viewModelScope.launch {
+            _currentState.update { it.copy(metaData = mediaMetadata) }
           }
-        },
-      )
-    }
+        }
+      },
+    )
   }
 
   fun getSliderPreviewThumbnail(position: Long) {
@@ -155,13 +145,16 @@ class VideoPageViewModel(
     }
   }
 
-  private suspend fun getCurrentMediaPosition() {
-    while (currentCoroutineContext().isActive) {
-      delay(50L)
-      if (exoPlayer.isPlaying) {
-        _currentPlayerPosition.value = exoPlayer.currentPosition
+  private fun getCurrentMediaPosition() {
+    currentPlayerPositionJob = viewModelScope.launch{
+      while (currentCoroutineContext().isActive && currentPlayerPositionJob?.isActive == true) {
+        delay(50L)
+        if (exoPlayer.isPlaying) {
+          _currentPlayerPosition.value = exoPlayer.currentPosition
+        }
       }
     }
+    currentPlayerPositionJob?.start()
   }
 
   fun resumePlayer() = viewModelScope.launch { exoPlayer.play() }
@@ -180,7 +173,7 @@ class VideoPageViewModel(
 
   fun seekToPosition(position: Long) = viewModelScope.launch {
     exoPlayer.seekTo(position)
-    _currentPlayerPosition.value = position
+    _currentPlayerPosition.update { position }
   }
 
   fun releasePlayer() = viewModelScope.launch {
@@ -204,7 +197,7 @@ class VideoPageViewModel(
 
   override fun onCleared() {
     super.onCleared()
-    releasePlayer()
+  //  releasePlayer()
   }
 
 }

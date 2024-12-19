@@ -10,13 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
+import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 @Composable
 fun PlayerController(
   modifier: Modifier = Modifier,
-  currentState: () -> CurrentMediaState,
+  currentState: () -> MediaPlayerState,
   onSeekToPrevious: () -> Unit,
   onSeekToNext: () -> Unit,
   onPause: () -> Unit,
@@ -67,7 +67,7 @@ fun PlayerController(
 private fun PreviewPlayerController() {
   MediaPlayerJetpackComposeTheme {
     PlayerController(
-      currentState = { CurrentMediaState.Empty },
+      currentState = { MediaPlayerState.Empty },
       onSeekToPrevious = {},
       onSeekToNext = {},
       onPause = {},

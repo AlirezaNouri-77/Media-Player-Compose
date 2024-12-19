@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
-import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
+import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.MusicMediaItem
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,7 +36,7 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.Musi
 fun CategoryPage(
   name: String,
   itemList:List<MusicModel>,
-  currentCurrentMediaState: CurrentMediaState,
+  currentMediaPlayerState: MediaPlayerState,
   onMusicClick: (index: Int) -> Unit,
   miniPlayerHeight: Dp,
   onBackClick: () -> Unit,
@@ -89,12 +89,12 @@ fun CategoryPage(
       ) { index, item ->
         MusicMediaItem(
           item = item,
-          isFav = false,
-          currentMediaId = currentCurrentMediaState.mediaId,
+          isFav =  false ,
+          currentMediaId = currentMediaPlayerState.mediaId,
           onItemClick = {
             onMusicClick.invoke(index)
           },
-          isPlaying = currentCurrentMediaState.isPlaying,
+          isPlaying =  currentMediaPlayerState.isPlaying ,
         )
       }
     }

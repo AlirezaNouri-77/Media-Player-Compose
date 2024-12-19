@@ -14,14 +14,15 @@ import com.example.mediaplayerjetpackcompose.data.service.MusicServiceConnection
 import com.example.mediaplayerjetpackcompose.data.util.DeviceVolumeManager
 import com.example.mediaplayerjetpackcompose.data.util.MediaThumbnailUtil
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.CategoryLists
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.CategoryMusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.FavoriteMusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.PagerThumbnailModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.SortTypeModel
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarPosition
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarModel
 import com.example.mediaplayerjetpackcompose.domain.model.repository.MediaStoreResult
-import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
+import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
 import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
 import com.example.mediaplayerjetpackcompose.domain.model.share.SortState
 import kotlinx.coroutines.Dispatchers
@@ -29,6 +30,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -51,13 +53,11 @@ class MusicPageViewModel(
 
   var searchList = mutableStateListOf<MusicModel>()
 
-  var artistsMusicMap = mutableStateListOf<CategoryMusicModel>()
-  var albumMusicMap = mutableStateListOf<CategoryMusicModel>()
-  var folderMusicMap = mutableStateListOf<CategoryMusicModel>()
+  var categoryLists by mutableStateOf(CategoryLists.Empty)
 
   var musicArtworkColorPalette by mutableIntStateOf(MediaThumbnailUtil.DefaultColorPalette)
 
-  var currentTabState by mutableStateOf(TabBarPosition.MUSIC)
+  var tabBarState by mutableStateOf(TabBarModel.MUSIC)
 
   var isFullPlayerShow by mutableStateOf(false)
 
@@ -70,14 +70,15 @@ class MusicPageViewModel(
   private var _sortSate = MutableStateFlow(SortState(SortTypeModel.NAME, false))
   var sortState = _sortSate.asStateFlow()
 
-  var currentMusicState = musicServiceConnection.currentMediaState
+  var currentMusicState = musicServiceConnection.mediaPlayerState
     .stateIn(
       viewModelScope,
       SharingStarted.Eagerly,
-      CurrentMediaState.Empty,
+      MediaPlayerState.Empty,
     )
 
-  var favoriteMusic = dataBaseDao.getAllFaFavoriteSongs()
+  var favoriteMusicMediaId = dataBaseDao.getAllFaFavoriteSongs()
+    .map { it.map { it.mediaId } }
     .stateIn(
       viewModelScope,
       SharingStarted.WhileSubscribed(5_000L),
@@ -236,7 +237,7 @@ class MusicPageViewModel(
 
   private fun handleFavoriteSongs(mediaId: String) {
     viewModelScope.launch(Dispatchers.IO) {
-      val isMediaIdInDatabase = favoriteMusic.value.firstOrNull { it.mediaId == mediaId }
+      val isMediaIdInDatabase = favoriteMusicMediaId.value.firstOrNull { it == mediaId }
       if (isMediaIdInDatabase != null) {
         dataBaseDao.deleteFavoriteSong(mediaId)
       } else {
@@ -299,9 +300,7 @@ class MusicPageViewModel(
                 musicList.addAll(mainList)
                 pagerItemList.addAll(pagerItem)
                 originalMusicList.addAll(mainList)
-                artistsMusicMap.addAll(artistItem)
-                albumMusicMap.addAll(albumItem)
-                folderMusicMap.addAll(folderItem)
+                categoryLists = categoryLists.copy(artist = artistItem, album = albumItem, folder = folderItem)
                 isLoading = false
               }
             }

@@ -1,7 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -24,6 +23,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.SortTypeModel
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarPosition
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarModel
 import com.example.mediaplayerjetpackcompose.domain.model.share.SortState
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 import kotlinx.coroutines.FlowPreview
@@ -46,26 +46,27 @@ import kotlinx.coroutines.flow.debounce
 @Composable
 fun TopBarMusic(
   modifier: Modifier = Modifier,
-  currentTabPosition: TabBarPosition,
+  currentTabPosition: TabBarModel,
   onSearch: (String) -> Unit,
   onVideoIconClick: () -> Unit,
   onSortIconClick: () -> Unit,
   isDropDownMenuSortExpand: Boolean,
   isSearchShow: () -> Boolean,
-  onDismiss: () -> Unit,
+  onDismissDropDownMenu: () -> Unit,
   sortState: () -> SortState,
   onSortClick: (SortTypeModel) -> Unit,
   onOrderClick: () -> Unit,
   onKeyboardFocusChange: (Boolean) -> Unit,
   onSearchClick: (Boolean) -> Unit,
+  onDismissSearch: () -> Unit,
 ) {
 
-  val textFieldValue = rememberSaveable { mutableStateOf("") }
+  val searchTextFieldValue = rememberSaveable { mutableStateOf("") }
 
   LaunchedEffect(
-    key1 = textFieldValue.value,
+    key1 = searchTextFieldValue.value,
     block = {
-      snapshotFlow { textFieldValue }
+      snapshotFlow { searchTextFieldValue }
         .debounce(500)
         .collectLatest {
           onSearch(it.value.trim())
@@ -76,24 +77,17 @@ fun TopBarMusic(
   TopAppBar(
     modifier = modifier.fillMaxWidth(),
     title = {
-      AnimatedVisibility(
-        visible = !isSearchShow(),
-        enter = fadeIn(tween(100, 360, LinearEasing)) + slideInHorizontally(tween(150, 360)) { it / 2 },
-        exit = fadeOut(tween(80)),
-        label = "Title AnimatedVisibility"
-      ) {
-        Text(
-          text = "Music",
-          modifier = Modifier,
-          fontWeight = FontWeight.Bold,
-          fontSize = 38.sp,
-        )
-      }
+      Text(
+        text = "Music",
+        modifier = Modifier,
+        fontWeight = FontWeight.Bold,
+        fontSize = 38.sp,
+      )
     },
     actions = {
 
       AnimatedVisibility(
-        visible = currentTabPosition == TabBarPosition.MUSIC,
+        visible = currentTabPosition == TabBarModel.MUSIC,
         exit = fadeOut(),
         enter = fadeIn(),
         label = "Actions AnimatedVisibility"
@@ -101,26 +95,29 @@ fun TopBarMusic(
 
         AnimatedVisibility(
           visible = isSearchShow(),
-          enter = slideInHorizontally(tween(150, 80, LinearEasing)) { it * 2 },
-          exit = slideOutHorizontally(tween(150, 80, LinearEasing)) { it * 2 },
+          enter = slideInHorizontally(tween(200, 40, LinearEasing)) { it * 2 },
+          exit = slideOutHorizontally(tween(150, 40, LinearEasing)) { it * 2 },
           label = "Search AnimatedVisibility"
         ) {
           SearchSection(
-            textFieldValue.value,
-            onTextFieldChange = { textFieldValue.value = it },
+            textFieldValue = searchTextFieldValue.value,
+            onTextFieldChange = { searchTextFieldValue.value = it },
             onDismiss = {
-              onSearchClick(false)
+              onDismissSearch()
             },
             onKeyboardFocusChange = {
               onKeyboardFocusChange(it)
             },
+            onClear = {
+              searchTextFieldValue.value = ""
+            }
           )
         }
 
         AnimatedVisibility(
           visible = !isSearchShow(),
           enter = fadeIn(tween(100, 360, LinearEasing)) + slideInHorizontally(tween(150, 360)) { -it },
-          exit = slideOutHorizontally(tween(50, 0, FastOutLinearInEasing)) { -it },
+          exit = slideOutHorizontally(tween(150, easing = LinearEasing)) { -it * 2 } + fadeOut(tween(120, easing = LinearEasing)),
           label = "ActionRow AnimatedVisibility"
         ) {
           Box(
@@ -158,7 +155,7 @@ fun TopBarMusic(
                 }
                 SortDropDownMenu(
                   isExpand = isDropDownMenuSortExpand,
-                  onDismiss = { onDismiss() },
+                  onDismiss = { onDismissDropDownMenu() },
                   sortState = sortState(),
                   onSortClick = { onSortClick(it) },
                   onOrderClick = { onOrderClick() }
@@ -191,13 +188,16 @@ fun TopBarMusic(
 @Composable
 private fun PreviewTopBarMusic() {
   MediaPlayerJetpackComposeTheme {
+    var isSearchShow = remember {
+      mutableStateOf(false)
+    }
     TopBarMusic(
-      currentTabPosition = TabBarPosition.MUSIC,
+      currentTabPosition = TabBarModel.MUSIC,
       onSearch = {},
       onVideoIconClick = {},
       onSortIconClick = {},
       isDropDownMenuSortExpand = false,
-      onDismiss = {},
+      onDismissDropDownMenu = { isSearchShow.value = false },
       sortState = {
         SortState(
           SortTypeModel.SIZE,
@@ -207,8 +207,9 @@ private fun PreviewTopBarMusic() {
       onSortClick = {},
       onOrderClick = {},
       onKeyboardFocusChange = {},
-      isSearchShow = { false },
-      onSearchClick = {},
+      isSearchShow = { isSearchShow.value },
+      onSearchClick = { isSearchShow.value = true },
+      onDismissSearch = { isSearchShow.value = false },
     )
   }
 }

@@ -55,7 +55,7 @@ fun VideoPlayer(
 ) {
 
   val currentPlayerPosition by videoPageViewModel.currentPlayerPosition.collectAsStateWithLifecycle(initialValue = 0)
-  val currentState by videoPageViewModel.currentMediaState.collectAsStateWithLifecycle()
+  val currentState by videoPageViewModel.mediaPlayerState.collectAsStateWithLifecycle()
   val previewSliderBitmap by videoPageViewModel.previewSliderBitmap.collectAsStateWithLifecycle(null)
 
   val currentDeviceOrientation by remember(orientation) {

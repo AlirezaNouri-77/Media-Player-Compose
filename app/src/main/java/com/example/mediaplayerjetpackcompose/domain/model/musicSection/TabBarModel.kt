@@ -1,7 +1,7 @@
 package com.example.mediaplayerjetpackcompose.domain.model.musicSection
 
-enum class TabBarPosition(val enuName: String, val id: Int) {
-  MUSIC("Music",0),
+enum class TabBarModel(val enuName: String, val id: Int) {
+  MUSIC("Home",0),
   ARTIST("Artist",1),
   ALBUM("Album",2),
   Folder("Folder",3),

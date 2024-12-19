@@ -8,7 +8,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
-import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
+import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.currentCoroutineContext
@@ -25,8 +25,8 @@ class MusicServiceConnection(
   private var context: Context,
 ) {
 
-  private var _currentMediaState = MutableStateFlow(CurrentMediaState.Empty)
-  var currentMediaState: StateFlow<CurrentMediaState> = _currentMediaState.asStateFlow()
+  private var _MediaPlayerState = MutableStateFlow(MediaPlayerState.Empty)
+  var mediaPlayerState: StateFlow<MediaPlayerState> = _MediaPlayerState.asStateFlow()
 
   private var factory: ListenableFuture<MediaController>? = null
 
@@ -66,19 +66,19 @@ class MusicServiceConnection(
   private val exoPlayerListener = object : Player.Listener {
 
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-      _currentMediaState.update { it.copy(metaData = mediaMetadata) }
+      _MediaPlayerState.update { it.copy(metaData = mediaMetadata) }
     }
 
     override fun onRepeatModeChanged(repeatMode: Int) {
-      _currentMediaState.update { it.copy(repeatMode = repeatMode) }
+      _MediaPlayerState.update { it.copy(repeatMode = repeatMode) }
     }
 
     override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
-      _currentMediaState.update { it.copy(isPlaying = playWhenReady) }
+      _MediaPlayerState.update { it.copy(isPlaying = playWhenReady) }
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-      _currentMediaState.update {
+      _MediaPlayerState.update {
         it.copy(
           mediaId = mediaItem?.mediaId ?: "",
           uri = mediaItem?.localConfiguration?.uri ?: Uri.EMPTY
@@ -88,8 +88,8 @@ class MusicServiceConnection(
 
     override fun onPlaybackStateChanged(playbackState: Int) {
       when (playbackState) {
-        Player.STATE_BUFFERING -> _currentMediaState.update { it.copy(isBuffering = true) }
-        Player.STATE_READY -> _currentMediaState.update { it.copy(isBuffering = false) }
+        Player.STATE_BUFFERING -> _MediaPlayerState.update { it.copy(isBuffering = true) }
+        Player.STATE_READY -> _MediaPlayerState.update { it.copy(isBuffering = false) }
         else -> {}
       }
     }

@@ -18,13 +18,13 @@ import com.example.mediaplayerjetpackcompose.data.util.convertByteToReadableSize
 import com.example.mediaplayerjetpackcompose.data.util.convertToKbps
 import com.example.mediaplayerjetpackcompose.data.util.extractFileExtension
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
-import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
+import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 @Composable
 fun SongDetail(
   modifier: Modifier = Modifier,
-  currentCurrentMediaState: () -> CurrentMediaState,
+  currentMediaPlayerState: () -> MediaPlayerState,
 ) {
 
   Column(
@@ -36,7 +36,7 @@ fun SongDetail(
       modifier = Modifier
         .fillMaxWidth()
         .basicMarquee(),
-      text = currentCurrentMediaState().metaData.title?.removeFileExtension() ?: "Nothing Play",
+      text = currentMediaPlayerState().metaData.title?.removeFileExtension() ?: "Nothing Play",
       fontSize = 20.sp,
       fontWeight = FontWeight.SemiBold,
       overflow = TextOverflow.Visible,
@@ -47,16 +47,16 @@ fun SongDetail(
     Text(
       modifier = Modifier
         .fillMaxWidth(),
-      text = currentCurrentMediaState().metaData.artist?.toString() ?: "Nothing Play",
+      text = currentMediaPlayerState().metaData.artist?.toString() ?: "Nothing Play",
       fontSize = 14.sp,
       fontWeight = FontWeight.Medium,
       maxLines = 1,
       color = Color.White.copy(alpha = 0.7f),
     )
     val songDetail = listOf(
-      currentCurrentMediaState().metaData.title?.toString()?.extractFileExtension() ?: "None",
-      currentCurrentMediaState().metaData.extras?.getInt(Constant.BITRATE_KEY)?.convertToKbps() ?: "None",
-      currentCurrentMediaState().metaData.extras?.getInt(Constant.SIZE_KEY)?.convertByteToReadableSize()
+      currentMediaPlayerState().metaData.title?.toString()?.extractFileExtension() ?: "None",
+      currentMediaPlayerState().metaData.extras?.getInt(Constant.BITRATE_KEY)?.convertToKbps() ?: "None",
+      currentMediaPlayerState().metaData.extras?.getInt(Constant.SIZE_KEY)?.convertByteToReadableSize()
         ?: ""
     )
     Text(
@@ -75,7 +75,7 @@ fun SongDetail(
 private fun FullScreenPreview() {
   MediaPlayerJetpackComposeTheme {
     SongDetail(
-      currentCurrentMediaState = { CurrentMediaState.Empty }
+      currentMediaPlayerState = { MediaPlayerState.Empty }
     )
     }
   }

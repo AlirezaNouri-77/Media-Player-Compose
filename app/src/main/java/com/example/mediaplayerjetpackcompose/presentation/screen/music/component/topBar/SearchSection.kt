@@ -1,6 +1,5 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,12 +23,15 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.mediaplayerjetpackcompose.R
+import kotlinx.coroutines.FlowPreview
 
+@OptIn(FlowPreview::class)
 @Composable
 fun SearchSection(
   textFieldValue: String,
   onTextFieldChange: (String) -> Unit,
   onDismiss: () -> Unit,
+  onClear: () -> Unit,
   onKeyboardFocusChange: (Boolean) -> Unit,
 ) {
 
@@ -61,15 +63,16 @@ fun SearchSection(
     },
     trailingIcon = {
       if (textFieldValue.isNotEmpty()) {
-        Icon(
-          imageVector = Icons.Rounded.Clear,
-          contentDescription = "Clear Search Field",
+        IconButton(
           modifier = Modifier
-            .size(20.dp)
-            .clickable {
-              onTextFieldChange.invoke("")
-            },
-        )
+            .size(20.dp),
+          onClick = { onClear() },
+        ) {
+          Icon(
+            imageVector = Icons.Rounded.Clear,
+            contentDescription = "Clear Search Field",
+          )
+        }
       }
     },
     leadingIcon = {

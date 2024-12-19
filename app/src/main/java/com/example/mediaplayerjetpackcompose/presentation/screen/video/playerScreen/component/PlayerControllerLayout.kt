@@ -34,7 +34,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import com.example.mediaplayerjetpackcompose.R
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
-import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
+import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
 import com.example.mediaplayerjetpackcompose.domain.model.videoSection.MiddleVideoPlayerIndicator
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
@@ -48,7 +48,7 @@ fun PlayerControllerLayout(
   currentDeviceOrientation: Int,
   playerResizeMode: Int,
   previewSlider: ImageBitmap?,
-  currentPlayerState: () -> CurrentMediaState,
+  currentPlayerState: () -> MediaPlayerState,
   currentPlayerPosition: () -> Long,
   onBackClick: () -> Unit,
   onSeekToPrevious: () -> Unit,
@@ -209,7 +209,7 @@ private fun PreviewPlayerControllerLayout() {
   MediaPlayerJetpackComposeTheme {
     PlayerControllerLayout(
       isVisible = true,
-      currentPlayerState = { CurrentMediaState.Empty },
+      currentPlayerState = { MediaPlayerState.Empty },
       onResumePlayer = {},
       onPausePlayer = {},
       onBackClick = {},

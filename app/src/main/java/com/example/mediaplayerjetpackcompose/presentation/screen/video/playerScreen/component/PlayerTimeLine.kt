@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
-import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
+import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
@@ -27,7 +27,7 @@ import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeT
 fun PlayerTimeLine(
   modifier: Modifier = Modifier,
   slidePosition: () -> Float,
-  currentState: () -> CurrentMediaState,
+  currentState: () -> MediaPlayerState,
   currentMediaPosition: Int,
   slideValueChange: (Float) -> Unit,
   slideValueChangeFinished: () -> Unit,
@@ -121,7 +121,7 @@ fun PlayerTimeLine(
 private fun PreviewPlayerTimeLine() {
   MediaPlayerJetpackComposeTheme {
     PlayerTimeLine(
-      currentState = { CurrentMediaState.Empty },
+      currentState = { MediaPlayerState.Empty },
       currentMediaPosition = 0,
       slideValueChange = {},
       slidePosition = { 0f },

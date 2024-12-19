@@ -5,7 +5,7 @@ import androidx.compose.runtime.Immutable
 import androidx.media3.common.MediaMetadata
 
 @Immutable
-data class CurrentMediaState(
+data class MediaPlayerState(
   var uri: Uri,
   val metaData: MediaMetadata,
   val mediaId: String,
@@ -14,7 +14,7 @@ data class CurrentMediaState(
   val repeatMode: Int,
 ) {
   companion object {
-    var Empty: CurrentMediaState = CurrentMediaState(
+    var Empty: MediaPlayerState = MediaPlayerState(
       isPlaying = false,
       mediaId = "",
       metaData = MediaMetadata.EMPTY,

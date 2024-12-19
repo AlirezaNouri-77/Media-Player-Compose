@@ -19,7 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.PagerThumbnailModel
-import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
+import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
 import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.PagerHandler
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.ThumbnailImage
@@ -28,7 +28,7 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 fun FullscreenPlayerPager(
   modifier: Modifier = Modifier,
   pagerItem: List<PagerThumbnailModel>,
-  currentMediaState: CurrentMediaState,
+  mediaPlayerState: MediaPlayerState,
   onPlayerAction: (action: PlayerActions) -> Unit,
   setCurrentPagerNumber: (Int) -> Unit,
   currentPagerPage: Int,
@@ -41,7 +41,7 @@ fun FullscreenPlayerPager(
   )
 
   PagerHandler(
-    currentMediaState = { currentMediaState },
+    mediaPlayerState = { mediaPlayerState },
     pagerMusicList = { pagerItem },
     currentPagerPage = { currentPagerPage },
     pagerState = pagerState,

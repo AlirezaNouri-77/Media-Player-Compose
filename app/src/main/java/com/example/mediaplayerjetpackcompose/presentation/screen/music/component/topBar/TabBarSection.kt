@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarPosition
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.MyTabIndicator
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.myCustomTabIndicator
@@ -22,12 +22,12 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.
 @Composable
 fun TabBarSection(
   modifier: Modifier = Modifier,
-  currentTabState: TabBarPosition,
-  onTabClick: (TabBarPosition, Int) -> Unit,
+  currentTabState: TabBarModel,
+  onTabClick: (TabBarModel, Int) -> Unit,
 ) {
   val indicator = @Composable { tabPosition: List<TabPosition> ->
     MyTabIndicator(
-      Modifier.myCustomTabIndicator(tabPosition[TabBarPosition.entries.indexOf(currentTabState)])
+      Modifier.myCustomTabIndicator(tabPosition[TabBarModel.entries.indexOf(currentTabState)])
     )
   }
   Card(
@@ -37,14 +37,14 @@ fun TabBarSection(
     shape = RoundedCornerShape(bottomEnd = 25.dp, bottomStart = 25.dp)
   ) {
     ScrollableTabRow(
-      selectedTabIndex = TabBarPosition.entries.indexOf(TabBarPosition.MUSIC),
+      selectedTabIndex = TabBarModel.entries.indexOf(TabBarModel.MUSIC),
       edgePadding = 30.dp,
       indicator = indicator,
       contentColor = MaterialTheme.colorScheme.onPrimary,
       containerColor = MaterialTheme.colorScheme.primaryContainer,
       divider = {}
     ) {
-      TabBarPosition.entries.forEachIndexed { index, item ->
+      TabBarModel.entries.forEachIndexed { index, item ->
         Tab(
           modifier = Modifier,
           text = {
@@ -55,7 +55,7 @@ fun TabBarSection(
             )
           },
           selected = currentTabState == item,
-          onClick = { onTabClick.invoke(item, TabBarPosition.entries.indexOf(currentTabState)) },
+          onClick = { onTabClick.invoke(item, TabBarModel.entries.indexOf(currentTabState)) },
           interactionSource = NoRippleEffect
         )
       }

@@ -3,21 +3,13 @@ package com.example.mediaplayerjetpackcompose.presentation.screen.music
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,16 +29,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarPosition
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarModel
 import com.example.mediaplayerjetpackcompose.domain.model.navigation.MusicNavigationModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.Loading
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.CategoryPage
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.HomeMusic
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.MiniMusicPlayer
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.MusicListHandler
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.FullMusicPlayer
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.TabBarSection
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.TopBarMusic
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.MusicMediaItem
 
 @Composable
 fun MusicScreen(
@@ -56,20 +44,15 @@ fun MusicScreen(
   orientation: Int = LocalConfiguration.current.orientation,
 ) {
 
-  var showSortBar by remember { mutableStateOf(false) }
   val navController: NavHostController = rememberNavController()
 
   val currentMusicState by musicPageViewModel.currentMusicState.collectAsStateWithLifecycle()
-  val favoriteMusicMediaIdList by musicPageViewModel.favoriteMusic.collectAsStateWithLifecycle()
+  val favoriteMusicMediaIdList by musicPageViewModel.favoriteMusicMediaId.collectAsStateWithLifecycle()
   val currentMusicPosition by musicPageViewModel.currentMusicPosition.collectAsStateWithLifecycle()
   val currentDeviceVolume by musicPageViewModel.currentDeviceVolume.collectAsStateWithLifecycle()
   val sortState by musicPageViewModel.sortState.collectAsStateWithLifecycle()
 
-  var isKeyboardFocus by remember { mutableStateOf(false) }
-
   var miniPlayerHeight by remember { mutableStateOf(0.dp) }
-
-  var showSearch by remember { mutableStateOf(false) }
 
   LaunchedEffect(key1 = currentMusicState.metaData) {
     musicPageViewModel.getColorPaletteFromArtwork(currentMusicState.uri)
@@ -103,109 +86,36 @@ fun MusicScreen(
     ) {
       composable<MusicNavigationModel.Home> {
 
-        Scaffold(
-          modifier = Modifier.imePadding(),
-          topBar = {
-            TopBarMusic(
-              currentTabPosition = musicPageViewModel.currentTabState,
-              onVideoIconClick = { onNavigateToVideoScreen() },
-              onSearch = { musicPageViewModel.searchMusic(it) },
-              onSortIconClick = { showSortBar = true },
-              isDropDownMenuSortExpand = showSortBar,
-              sortState = { sortState },
-              onDismiss = { showSortBar = false },
-              onSortClick = {
-                musicPageViewModel.updateSortType(it)
-                musicPageViewModel.sortMusicListByCategory(list = musicPageViewModel.musicList)
-              },
-              onOrderClick = {
-                musicPageViewModel.updateSortIsDec(!sortState.isDec)
-                musicPageViewModel.sortMusicListByCategory(list = musicPageViewModel.musicList)
-              },
-              onKeyboardFocusChange = {
-                isKeyboardFocus = it
-              },
-              isSearchShow = { showSearch },
-              onSearchClick = { showSearch = it },
-            )
+        HomeMusic(
+          listBottomPadding = miniPlayerHeight,
+          navigateTo = { navController.navigate(it) },
+          sortState = { sortState },
+          onNavigateToVideoScreen = { onNavigateToVideoScreen() },
+          favoriteMusicMediaIdList = { favoriteMusicMediaIdList },
+          currentMusicState = { currentMusicState },
+          isLoading = musicPageViewModel.isLoading,
+          musicList = musicPageViewModel.musicList,
+          searchList = musicPageViewModel.searchList,
+          categoryList = musicPageViewModel.categoryLists,
+          tabBarState = musicPageViewModel.tabBarState,
+          onTabBarClick = {
+            musicPageViewModel.tabBarState = it
           },
-        ) { paddingValue ->
-
-          Column(
-            modifier = Modifier
-              .fillMaxSize()
-              .padding(paddingValue),
-          ) {
-
-            AnimatedVisibility(
-              visible = !showSearch,
-              enter = fadeIn(tween(50)) + slideInVertically(tween(100, 50)),
-              exit = slideOutVertically(tween(400)) { -it } + fadeOut(tween(50, 400))
-            ) {
-              TabBarSection(
-                currentTabState = musicPageViewModel.currentTabState,
-                onTabClick = { tabBar, _ ->
-                  musicPageViewModel.currentTabState = tabBar
-                }
-              )
-            }
-
-            Crossfade(
-              modifier = Modifier
-                .fillMaxSize(),
-              targetState = showSearch,
-              label = "",
-            ) {
-              if (it == false) {
-                Crossfade(
-                  modifier = Modifier
-                    .fillMaxSize(),
-                  targetState = musicPageViewModel.isLoading,
-                  label = "",
-                ) { target ->
-                  if (target) {
-                    Loading(modifier = Modifier)
-                  } else {
-                    MusicListHandler(
-                      musicPageViewModel = musicPageViewModel,
-                      currentMusicState = currentMusicState,
-                      favoriteMusicMediaIdList = favoriteMusicMediaIdList.map { it.mediaId },
-                      bottomPadding = miniPlayerHeight,
-                      navigateTo = { navController.navigate(it) },
-                    )
-                  }
-                }
-              } else {
-
-                LazyColumn(
-                  modifier = Modifier
-                    .fillMaxSize(),
-                  contentPadding = PaddingValues(bottom = if (isKeyboardFocus) 0.dp else miniPlayerHeight, top = 10.dp),
-                ) {
-                  itemsIndexed(
-                    items = musicPageViewModel.searchList,
-                    key = { _, item -> item.musicId },
-                  ) { index, item ->
-                    MusicMediaItem(
-                      item = item,
-                      isFav = item.musicId.toString() in favoriteMusicMediaIdList.map { it.mediaId },
-                      currentMediaId = currentMusicState.mediaId,
-                      onItemClick = {
-                        musicPageViewModel.playMusic(
-                          index = index,
-                          musicPageViewModel.searchList
-                        )
-                      },
-                      isPlaying = currentMusicState.isPlaying,
-                    )
-                  }
-                }
-              }
-            }
-
-          }
-
-        }
+          onSearch = {
+            musicPageViewModel.searchMusic(it)
+          },
+          onItemClick = { index, list ->
+            musicPageViewModel.playMusic(index, list)
+          },
+          onSortClick = {
+            musicPageViewModel.updateSortType(it)
+            musicPageViewModel.sortMusicListByCategory(list = musicPageViewModel.musicList)
+          },
+          onOrderClick = {
+            musicPageViewModel.updateSortIsDec(!sortState.isDec)
+            musicPageViewModel.sortMusicListByCategory(list = musicPageViewModel.musicList)
+          },
+        )
 
       }
 
@@ -213,10 +123,10 @@ fun MusicScreen(
         val categoryName = backStackEntry.toRoute<MusicNavigationModel.Category>().name
 
         val itemList = remember(categoryName) {
-          when (musicPageViewModel.currentTabState) {
-            TabBarPosition.ARTIST -> musicPageViewModel.artistsMusicMap.first { it.categoryName == categoryName }.categoryList
-            TabBarPosition.ALBUM -> musicPageViewModel.albumMusicMap.first { it.categoryName == categoryName }.categoryList
-            TabBarPosition.Folder -> musicPageViewModel.folderMusicMap.first { it.categoryName == categoryName }.categoryList
+          when (musicPageViewModel.tabBarState) {
+            TabBarModel.ARTIST -> musicPageViewModel.categoryLists.artist.first { it.categoryName == categoryName }.categoryList
+            TabBarModel.ALBUM -> musicPageViewModel.categoryLists.album.first { it.categoryName == categoryName }.categoryList
+            TabBarModel.Folder -> musicPageViewModel.categoryLists.folder.first { it.categoryName == categoryName }.categoryList
             else -> emptyList()
           }
         }
@@ -224,7 +134,7 @@ fun MusicScreen(
         CategoryPage(
           name = categoryName,
           itemList = itemList,
-          currentCurrentMediaState = currentMusicState,
+          currentMediaPlayerState = currentMusicState,
           onMusicClick = { index ->
             musicPageViewModel.playMusic(
               index = index,
@@ -256,7 +166,7 @@ fun MusicScreen(
         onClick = { musicPageViewModel.isFullPlayerShow = true },
         modifier = Modifier.onGloballyPositioned { miniPlayerHeight = density.run { it.size.height.toDp() } },
         pagerMusicList = musicPageViewModel.pagerItemList,
-        currentMediaState = { currentMusicState },
+        mediaPlayerState = { currentMusicState },
         currentMusicPosition = { currentMusicPosition },
         currentPagerPage = musicPageViewModel.currentPagerPage.intValue,
         setCurrentPagerNumber = { musicPageViewModel.currentPagerPage.intValue = it },
@@ -274,14 +184,14 @@ fun MusicScreen(
         targetOffsetY = { int -> int / 4 }) + fadeOut(tween(350, 50))
     ) {
       FullMusicPlayer(
-        favoriteList = favoriteMusicMediaIdList.map { it.mediaId },
+        favoriteList = favoriteMusicMediaIdList,
         pagerMusicList = musicPageViewModel.pagerItemList,
         backgroundColorByArtwork = musicPageViewModel.musicArtworkColorPalette,
         repeatMode = currentMusicState.repeatMode,
         currentPagerPage = musicPageViewModel.currentPagerPage.intValue,
         onPlayerAction = musicPageViewModel::onPlayerAction,
         currentVolume = currentDeviceVolume,
-        currentMediaState = { currentMusicState },
+        mediaPlayerState = { currentMusicState },
         setCurrentPagerNumber = { musicPageViewModel.currentPagerPage.intValue = it },
         onBack = { musicPageViewModel.isFullPlayerShow = false },
         currentMusicPosition = { currentMusicPosition },

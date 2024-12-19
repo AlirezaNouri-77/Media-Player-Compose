@@ -5,11 +5,11 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.PagerThumbnailModel
-import com.example.mediaplayerjetpackcompose.domain.model.share.CurrentMediaState
+import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
 
 @Composable
 fun PagerHandler(
-  currentMediaState: () -> CurrentMediaState,
+  mediaPlayerState: () -> MediaPlayerState,
   pagerMusicList: () -> List<PagerThumbnailModel>,
   currentPagerPage: () -> Int,
   pagerState: PagerState,
@@ -17,8 +17,8 @@ fun PagerHandler(
   onMoveToIndex: (Int) -> Unit,
 ) {
   // when current music track is end and moved to the next music it cause mediaId change and this this execute
-  LaunchedEffect(key1 = currentMediaState().mediaId) {
-    val index = pagerMusicList().indexOfFirst { it.musicId == currentMediaState().mediaId.toLong() }
+  LaunchedEffect(key1 = mediaPlayerState().mediaId) {
+    val index = pagerMusicList().indexOfFirst { it.musicId == mediaPlayerState().mediaId.toLong() }
     if (currentPagerPage() == index && pagerState.isScrollInProgress) return@LaunchedEffect
     setCurrentPagerNumber(index)
     pagerState.animateScrollToPage(index, animationSpec = tween(durationMillis = 300))

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -42,11 +41,7 @@ fun MainNavController(
   val navHostController: NavHostController = rememberNavController()
   val navBackStackEntry by navHostController.currentBackStackEntryAsState()
 
-  val currentRoute = remember(navBackStackEntry) {
-    navBackStackEntry?.destination
-  }
-
-  if (currentRoute?.hasRoute(MainScreenNavigationModel.VideoPlayerScreen::class) == true) {
+  if (navBackStackEntry?.destination?.hasRoute(MainScreenNavigationModel.VideoPlayerScreen::class) == true) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       window.insetsController?.apply {
         hide(WindowInsets.Type.statusBars())
