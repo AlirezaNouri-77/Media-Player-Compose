@@ -1,10 +1,16 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +34,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,6 +69,10 @@ fun TopBarMusic(
 ) {
 
   val searchTextFieldValue = rememberSaveable { mutableStateOf("") }
+  val topBarColor = animateFloatAsState(
+    if (isSearchShow()) 0f else 1f, label = "",
+    animationSpec = tween(50)
+  )
 
   LaunchedEffect(
     key1 = searchTextFieldValue.value,
@@ -74,58 +85,50 @@ fun TopBarMusic(
     },
   )
 
-  TopAppBar(
-    modifier = modifier.fillMaxWidth(),
-    title = {
-      Text(
-        text = "Music",
-        modifier = Modifier,
-        fontWeight = FontWeight.Bold,
-        fontSize = 38.sp,
-      )
-    },
-    actions = {
+  AnimatedVisibility(
+    visible = isSearchShow(),
+    enter = fadeIn(tween(100)) + slideInHorizontally(tween(150, 50, easing = LinearEasing)) { it },
+    exit = slideOutHorizontally(tween(150, easing = LinearEasing)) { it } + fadeOut(tween(100,80)),
+    label = "Search AnimatedVisibility"
+  ) {
+    SearchSection(
+      textFieldValue = searchTextFieldValue.value,
+      onTextFieldChange = { searchTextFieldValue.value = it },
+      onDismiss = {
+        onDismissSearch()
+      },
+      onKeyboardFocusChange = {
+        onKeyboardFocusChange(it)
+      },
+      onClear = {
+        searchTextFieldValue.value = ""
+      }
+    )
+  }
 
-      AnimatedVisibility(
-        visible = currentTabPosition == TabBarModel.MUSIC,
-        exit = fadeOut(),
-        enter = fadeIn(),
-        label = "Actions AnimatedVisibility"
-      ) {
+  AnimatedVisibility(
+    visible = !isSearchShow(),
+    enter = fadeIn(tween(100)) + slideInHorizontally(tween(150, 80)) { -it },
+    exit = slideOutHorizontally(tween(150, easing = LinearEasing)) { -it } + fadeOut(tween(100,80)),
+    label = "TopAppBar AnimatedVisibility"
+  ) {
+    TopAppBar(
+      modifier = modifier.fillMaxWidth(),
+      title = {
+        Text(
+          text = "Music",
+          modifier = Modifier,
+          fontWeight = FontWeight.Bold,
+          fontSize = 38.sp,
+        )
+      },
+      actions = {
 
-        AnimatedVisibility(
-          visible = isSearchShow(),
-          enter = slideInHorizontally(tween(200, 40, LinearEasing)) { it * 2 },
-          exit = slideOutHorizontally(tween(150, 40, LinearEasing)) { it * 2 },
-          label = "Search AnimatedVisibility"
-        ) {
-          SearchSection(
-            textFieldValue = searchTextFieldValue.value,
-            onTextFieldChange = { searchTextFieldValue.value = it },
-            onDismiss = {
-              onDismissSearch()
-            },
-            onKeyboardFocusChange = {
-              onKeyboardFocusChange(it)
-            },
-            onClear = {
-              searchTextFieldValue.value = ""
-            }
-          )
-        }
-
-        AnimatedVisibility(
-          visible = !isSearchShow(),
-          enter = fadeIn(tween(100, 360, LinearEasing)) + slideInHorizontally(tween(150, 360)) { -it },
-          exit = slideOutHorizontally(tween(150, easing = LinearEasing)) { -it * 2 } + fadeOut(tween(120, easing = LinearEasing)),
-          label = "ActionRow AnimatedVisibility"
-        ) {
+        if (currentTabPosition == TabBarModel.MUSIC) {
           Box(
-            modifier = Modifier,
             contentAlignment = Alignment.Center,
           ) {
             Row(
-              modifier = Modifier,
               verticalAlignment = Alignment.CenterVertically,
               horizontalArrangement = Arrangement.Center
             ) {
@@ -174,14 +177,14 @@ fun TopBarMusic(
               }
             }
           }
-        }
-      }
-    },
-    colors = TopAppBarDefaults.topAppBarColors(
-      containerColor = MaterialTheme.colorScheme.primaryContainer,
-    )
-  )
 
+        }
+      },
+      colors = TopAppBarDefaults.topAppBarColors(
+        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = topBarColor.value),
+      )
+    )
+  }
 }
 
 @Preview(showBackground = true, apiLevel = 34)

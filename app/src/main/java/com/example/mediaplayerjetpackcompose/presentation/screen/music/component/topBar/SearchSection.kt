@@ -1,9 +1,11 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
@@ -43,51 +45,59 @@ fun SearchSection(
     focusRequester.requestFocus()
   }
 
-  OutlinedTextField(
-    value = textFieldValue,
-    onValueChange = { value ->
-      onTextFieldChange.invoke(value)
-    },
+  Box(
     modifier = Modifier
       .fillMaxWidth()
-      .height(50.dp)
-      .padding(horizontal = 15.dp)
-      .focusRequester(focusRequester)
-      .onFocusChanged {
-        onKeyboardFocusChange(it.isFocused)
+      .statusBarsPadding()
+  ) {
+    OutlinedTextField(
+      value = textFieldValue,
+      onValueChange = { value ->
+        onTextFieldChange.invoke(value)
       },
-    singleLine = true,
-    maxLines = 1,
-    placeholder = {
-      Text(text = "Enter a music name")
-    },
-    trailingIcon = {
-      if (textFieldValue.isNotEmpty()) {
-        IconButton(
-          modifier = Modifier
-            .size(20.dp),
-          onClick = { onClear() },
-        ) {
-          Icon(
-            imageVector = Icons.Rounded.Clear,
-            contentDescription = "Clear Search Field",
-          )
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(50.dp)
+        .padding(horizontal = 15.dp)
+        .focusRequester(focusRequester)
+        .onFocusChanged {
+          onKeyboardFocusChange(it.isFocused)
+        },
+      singleLine = true,
+      maxLines = 1,
+      placeholder = {
+        Text(text = "Enter a music name")
+      },
+      trailingIcon = {
+        if (textFieldValue.isNotEmpty()) {
+          IconButton(
+            modifier = Modifier
+              .size(20.dp),
+            onClick = { onClear() },
+          ) {
+            Icon(
+              imageVector = Icons.Rounded.Clear,
+              contentDescription = "Clear Search Field",
+            )
+          }
         }
-      }
-    },
-    leadingIcon = {
-      IconButton(onClick = { onDismiss() }, modifier = Modifier.size(35.dp)) {
-        Icon(painter = painterResource(id = R.drawable.icon_right), contentDescription = "")
-      }
-    },
-    shape = RoundedCornerShape(15.dp),
-    colors = OutlinedTextFieldDefaults.colors(
-      focusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-      unfocusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-      focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-      cursorColor = MaterialTheme.colorScheme.onPrimary,
-      focusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
-      unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
+      },
+      leadingIcon = {
+        IconButton(onClick = { onDismiss() }, modifier = Modifier.size(35.dp)) {
+          Icon(painter = painterResource(id = R.drawable.icon_right), contentDescription = "")
+        }
+      },
+      shape = RoundedCornerShape(15.dp),
+      colors = OutlinedTextFieldDefaults.colors(
+        focusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.45f),
+        unfocusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+        focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+        cursorColor = MaterialTheme.colorScheme.onPrimary,
+        focusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
+        unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
+      )
     )
-  )
+  }
+
+
 }

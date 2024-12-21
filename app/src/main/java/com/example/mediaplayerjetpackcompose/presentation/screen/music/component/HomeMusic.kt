@@ -2,6 +2,7 @@ package com.example.mediaplayerjetpackcompose.presentation.screen.music.componen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -93,8 +94,8 @@ fun HomeMusic(
 
       AnimatedVisibility(
         visible = !showSearch,
-        enter = fadeIn(tween(50)) + slideInVertically(tween(100, 20)),
-        exit = slideOutVertically(tween(100, 10)) { -it } + fadeOut(tween(50, 60))
+        enter = fadeIn(tween(100)) + slideInVertically(tween(130, 50, easing = LinearEasing)) { -it },
+        exit = slideOutVertically(tween(130, easing = LinearEasing)) { -it } + fadeOut(tween(100, 50))
       ) {
         TabBarSection(
           currentTabState = tabBarState,

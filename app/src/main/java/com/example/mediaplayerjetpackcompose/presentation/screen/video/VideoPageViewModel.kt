@@ -176,7 +176,7 @@ class VideoPageViewModel(
     _currentPlayerPosition.update { position }
   }
 
-  fun releasePlayer() = viewModelScope.launch {
+  fun releasePlayer() {
     exoPlayer.pause()
     exoPlayer.clearMediaItems()
     exoPlayer.release()
@@ -197,7 +197,7 @@ class VideoPageViewModel(
 
   override fun onCleared() {
     super.onCleared()
-  //  releasePlayer()
+    releasePlayer()
   }
 
 }
