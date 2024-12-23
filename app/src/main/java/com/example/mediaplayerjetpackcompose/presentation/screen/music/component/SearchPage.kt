@@ -1,7 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -40,7 +39,7 @@ fun SearchPage(
           onItemClick = {
             onItemClick(index)
           },
-          isPlaying = currentMusicState().isPlaying,
+          isPlaying = { currentMusicState().isPlaying },
         )
       }
     }

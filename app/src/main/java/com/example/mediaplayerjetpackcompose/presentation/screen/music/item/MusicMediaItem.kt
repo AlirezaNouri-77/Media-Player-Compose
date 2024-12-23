@@ -40,9 +40,9 @@ import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeT
 @Composable
 fun MusicMediaItem(
   item: MusicModel,
-  isPlaying: Boolean,
   isFav: Boolean,
   currentMediaId: String,
+  isPlaying: () -> Boolean,
   contentColor: Color = MaterialTheme.colorScheme.onPrimary,
   onItemClick: () -> Unit,
 ) {
@@ -76,7 +76,7 @@ fun MusicMediaItem(
               .clip(RoundedCornerShape(5.dp))
               .background(color = Color.Black.copy(alpha = 0.4f)),
             size = 55.dp,
-            enable = isPlaying,
+            enable = isPlaying(),
           )
         }
       }
@@ -151,7 +151,7 @@ private fun PreviewMusicMediaItem() {
         album = "Example",
         folderName = "",
       ),
-      isPlaying = false,
+      isPlaying = { false },
       isFav = true,
       currentMediaId = "",
       onItemClick = {}

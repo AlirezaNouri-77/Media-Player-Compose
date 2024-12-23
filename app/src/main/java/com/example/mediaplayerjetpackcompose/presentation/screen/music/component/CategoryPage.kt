@@ -94,7 +94,7 @@ fun CategoryPage(
           onItemClick = {
             onMusicClick.invoke(index)
           },
-          isPlaying =  currentMediaPlayerState.isPlaying ,
+          isPlaying = { currentMediaPlayerState.isPlaying } ,
         )
       }
     }
