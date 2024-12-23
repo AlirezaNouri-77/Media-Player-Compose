@@ -57,7 +57,7 @@ class MusicPageViewModel(
 
   var musicArtworkColorPalette by mutableIntStateOf(MediaThumbnailUtil.DefaultColorPalette)
 
-  var tabBarState by mutableStateOf(TabBarModel.MUSIC)
+  var tabBarState by mutableStateOf(TabBarModel.HOME)
 
   var isFullPlayerShow by mutableStateOf(false)
 

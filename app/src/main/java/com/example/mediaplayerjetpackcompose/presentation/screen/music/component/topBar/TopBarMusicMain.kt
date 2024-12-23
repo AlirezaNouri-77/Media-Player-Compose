@@ -1,16 +1,11 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Arrangement
@@ -69,10 +64,6 @@ fun TopBarMusic(
 ) {
 
   val searchTextFieldValue = rememberSaveable { mutableStateOf("") }
-  val topBarColor = animateFloatAsState(
-    if (isSearchShow()) 0f else 1f, label = "",
-    animationSpec = tween(50)
-  )
 
   LaunchedEffect(
     key1 = searchTextFieldValue.value,
@@ -88,7 +79,7 @@ fun TopBarMusic(
   AnimatedVisibility(
     visible = isSearchShow(),
     enter = fadeIn(tween(100)) + slideInHorizontally(tween(150, 50, easing = LinearEasing)) { it },
-    exit = slideOutHorizontally(tween(150, easing = LinearEasing)) { it } + fadeOut(tween(100,80)),
+    exit = slideOutHorizontally(tween(150, easing = LinearEasing)) { it } + fadeOut(tween(100, 80)),
     label = "Search AnimatedVisibility"
   ) {
     SearchSection(
@@ -109,7 +100,7 @@ fun TopBarMusic(
   AnimatedVisibility(
     visible = !isSearchShow(),
     enter = fadeIn(tween(100)) + slideInHorizontally(tween(150, 80)) { -it },
-    exit = slideOutHorizontally(tween(150, easing = LinearEasing)) { -it } + fadeOut(tween(100,80)),
+    exit = slideOutHorizontally(tween(150, easing = LinearEasing)) { -it } + fadeOut(tween(100, 80)),
     label = "TopAppBar AnimatedVisibility"
   ) {
     TopAppBar(
@@ -124,24 +115,26 @@ fun TopBarMusic(
       },
       actions = {
 
-        if (currentTabPosition == TabBarModel.MUSIC) {
-          Box(
-            contentAlignment = Alignment.Center,
+        Box(
+          modifier = Modifier,
+          contentAlignment = Alignment.Center,
+        ) {
+          AnimatedContent(targetState = currentTabPosition == TabBarModel.HOME, label = "") { boolean ->
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
           ) {
-            Row(
-              verticalAlignment = Alignment.CenterVertically,
-              horizontalArrangement = Arrangement.Center
+            IconButton(
+              onClick = { onVideoIconClick.invoke() },
             ) {
-              IconButton(
-                onClick = { onVideoIconClick.invoke() },
-              ) {
-                Icon(
-                  modifier = Modifier.size(24.dp),
-                  painter = painterResource(id = R.drawable.icon_video),
-                  contentDescription = "video Icon",
-                  tint = MaterialTheme.colorScheme.onPrimary,
-                )
-              }
+              Icon(
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(id = R.drawable.icon_video),
+                contentDescription = "video Icon",
+                tint = MaterialTheme.colorScheme.onPrimary,
+              )
+            }
+            if (boolean) {
               Box(
                 modifier = Modifier
                   .wrapContentSize(Alignment.TopEnd)
@@ -164,24 +157,27 @@ fun TopBarMusic(
                   onOrderClick = { onOrderClick() }
                 )
               }
-              IconButton(
-                onClick = { onSearchClick(true) },
-              ) {
-                Icon(
-                  painter = painterResource(id = R.drawable.icon_search_24),
-                  contentDescription = "Search Icon",
-                  modifier = Modifier
-                    .size(24.dp),
-                  tint = MaterialTheme.colorScheme.onPrimary,
-                )
-              }
+            }
+
+            IconButton(
+              onClick = { onSearchClick(true) },
+            ) {
+              Icon(
+                painter = painterResource(id = R.drawable.icon_search_24),
+                contentDescription = "Search Icon",
+                modifier = Modifier
+                  .size(24.dp),
+                tint = MaterialTheme.colorScheme.onPrimary,
+              )
             }
           }
+        }
 
         }
+
       },
       colors = TopAppBarDefaults.topAppBarColors(
-        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = topBarColor.value),
+        containerColor = Color.Transparent,
       )
     )
   }
@@ -195,7 +191,7 @@ private fun PreviewTopBarMusic() {
       mutableStateOf(false)
     }
     TopBarMusic(
-      currentTabPosition = TabBarModel.MUSIC,
+      currentTabPosition = TabBarModel.HOME,
       onSearch = {},
       onVideoIconClick = {},
       onSortIconClick = {},
