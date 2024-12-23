@@ -93,123 +93,131 @@ fun MiniMusicPlayer(
     interactionSource = NoRippleEffect,
   ) {
 
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.SpaceAround,
+    Column(
       modifier = Modifier
         .navigationBarsPadding()
         .fillMaxWidth()
         .padding(horizontal = 6.dp, vertical = 5.dp),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      ThumbnailImage(
-        modifier = Modifier
-          .weight(0.2f, false)
-          .size(55.dp)
-          .clip(RoundedCornerShape(5.dp)),
-        uri = mediaPlayerState().metaData.artworkUri,
-      )
-      Column(
-        modifier = Modifier
-          .fillMaxWidth()
-          .weight(0.7f),
-        verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.Start,
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
       ) {
-        Box(
+        ThumbnailImage(
           modifier = Modifier
-            .fillMaxWidth(),
-          contentAlignment = Alignment.Center,
+            .weight(0.2f, false)
+            .size(55.dp)
+            .clip(RoundedCornerShape(5.dp)),
+          uri = mediaPlayerState().metaData.artworkUri,
+        )
+        Column(
+          modifier = Modifier
+            .fillMaxWidth()
+            .weight(0.7f),
+          verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically),
+          horizontalAlignment = Alignment.Start,
         ) {
-          HorizontalPager(
-            modifier = Modifier.fillMaxWidth(),
-            state = pagerState,
-            pageSpacing = 20.dp,
-            beyondViewportPageCount = 2,
-            contentPadding = PaddingValues(horizontal = 10.dp)
-          ) { page ->
-            Column(
-              modifier = Modifier
-                .fillMaxWidth(0.95f),
-            ) {
-              Text(
-                text = pagerMusicList[page].name.removeFileExtension(),
-                fontSize = 13.sp,
+          Box(
+            modifier = Modifier
+              .fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+          ) {
+            HorizontalPager(
+              modifier = Modifier.fillMaxWidth(),
+              state = pagerState,
+              pageSpacing = 20.dp,
+              beyondViewportPageCount = 2,
+              contentPadding = PaddingValues(horizontal = 10.dp)
+            ) { page ->
+              Column(
                 modifier = Modifier
-                  .fillMaxWidth()
-                  .basicMarquee(iterations = marqueeAnimate, initialDelayMillis = 500),
-                maxLines = 1,
-              )
-              Text(
-                text = pagerMusicList[page].artist,
-                fontSize = 12.sp,
-                modifier = Modifier
-                  .fillMaxWidth(),
-                maxLines = 1,
-              )
+                  .fillMaxWidth(0.95f),
+              ) {
+                Text(
+                  text = pagerMusicList[page].name.removeFileExtension(),
+                  fontSize = 13.sp,
+                  modifier = Modifier
+                    .fillMaxWidth()
+                    .basicMarquee(iterations = marqueeAnimate, initialDelayMillis = 500),
+                  maxLines = 1,
+                )
+                Text(
+                  text = pagerMusicList[page].artist,
+                  fontSize = 12.sp,
+                  modifier = Modifier
+                    .fillMaxWidth(),
+                  maxLines = 1,
+                )
+              }
             }
           }
         }
-        Row(
-          modifier = Modifier.fillMaxWidth().wrapContentHeight(),
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterHorizontally),
+        IconButton(
+          modifier = Modifier
+            .weight(0.1f)
+            .padding(7.dp),
+          onClick = {
+            when (mediaPlayerState().isPlaying) {
+              true -> onPlayerAction(PlayerActions.PausePlayer)
+              false -> onPlayerAction(PlayerActions.ResumePlayer)
+            }
+          },
+          interactionSource = NoRippleEffect,
         ) {
-          Text(
-            modifier = Modifier,
-            text = currentMusicPosition().convertMilliSecondToTime(),
-            fontSize = 11.sp,
-            color = MaterialTheme.colorScheme.onPrimary,
-            fontWeight = FontWeight.Medium,
-          )
-          Box(
-            modifier = Modifier
-              .fillMaxWidth()
-              .weight(0.8f)
-              .height(4.dp)
-              .graphicsLayer {
-                shape = RoundedCornerShape(4.dp)
-                clip = true
-              }
-              .drawBehind {
-                val size = this.size.width
-                val progress = (currentMusicPosition() * size) / (mediaPlayerState().metaData.extras?.getInt(Constant.DURATION_KEY) ?: 0)
-                drawRoundRect(color = reactCanvasColor.copy(alpha = 0.1f))
-                clipRect(
-                  right = progress,
-                ) {
-                  this.drawRect(color = reactCanvasColor)
-                }
-              },
-          )
-          Text(
-            modifier = Modifier,
-            text = mediaPlayerState().metaData.extras?.getInt(Constant.DURATION_KEY).convertMilliSecondToTime(),
-            fontSize = 11.sp,
-            color = MaterialTheme.colorScheme.onPrimary,
-            fontWeight = FontWeight.Medium,
+          Icon(
+            modifier = Modifier.size(22.dp),
+            painter = painterResource(id = if (mediaPlayerState().isPlaying) R.drawable.icon_pause else R.drawable.icon_play),
+            contentDescription = "",
+            tint = MaterialTheme.colorScheme.onPrimary,
           )
         }
       }
-
-      IconButton(
-        modifier = Modifier.weight(0.1f).padding(7.dp),
-        onClick = {
-          when (mediaPlayerState().isPlaying) {
-            true -> onPlayerAction(PlayerActions.PausePlayer)
-            false -> onPlayerAction(PlayerActions.ResumePlayer)
-          }
-        },
-        interactionSource = NoRippleEffect,
+      Row(
+        modifier = Modifier
+          .fillMaxWidth(0.7f)
+          .wrapContentHeight(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
       ) {
-        Icon(
-          modifier = Modifier.size(22.dp),
-          painter = painterResource(id = if (mediaPlayerState().isPlaying) R.drawable.icon_pause else R.drawable.icon_play),
-          contentDescription = "",
-          tint = MaterialTheme.colorScheme.onPrimary,
+        Text(
+          modifier = Modifier,
+          text = currentMusicPosition().convertMilliSecondToTime(),
+          fontSize = 13.sp,
+          color = MaterialTheme.colorScheme.onPrimary,
+          fontWeight = FontWeight.Medium,
+        )
+        Box(
+          modifier = Modifier
+            .fillMaxWidth()
+            .weight(0.8f)
+            .height(4.dp)
+            .graphicsLayer {
+              shape = RoundedCornerShape(4.dp)
+              clip = true
+            }
+            .drawBehind {
+              val size = this.size.width
+              val progress = (currentMusicPosition() * size) / (mediaPlayerState().metaData.extras?.getInt(Constant.DURATION_KEY) ?: 0)
+              drawRoundRect(color = reactCanvasColor.copy(alpha = 0.1f))
+              clipRect(
+                right = progress,
+              ) {
+                this.drawRect(color = reactCanvasColor)
+              }
+            },
+        )
+        Text(
+          modifier = Modifier,
+          text = mediaPlayerState().metaData.extras?.getInt(Constant.DURATION_KEY).convertMilliSecondToTime(),
+          fontSize = 13.sp,
+          color = MaterialTheme.colorScheme.onPrimary,
+          fontWeight = FontWeight.Medium,
         )
       }
-
     }
+
   }
 }
 
