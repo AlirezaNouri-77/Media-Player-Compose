@@ -71,6 +71,8 @@ dependencies {
   androidTestImplementation(libs.androidx.ui.test.junit4)
   debugImplementation(libs.androidx.ui.test.manifest)
 
+  debugImplementation(libs.squareup.leakcanary)
+
   implementation(libs.androidx.media3.exoplayer)
   implementation(libs.androidx.media3.exoplayer.dash)
   implementation(libs.androidx.media3.ui)
@@ -92,6 +94,7 @@ dependencies {
 
   implementation(libs.koin.android)
   implementation(libs.koin.androidx.compose)
+  implementation(libs.koin.android.viewmodel)
 
   implementation(libs.coil.compose)
   implementation(libs.coil.video)
