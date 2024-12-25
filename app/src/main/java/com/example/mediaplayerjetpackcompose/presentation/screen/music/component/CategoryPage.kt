@@ -23,6 +23,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -35,7 +36,7 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.Musi
 @Composable
 fun CategoryPage(
   name: String,
-  itemList:List<MusicModel>,
+  itemList: List<MusicModel>,
   currentMediaPlayerState: MediaPlayerState,
   onMusicClick: (index: Int) -> Unit,
   miniPlayerHeight: Dp,
@@ -44,36 +45,30 @@ fun CategoryPage(
 
   Scaffold(
     topBar = {
-      Card(
-        modifier = Modifier
-          .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        shape = RoundedCornerShape(bottomEnd = 25.dp, bottomStart = 25.dp),
-      ) {
-        TopAppBar(
-          title = {
-            Text(
-              modifier = Modifier.basicMarquee(),
-              text = name,
-              fontSize = 18.sp,
-              fontWeight = FontWeight.SemiBold,
-            )
-          },
-          navigationIcon = {
-            IconButton(onClick = { onBackClick.invoke() }) {
-              Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                contentDescription = "",
-                modifier = Modifier
-                  .size(35.dp),
-              )
-            }
-          },
-          colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
+      TopAppBar(
+        title = {
+          Text(
+            modifier = Modifier.basicMarquee(),
+            text = name,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold,
           )
+        },
+        navigationIcon = {
+          IconButton(onClick = { onBackClick.invoke() }) {
+            Icon(
+              imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+              contentDescription = "",
+              modifier = Modifier
+                .size(35.dp),
+            )
+          }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+          containerColor = Color.Transparent,
+          titleContentColor = MaterialTheme.colorScheme.onPrimary,
         )
-      }
+      )
     },
   ) { innerPadding ->
 
@@ -89,12 +84,12 @@ fun CategoryPage(
       ) { index, item ->
         MusicMediaItem(
           item = item,
-          isFav =  false ,
+          isFav = false,
           currentMediaId = currentMediaPlayerState.mediaId,
           onItemClick = {
             onMusicClick.invoke(index)
           },
-          isPlaying = { currentMediaPlayerState.isPlaying } ,
+          isPlaying = { currentMediaPlayerState.isPlaying },
         )
       }
     }
