@@ -83,7 +83,7 @@ fun MainNavController(
         navHostController = navHostController,
         videoPageViewModel = videoPageViewModel,
         onNavigateToMusicScreen = {
-          navHostController.navigate(MainScreenNavigationModel.MusicScreen)
+          navHostController.popBackStack()
         },
       )
     }

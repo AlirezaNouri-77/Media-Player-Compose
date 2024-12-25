@@ -38,6 +38,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.koin.dsl.koinApplication
 
 @OptIn(UnstableApi::class)
 class VideoPageViewModel(
@@ -60,6 +61,8 @@ class VideoPageViewModel(
   private var getThumbnailJob: Job? = null
   private var currentPlayerPositionJob: Job? = null
 
+  lateinit var playerListener: Player.Listener
+
   private var _currentState = MutableStateFlow(MediaPlayerState.Empty)
   val mediaPlayerState: StateFlow<MediaPlayerState> = _currentState.asStateFlow()
 
@@ -77,34 +80,33 @@ class VideoPageViewModel(
 
   init {
     exoPlayer.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT
-    exoPlayer.addListener(
-      object : Player.Listener {
+    playerListener = object : Player.Listener {
 
-        override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
-          _currentState.update { it.copy(isPlaying = playWhenReady) }
-        }
+      override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+        _currentState.update { it.copy(isPlaying = playWhenReady) }
+      }
 
-        override fun onPlaybackStateChanged(playbackState: Int) {
-          when (playbackState) {
-            Player.STATE_BUFFERING -> _currentState.update { it.copy(isBuffering = true) }
-            Player.STATE_READY -> _currentState.update { it.copy(isBuffering = false) }
-            else -> {}
-          }
+      override fun onPlaybackStateChanged(playbackState: Int) {
+        when (playbackState) {
+          Player.STATE_BUFFERING -> _currentState.update { it.copy(isBuffering = true) }
+          Player.STATE_READY -> _currentState.update { it.copy(isBuffering = false) }
+          else -> {}
         }
+      }
 
-        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-          viewModelScope.launch {
-            _currentState.update { it.copy(uri = mediaItem?.localConfiguration?.uri ?: Uri.EMPTY) }
-          }
+      override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+        viewModelScope.launch {
+          _currentState.update { it.copy(uri = mediaItem?.localConfiguration?.uri ?: Uri.EMPTY) }
         }
+      }
 
-        override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-          viewModelScope.launch {
-            _currentState.update { it.copy(metaData = mediaMetadata) }
-          }
+      override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+        viewModelScope.launch {
+          _currentState.update { it.copy(metaData = mediaMetadata) }
         }
-      },
-    )
+      }
+    }
+    exoPlayer.addListener(playerListener)
   }
 
   fun getSliderPreviewThumbnail(position: Long) {
@@ -146,7 +148,7 @@ class VideoPageViewModel(
   }
 
   private fun getCurrentMediaPosition() {
-    currentPlayerPositionJob = viewModelScope.launch{
+    currentPlayerPositionJob = viewModelScope.launch {
       while (currentCoroutineContext().isActive && currentPlayerPositionJob?.isActive == true) {
         delay(50L)
         if (exoPlayer.isPlaying) {
@@ -179,6 +181,7 @@ class VideoPageViewModel(
   fun releasePlayer() {
     exoPlayer.pause()
     exoPlayer.clearMediaItems()
+    exoPlayer.removeListener(playerListener)
     exoPlayer.release()
   }
 
@@ -201,5 +204,3 @@ class VideoPageViewModel(
   }
 
 }
-
-

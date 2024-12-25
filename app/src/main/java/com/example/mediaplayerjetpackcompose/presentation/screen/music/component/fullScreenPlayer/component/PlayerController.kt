@@ -42,7 +42,7 @@ fun SongController(
   onFavoriteToggle: () -> Unit,
 ) {
 
-  val favIcon = remember(mediaPlayerState().mediaId) {
+  val favIcon = remember(mediaPlayerState().mediaId, favoriteList.size) {
     when (mediaPlayerState().mediaId in favoriteList) {
       true -> Icons.Default.Favorite
       false -> Icons.Default.FavoriteBorder

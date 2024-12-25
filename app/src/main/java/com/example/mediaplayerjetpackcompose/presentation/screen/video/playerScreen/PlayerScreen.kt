@@ -112,7 +112,6 @@ fun VideoPlayer(
   DisposableEffect(key1 = lifecycleOwner, effect = {
     val observe = LifecycleEventObserver { _, event ->
       when (event) {
-        Lifecycle.Event.ON_DESTROY -> videoPageViewModel.releasePlayer()
         Lifecycle.Event.ON_START -> videoPageViewModel.resumePlayer()
         Lifecycle.Event.ON_STOP -> videoPageViewModel.pausePlayer()
         else -> {}

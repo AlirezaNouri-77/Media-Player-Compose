@@ -16,8 +16,11 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.scopedOf
+import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 
 var appModule = module {
@@ -28,17 +31,18 @@ var appModule = module {
       AppDataBase::class.java, "DataBase_MediaPlayer",
     ).build()
   }
-  single { ExoPlayer.Builder(androidApplication().applicationContext).build() }
+
+  factory { ExoPlayer.Builder(androidApplication().applicationContext).build() }
   single { get<AppDataBase>().dataBaseDao() }
   single { MediaThumbnailUtil(androidApplication().applicationContext) }
 
   single { DeviceVolumeManager(androidApplication().applicationContext) }
 
-  single { MediaThumbnailUtil(androidContext()) }
+  single { MediaThumbnailUtil(androidApplication().applicationContext) }
   single { GetMediaMetaData(get()) }
 
-  single<MediaStoreRepositoryImpl<MusicModel>>(named("musicRepo")) { MusicMediaStoreRepository(androidContext().contentResolver) }
-  single<MediaStoreRepositoryImpl<VideoItemModel>> { VideoMediaStoreRepository(androidContext().contentResolver) }
+  single<MediaStoreRepositoryImpl<MusicModel>>(named("musicRepo")) { MusicMediaStoreRepository(androidApplication().applicationContext.contentResolver) }
+  single<MediaStoreRepositoryImpl<VideoItemModel>> { VideoMediaStoreRepository(androidApplication().applicationContext.contentResolver) }
   single { MusicServiceConnection(androidApplication().applicationContext) }
 
   viewModel { MusicPageViewModel(get(named("musicRepo")), get(), get(), get(), get()) }

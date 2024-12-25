@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -24,9 +25,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,13 +50,17 @@ class MainActivity : ComponentActivity() {
     enableEdgeToEdge()
     super.onCreate(savedInstanceState)
 
-    var permissionState by mutableStateOf(PermissionState.Initial)
-
     setContent {
       MediaPlayerJetpackComposeTheme {
         Surface(
           color = MaterialTheme.colorScheme.background,
         ) {
+
+          var permissionState by remember {
+            mutableStateOf(PermissionState.Initial)
+          }
+
+          var context = LocalContext.current
 
           intent?.let { mIntent ->
             if (mIntent.action == Intent.ACTION_VIEW) {
@@ -62,12 +69,14 @@ class MainActivity : ComponentActivity() {
               VideoPlayer(
                 videoUri = videoUri.toString(),
                 videoPageViewModel = videoPageViewModel,
-                onBackClick = { this.finishAffinity() })
+                onBackClick = {
+                  this.finishAffinity()
+                }
+              )
             } else {
 
               CheckPermission(
                 permission = musicPermission,
-                context = this,
                 shouldShowPermissionRationale = {
                   permissionState = PermissionState.ShouldShowRationale
                 },
@@ -87,14 +96,14 @@ class MainActivity : ComponentActivity() {
                 PermissionState.NotGrant -> {
 
                   var activityResult = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                    if (this@MainActivity.isPermissionGrant(musicPermission)) permissionState = PermissionState.Grant
+                    if (context.isPermissionGrant(musicPermission)) permissionState = PermissionState.Grant
                   }
 
                   ShowMessage(
                     message = "The permission to access music is denied",
                     actionMessage = "Open Setting",
                     onAction = {
-                      this.openSetting(activityResult)
+                      context.openSetting(activityResult)
                     }
                   )
 
@@ -170,10 +179,10 @@ private fun ShowMessage(
 @Composable
 fun CheckPermission(
   permission: String,
-  context: Context,
   shouldShowPermissionRationale: () -> Unit,
   onGrant: () -> Unit,
   onDenied: () -> Unit,
+  context: Context = LocalContext.current,
 ) {
 
   val activityResult = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGrant ->
