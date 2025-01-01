@@ -40,7 +40,7 @@ fun decoupledConstraintLayout(
       constrain(songDetail) {
         start.linkTo(startGuideLine)
         end.linkTo(endGuideLine)
-        bottom.linkTo(slider.top, margin = 15.dp)
+        bottom.linkTo(slider.top, margin = 28.dp)
         width = Dimension.fillToConstraints
       }
       constrain(slider) {
@@ -65,8 +65,8 @@ fun decoupledConstraintLayout(
     } else {
 
       val bottomGuideline = createGuidelineFromBottom(30.dp)
-      val topGuideline = createGuidelineFromTop(40.dp)
-      val endGuideLine = createGuidelineFromEnd(40.dp)
+      val topGuideline = createGuidelineFromTop(30.dp)
+      val endGuideLine = createGuidelineFromEnd(30.dp)
 
       constrain(headerRef) {
         top.linkTo(topGuideline)
@@ -82,7 +82,7 @@ fun decoupledConstraintLayout(
       constrain(songDetail) {
         start.linkTo(slider.start)
         end.linkTo(slider.end)
-        bottom.linkTo(slider.top, margin = 5.dp)
+        bottom.linkTo(slider.top, margin = 10.dp)
         width = Dimension.fillToConstraints
       }
       constrain(slider) {
