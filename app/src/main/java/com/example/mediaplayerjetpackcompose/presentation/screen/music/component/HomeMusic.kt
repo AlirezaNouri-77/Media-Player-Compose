@@ -78,12 +78,16 @@ fun HomeMusic(
   var showSearch by remember { mutableStateOf(false) }
   var showSortBar by remember { mutableStateOf(false) }
   val pagerState = rememberPagerState(pageCount = { TabBarModel.entries.size })
-  var listState = rememberLazyListState()
+  var listStates = TabBarModel.entries.map {
+    rememberLazyListState()
+  }
   var tabBarHeight = remember { mutableStateOf(0.dp) }
 
   var shouldHideTabBar = remember {
     derivedStateOf {
-      listState.isScrollInProgress && listState.firstVisibleItemIndex >= 3
+      listStates[pagerState.currentPage].isScrollInProgress
+           && (listStates[pagerState.currentPage].firstVisibleItemIndex >= 3)
+           && (pagerState.currentPage == 0)
     }
   }
 
@@ -177,7 +181,7 @@ fun HomeMusic(
 
                   if (list.isNotEmpty()) {
                     LazyColumn(
-                      state = listState,
+                      state = listStates[page],
                       modifier = Modifier
                         .fillMaxSize(),
                       contentPadding = PaddingValues(bottom = listBottomPadding, top = tabBarHeight.value + 8.dp),
@@ -212,7 +216,7 @@ fun HomeMusic(
                   }
                   if (list.isNotEmpty()) {
                     LazyColumn(
-                      state = listState,
+                      state = listStates[page],
                       modifier = Modifier
                         .fillMaxSize(),
                       contentPadding = PaddingValues(bottom = listBottomPadding, top = tabBarHeight.value + 8.dp),
