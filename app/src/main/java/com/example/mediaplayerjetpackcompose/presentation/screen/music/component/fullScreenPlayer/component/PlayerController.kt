@@ -2,6 +2,8 @@ package com.example.mediaplayerjetpackcompose.presentation.screen.music.componen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -14,8 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -50,9 +50,9 @@ fun SongController(
   }
 
   Row(
-    modifier = modifier,
+    modifier = modifier.fillMaxWidth(),
     verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+    horizontalArrangement = Arrangement.SpaceEvenly,
   ) {
     ButtonOfFullScreenPlayer(
       icon = favIcon,
@@ -69,16 +69,9 @@ fun SongController(
       },
     )
     ButtonOfFullScreenPlayer(
-      modifier = Modifier
-        .drawBehind {
-          drawRoundRect(
-            color = Color.White.copy(alpha = 0.3f),
-            cornerRadius = CornerRadius(x = 30f),
-          )
-        }
-        .padding(horizontal = 7.dp),
+      modifier = Modifier.padding(horizontal = 5.dp),
       icon = if (mediaPlayerState().isPlaying) R.drawable.icon_pause else R.drawable.icon_play,
-      size = DpSize(37.dp, 42.dp),
+      size = DpSize(42.dp, 42.dp),
       contentDescription = "Play and Pause",
       onClick = {
         when (mediaPlayerState().isPlaying) {
@@ -125,7 +118,7 @@ private fun ButtonOfFullScreenPlayer(
   onClick: () -> Unit,
 ) {
   IconButton(
-    modifier = modifier,
+    modifier = modifier.size(size),
     onClick = { onClick.invoke() },
     interactionSource = NoRippleEffect,
     colors = IconButtonDefaults.iconButtonColors(
@@ -135,13 +128,13 @@ private fun ButtonOfFullScreenPlayer(
   ) {
     if (icon is Int) {
       Icon(
-        modifier = Modifier.size(size),
+        modifier = Modifier.fillMaxSize(0.9f),
         imageVector = ImageVector.vectorResource(icon),
         contentDescription = contentDescription,
       )
     } else if (icon is ImageVector) {
       Icon(
-        modifier = Modifier.size(size),
+        modifier = Modifier.fillMaxSize(0.9f),
         imageVector = icon,
         contentDescription = contentDescription,
       )

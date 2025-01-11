@@ -1,8 +1,5 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -11,8 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,9 +28,10 @@ import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeT
 
 @Composable
 fun FullMusicPlayer(
-  backgroundColorByArtwork: Int,
+  modifier: Modifier,
   repeatMode: Int,
   currentPagerPage: Int,
+  musicArtWorkColorAnimation: () -> Color,
   mediaPlayerState: () -> MediaPlayerState,
   currentMusicPosition: () -> Long,
   favoriteList: List<String>,
@@ -49,33 +45,19 @@ fun FullMusicPlayer(
   onVolumeChange: (Float) -> Unit,
 ) {
 
-  val animateColor = animateColorAsState(
-    targetValue = Color(backgroundColorByArtwork),
-    animationSpec = tween(durationMillis = 250, delayMillis = 80),
-    label = "",
-  )
-
   ConstraintLayout(
-    modifier = Modifier
+    modifier = modifier
       .fillMaxSize()
       .drawWithCache {
         onDrawBehind {
           drawRect(Color.Black)
           drawRect(
             Brush.verticalGradient(
-              0.4f to animateColor.value.copy(alpha = 0.8f),
-              0.7f to animateColor.value.copy(alpha = 0.3f),
+              0.4f to musicArtWorkColorAnimation().copy(alpha = 0.8f),
+              0.7f to musicArtWorkColorAnimation().copy(alpha = 0.3f),
               1f to Color.Black,
             )
           )
-        }
-      }
-      .pointerInput(Unit) {
-        this.detectDragGestures { change, dragAmount ->
-          change.changedToUpIgnoreConsumed()
-          if (dragAmount.y > 80f) {
-            onBack.invoke()
-          }
         }
       }
       .displayCutoutPadding()
@@ -140,9 +122,9 @@ fun FullMusicPlayer(
 private fun FullScreenPreview() {
   MediaPlayerJetpackComposeTheme {
     FullMusicPlayer(
+      modifier = Modifier,
       favoriteList = emptyList(),
       mediaPlayerState = { MediaPlayerState.Empty },
-      backgroundColorByArtwork = MediaThumbnailUtil.DefaultColorPalette,
       repeatMode = 0,
       currentMusicPosition = { 10000L },
       currentPagerPage = 0,
@@ -153,6 +135,7 @@ private fun FullScreenPreview() {
       maxDeviceVolume = 10,
       currentVolume = 2,
       onVolumeChange = {},
+      musicArtWorkColorAnimation = { Color(MediaThumbnailUtil.DefaultColorPalette) }
     )
   }
 }

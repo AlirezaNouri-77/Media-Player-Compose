@@ -1,6 +1,9 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +27,7 @@ import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.PagerHandler
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.ThumbnailImage
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun FullscreenPlayerPager(
   modifier: Modifier = Modifier,
@@ -54,13 +58,16 @@ fun FullscreenPlayerPager(
     contentAlignment = Alignment.Center,
   ) {
     HorizontalPager(
-      modifier =  if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-        Modifier
-          .fillMaxWidth()
-          .height(360.dp)
-      } else {
-        Modifier.size(250.dp)
-      },
+      modifier = Modifier
+        .then(
+          if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Modifier
+              .fillMaxWidth()
+              .height(360.dp)
+          } else {
+            Modifier.size(250.dp)
+          }
+        ),
       beyondViewportPageCount = 1,
       state = pagerState,
       pageSpacing = 10.dp,

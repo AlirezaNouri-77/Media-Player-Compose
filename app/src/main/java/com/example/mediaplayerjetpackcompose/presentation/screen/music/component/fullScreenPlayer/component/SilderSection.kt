@@ -128,7 +128,7 @@ fun SliderSection(
               sliderState = sliderState,
               modifier = modifier
                 .height(sliderTrackHeight)
-                .clip(RoundedCornerShape(10.dp)),
+                .clip(RoundedCornerShape(5.dp)),
               colors = SliderDefaults.colors(
                 activeTrackColor = Color.White,
                 inactiveTrackColor = Color.White.copy(alpha = 0.2f),

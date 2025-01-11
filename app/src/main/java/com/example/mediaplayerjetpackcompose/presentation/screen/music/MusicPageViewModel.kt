@@ -59,8 +59,6 @@ class MusicPageViewModel(
 
   var tabBarState by mutableStateOf(TabBarModel.HOME)
 
-  var isFullPlayerShow by mutableStateOf(false)
-
   var currentPagerPage = mutableIntStateOf(0)
 
   var pagerItemList = mutableStateListOf<PagerThumbnailModel>()
@@ -192,7 +190,7 @@ class MusicPageViewModel(
   }
 
   private fun moveToNext() {
-    val hasNextItem = musicServiceConnection.mediaController?.hasNextMediaItem() ?: false
+    val hasNextItem = musicServiceConnection.mediaController?.hasNextMediaItem() == true
     if (!hasNextItem) return
     musicServiceConnection.mediaController?.apply {
       seekToNext()
@@ -204,7 +202,7 @@ class MusicPageViewModel(
   }
 
   private fun moveToPrevious(seekToStart: Boolean = false) {
-    val hasPreviewItem = musicServiceConnection.mediaController?.hasNextMediaItem() ?: false
+    val hasPreviewItem = musicServiceConnection.mediaController?.hasNextMediaItem() == true
     if (!hasPreviewItem) return
 
     if (_currentMusicPosition.value <= 15_000 || seekToStart) {
