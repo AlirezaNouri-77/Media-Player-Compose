@@ -41,7 +41,7 @@ fun FullscreenPlayerPager(
   )
 
   PagerHandler(
-    mediaPlayerState = { mediaPlayerState },
+    currentPlayerMediaId = mediaPlayerState.mediaId.toLong(),
     pagerMusicList = { pagerItem },
     currentPagerPage = { currentPagerPage },
     pagerState = pagerState,

@@ -65,7 +65,7 @@ fun MiniMusicPlayer(
   )
 
   PagerHandler(
-    mediaPlayerState = mediaPlayerState,
+    currentPlayerMediaId = currentPlayerMediaId,
     pagerMusicList = { pagerMusicList },
     currentPagerPage = { currentPagerPage },
     pagerState = pagerState,
