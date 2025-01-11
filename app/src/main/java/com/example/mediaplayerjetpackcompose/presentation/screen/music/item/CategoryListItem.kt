@@ -1,5 +1,8 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.item
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,27 +20,37 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun CategoryListItem(
   categoryName: String,
   musicListSize: Int,
   onClick: (String) -> Unit,
+  sharedTransitionScope: SharedTransitionScope,
+  animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
-  Surface(
-    onClick = { onClick.invoke(categoryName) },
-    color = Color.Transparent
-  ) {
-    Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 6.dp, horizontal = 10.dp),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.Start,
+  with(sharedTransitionScope) {
+    Surface(
+      onClick = { onClick.invoke(categoryName) },
+      color = Color.Transparent
     ) {
-      Spacer(modifier = Modifier.width(10.dp))
-      Column {
-        Text(text = categoryName, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, maxLines = 2)
-        Text(text = "$musicListSize Music", fontSize = 15.sp, fontWeight = FontWeight.Medium)
+      Row(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(vertical = 6.dp, horizontal = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start,
+      ) {
+        Spacer(modifier = Modifier.width(10.dp))
+        Column {
+          Text(
+            modifier = Modifier.sharedElement(
+              state = rememberSharedContentState("categoryKey$categoryName"),
+              animatedVisibilityScope = animatedVisibilityScope,
+            ), text = categoryName, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, maxLines = 2
+          )
+          Text(text = "$musicListSize Music", fontSize = 15.sp, fontWeight = FontWeight.Medium)
+        }
       }
     }
   }

@@ -1,7 +1,10 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -10,6 +13,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,9 +34,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -50,9 +56,9 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.CategoryListItem
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.MusicMediaItem
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun HomeMusic(
+fun SharedTransitionScope.HomeMusic(
   modifier: Modifier = Modifier,
   isLoading: Boolean,
   musicList: List<MusicModel>,
@@ -70,9 +76,9 @@ fun HomeMusic(
   onItemClick: (Int, List<MusicModel>) -> Unit,
   onSortClick: (SortTypeModel) -> Unit,
   onOrderClick: () -> Unit,
+  animatedVisibilityScope: AnimatedVisibilityScope,
+  density: Density = LocalDensity.current
 ) {
-
-  val density = LocalDensity.current
 
   var isKeyboardFocus by remember { mutableStateOf(false) }
   var showSearch by remember { mutableStateOf(false) }
@@ -114,7 +120,11 @@ fun HomeMusic(
   }
 
   Scaffold(
-    modifier = modifier,
+    modifier = modifier.sharedBounds(
+      sharedContentState = rememberSharedContentState("bound"),
+      animatedVisibilityScope = animatedVisibilityScope,
+      resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
+    ),
     topBar = {
       TopBarMusic(
         currentTabPosition = tabBarState,
@@ -148,9 +158,10 @@ fun HomeMusic(
       label = "",
     ) {
       if (!it) {
-        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-          var (list, category) = createRefs()
-
+        Box(
+          modifier = Modifier
+            .fillMaxSize(),
+        ) {
           Crossfade(
             modifier = Modifier
               .fillMaxSize(),
@@ -163,13 +174,7 @@ fun HomeMusic(
 
               HorizontalPager(
                 modifier = Modifier
-                  .fillMaxSize()
-                  .constrainAs(list) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
-                  },
+                  .fillMaxSize(),
                 state = pagerState,
                 key = { it },
               ) { page ->
@@ -231,6 +236,8 @@ fun HomeMusic(
                           onClick = { categoryName ->
                             navigateTo(MusicNavigationModel.Category(categoryName))
                           },
+                          sharedTransitionScope = this@HomeMusic,
+                          animatedVisibilityScope = animatedVisibilityScope,
                         )
                       }
                     }
@@ -245,11 +252,7 @@ fun HomeMusic(
           }
 
           AnimatedVisibility(
-            modifier = Modifier.constrainAs(category) {
-              top.linkTo(parent.top)
-              start.linkTo(parent.start)
-              end.linkTo(parent.end)
-            },
+            modifier = Modifier.align(Alignment.TopCenter),
             visible = showSearch == false or shouldHideTabBar.value,
             enter = fadeIn(tween(100)) + slideInVertically(tween(130, 90, easing = LinearEasing)) { -it / 3 },
             exit = slideOutVertically(tween(130, easing = LinearEasing)) { -it / 3 } + fadeOut(tween(100, 50))

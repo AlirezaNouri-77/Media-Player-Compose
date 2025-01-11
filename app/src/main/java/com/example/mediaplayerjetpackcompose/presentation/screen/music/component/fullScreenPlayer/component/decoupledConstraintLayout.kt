@@ -54,6 +54,8 @@ fun decoupledConstraintLayout(
         start.linkTo(startGuideLine)
         end.linkTo(endGuideLine)
         bottom.linkTo(volumeSlider.top, margin = 5.dp)
+        width = Dimension.fillToConstraints
+        height = Dimension.wrapContent
       }
 
       constrain(volumeSlider) {
@@ -70,8 +72,8 @@ fun decoupledConstraintLayout(
 
       constrain(headerRef) {
         top.linkTo(topGuideline)
-        start.linkTo(pagerArtWork.end, margin = 20.dp)
-        end.linkTo(endGuideLine)
+        start.linkTo(pagerArtWork.end, margin = 30.dp)
+        end.linkTo(parent.end, margin = 30.dp)
         width = Dimension.fillToConstraints
       }
       constrain(pagerArtWork) {
@@ -82,7 +84,7 @@ fun decoupledConstraintLayout(
       constrain(songDetail) {
         start.linkTo(slider.start)
         end.linkTo(slider.end)
-        bottom.linkTo(slider.top, margin = 10.dp)
+        bottom.linkTo(slider.top, margin = 15.dp)
         width = Dimension.fillToConstraints
       }
       constrain(slider) {
@@ -92,9 +94,10 @@ fun decoupledConstraintLayout(
         width = Dimension.fillToConstraints
       }
       constrain(controllerRef) {
-        start.linkTo(pagerArtWork.end)
-        end.linkTo(parent.end)
+        start.linkTo(pagerArtWork.end, margin = 30.dp)
+        end.linkTo(parent.end, margin = 30.dp)
         bottom.linkTo(volumeSlider.top, margin = 15.dp)
+        width = Dimension.fillToConstraints
       }
 
       constrain(volumeSlider) {

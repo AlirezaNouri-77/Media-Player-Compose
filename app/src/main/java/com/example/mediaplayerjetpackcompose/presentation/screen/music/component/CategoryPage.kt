@@ -1,18 +1,21 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,23 +35,36 @@ import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicMode
 import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.MusicMediaItem
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun CategoryPage(
+fun SharedTransitionScope.CategoryPage(
   name: String,
   itemList: List<MusicModel>,
   currentMediaPlayerState: MediaPlayerState,
   onMusicClick: (index: Int) -> Unit,
   miniPlayerHeight: Dp,
   onBackClick: () -> Unit,
+  animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
 
   Scaffold(
+    modifier = Modifier.sharedBounds(
+      sharedContentState = rememberSharedContentState("bound"),
+      animatedVisibilityScope = animatedVisibilityScope,
+      renderInOverlayDuringTransition = false,
+      exit = fadeOut(tween(150, 20)),
+      enter = fadeIn(tween(150, 150, easing = LinearEasing)),
+    ),
     topBar = {
       TopAppBar(
         title = {
           Text(
-            modifier = Modifier.basicMarquee(),
+            modifier = Modifier
+              .sharedElement(
+                state = rememberSharedContentState("categoryKey$name"),
+                animatedVisibilityScope = animatedVisibilityScope,
+              )
+              .basicMarquee(),
             text = name,
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
