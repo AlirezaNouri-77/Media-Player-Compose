@@ -5,10 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -31,16 +30,17 @@ fun CategorySection(
   onTabClick: (TabBarModel, Int) -> Unit,
 ) {
 
-  LazyRow(
-    modifier = modifier,
-    contentPadding = PaddingValues(horizontal = 15.dp, vertical = 7.dp),
+  Row(
+    modifier = modifier.padding(horizontal = 4.dp, vertical = 4.dp),
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterHorizontally)
   ) {
-    itemsIndexed(items = TabBarModel.entries.toList()) { index, item ->
+    TabBarModel.entries.forEachIndexed { index, item ->
       Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
+          .fillMaxWidth()
+          .weight(0.5f)
           .background(
             color = if (currentTabState.id == index) {
               if (isSystemInDarkTheme()) Color.White else Color.Black
@@ -79,7 +79,7 @@ private fun Preview() {
   MediaPlayerJetpackComposeTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       CategorySection(
-        currentTabState = TabBarModel.ARTIST,
+        currentTabState = TabBarModel.All,
         onTabClick = { _, _ -> },
       )
     }

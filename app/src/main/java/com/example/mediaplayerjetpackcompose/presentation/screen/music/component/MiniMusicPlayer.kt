@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
@@ -112,23 +113,23 @@ fun MiniMusicPlayer(
           .drawWithContent {
             drawContent()
 
+            // margin times by 2 because i applied 15.dp to end and start
             var margin = 15.dp.toPx()
 
-            // margin times by 2 because i applied 15.dp to end and start
             val progress = (currentMusicPosition() * (this.size.width - margin.times(2))) / currentPlayerDuration
 
             drawLine(
               color = Color.White,
               alpha = 0.4f,
               strokeWidth = 2.dp.toPx(),
-              start = Offset(x = margin, y = this.size.height + 5.dp.toPx()),
-              end = Offset(x = this.size.width - margin, y = this.size.height + 5.dp.toPx())
+              start = Offset(x = margin, y = this.size.height + 6.dp.toPx()),
+              end = Offset(x = this.size.width - margin, y = this.size.height + 6.dp.toPx())
             )
             drawLine(
               color = Color.White,
               strokeWidth = 2.dp.toPx(),
-              start = Offset(x = 15.dp.toPx(), y = this.size.height + 5.dp.toPx()),
-              end = Offset(x = progress + margin, y = this.size.height + 5.dp.toPx())
+              start = Offset(x = 15.dp.toPx(), y = this.size.height + 6.dp.toPx()),
+              end = Offset(x = progress + margin, y = this.size.height + 6.dp.toPx())
             )
 
           },
@@ -232,7 +233,7 @@ private fun Preview() {
       currentPagerPage = 0,
       currentMusicPosition = { 2000 },
       onPlayerAction = {},
-      modifier = Modifier,
+      modifier = Modifier.height(70.dp).padding(horizontal = 8.dp, vertical = 5.dp),
       musicArtWorkColorAnimation = { Color(MediaThumbnailUtil.DefaultColorPalette) },
       currentPlayerMediaId = 0L,
       currentPlayerDuration = 207726,

@@ -57,7 +57,7 @@ class MusicPageViewModel(
 
   var musicArtworkColorPalette by mutableIntStateOf(MediaThumbnailUtil.DefaultColorPalette)
 
-  var tabBarState by mutableStateOf(TabBarModel.HOME)
+  var tabBarState by mutableStateOf(TabBarModel.All)
 
   var currentPagerPage = mutableIntStateOf(0)
 

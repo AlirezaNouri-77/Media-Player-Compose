@@ -1,9 +1,7 @@
 package com.example.mediaplayerjetpackcompose.domain.model.musicSection
 
 enum class TabBarModel(val enuName: String, val id: Int) {
-  HOME("Home",0),
-  ARTIST("Artist",1),
-  ALBUM("Album",2),
-  Folder("Folder",3),
-  FAVORITE("Favorite",4),
+  All("All", 0),
+  Favorite("Favorite", 1),
+  Folder("Folder", 2),
 }

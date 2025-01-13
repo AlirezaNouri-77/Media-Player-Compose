@@ -32,9 +32,7 @@ import kotlinx.coroutines.FlowPreview
 fun SearchSection(
   textFieldValue: String,
   onTextFieldChange: (String) -> Unit,
-  onDismiss: () -> Unit,
   onClear: () -> Unit,
-  onKeyboardFocusChange: (Boolean) -> Unit,
 ) {
 
   var focusRequester = remember {
@@ -48,7 +46,6 @@ fun SearchSection(
   Box(
     modifier = Modifier
       .fillMaxWidth()
-      .statusBarsPadding()
   ) {
     OutlinedTextField(
       value = textFieldValue,
@@ -59,10 +56,7 @@ fun SearchSection(
         .fillMaxWidth()
         .height(50.dp)
         .padding(horizontal = 15.dp)
-        .focusRequester(focusRequester)
-        .onFocusChanged {
-          onKeyboardFocusChange(it.isFocused)
-        },
+        .focusRequester(focusRequester),
       singleLine = true,
       maxLines = 1,
       placeholder = {
@@ -83,9 +77,7 @@ fun SearchSection(
         }
       },
       leadingIcon = {
-        IconButton(onClick = { onDismiss() }, modifier = Modifier.size(35.dp)) {
-          Icon(painter = painterResource(id = R.drawable.icon_right), contentDescription = "")
-        }
+        Icon(painter = painterResource(id = R.drawable.icon_search_24), contentDescription = "")
       },
       shape = RoundedCornerShape(15.dp),
       colors = OutlinedTextFieldDefaults.colors(

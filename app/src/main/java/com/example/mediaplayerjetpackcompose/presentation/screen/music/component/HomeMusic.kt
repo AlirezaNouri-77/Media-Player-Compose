@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -41,18 +40,16 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.CategoryLists
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.SortTypeModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarModel
-import com.example.mediaplayerjetpackcompose.domain.model.navigation.MusicNavigationModel
 import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
 import com.example.mediaplayerjetpackcompose.domain.model.share.SortState
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.EmptyPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.Loading
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.CategorySection
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.TopBarMusic
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.HomePageTopBar
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.CategoryListItem
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.MusicMediaItem
 
@@ -62,15 +59,14 @@ fun SharedTransitionScope.HomeMusic(
   modifier: Modifier = Modifier,
   isLoading: Boolean,
   musicList: List<MusicModel>,
-  searchList: List<MusicModel>,
   categoryList: CategoryLists,
   tabBarState: TabBarModel,
   listBottomPadding: Dp,
   onTabBarClick: (TabBarModel) -> Unit,
-  onSearch: (String) -> Unit,
   favoriteMusicMediaIdList: () -> List<String>,
-  currentMusicState: () -> MediaPlayerState,
-  navigateTo: (MusicNavigationModel) -> Unit,
+  currentPlayerMediaId: () -> String,
+  currentPlayerPlayingState: () -> Boolean,
+  navigateToCategoryPage: (String) -> Unit,
   sortState: () -> SortState,
   onNavigateToVideoScreen: () -> Unit,
   onItemClick: (Int, List<MusicModel>) -> Unit,
@@ -80,7 +76,6 @@ fun SharedTransitionScope.HomeMusic(
   density: Density = LocalDensity.current
 ) {
 
-  var isKeyboardFocus by remember { mutableStateOf(false) }
   var showSearch by remember { mutableStateOf(false) }
   var showSortBar by remember { mutableStateOf(false) }
   val pagerState = rememberPagerState(pageCount = { TabBarModel.entries.size })
@@ -105,12 +100,10 @@ fun SharedTransitionScope.HomeMusic(
 
   LaunchedEffect(pagerState.settledPage) {
     var currentTab = when (pagerState.currentPage) {
-      0 -> TabBarModel.HOME
-      1 -> TabBarModel.ARTIST
-      2 -> TabBarModel.ALBUM
-      3 -> TabBarModel.Folder
-      4 -> TabBarModel.FAVORITE
-      else -> TabBarModel.HOME
+      0 -> TabBarModel.All
+      1 -> TabBarModel.Favorite
+      2 -> TabBarModel.Folder
+      else -> TabBarModel.All
     }
     onTabBarClick(currentTab)
   }
@@ -126,10 +119,9 @@ fun SharedTransitionScope.HomeMusic(
       resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
     ),
     topBar = {
-      TopBarMusic(
+      HomePageTopBar(
         currentTabPosition = tabBarState,
         onVideoIconClick = { onNavigateToVideoScreen() },
-        onSearch = { onSearch(it) },
         onSortIconClick = { showSortBar = true },
         isDropDownMenuSortExpand = showSortBar,
         sortState = { sortState() },
@@ -140,156 +132,115 @@ fun SharedTransitionScope.HomeMusic(
         onOrderClick = {
           onOrderClick()
         },
-        onKeyboardFocusChange = {
-          isKeyboardFocus = it
-        },
-        isSearchShow = { showSearch },
-        onSearchClick = { showSearch = it },
-        onDismissSearch = { showSearch = false },
       )
     },
   ) { paddingValue ->
 
-    Crossfade(
+    Box(
       modifier = Modifier
         .fillMaxSize()
         .padding(paddingValue),
-      targetState = showSearch,
-      label = "",
     ) {
-      if (!it) {
-        Box(
-          modifier = Modifier
-            .fillMaxSize(),
-        ) {
-          Crossfade(
+      Crossfade(
+        modifier = Modifier
+          .fillMaxSize(),
+        targetState = isLoading,
+        label = "",
+      ) { target ->
+        if (target) {
+          Loading(modifier = Modifier)
+        } else {
+
+          HorizontalPager(
             modifier = Modifier
               .fillMaxSize(),
-            targetState = isLoading,
-            label = "",
-          ) { target ->
-            if (target) {
-              Loading(modifier = Modifier)
+            state = pagerState,
+            key = { it },
+          ) { page ->
+
+            if (page == 0 || page == 1) {
+
+              var list = remember { if (page == 0) musicList else favoriteList.value }
+
+              if (list.isNotEmpty()) {
+                LazyColumn(
+                  state = listStates[page],
+                  modifier = Modifier
+                    .fillMaxSize(),
+                  contentPadding = PaddingValues(bottom = listBottomPadding, top = tabBarHeight.value + 8.dp),
+                ) {
+                  itemsIndexed(
+                    items = list,
+                    key = { _, item -> item.musicId },
+                  ) { index, item ->
+                    MusicMediaItem(
+                      item = item,
+                      isFav = item.musicId.toString() in favoriteMusicMediaIdList(),
+                      currentMediaId = currentPlayerMediaId(),
+                      onItemClick = {
+                        onItemClick(index, musicList)
+                      },
+                      isPlaying = { currentPlayerPlayingState() },
+                    )
+                  }
+                }
+              } else EmptyPage()
+
             } else {
 
-              HorizontalPager(
-                modifier = Modifier
-                  .fillMaxSize(),
-                state = pagerState,
-                key = { it },
-              ) { page ->
-
-                if (page == 0 || page == 4) {
-
-                  var list =
-                    remember(favoriteMusicMediaIdList().size) { if (page == 0) musicList else favoriteList.value }
-
-                  if (list.isNotEmpty()) {
-                    LazyColumn(
-                      state = listStates[page],
-                      modifier = Modifier
-                        .fillMaxSize(),
-                      contentPadding = PaddingValues(bottom = listBottomPadding, top = tabBarHeight.value + 8.dp),
-                    ) {
-                      itemsIndexed(
-                        items = list,
-                        key = { _, item -> item.musicId },
-                      ) { index, item ->
-                        MusicMediaItem(
-                          item = item,
-                          isFav = item.musicId.toString() in favoriteMusicMediaIdList(),
-                          currentMediaId = currentMusicState().mediaId,
-                          onItemClick = {
-                            onItemClick(index, list)
-                          },
-                          isPlaying = { currentMusicState().isPlaying },
-                        )
-                      }
-                    }
-
-                  } else EmptyPage()
-
-                } else {
-                  var list = remember {
-                    if (page == 1) {
-                      categoryList.artist
-                    } else if (page == 2) {
-                      categoryList.album
-                    } else {
-                      categoryList.folder
-                    }
+              if (categoryList.folder.isNotEmpty()) {
+                LazyColumn(
+                  state = listStates[page],
+                  modifier = Modifier
+                    .fillMaxSize(),
+                  contentPadding = PaddingValues(bottom = listBottomPadding, top = tabBarHeight.value + 8.dp),
+                ) {
+                  items(
+                    items = categoryList.folder,
+                    key = { it.categoryName.hashCode() }
+                  ) { item ->
+                    CategoryListItem(
+                      categoryName = item.categoryName,
+                      musicListSize = item.categoryList.size,
+                      onClick = { categoryName ->
+                        navigateToCategoryPage(categoryName)
+                      },
+                      sharedTransitionScope = this@HomeMusic,
+                      animatedVisibilityScope = animatedVisibilityScope,
+                    )
                   }
-                  if (list.isNotEmpty()) {
-                    LazyColumn(
-                      state = listStates[page],
-                      modifier = Modifier
-                        .fillMaxSize(),
-                      contentPadding = PaddingValues(bottom = listBottomPadding, top = tabBarHeight.value + 8.dp),
-                    ) {
-                      items(
-                        items = list,
-                        key = { it.categoryName.hashCode() }
-                      ) { item ->
-                        CategoryListItem(
-                          categoryName = item.categoryName,
-                          musicListSize = item.categoryList.size,
-                          onClick = { categoryName ->
-                            navigateTo(MusicNavigationModel.Category(categoryName))
-                          },
-                          sharedTransitionScope = this@HomeMusic,
-                          animatedVisibilityScope = animatedVisibilityScope,
-                        )
-                      }
-                    }
-
-                  } else EmptyPage()
-
                 }
 
+              } else EmptyPage()
 
-              }
             }
-          }
 
-          AnimatedVisibility(
-            modifier = Modifier.align(Alignment.TopCenter),
-            visible = showSearch == false or shouldHideTabBar.value,
-            enter = fadeIn(tween(100)) + slideInVertically(tween(130, 90, easing = LinearEasing)) { -it / 3 },
-            exit = slideOutVertically(tween(130, easing = LinearEasing)) { -it / 3 } + fadeOut(tween(100, 50))
-          ) {
-            CategorySection(
-              modifier = modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background)
-                .onPlaced { it ->
-                  tabBarHeight.value = with(density) {
-                    it.size.height.toDp()
-                  }
-                },
-              currentTabState = tabBarState,
-              onTabClick = { tabBar, _ ->
-                onTabBarClick(tabBar)
-              }
-            )
           }
         }
+      }
 
-      } else {
-
-        SearchPage(
-          modifier = Modifier.imePadding(),
-          searchList = searchList,
-          favoriteMusicMediaIdList = favoriteMusicMediaIdList,
-          bottomPaddingList = if (isKeyboardFocus) 0.dp else listBottomPadding,
-          currentMusicState = { currentMusicState() },
-          onItemClick = { index ->
-            onItemClick(index, searchList)
-          },
+      AnimatedVisibility(
+        modifier = Modifier.align(Alignment.TopCenter),
+        visible = showSearch == false or shouldHideTabBar.value,
+        enter = fadeIn(tween(100)) + slideInVertically(tween(130, 90, easing = LinearEasing)) { -it / 3 },
+        exit = slideOutVertically(tween(130, easing = LinearEasing)) { -it / 3 } + fadeOut(tween(100, 50))
+      ) {
+        CategorySection(
+          modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
+            .onPlaced { it ->
+              tabBarHeight.value = with(density) {
+                it.size.height.toDp()
+              }
+            },
+          currentTabState = tabBarState,
+          onTabClick = { tabBar, _ ->
+            onTabBarClick(tabBar)
+          }
         )
-
       }
     }
-
 
   }
 
