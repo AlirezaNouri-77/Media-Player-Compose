@@ -48,7 +48,7 @@ fun HomePageTopBar(
     modifier = modifier.fillMaxWidth(),
     title = {
       Text(
-        text = "Music",
+        text = "Home",
         modifier = Modifier,
         fontWeight = FontWeight.Bold,
         fontSize = 38.sp,

@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
@@ -76,7 +77,6 @@ fun SharedTransitionScope.HomeMusic(
   density: Density = LocalDensity.current
 ) {
 
-  var showSearch by remember { mutableStateOf(false) }
   var showSortBar by remember { mutableStateOf(false) }
   val pagerState = rememberPagerState(pageCount = { TabBarModel.entries.size })
   var listStates = TabBarModel.entries.map {
@@ -221,7 +221,7 @@ fun SharedTransitionScope.HomeMusic(
 
       AnimatedVisibility(
         modifier = Modifier.align(Alignment.TopCenter),
-        visible = showSearch == false or shouldHideTabBar.value,
+        visible = !shouldHideTabBar.value,
         enter = fadeIn(tween(100)) + slideInVertically(tween(130, 90, easing = LinearEasing)) { -it / 3 },
         exit = slideOutVertically(tween(130, easing = LinearEasing)) { -it / 3 } + fadeOut(tween(100, 50))
       ) {
@@ -229,7 +229,7 @@ fun SharedTransitionScope.HomeMusic(
           modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .onPlaced { it ->
+            .onGloballyPositioned { it ->
               tabBarHeight.value = with(density) {
                 it.size.height.toDp()
               }
