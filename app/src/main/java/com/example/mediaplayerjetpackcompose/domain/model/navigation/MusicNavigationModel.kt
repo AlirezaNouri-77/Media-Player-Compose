@@ -1,5 +1,6 @@
 package com.example.mediaplayerjetpackcompose.domain.model.navigation
 
+import androidx.annotation.Keep
 import kotlinx.serialization.Serializable
 
 sealed interface MusicNavigationModel {
@@ -19,6 +20,7 @@ sealed interface MusicNavigationModel {
   data class Category(var name: String, var parentRoute: ParentRoute) : MusicNavigationModel
 }
 
+@Keep
 enum class ParentRoute {
   FOLDER, ARTIST, ALBUM
 }
