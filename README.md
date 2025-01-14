@@ -18,10 +18,11 @@
 
 ### Screenshot
 <img src="https://github.com/user-attachments/assets/7a43a174-6878-4f32-8044-a00d5c10b65c" width="200" height="400">
-<img src="https://github.com/user-attachments/assets/faccf223-35e8-43af-8270-ba25dd7e6bdc" width="200" height="400">
-<img src="https://github.com/user-attachments/assets/2a7ec3a5-6bb8-403f-bc92-404887202e54" width="200" height="400">
- 
+<img src="https://github.com/user-attachments/assets/a7301888-7343-4dd5-86ba-9b76f18f6e48" width="200" height="400">
+<img src="https://github.com/user-attachments/assets/8a8e75c6-3dd5-439c-994f-1efde0429997" width="200" height="400">
+<img src="https://github.com/user-attachments/assets/a2ab8e95-c690-41fe-ae64-0d6b1d0d17c2" width="200" height="400">
+
 ### Demo
 video size ~9MB
 
-https://github.com/user-attachments/assets/faa131b3-999a-4059-8e2b-6cb5c42d13f9
+https://github.com/user-attachments/assets/0c0ea8dd-b467-4ef7-9b4c-40647ece9445
