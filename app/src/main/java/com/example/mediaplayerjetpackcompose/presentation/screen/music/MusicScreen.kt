@@ -44,9 +44,11 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.mediaplayerjetpackcompose.data.util.Constant
@@ -61,8 +63,6 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.bottomBar.MusicNavigationBar
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.FullMusicPlayer
 import kotlinx.coroutines.launch
-import kotlin.math.abs
-import kotlin.plus
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -87,6 +87,8 @@ fun MusicScreen(
   val currentDeviceVolume by musicPageViewModel.currentDeviceVolume.collectAsStateWithLifecycle()
   val sortState by musicPageViewModel.sortState.collectAsStateWithLifecycle()
 
+  var currentRoute = navController.currentBackStackEntryAsState()
+ 
   var miniPlayerHeight by remember { mutableStateOf(70.dp) }
   var bottomBarHeight by remember { mutableStateOf(0.dp) }
 
@@ -137,7 +139,17 @@ fun MusicScreen(
             translationY = density.run { bottomBarHeight.toPx() } * bottomSheetSwapFraction.value
           },
         navigateTo = {
-          navController.navigate(it)
+          var isDuplicateDestination = currentRoute.value?.destination?.hasRoute(it::class) == true
+
+          if (!isDuplicateDestination){
+            navController.navigate(it){
+              this.launchSingleTop = true
+              this.popUpTo(it){
+                inclusive = false
+              }
+            }
+          }
+
         }
       )
     },
