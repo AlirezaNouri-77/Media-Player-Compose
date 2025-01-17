@@ -1,8 +1,8 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer
 
-import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
@@ -60,8 +60,8 @@ fun FullMusicPlayer(
           )
         }
       }
-      .displayCutoutPadding()
-      .navigationBarsPadding(),
+      .navigationBarsPadding()
+      .padding(top = Constant.MINI_PLAYER_HEIGHT),
     constraintSet = decoupledConstraintLayout(orientation)
   ) {
 
@@ -135,7 +135,7 @@ private fun FullScreenPreview() {
       maxDeviceVolume = 10,
       currentVolume = 2,
       onVolumeChange = {},
-      musicArtWorkColorAnimation = { Color(MediaThumbnailUtil.DefaultColorPalette) }
+      musicArtWorkColorAnimation = { Color(MediaThumbnailUtil.DefaultColorPalette) },
     )
   }
 }

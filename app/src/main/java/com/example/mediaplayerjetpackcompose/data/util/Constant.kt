@@ -2,6 +2,7 @@ package com.example.mediaplayerjetpackcompose.data.util
 
 import android.Manifest
 import android.os.Build
+import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 
 object Constant {
@@ -18,6 +19,8 @@ object Constant {
 
   const val VIDEO_WIDTH = 150
   const val VIDEO_HEIGHT = 150
+
+  val MINI_PLAYER_HEIGHT = 70.dp
 
   const val API_30_R_ANDROID_11 = Build.VERSION_CODES.R
   const val API_33_TIRAMISU_ANDROID_13 = Build.VERSION_CODES.TIRAMISU
