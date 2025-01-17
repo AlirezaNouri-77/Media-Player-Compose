@@ -5,6 +5,7 @@ import android.os.Build
 import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -32,7 +33,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MainNavController(
-  window: Window = (LocalContext.current as Activity).window,
+  window: Window? = LocalActivity.current?.window,
 ) {
 
   val musicPageViewModel: MusicPageViewModel = koinViewModel()
@@ -41,22 +42,25 @@ fun MainNavController(
   val navHostController: NavHostController = rememberNavController()
   val navBackStackEntry by navHostController.currentBackStackEntryAsState()
 
-  if (navBackStackEntry?.destination?.hasRoute(MainScreenNavigationModel.VideoPlayerScreen::class) == true) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      window.insetsController?.apply {
-        hide(WindowInsets.Type.statusBars())
-        hide(WindowInsets.Type.systemBars())
-        this.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+  window?.let {
+    if (navBackStackEntry?.destination?.hasRoute(MainScreenNavigationModel.VideoPlayerScreen::class) == true) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        it.insetsController?.apply {
+          hide(WindowInsets.Type.statusBars())
+          hide(WindowInsets.Type.systemBars())
+          this.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
       }
-    }
-  } else {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      window.insetsController?.apply {
-        show(WindowInsets.Type.statusBars())
-        show(WindowInsets.Type.systemBars())
+    } else {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        it.insetsController?.apply {
+          show(WindowInsets.Type.statusBars())
+          show(WindowInsets.Type.systemBars())
+        }
       }
     }
   }
+
 
   NavHost(
     modifier = Modifier
