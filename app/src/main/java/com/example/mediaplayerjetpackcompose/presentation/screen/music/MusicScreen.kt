@@ -74,6 +74,8 @@ fun MusicScreen(
   screenHeight: Dp = LocalConfiguration.current.screenHeightDp.dp,
 ) {
 
+  val miniPlayerHeight = MINI_PLAYER_HEIGHT
+
   val navController: NavHostController = rememberNavController()
 
   var bottomSheetState = rememberStandardBottomSheetState()
@@ -99,6 +101,7 @@ fun MusicScreen(
   }
 
   val musicArtWorkColorAnimation = animateColorAsState(
+  val musicArtWorkColorAnimation by animateColorAsState(
     targetValue = Color(musicPageViewModel.musicArtworkColorPalette),
     animationSpec = tween(durationMillis = 180, delayMillis = 120),
     label = "",
@@ -123,7 +126,7 @@ fun MusicScreen(
           screenHeightPx - miniPlayerHeight.toPx() - bottomBarHeight.toPx() - runCatching { bottomSheetScaffoldState.bottomSheetState.requireOffset() }.getOrDefault(
             0f
           )
-        (swapOffset / (screenHeightPx / 6)).coerceIn(0f, 1f)
+        (swapOffset / 100).coerceIn(0f, 1f)
       }
     }
   }
@@ -138,19 +141,17 @@ fun MusicScreen(
           .graphicsLayer {
             translationY = density.run { bottomBarHeight.toPx() } * bottomSheetSwapFraction.value
           },
+        navController = navController,
         navigateTo = {
-          var isDuplicateDestination = currentRoute.value?.destination?.hasRoute(it::class) == true
-
-          if (!isDuplicateDestination){
-            navController.navigate(it){
-              this.launchSingleTop = true
-              this.popUpTo(it){
-                inclusive = false
-              }
+          navController.navigate(it) {
+            this.popUpTo(navController.graph.findStartDestination().id) {
+              saveState = true
+              inclusive = true
             }
+            restoreState = true
+            this.launchSingleTop = true
           }
-
-        }
+        },
       )
     },
   ) {
@@ -167,15 +168,31 @@ fun MusicScreen(
         AnimatedVisibility(
           visible = currentMusicState.mediaId.isNotEmpty(),
           enter = fadeIn(tween(200, delayMillis = 90)) + slideInVertically(
-            animationSpec = tween(400, 100),
-            initialOffsetY = { int -> int / 4 }),
+            animationSpec = tween(400, 250),
+            initialOffsetY = { int -> int / 2 }),
           exit = slideOutVertically(
             animationSpec = tween(400, 100),
-            targetOffsetY = { int -> int / 4 }) + fadeOut(tween(200, delayMillis = 90))
+            targetOffsetY = { int -> int / 2 }) + fadeOut(tween(200, delayMillis = 90))
         ) {
           Box {
             FullMusicPlayer(
-              modifier = Modifier.alpha(bottomSheetSwapFraction.value),
+              modifier = Modifier
+                .fillMaxSize()
+                .alpha(bottomSheetSwapFraction.value)
+                .drawWithCache {
+                  onDrawBehind {
+                    drawRect(Color.Black)
+                    drawRect(
+                      Brush.verticalGradient(
+                        0.4f to musicArtWorkColorAnimation.copy(alpha = 0.8f),
+                        0.7f to musicArtWorkColorAnimation.copy(alpha = 0.3f),
+                        1f to Color.Black,
+                      )
+                    )
+                  }
+                }
+                .navigationBarsPadding()
+                .padding(top = Constant.MINI_PLAYER_HEIGHT),
               favoriteList = favoriteMusicMediaIdList,
               pagerMusicList = musicPageViewModel.pagerItemList,
               repeatMode = currentMusicState.repeatMode,
@@ -200,7 +217,20 @@ fun MusicScreen(
                 .height(miniPlayerHeight)
                 .align(Alignment.TopCenter)
                 .padding(horizontal = 8.dp, vertical = 5.dp)
-                .alpha(1f - bottomSheetSwapFraction.value),
+                .alpha(1f - bottomSheetSwapFraction.value)
+                .drawWithCache {
+                  onDrawBehind {
+                    drawRoundRect(
+                      color = Color.Black,
+                      cornerRadius = CornerRadius(x = 25f, y = 25f),
+                    )
+                    drawRoundRect(
+                      color = musicArtWorkColorAnimation,
+                      cornerRadius = CornerRadius(x = 25f, y = 25f),
+                      alpha = 0.3f,
+                    )
+                  }
+                },
               onClick = {
                 coroutineScope.launch {
                   bottomSheetScaffoldState.bottomSheetState.expand()

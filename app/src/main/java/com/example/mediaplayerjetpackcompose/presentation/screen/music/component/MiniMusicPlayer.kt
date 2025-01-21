@@ -56,7 +56,6 @@ fun MiniMusicPlayer(
   currentPlayerArtworkUri: Uri?,
   isPlayerPlaying: Boolean,
   currentMusicPosition: () -> Long,
-  musicArtWorkColorAnimation: () -> Color,
   onPlayerAction: (action: PlayerActions) -> Unit,
 ) {
 
@@ -79,20 +78,7 @@ fun MiniMusicPlayer(
   }
 
   Card(
-    modifier = modifier
-      .drawWithCache {
-        onDrawBehind {
-          drawRoundRect(
-            color = Color.Black,
-            cornerRadius = CornerRadius(x = 25f, y = 25f),
-          )
-          drawRoundRect(
-            color = musicArtWorkColorAnimation(),
-            cornerRadius = CornerRadius(x = 25f, y = 25f),
-            alpha = 0.3f,
-          )
-        }
-      },
+    modifier = modifier,
     shape = RoundedCornerShape(0.dp),
     onClick = { onClick.invoke() },
     colors = CardDefaults.cardColors(
@@ -234,7 +220,6 @@ private fun Preview() {
       currentMusicPosition = { 2000 },
       onPlayerAction = {},
       modifier = Modifier.height(70.dp).padding(horizontal = 8.dp, vertical = 5.dp),
-      musicArtWorkColorAnimation = { Color(MediaThumbnailUtil.DefaultColorPalette) },
       currentPlayerMediaId = 0L,
       currentPlayerDuration = 207726,
       currentPlayerArtworkUri = Uri.EMPTY,

@@ -31,7 +31,6 @@ fun FullMusicPlayer(
   modifier: Modifier,
   repeatMode: Int,
   currentPagerPage: Int,
-  musicArtWorkColorAnimation: () -> Color,
   mediaPlayerState: () -> MediaPlayerState,
   currentMusicPosition: () -> Long,
   favoriteList: List<String>,
@@ -46,22 +45,7 @@ fun FullMusicPlayer(
 ) {
 
   ConstraintLayout(
-    modifier = modifier
-      .fillMaxSize()
-      .drawWithCache {
-        onDrawBehind {
-          drawRect(Color.Black)
-          drawRect(
-            Brush.verticalGradient(
-              0.4f to musicArtWorkColorAnimation().copy(alpha = 0.8f),
-              0.7f to musicArtWorkColorAnimation().copy(alpha = 0.3f),
-              1f to Color.Black,
-            )
-          )
-        }
-      }
-      .navigationBarsPadding()
-      .padding(top = Constant.MINI_PLAYER_HEIGHT),
+    modifier = modifier,
     constraintSet = decoupledConstraintLayout(orientation)
   ) {
 
@@ -135,7 +119,6 @@ private fun FullScreenPreview() {
       maxDeviceVolume = 10,
       currentVolume = 2,
       onVolumeChange = {},
-      musicArtWorkColorAnimation = { Color(MediaThumbnailUtil.DefaultColorPalette) },
     )
   }
 }
