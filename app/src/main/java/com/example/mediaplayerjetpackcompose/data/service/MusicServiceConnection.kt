@@ -15,6 +15,7 @@ import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicMode
 import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
@@ -32,12 +33,13 @@ import kotlinx.coroutines.isActive
 
 class MusicServiceConnection(
   private var context: Context,
+  coroutineScopeMain: CoroutineScope,
 ) {
 
   private var factory: ListenableFuture<MediaController>? = null
   var mediaController: MediaController? = null
 
-  var scope = CoroutineScope(Dispatchers.Main)
+  var coroutineScope = coroutineScopeMain
 
   private var _mediaPlayerState = MutableStateFlow(MediaPlayerState.Empty)
   var mediaPlayerState: StateFlow<MediaPlayerState> = _mediaPlayerState.asStateFlow()
@@ -55,7 +57,7 @@ class MusicServiceConnection(
         musicPosition
           .onEach {
             _currentMusicPosition.value = it
-          }.launchIn(scope)
+          }.launchIn(coroutineScope)
       }
 
   init {

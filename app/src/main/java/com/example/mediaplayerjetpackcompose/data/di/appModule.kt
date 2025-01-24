@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.example.mediaplayerjetpackcompose.data.database.databaseClass.AppDataBase
 import com.example.mediaplayerjetpackcompose.data.repository.MusicMediaStoreRepository
 import com.example.mediaplayerjetpackcompose.data.repository.VideoMediaStoreRepository
+import com.example.mediaplayerjetpackcompose.data.service.MusicPlayerService
 import com.example.mediaplayerjetpackcompose.data.service.MusicServiceConnection
 import com.example.mediaplayerjetpackcompose.data.util.DeviceVolumeManager
 import com.example.mediaplayerjetpackcompose.data.util.GetMediaMetaData
@@ -14,6 +15,8 @@ import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicMode
 import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoItemModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.scopedOf
@@ -41,9 +44,11 @@ var appModule = module {
   single { MediaThumbnailUtil(androidApplication().applicationContext) }
   single { GetMediaMetaData(get()) }
 
+  factory(named("CoroutineMain")) { CoroutineScope(Dispatchers.Main) }
+
   single<MediaStoreRepositoryImpl<MusicModel>>(named("musicRepo")) { MusicMediaStoreRepository(androidApplication().applicationContext.contentResolver) }
   single<MediaStoreRepositoryImpl<VideoItemModel>> { VideoMediaStoreRepository(androidApplication().applicationContext.contentResolver) }
-  single { MusicServiceConnection(androidApplication().applicationContext) }
+  single { MusicServiceConnection(androidApplication().applicationContext, get(named("CoroutineMain"))) }
 
   viewModel { MusicPageViewModel(get(named("musicRepo")), get(), get(), get(), get()) }
   viewModel { VideoPageViewModel(get(), get(), get(), get()) }

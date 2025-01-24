@@ -53,8 +53,6 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 
 squareup-leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 
-jetbrains-kotlinx = {group="org.jetbrains.kotlinx",name="kotlinx-serialization-json", version.ref = "serialization"}
-
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
