@@ -17,7 +17,8 @@ import java.util.concurrent.TimeUnit
 class VideoMediaStoreRepository(
   private var contentResolver: ContentResolver,
 ) : MediaStoreRepositoryImpl<VideoItemModel> {
-  override suspend fun getMedia(): Flow<MediaStoreResult<VideoItemModel>> {
+
+  override fun getMedia(): Flow<MediaStoreResult<VideoItemModel>> {
     return flow {
       emit(MediaStoreResult.Loading)
 

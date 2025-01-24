@@ -24,7 +24,7 @@ class MediaThumbnailUtil(
 ) {
 
   suspend fun getMusicArt(uri: Uri, width: Int = 200, height: Int = 200): Bitmap {
-    return onIoDispatcher {
+    return onDefaultDispatcher {
       val mediaMetadataRetriever = MediaMetadataRetriever()
       runCatching {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

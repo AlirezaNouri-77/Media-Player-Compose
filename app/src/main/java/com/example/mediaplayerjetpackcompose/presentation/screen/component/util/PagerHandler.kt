@@ -1,15 +1,17 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.component.util
 
+import android.util.Log
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.PagerThumbnailModel
 
 @Composable
 fun PagerHandler(
   currentPlayerMediaId: Long,
-  pagerMusicList: () -> List<PagerThumbnailModel>,
+  pagerMusicList: () -> List<MusicModel>,
   currentPagerPage: () -> Int,
   pagerState: PagerState,
   setCurrentPagerNumber: (Int) -> Unit,

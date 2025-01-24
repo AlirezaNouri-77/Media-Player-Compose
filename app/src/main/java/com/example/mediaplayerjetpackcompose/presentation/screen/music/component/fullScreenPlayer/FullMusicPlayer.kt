@@ -1,19 +1,14 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.mediaplayerjetpackcompose.data.util.Constant
-import com.example.mediaplayerjetpackcompose.data.util.MediaThumbnailUtil
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.FavoriteMusicModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.PagerThumbnailModel
 import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
 import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
@@ -25,6 +20,8 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.VolumeController
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.component.decoupledConstraintLayout
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun FullMusicPlayer(
@@ -33,10 +30,10 @@ fun FullMusicPlayer(
   currentPagerPage: Int,
   mediaPlayerState: () -> MediaPlayerState,
   currentMusicPosition: () -> Long,
-  favoriteList: List<String>,
-  pagerMusicList: List<PagerThumbnailModel>,
+  favoriteList: ImmutableList<String>,
+  pagerMusicList: ImmutableList<MusicModel>,
   onBack: () -> Unit,
-  onPlayerAction: (action: PlayerActions) -> Unit,
+  onPlayerAction: (PlayerActions) -> Unit,
   setCurrentPagerNumber: (Int) -> Unit,
   orientation: Int = LocalConfiguration.current.orientation,
   maxDeviceVolume: Int,
@@ -107,12 +104,12 @@ private fun FullScreenPreview() {
   MediaPlayerJetpackComposeTheme {
     FullMusicPlayer(
       modifier = Modifier,
-      favoriteList = emptyList(),
+      favoriteList = emptyList<String>().toImmutableList(),
       mediaPlayerState = { MediaPlayerState.Empty },
       repeatMode = 0,
       currentMusicPosition = { 10000L },
       currentPagerPage = 0,
-      pagerMusicList = emptyList(),
+      pagerMusicList = emptyList<MusicModel>().toImmutableList(),
       onBack = {},
       setCurrentPagerNumber = {},
       onPlayerAction = {},

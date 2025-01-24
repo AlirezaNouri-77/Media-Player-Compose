@@ -86,7 +86,8 @@ dependencies {
 
   implementation(libs.androidx.constraintlayout.compose)
 
-  implementation(libs.jetbrains.kotlinx)
+  implementation(libs.jetbrains.kotlinx.immutableCollections)
+  implementation(libs.jetbrains.kotlinx.serialization)
 
   implementation(libs.androidx.room.ktx)
   implementation(libs.androidx.room.runtime)

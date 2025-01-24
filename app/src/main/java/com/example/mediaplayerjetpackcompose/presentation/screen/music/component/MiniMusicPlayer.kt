@@ -26,9 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -36,9 +34,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.data.util.MediaThumbnailUtil
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.PagerThumbnailModel
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.PagerHandler
@@ -48,7 +45,7 @@ import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeT
 fun MiniMusicPlayer(
   modifier: Modifier,
   onClick: () -> Unit,
-  pagerMusicList: List<PagerThumbnailModel>,
+  artworkPagerList: List<MusicModel>,
   setCurrentPagerNumber: (Int) -> Unit,
   currentPagerPage: Int,
   currentPlayerMediaId: Long,
@@ -61,12 +58,12 @@ fun MiniMusicPlayer(
 
   val pagerState = rememberPagerState(
     initialPage = currentPagerPage,
-    pageCount = { pagerMusicList.size },
+    pageCount = { artworkPagerList.size },
   )
 
   PagerHandler(
     currentPlayerMediaId = currentPlayerMediaId,
-    pagerMusicList = { pagerMusicList },
+    pagerMusicList = { artworkPagerList },
     currentPagerPage = { currentPagerPage },
     pagerState = pagerState,
     setCurrentPagerNumber = setCurrentPagerNumber,
@@ -156,7 +153,7 @@ fun MiniMusicPlayer(
                   modifier = Modifier
                     .fillMaxWidth()
                     .basicMarquee(iterations = marqueeAnimate, initialDelayMillis = 500),
-                  text = pagerMusicList[page].name.removeFileExtension(),
+                  text = artworkPagerList[page].name.removeFileExtension(),
                   fontSize = 13.sp,
                   maxLines = 1,
                   color = Color.White,
@@ -164,7 +161,7 @@ fun MiniMusicPlayer(
                 Text(
                   modifier = Modifier
                     .fillMaxWidth(),
-                  text = pagerMusicList[page].artist,
+                  text = artworkPagerList[page].artist,
                   fontSize = 12.sp,
                   maxLines = 1,
                   color = Color.White,
@@ -203,18 +200,10 @@ fun MiniMusicPlayer(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL)
 @Composable
 private fun Preview() {
-  var list = listOf<PagerThumbnailModel>(
-    PagerThumbnailModel(
-      uri = Uri.EMPTY,
-      musicId = 0,
-      name = "Example Name.mp3",
-      artist = "Example Artist",
-    ),
-  )
   MediaPlayerJetpackComposeTheme {
     MiniMusicPlayer(
       onClick = {},
-      pagerMusicList = list,
+      artworkPagerList = listOf(MusicModel.Empty),
       setCurrentPagerNumber = {},
       currentPagerPage = 0,
       currentMusicPosition = { 2000 },

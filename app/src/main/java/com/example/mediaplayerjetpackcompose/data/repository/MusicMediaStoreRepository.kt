@@ -19,9 +19,8 @@ class MusicMediaStoreRepository(
   private var contentResolver: ContentResolver,
 ) : MediaStoreRepositoryImpl<MusicModel> {
 
-  override suspend fun getMedia(): Flow<MediaStoreResult<MusicModel>> {
+  override fun getMedia(): Flow<MediaStoreResult<MusicModel>> {
     return channelFlow {
-      send(MediaStoreResult.Loading)
 
       val resultList = buildList {
         contentResolver.query(

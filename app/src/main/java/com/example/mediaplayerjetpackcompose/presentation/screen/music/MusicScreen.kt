@@ -1,6 +1,7 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,6 +28,7 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +38,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -44,16 +50,17 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.mediaplayerjetpackcompose.data.util.Constant
+import com.example.mediaplayerjetpackcompose.data.util.Constant.MINI_PLAYER_HEIGHT
 import com.example.mediaplayerjetpackcompose.domain.model.navigation.MusicNavigationModel
 import com.example.mediaplayerjetpackcompose.domain.model.navigation.ParentRoute
+import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.AlbumPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.ArtistPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.CategoryPage
@@ -62,6 +69,7 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.SearchPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.bottomBar.MusicNavigationBar
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.FullMusicPlayer
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
@@ -88,10 +96,9 @@ fun MusicScreen(
   val currentMusicPosition by musicPageViewModel.currentMusicPosition.collectAsStateWithLifecycle()
   val currentDeviceVolume by musicPageViewModel.currentDeviceVolume.collectAsStateWithLifecycle()
   val sortState by musicPageViewModel.sortState.collectAsStateWithLifecycle()
+  val currentArtworkPagerIndex by musicPageViewModel.currentArtworkPagerIndex.collectAsStateWithLifecycle()
+  val artworkPagerList by musicPageViewModel.artworkPagerList.collectAsStateWithLifecycle()
 
-  var currentRoute = navController.currentBackStackEntryAsState()
- 
-  var miniPlayerHeight by remember { mutableStateOf(70.dp) }
   var bottomBarHeight by remember { mutableStateOf(0.dp) }
 
   var screenHeightPx = remember(screenHeight) {
@@ -100,7 +107,6 @@ fun MusicScreen(
     }
   }
 
-  val musicArtWorkColorAnimation = animateColorAsState(
   val musicArtWorkColorAnimation by animateColorAsState(
     targetValue = Color(musicPageViewModel.musicArtworkColorPalette),
     animationSpec = tween(durationMillis = 180, delayMillis = 120),
@@ -108,6 +114,8 @@ fun MusicScreen(
   )
 
   LaunchedEffect(key1 = currentMusicState.metaData) {
+    if (currentMusicState.mediaId.isEmpty()) return@LaunchedEffect
+
     musicPageViewModel.getColorPaletteFromArtwork(currentMusicState.uri)
   }
 
@@ -192,15 +200,15 @@ fun MusicScreen(
                   }
                 }
                 .navigationBarsPadding()
-                .padding(top = Constant.MINI_PLAYER_HEIGHT),
-              favoriteList = favoriteMusicMediaIdList,
-              pagerMusicList = musicPageViewModel.pagerItemList,
+                .padding(top = MINI_PLAYER_HEIGHT),
+              favoriteList = favoriteMusicMediaIdList.toImmutableList(),
+              pagerMusicList = artworkPagerList.toImmutableList(),
               repeatMode = currentMusicState.repeatMode,
-              currentPagerPage = musicPageViewModel.currentPagerPage.intValue,
+              currentPagerPage = currentArtworkPagerIndex,
               onPlayerAction = musicPageViewModel::onPlayerAction,
               currentVolume = currentDeviceVolume,
               mediaPlayerState = { currentMusicState },
-              setCurrentPagerNumber = { musicPageViewModel.currentPagerPage.intValue = it },
+              setCurrentPagerNumber = { musicPageViewModel.onPlayerAction(PlayerActions.UpdateArtworkPageIndex(it)) },
               onBack = {
                 coroutineScope.launch {
                   bottomSheetScaffoldState.bottomSheetState.partialExpand()
@@ -208,7 +216,6 @@ fun MusicScreen(
               },
               currentMusicPosition = { currentMusicPosition },
               onVolumeChange = { musicPageViewModel.setDeviceVolume(it) },
-              musicArtWorkColorAnimation = { musicArtWorkColorAnimation.value },
               maxDeviceVolume = musicPageViewModel.getMaxDeviceVolume(),
             )
             MiniMusicPlayer(
@@ -216,7 +223,7 @@ fun MusicScreen(
                 .fillMaxWidth()
                 .height(miniPlayerHeight)
                 .align(Alignment.TopCenter)
-                .padding(horizontal = 8.dp, vertical = 5.dp)
+                .padding(horizontal = 8.dp, vertical = 2.dp)
                 .alpha(1f - bottomSheetSwapFraction.value)
                 .drawWithCache {
                   onDrawBehind {
@@ -236,12 +243,11 @@ fun MusicScreen(
                   bottomSheetScaffoldState.bottomSheetState.expand()
                 }
               },
-              pagerMusicList = musicPageViewModel.pagerItemList,
+              artworkPagerList = artworkPagerList,
               currentMusicPosition = { currentMusicPosition },
-              currentPagerPage = musicPageViewModel.currentPagerPage.intValue,
-              setCurrentPagerNumber = { musicPageViewModel.currentPagerPage.intValue = it },
+              currentPagerPage = currentArtworkPagerIndex,
+              setCurrentPagerNumber = { musicPageViewModel.onPlayerAction(PlayerActions.UpdateArtworkPageIndex(it)) },
               onPlayerAction = musicPageViewModel::onPlayerAction,
-              musicArtWorkColorAnimation = { musicArtWorkColorAnimation.value },
               currentPlayerMediaId = currentMusicState.mediaId.toLong(),
               currentPlayerDuration = currentMusicState.metaData.extras?.getInt(Constant.DURATION_KEY) ?: 0,
               currentPlayerArtworkUri = currentMusicState.metaData.artworkUri,
@@ -369,9 +375,9 @@ fun MusicScreen(
             )
           }
         }
+
       }
     }
-
   }
 
 }

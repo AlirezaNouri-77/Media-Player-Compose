@@ -9,7 +9,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mediaplayerjetpackcompose.data.database.dao.DataBaseDao
-import com.example.mediaplayerjetpackcompose.data.mapper.toMediaItem
 import com.example.mediaplayerjetpackcompose.data.service.MusicServiceConnection
 import com.example.mediaplayerjetpackcompose.data.util.DeviceVolumeManager
 import com.example.mediaplayerjetpackcompose.data.util.MediaThumbnailUtil
@@ -18,7 +17,6 @@ import com.example.mediaplayerjetpackcompose.domain.model.musicSection.CategoryL
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.CategoryMusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.FavoriteMusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.PagerThumbnailModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.SortTypeModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarModel
 import com.example.mediaplayerjetpackcompose.domain.model.repository.MediaStoreResult
@@ -29,15 +27,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.internal.filterList
+import kotlin.collections.map
 
 class MusicPageViewModel(
   private var musicMediaStoreRepository: MediaStoreRepositoryImpl<MusicModel>,
@@ -51,7 +48,7 @@ class MusicPageViewModel(
 
   var musicList = mutableStateListOf<MusicModel>()
 
-  var searchList = mutableStateListOf<MusicModel>()
+  var searchList by mutableStateOf(emptyList<MusicModel>())
 
   var categoryLists by mutableStateOf(CategoryLists.Empty)
 
@@ -59,11 +56,19 @@ class MusicPageViewModel(
 
   var tabBarState by mutableStateOf(TabBarModel.All)
 
-  var currentPagerPage = mutableIntStateOf(0)
-
-  var pagerItemList = mutableStateListOf<PagerThumbnailModel>()
-
   var isLoading by mutableStateOf(true)
+
+  var artworkPagerList = musicServiceConnection.artworkPagerList.stateIn(
+    viewModelScope,
+    SharingStarted.Eagerly,
+    emptyList(),
+  )
+
+  var currentArtworkPagerIndex = musicServiceConnection.currentArtworkPagerIndex.stateIn(
+    viewModelScope,
+    SharingStarted.Eagerly,
+    0,
+  )
 
   private var _sortSate = MutableStateFlow(SortState(SortTypeModel.NAME, false))
   var sortState = _sortSate.asStateFlow()
@@ -83,20 +88,11 @@ class MusicPageViewModel(
       emptyList()
     )
 
-  private var _currentMusicPosition = MutableStateFlow(0L)
-  var currentMusicPosition =
-    _currentMusicPosition
-      .onStart {
-        musicServiceConnection
-          .musicPosition
-          .onEach {
-            _currentMusicPosition.value = it
-          }.launchIn(viewModelScope)
-      }.stateIn(
-        viewModelScope,
-        SharingStarted.Eagerly,
-        0L
-      )
+  var currentMusicPosition = musicServiceConnection.currentMusicPosition.stateIn(
+    viewModelScope,
+    SharingStarted.Eagerly,
+    0L
+  )
 
   var currentDeviceVolume = deviceVolumeManager.currentMusicLevelVolume
     .onStart {
@@ -115,14 +111,15 @@ class MusicPageViewModel(
 
   fun onPlayerAction(action: PlayerActions) {
     when (action) {
-      PlayerActions.MoveNextPlayer -> moveToNext()
-      PlayerActions.PausePlayer -> pauseMusic()
-      PlayerActions.ResumePlayer -> resumeMusic()
+      PlayerActions.MoveNextPlayer -> musicServiceConnection.moveToNext()
+      PlayerActions.PausePlayer -> musicServiceConnection.pauseMusic()
+      PlayerActions.ResumePlayer -> musicServiceConnection.resumeMusic()
       is PlayerActions.OnFavoriteToggle -> handleFavoriteSongs(action.mediaId)
-      is PlayerActions.SeekTo -> seekToPosition(action.value)
-      is PlayerActions.OnRepeatMode -> setRepeatMode(action.value)
-      is PlayerActions.MovePreviousPlayer -> moveToPrevious(action.seekToStart)
-      is PlayerActions.OnMoveToIndex -> moveToMediaIndex(index = action.value)
+      is PlayerActions.SeekTo -> musicServiceConnection.seekToPosition(action.value)
+      is PlayerActions.OnRepeatMode -> musicServiceConnection.setRepeatMode(action.value)
+      is PlayerActions.MovePreviousPlayer -> musicServiceConnection.moveToPrevious(action.seekToStart)
+      is PlayerActions.OnMoveToIndex -> musicServiceConnection.moveToMediaIndex(index = action.value)
+      is PlayerActions.UpdateArtworkPageIndex -> musicServiceConnection.setCurrentArtworkPagerIndex(action.value)
     }
   }
 
@@ -133,16 +130,6 @@ class MusicPageViewModel(
   fun setDeviceVolume(volume: Float) = deviceVolumeManager.setVolume(volume)
 
   fun getMaxDeviceVolume(): Int = deviceVolumeManager.getMaxVolume()
-
-  private fun moveToMediaIndex(index: Int) {
-    _currentMusicPosition.update { 0 }
-
-    musicServiceConnection.mediaController?.apply {
-      seekTo(index, 0L)
-      prepare()
-      play()
-    }
-  }
 
   fun getColorPaletteFromArtwork(uri: Uri) {
     viewModelScope.launch {
@@ -155,82 +142,21 @@ class MusicPageViewModel(
     list: MutableList<MusicModel>
   ) {
     viewModelScope.launch {
-
-      withContext(Dispatchers.Default) {
-
-        val resultSortedList = when (_sortSate.value.sortType) {
+      var sortedList = withContext(Dispatchers.Default) {
+        return@withContext when (_sortSate.value.sortType) {
           SortTypeModel.NAME -> if (_sortSate.value.isDec) list.sortedByDescending { it.name } else list.sortedBy { it.name }
           SortTypeModel.ARTIST -> if (_sortSate.value.isDec) list.sortedByDescending { it.artist } else list.sortedBy { it.artist }
           SortTypeModel.DURATION -> if (_sortSate.value.isDec) list.sortedByDescending { it.duration } else list.sortedBy { it.duration }
           SortTypeModel.SIZE -> if (_sortSate.value.isDec) list.sortedByDescending { it.size } else list.sortedBy { it.size }
         }
-
-        val currentMediaIndex = resultSortedList.indexOfFirst { it.musicId.toString() == currentMusicState.value.mediaId }
-        val pagerItem =
-          resultSortedList.map { PagerThumbnailModel(uri = it.artworkUri, musicId = it.musicId, name = it.name, artist = it.artist) }
-        val mediaItems = resultSortedList.map(MusicModel::toMediaItem)
-
-        withContext(Dispatchers.Main.immediate) {
-          currentPagerPage.intValue = if (currentMediaIndex == -1) 0 else currentMediaIndex
-          pagerItemList.apply {
-            clear()
-            addAll(pagerItem)
-          }
-          musicList.apply {
-            clear()
-            addAll(resultSortedList)
-          }
-          musicServiceConnection.mediaController?.setMediaItems(
-            mediaItems, currentMediaIndex, _currentMusicPosition.value
-          )
-        }
-
       }
-    }
-  }
 
-  private fun moveToNext() {
-    val hasNextItem = musicServiceConnection.mediaController?.hasNextMediaItem() == true
-    if (!hasNextItem) return
-    musicServiceConnection.mediaController?.apply {
-      seekToNext()
-      prepare()
-      play()
-    }
-    _currentMusicPosition.update { 0 }
-    currentPagerPage.intValue += 1
-  }
-
-  private fun moveToPrevious(seekToStart: Boolean = false) {
-    val hasPreviewItem = musicServiceConnection.mediaController?.hasNextMediaItem() == true
-    if (!hasPreviewItem) return
-
-    if (_currentMusicPosition.value <= 15_000 || seekToStart) {
-      musicServiceConnection.mediaController?.apply {
-        seekToPreviousMediaItem()
-        prepare()
-        play()
+      musicList.apply {
+        clear()
+        addAll(sortedList)
       }
-      currentPagerPage.intValue -= 1
-    } else musicServiceConnection.mediaController?.apply {
-      seekToPrevious()
-      prepare()
-      play()
+
     }
-    _currentMusicPosition.update { 0 }
-  }
-
-  private fun pauseMusic() = musicServiceConnection.mediaController?.pause()
-
-  private fun resumeMusic() = musicServiceConnection.mediaController?.play()
-
-  private fun seekToPosition(position: Long) {
-    musicServiceConnection.mediaController?.seekTo(position)
-    _currentMusicPosition.update { position }
-  }
-
-  private fun setRepeatMode(repeatMode: Int) {
-    musicServiceConnection.mediaController?.repeatMode = repeatMode
   }
 
   private fun handleFavoriteSongs(mediaId: String) {
@@ -248,30 +174,17 @@ class MusicPageViewModel(
     if (input.isNotEmpty() || input.isNotBlank()) {
       val filteredList = originalMusicList.filterList { name.lowercase().contains(input.lowercase()) }
       viewModelScope.launch {
-        searchList.clear()
-        searchList.addAll(filteredList)
+        searchList = filteredList
       }
     } else {
       viewModelScope.launch {
-        searchList.clear()
-        searchList.addAll(originalMusicList)
+        searchList = originalMusicList
       }
     }
   }
 
-  fun playMusic(index: Int, musicList: List<MusicModel>) = viewModelScope.launch(Dispatchers.Default) {
-    val pagerItem = musicList.map { PagerThumbnailModel(uri = it.artworkUri, musicId = it.musicId, name = it.name, artist = it.artist) }
-    val musicItem = musicList.map(MusicModel::toMediaItem)
-    viewModelScope.launch {
-      pagerItemList.clear()
-      pagerItemList.addAll(pagerItem)
-      currentPagerPage.intValue = index
-      musicServiceConnection.mediaController?.run {
-        setMediaItems(musicItem, index, 0L)
-        prepare()
-        play()
-      }
-    }
+  fun playMusic(index: Int, musicList: List<MusicModel>) = viewModelScope.launch {
+    musicServiceConnection.playSongs(index, musicList)
   }
 
   fun getMusic() = viewModelScope.launch {
@@ -284,22 +197,14 @@ class MusicPageViewModel(
           is MediaStoreResult.Result -> {
             viewModelScope.launch(Dispatchers.Default) {
               val mainList = result.result
-              val pagerItem =
-                result.result.map { PagerThumbnailModel(uri = it.artworkUri, musicId = it.musicId, name = it.name, artist = it.artist) }
               val artistItem = result.result.groupBy { by -> by.artist }.map { CategoryMusicModel(it.key, it.value) }
               val albumItem = result.result.groupBy { by -> by.album }.map { CategoryMusicModel(it.key, it.value) }
               val folderItem = result.result.groupBy { by -> by.folderName }.map { CategoryMusicModel(it.key, it.value) }
-              val currentPagerIndex = if (currentMusicState.value.mediaId.isNotEmpty()) {
-                mainList.indexOfFirst { it.musicId == currentMusicState.value.mediaId.toLong() }
-              } else 0
 
               viewModelScope.launch {
-                currentPagerPage.intValue = currentPagerIndex
                 musicList.addAll(mainList)
-                pagerItemList.addAll(pagerItem)
                 originalMusicList.addAll(mainList)
                 categoryLists = categoryLists.copy(artist = artistItem, album = albumItem, folder = folderItem)
-                isLoading = false
               }
             }
 
@@ -308,7 +213,7 @@ class MusicPageViewModel(
           else -> {}
         }
       }
-
+    isLoading = false
   }
 
   override fun onCleared() {

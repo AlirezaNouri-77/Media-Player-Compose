@@ -14,7 +14,7 @@ data class MusicModel(
   val size: Int = 0,
   val artworkUri: Uri,
   val bitrate: Int,
-  var artist: String,
+  val artist: String,
   val album: String,
   val folderName: String,
 ) {

@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.PagerThumbnailModel
 import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
 import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
@@ -31,7 +32,7 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 @Composable
 fun FullscreenPlayerPager(
   modifier: Modifier = Modifier,
-  pagerItem: List<PagerThumbnailModel>,
+  pagerItem: List<MusicModel>,
   mediaPlayerState: MediaPlayerState,
   onPlayerAction: (action: PlayerActions) -> Unit,
   setCurrentPagerNumber: (Int) -> Unit,
@@ -79,7 +80,7 @@ fun FullscreenPlayerPager(
           .padding(horizontal = 12.dp, vertical = 10.dp)
           .clip(RoundedCornerShape(8.dp))
           .background(color = MaterialTheme.colorScheme.primary),
-        uri = pagerItem[page].uri,
+        uri = pagerItem[page].artworkUri,
       )
     }
   }
