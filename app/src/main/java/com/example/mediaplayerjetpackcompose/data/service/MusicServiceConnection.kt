@@ -3,8 +3,6 @@ package com.example.mediaplayerjetpackcompose.data.service
 import android.content.ComponentName
 import android.content.Context
 import android.net.Uri
-import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
@@ -15,9 +13,7 @@ import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicMode
 import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

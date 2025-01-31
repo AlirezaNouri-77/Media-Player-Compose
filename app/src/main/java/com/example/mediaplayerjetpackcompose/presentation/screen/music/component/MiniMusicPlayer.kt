@@ -40,12 +40,15 @@ import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.PagerHandler
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
+import okhttp3.internal.immutableListOf
 
 @Composable
 fun MiniMusicPlayer(
   modifier: Modifier,
   onClick: () -> Unit,
-  artworkPagerList: List<MusicModel>,
+  artworkPagerList: ImmutableList<MusicModel>,
   setCurrentPagerNumber: (Int) -> Unit,
   currentPagerPage: Int,
   currentPlayerMediaId: Long,
@@ -63,8 +66,8 @@ fun MiniMusicPlayer(
 
   PagerHandler(
     currentPlayerMediaId = currentPlayerMediaId,
-    pagerMusicList = { artworkPagerList },
-    currentPagerPage = { currentPagerPage },
+    pagerMusicList = artworkPagerList,
+    currentPagerPage = currentPagerPage,
     pagerState = pagerState,
     setCurrentPagerNumber = setCurrentPagerNumber,
     onMoveToIndex = { onPlayerAction(PlayerActions.OnMoveToIndex(it)) },
@@ -203,12 +206,14 @@ private fun Preview() {
   MediaPlayerJetpackComposeTheme {
     MiniMusicPlayer(
       onClick = {},
-      artworkPagerList = listOf(MusicModel.Empty),
+      artworkPagerList = listOf(MusicModel.Empty).toImmutableList(),
       setCurrentPagerNumber = {},
       currentPagerPage = 0,
       currentMusicPosition = { 2000 },
       onPlayerAction = {},
-      modifier = Modifier.height(70.dp).padding(horizontal = 8.dp, vertical = 5.dp),
+      modifier = Modifier
+        .height(70.dp)
+        .padding(horizontal = 8.dp, vertical = 5.dp),
       currentPlayerMediaId = 0L,
       currentPlayerDuration = 207726,
       currentPlayerArtworkUri = Uri.EMPTY,

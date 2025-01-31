@@ -1,5 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.Crossfade
@@ -42,6 +43,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.CategoryLists
+import com.example.mediaplayerjetpackcompose.domain.model.musicSection.CategoryMusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.SortTypeModel
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarModel
@@ -53,18 +55,20 @@ import com.example.mediaplayerjetpackcompose.presentation.screen.music.component
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.HomePageTopBar
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.CategoryListItem
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.MusicMediaItem
+import kotlinx.collections.immutable.ImmutableList
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.HomeMusic(
   modifier: Modifier = Modifier,
   isLoading: Boolean,
-  musicList: List<MusicModel>,
-  categoryList: CategoryLists,
+  musicList: ImmutableList<MusicModel>,
   tabBarState: TabBarModel,
   listBottomPadding: Dp,
   onTabBarClick: (TabBarModel) -> Unit,
-  favoriteMusicMediaIdList: () -> List<String>,
+  folderList: List<CategoryMusicModel>,
+  favoriteList: ImmutableList<MusicModel>,
+  favoriteSongsMediaId: ImmutableList<String>,
   currentPlayerMediaId: () -> String,
   currentPlayerPlayingState: () -> Boolean,
   navigateToCategoryPage: (String) -> Unit,
@@ -89,12 +93,6 @@ fun SharedTransitionScope.HomeMusic(
       listStates[pagerState.currentPage].isScrollInProgress
            && (listStates[pagerState.currentPage].firstVisibleItemIndex >= 3)
            && (pagerState.currentPage == 0)
-    }
-  }
-
-  var favoriteList = remember {
-    derivedStateOf {
-      musicList.filter { musicModel -> musicModel.musicId.toString() in favoriteMusicMediaIdList() }
     }
   }
 
@@ -160,7 +158,9 @@ fun SharedTransitionScope.HomeMusic(
 
             if (page == 0 || page == 1) {
 
-              var list = remember { if (page == 0) musicList else favoriteList.value }
+              var list = remember(
+                musicList, favoriteList
+              ) { if (page == 0) musicList else favoriteList }
 
               if (list.isNotEmpty()) {
                 LazyColumn(
@@ -175,10 +175,10 @@ fun SharedTransitionScope.HomeMusic(
                   ) { index, item ->
                     MusicMediaItem(
                       item = item,
-                      isFav = item.musicId.toString() in favoriteMusicMediaIdList(),
+                      isFav = item.musicId.toString() in favoriteSongsMediaId,
                       currentMediaId = currentPlayerMediaId(),
                       onItemClick = {
-                        onItemClick(index, musicList)
+                        onItemClick(index, list)
                       },
                       isPlaying = { currentPlayerPlayingState() },
                     )
@@ -188,7 +188,7 @@ fun SharedTransitionScope.HomeMusic(
 
             } else {
 
-              if (categoryList.folder.isNotEmpty()) {
+              if (folderList.isNotEmpty()) {
                 LazyColumn(
                   state = listStates[page],
                   modifier = Modifier
@@ -196,7 +196,7 @@ fun SharedTransitionScope.HomeMusic(
                   contentPadding = PaddingValues(bottom = listBottomPadding, top = tabBarHeight.value + 8.dp),
                 ) {
                   items(
-                    items = categoryList.folder,
+                    items = folderList,
                     key = { it.categoryName.hashCode() }
                   ) { item ->
                     CategoryListItem(

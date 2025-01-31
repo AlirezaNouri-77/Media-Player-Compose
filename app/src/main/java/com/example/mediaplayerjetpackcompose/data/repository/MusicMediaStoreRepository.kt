@@ -5,6 +5,7 @@ import android.content.ContentUris
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import com.example.mediaplayerjetpackcompose.data.util.Constant
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
@@ -17,9 +18,10 @@ import java.util.concurrent.TimeUnit
 
 class MusicMediaStoreRepository(
   private var contentResolver: ContentResolver,
-) : MediaStoreRepositoryImpl<MusicModel> {
+) {
 
-  override fun getMedia(): Flow<MediaStoreResult<MusicModel>> {
+  fun getMedia(): Flow<List<MusicModel>> {
+
     return channelFlow {
 
       val resultList = buildList {
@@ -80,7 +82,8 @@ class MusicMediaStoreRepository(
         }
       }
 
-      send(MediaStoreResult.Result(resultList))
+      //send(MediaStoreResult.Result(resultList))
+      send(resultList)
 
     }.flowOn(Dispatchers.IO)
   }

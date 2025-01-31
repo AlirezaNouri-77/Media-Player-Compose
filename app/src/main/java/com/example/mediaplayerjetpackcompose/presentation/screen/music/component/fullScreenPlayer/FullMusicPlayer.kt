@@ -30,7 +30,7 @@ fun FullMusicPlayer(
   currentPagerPage: Int,
   mediaPlayerState: () -> MediaPlayerState,
   currentMusicPosition: () -> Long,
-  favoriteList: ImmutableList<String>,
+  isFavorite: Boolean,
   pagerMusicList: ImmutableList<MusicModel>,
   onBack: () -> Unit,
   onPlayerAction: (PlayerActions) -> Unit,
@@ -76,7 +76,7 @@ fun FullMusicPlayer(
     SongController(
       modifier = Modifier.layoutId("controllerRef"),
       mediaPlayerState = { mediaPlayerState() },
-      favoriteList = favoriteList,
+      isFavorite = isFavorite,
       repeatMode = repeatMode,
       onPauseMusic = { onPlayerAction(PlayerActions.PausePlayer) },
       onResumeMusic = { onPlayerAction(PlayerActions.ResumePlayer) },
@@ -104,7 +104,7 @@ private fun FullScreenPreview() {
   MediaPlayerJetpackComposeTheme {
     FullMusicPlayer(
       modifier = Modifier,
-      favoriteList = emptyList<String>().toImmutableList(),
+      isFavorite = false,
       mediaPlayerState = { MediaPlayerState.Empty },
       repeatMode = 0,
       currentMusicPosition = { 10000L },

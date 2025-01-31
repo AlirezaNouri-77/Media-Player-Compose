@@ -6,7 +6,7 @@ import androidx.media3.common.MediaMetadata
 
 @Immutable
 data class MediaPlayerState(
-  var uri: Uri,
+  val uri: Uri,
   val metaData: MediaMetadata,
   val mediaId: String,
   val isPlaying: Boolean,

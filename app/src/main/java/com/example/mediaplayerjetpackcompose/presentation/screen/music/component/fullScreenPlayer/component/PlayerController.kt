@@ -32,7 +32,7 @@ import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeT
 fun SongController(
   modifier: Modifier = Modifier,
   mediaPlayerState: () -> MediaPlayerState,
-  favoriteList: List<String>,
+  isFavorite: Boolean,
   repeatMode: Int,
   onMovePreviousMusic: () -> Unit,
   onPauseMusic: () -> Unit,
@@ -42,8 +42,8 @@ fun SongController(
   onFavoriteToggle: () -> Unit,
 ) {
 
-  val favIcon = remember(mediaPlayerState().mediaId, favoriteList.size) {
-    when (mediaPlayerState().mediaId in favoriteList) {
+  val favIcon = remember(mediaPlayerState().mediaId, isFavorite) {
+    when (isFavorite) {
       true -> Icons.Default.Favorite
       false -> Icons.Default.FavoriteBorder
     }
@@ -150,7 +150,7 @@ private fun Preview() {
     SongController(
       modifier = Modifier,
       mediaPlayerState = { MediaPlayerState.Empty },
-      favoriteList = emptyList(),
+      isFavorite = false,
       repeatMode = 0,
       onMovePreviousMusic = {},
       onPauseMusic = {},

@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface DataBaseDao {
 
-  @Query("SELECT * FROM favoritemusicmodel")
-  fun getAllFaFavoriteSongs(): Flow<List<FavoriteMusicModel>>
+  @Query("SELECT media_Id FROM favoritemusicmodel")
+  fun getFavoriteSongsMediaId(): Flow<List<String>>
 
   @Insert
   fun insertFavoriteSong(favoriteMediaId: FavoriteMusicModel)
@@ -18,4 +18,6 @@ interface DataBaseDao {
   @Query("DELETE FROM favoritemusicmodel WHERE media_Id = :mediaId")
   fun deleteFavoriteSong(mediaId: String)
 
+  @Query("SELECT EXISTS(SELECT 1 FROM favoritemusicmodel WHERE media_Id=:mediaId) ")
+  fun isFavorite(mediaId: String): Boolean
 }
