@@ -156,8 +156,10 @@ fun MusicScreen(
           },
         navController = navController,
         navigateTo = {
+          var currentDestination = navController.currentDestination?.id ?: navController.graph.findStartDestination().id
           navController.navigate(it) {
-            this.popUpTo(navController.graph.findStartDestination().id) {
+            this.popUpTo(currentDestination) {
+              inclusive = true
               saveState = true
             }
             restoreState = true
