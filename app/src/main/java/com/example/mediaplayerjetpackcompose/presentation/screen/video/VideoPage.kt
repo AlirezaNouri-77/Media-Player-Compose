@@ -1,7 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.video
 
 import android.content.Context
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
@@ -15,27 +14,21 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.mediaplayerjetpackcompose.data.util.Constant
+import com.example.mediaplayerjetpackcompose.designSystem.Loading
 import com.example.mediaplayerjetpackcompose.domain.model.navigation.MainScreenNavigationModel
 import com.example.mediaplayerjetpackcompose.domain.model.repository.MediaStoreResult
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.Loading
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.isPermissionDenied
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.openSetting
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.shouldShowPermissionRationale
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.component.EmptyVideoResultHandler
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.component.TopBarVideo
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.item.VideoMediaItem
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun VideoPage(

@@ -1,6 +1,5 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.component.navigation
 
-import android.app.Activity
 import android.os.Build
 import android.view.Window
 import android.view.WindowInsets
@@ -15,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -24,7 +22,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.mediaplayerjetpackcompose.domain.model.navigation.MainScreenNavigationModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicScreen
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
@@ -36,7 +33,6 @@ fun MainNavController(
   window: Window? = LocalActivity.current?.window,
 ) {
 
-  val musicPageViewModel: MusicPageViewModel = koinViewModel()
   val videoPageViewModel: VideoPageViewModel = koinViewModel()
 
   val navHostController: NavHostController = rememberNavController()
@@ -137,7 +133,6 @@ fun MainNavController(
       },
     ) {
       MusicScreen(
-        musicPageViewModel = musicPageViewModel,
         onNavigateToVideoScreen = {
           navHostController.navigate(MainScreenNavigationModel.VideoScreen)
         }

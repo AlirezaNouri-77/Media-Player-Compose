@@ -38,7 +38,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import org.koin.dsl.koinApplication
 
 @OptIn(UnstableApi::class)
 class VideoPageViewModel(

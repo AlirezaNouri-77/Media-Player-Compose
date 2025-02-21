@@ -32,9 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
 import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
+import com.example.mediaplayerjetpackcompose.designSystem.ThumbnailImage
+import com.example.mediaplayerjetpackcompose.designSystem.WaveForm
 import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.WaveForm
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.ThumbnailImage
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 @Composable

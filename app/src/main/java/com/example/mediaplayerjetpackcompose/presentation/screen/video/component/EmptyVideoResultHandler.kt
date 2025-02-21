@@ -6,7 +6,7 @@ import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.data.util.Constant
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.EmptyPage
+import com.example.mediaplayerjetpackcompose.designSystem.EmptyPage
 import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.isPermissionGrant
 
 @Composable

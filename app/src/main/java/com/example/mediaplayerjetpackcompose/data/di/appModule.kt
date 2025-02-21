@@ -2,11 +2,11 @@ package com.example.mediaplayerjetpackcompose.data.di
 
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.room.Room
-import com.example.mediaplayerjetpackcompose.data.musicManager.FavoriteMusicManager
-import com.example.mediaplayerjetpackcompose.data.repository.MusicSource
-import com.example.mediaplayerjetpackcompose.data.musicManager.SearchMusicManager
 import com.example.mediaplayerjetpackcompose.data.database.databaseClass.AppDataBase
+import com.example.mediaplayerjetpackcompose.data.musicManager.FavoriteMusicManager
+import com.example.mediaplayerjetpackcompose.data.musicManager.SearchMusicManager
 import com.example.mediaplayerjetpackcompose.data.repository.MusicMediaStoreRepository
+import com.example.mediaplayerjetpackcompose.data.repository.MusicSource
 import com.example.mediaplayerjetpackcompose.data.repository.VideoMediaStoreRepository
 import com.example.mediaplayerjetpackcompose.data.service.MusicServiceConnection
 import com.example.mediaplayerjetpackcompose.data.util.DeviceVolumeManager
@@ -14,7 +14,12 @@ import com.example.mediaplayerjetpackcompose.data.util.GetMediaMetaData
 import com.example.mediaplayerjetpackcompose.data.util.MediaThumbnailUtil
 import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
 import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoItemModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.MusicPageViewModel
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.ShareViewModel
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.album.AlbumViewModel
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.artist.ArtistViewModel
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.category.CategoryViewModel
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.home.HomeViewModel
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.search.SearchViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -56,7 +61,12 @@ var appModule = module {
   single<MediaStoreRepositoryImpl<VideoItemModel>> { VideoMediaStoreRepository(androidApplication().applicationContext.contentResolver) }
   single { MusicServiceConnection(androidApplication().applicationContext, get(named("CoroutineMain"))) }
 
-  viewModelOf(::MusicPageViewModel)
+  viewModelOf(::ShareViewModel)
   viewModelOf(::VideoPageViewModel)
+  viewModelOf(::AlbumViewModel)
+  viewModelOf(::CategoryViewModel)
+  viewModelOf(::ArtistViewModel)
+  viewModelOf(::SearchViewModel)
+  viewModelOf(::HomeViewModel)
 
 }

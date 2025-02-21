@@ -26,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -59,28 +60,28 @@ import com.example.mediaplayerjetpackcompose.data.util.Constant.MINI_PLAYER_HEIG
 import com.example.mediaplayerjetpackcompose.domain.model.navigation.MusicNavigationModel
 import com.example.mediaplayerjetpackcompose.domain.model.navigation.ParentRoute
 import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.AlbumPage
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.ArtistPage
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.CategoryPage
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.HomeMusic
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.MiniMusicPlayer
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.SearchPage
+import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.LocalBottomPadding
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.bottomBar.MusicNavigationBar
-import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.fullScreenPlayer.FullMusicPlayer
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.album.AlbumRoute
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.artist.ArtistRoute
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.category.CategoryRoute
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.fullScreen.FullMusicPlayer
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.home.HomeMusic
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.miniPlayer.MiniMusicPlayer
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.search.SearchRoot
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun MusicScreen(
-  musicPageViewModel: MusicPageViewModel,
+  shareViewModel: ShareViewModel = koinViewModel(),
   onNavigateToVideoScreen: () -> Unit,
   density: Density = LocalDensity.current,
   orientation: Int = LocalConfiguration.current.orientation,
   screenHeight: Dp = LocalConfiguration.current.screenHeightDp.dp,
 ) {
-
-  val miniPlayerHeight = MINI_PLAYER_HEIGHT
 
   val navController: NavHostController = rememberNavController()
 
@@ -89,22 +90,19 @@ fun MusicScreen(
 
   var coroutineScope = rememberCoroutineScope()
 
-  val currentMusicState by musicPageViewModel.currentMusicState.collectAsStateWithLifecycle()
+  val currentMusicState by shareViewModel.currentMusicState.collectAsStateWithLifecycle()
 
-  val currentMusicPosition by musicPageViewModel.currentMusicPosition.collectAsStateWithLifecycle()
-  val currentDeviceVolume by musicPageViewModel.currentDeviceVolume.collectAsStateWithLifecycle()
-  val sortState by musicPageViewModel.sortState.collectAsStateWithLifecycle()
-  val currentArtworkPagerIndex by musicPageViewModel.currentArtworkPagerIndex.collectAsStateWithLifecycle()
-  val artworkPagerList by musicPageViewModel.artworkPagerList.collectAsStateWithLifecycle()
-  val favoriteSongsList by musicPageViewModel.favoriteSongsList.collectAsStateWithLifecycle()
-
-  val favoriteSongsMediaId by musicPageViewModel.favoriteSongsMediaId.collectAsStateWithLifecycle()
-
-  val album by musicPageViewModel.album.collectAsStateWithLifecycle()
-  val folder by musicPageViewModel.folder.collectAsStateWithLifecycle()
-  val artist by musicPageViewModel.artist.collectAsStateWithLifecycle()
+  val currentMusicPosition by shareViewModel.currentMusicPosition.collectAsStateWithLifecycle()
+  val currentDeviceVolume by shareViewModel.currentDeviceVolume.collectAsStateWithLifecycle()
+  val currentArtworkPagerIndex by shareViewModel.currentArtworkPagerIndex.collectAsStateWithLifecycle()
+  val artworkPagerList by shareViewModel.artworkPagerList.collectAsStateWithLifecycle()
+  val favoriteSongsMediaId by shareViewModel.favoriteSongsMediaId.collectAsStateWithLifecycle()
 
   var bottomBarHeight by remember { mutableStateOf(0.dp) }
+
+  var bottomPadding by remember(bottomBarHeight) {
+    mutableStateOf(MINI_PLAYER_HEIGHT + bottomBarHeight + 5.dp)
+  }
 
   var screenHeightPx = remember(screenHeight) {
     with(density) {
@@ -113,7 +111,7 @@ fun MusicScreen(
   }
 
   val musicArtWorkColorAnimation by animateColorAsState(
-    targetValue = Color(musicPageViewModel.musicArtworkColorPalette),
+    targetValue = Color(shareViewModel.musicArtworkColorPalette),
     animationSpec = tween(durationMillis = 180, delayMillis = 120),
     label = "",
   )
@@ -121,7 +119,7 @@ fun MusicScreen(
   LaunchedEffect(key1 = currentMusicState.metaData) {
     if (currentMusicState.mediaId.isEmpty()) return@LaunchedEffect
 
-    musicPageViewModel.getColorPaletteFromArtwork(currentMusicState.uri)
+    shareViewModel.getColorPaletteFromArtwork(currentMusicState.uri)
   }
 
   BackHandler {
@@ -136,7 +134,7 @@ fun MusicScreen(
     derivedStateOf {
       with(density) {
         var swapOffset =
-          screenHeightPx - miniPlayerHeight.toPx() - bottomBarHeight.toPx() - runCatching { bottomSheetScaffoldState.bottomSheetState.requireOffset() }.getOrDefault(
+          screenHeightPx - MINI_PLAYER_HEIGHT.toPx() - bottomBarHeight.toPx() - runCatching { bottomSheetScaffoldState.bottomSheetState.requireOffset() }.getOrDefault(
             0f
           )
         (swapOffset / 100).coerceIn(0f, 1f)
@@ -170,13 +168,15 @@ fun MusicScreen(
     },
   ) {
 
+    CompositionLocalProvider(LocalBottomPadding provides bottomPadding ) {
+
     BottomSheetScaffold(
       modifier = Modifier
         .padding(top = it.calculateTopPadding())
         .consumeWindowInsets(it),
       scaffoldState = bottomSheetScaffoldState,
       sheetDragHandle = { null },
-      sheetPeekHeight = miniPlayerHeight + bottomBarHeight,
+      sheetPeekHeight = MINI_PLAYER_HEIGHT + bottomBarHeight,
       sheetMaxWidth = Dp.Unspecified,
       sheetContent = {
         AnimatedVisibility(
@@ -211,23 +211,23 @@ fun MusicScreen(
               pagerMusicList = artworkPagerList.toImmutableList(),
               repeatMode = currentMusicState.repeatMode,
               currentPagerPage = currentArtworkPagerIndex,
-              onPlayerAction = musicPageViewModel::onPlayerAction,
+              onPlayerAction = shareViewModel::onPlayerAction,
               currentVolume = currentDeviceVolume,
               mediaPlayerState = { currentMusicState },
-              setCurrentPagerNumber = { musicPageViewModel.onPlayerAction(PlayerActions.UpdateArtworkPageIndex(it)) },
+              setCurrentPagerNumber = { shareViewModel.onPlayerAction(PlayerActions.UpdateArtworkPageIndex(it)) },
               onBack = {
                 coroutineScope.launch {
                   bottomSheetScaffoldState.bottomSheetState.partialExpand()
                 }
               },
               currentMusicPosition = { currentMusicPosition },
-              onVolumeChange = { musicPageViewModel.setDeviceVolume(it) },
-              maxDeviceVolume = musicPageViewModel.getMaxDeviceVolume(),
+              onVolumeChange = { shareViewModel.setDeviceVolume(it) },
+              maxDeviceVolume = shareViewModel.getMaxDeviceVolume(),
             )
             MiniMusicPlayer(
               modifier = Modifier
                 .fillMaxWidth()
-                .height(miniPlayerHeight)
+                .height(MINI_PLAYER_HEIGHT)
                 .align(Alignment.TopCenter)
                 .padding(horizontal = 8.dp, vertical = 2.dp)
                 .alpha(1f - bottomSheetSwapFraction.value)
@@ -252,8 +252,8 @@ fun MusicScreen(
               artworkPagerList = artworkPagerList.toImmutableList(),
               currentMusicPosition = { currentMusicPosition },
               currentPagerPage = currentArtworkPagerIndex,
-              setCurrentPagerNumber = { musicPageViewModel.onPlayerAction(PlayerActions.UpdateArtworkPageIndex(it)) },
-              onPlayerAction = musicPageViewModel::onPlayerAction,
+              setCurrentPagerNumber = { shareViewModel.onPlayerAction(PlayerActions.UpdateArtworkPageIndex(it)) },
+              onPlayerAction = shareViewModel::onPlayerAction,
               currentPlayerMediaId = currentMusicState.mediaId.toLong(),
               currentPlayerDuration = currentMusicState.metaData.extras?.getInt(Constant.DURATION_KEY) ?: 0,
               currentPlayerArtworkUri = currentMusicState.metaData.artworkUri,
@@ -277,116 +277,80 @@ fun MusicScreen(
           navController = navController,
           startDestination = MusicNavigationModel.Home,
         ) {
-          composable<MusicNavigationModel.Home> {
 
+          composable<MusicNavigationModel.Home> {
             HomeMusic(
-              listBottomPadding = miniPlayerHeight + bottomBarHeight + 5.dp,
               navigateToCategoryPage = { navController.navigate(MusicNavigationModel.Category(it, ParentRoute.FOLDER)) },
-              sortState = { sortState },
               onNavigateToVideoScreen = { onNavigateToVideoScreen() },
-              favoriteList = favoriteSongsList.toImmutableList(),
-              favoriteSongsMediaId = favoriteSongsMediaId.toImmutableList(),
               currentPlayerMediaId = { currentMusicState.mediaId },
               currentPlayerPlayingState = { currentMusicState.isPlaying },
-              isLoading = musicPageViewModel.isLoading,
-              musicList = musicPageViewModel.musicList.toImmutableList(),
-              folderList = folder,
-              tabBarState = musicPageViewModel.tabBarState,
               animatedVisibilityScope = this,
-              onTabBarClick = {
-                musicPageViewModel.tabBarState = it
-              },
-              onItemClick = { index, list ->
-                musicPageViewModel.playMusic(index, list)
-              },
-              onSortClick = {
-                musicPageViewModel.updateSortType(it)
-                musicPageViewModel.sortMusicListByCategory()
-              },
-              onOrderClick = {
-                musicPageViewModel.updateSortIsDec(!sortState.isDec)
-                musicPageViewModel.sortMusicListByCategory()
+              onMusicClick = { index,list->
+                shareViewModel.onPlayerAction(
+                  PlayerActions.PlaySongs(index, list)
+                )
               },
             )
-
           }
 
           composable<MusicNavigationModel.Artist> {
-            ArtistPage(
+            ArtistRoute(
               modifier = Modifier,
-              listItems = artist,
-              bottomLazyListPadding = miniPlayerHeight + bottomBarHeight + 5.dp,
               animatedVisibilityScope = this@composable,
-              navigateTo = {
+              navigateToCategory = {
                 navController.navigate(MusicNavigationModel.Category(it, ParentRoute.ARTIST))
               }
             )
           }
 
           composable<MusicNavigationModel.Album> {
-            AlbumPage(
+            AlbumRoute(
               modifier = Modifier,
-              listItems = album,
-              bottomLazyListPadding = miniPlayerHeight + bottomBarHeight + 5.dp,
-              animatedVisibilityScope = this@composable,
-              navigateTo = {
+              navigateToCategory = {
                 navController.navigate(MusicNavigationModel.Category(it, ParentRoute.ALBUM))
-              }
+              },
+              animatedVisibilityScope = this@composable
             )
           }
 
           composable<MusicNavigationModel.Search> {
-            val searchList by musicPageViewModel.searchList.collectAsStateWithLifecycle()
-
-            SearchPage(
+            SearchRoot(
               modifier = Modifier.imePadding(),
-              searchList = searchList,
-              bottomLazyListPadding = miniPlayerHeight + bottomBarHeight + 5.dp,
-              favoriteMusicMediaIdList = { emptyList() },
               currentPlayerMediaId = { currentMusicState.mediaId },
               currentPlayerPlayingState = { currentMusicState.isPlaying },
-              onItemClick = { index ->
-                musicPageViewModel.playMusic(index, searchList)
-              },
-              onSearch = {
-                musicPageViewModel.searchMusic(it)
+              onMusicClick = { index,list ->
+                shareViewModel.onPlayerAction(
+                  PlayerActions.PlaySongs(index, list)
+                )
               },
             )
           }
 
           composable<MusicNavigationModel.Category> { backStackEntry ->
             // for name of parent such as folder name or artist name ...
-            val parentName = backStackEntry.toRoute<MusicNavigationModel.Category>().name
+            val categoryName = backStackEntry.toRoute<MusicNavigationModel.Category>().name
             // for example if user in folder or artist page ...
             val parentRoute = backStackEntry.toRoute<MusicNavigationModel.Category>().parentRoute
 
-            val itemList = remember(parentName) {
-              when (parentRoute) {
-                ParentRoute.FOLDER -> folder.first { it.categoryName == parentName }.categoryList
-                ParentRoute.ARTIST -> artist.first { it.categoryName == parentName }.categoryList
-                ParentRoute.ALBUM -> album.first { it.categoryName == parentName }.categoryList
-              }
-            }
-
-            CategoryPage(
-              name = parentName,
-              itemList = itemList,
+            CategoryRoute(
+              categoryName = categoryName,
+              parentRouteName = parentRoute,
               currentMediaPlayerState = currentMusicState,
-              onMusicClick = { index ->
-                musicPageViewModel.playMusic(
-                  index = index,
-                  musicList = itemList,
+              onMusicClick = { index,list ->
+                shareViewModel.onPlayerAction(
+                  PlayerActions.PlaySongs(index, list)
                 )
               },
-              miniPlayerHeight = miniPlayerHeight,
               onBackClick = navController::popBackStack,
               animatedVisibilityScope = this,
             )
           }
+
         }
 
       }
     }
   }
 
+  }
 }
