@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
+import com.example.mediaplayerjetpackcompose.core.model.MediaPlayerState
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 @Composable

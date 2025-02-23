@@ -1,6 +1,8 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.video
 
+import android.app.Activity
 import android.content.Context
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
@@ -19,13 +21,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.example.mediaplayerjetpackcompose.data.util.Constant
-import com.example.mediaplayerjetpackcompose.designSystem.Loading
-import com.example.mediaplayerjetpackcompose.domain.model.navigation.MainScreenNavigationModel
-import com.example.mediaplayerjetpackcompose.domain.model.repository.MediaStoreResult
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.isPermissionDenied
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.openSetting
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.shouldShowPermissionRationale
+import com.example.mediaplayerjetpackcompose.util.Constant
+import com.example.mediaplayerjetpackcompose.core.designSystem.Loading
+import com.example.mediaplayerjetpackcompose.navigation.MainNavRoute
+import com.example.mediaplayerjetpackcompose.core.model.MediaStoreResult
+import com.example.mediaplayerjetpackcompose.util.isPermissionDenied
+import com.example.mediaplayerjetpackcompose.util.openSetting
+import com.example.mediaplayerjetpackcompose.util.shouldShowPermissionRationale
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.component.EmptyVideoResultHandler
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.component.TopBarVideo
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.item.VideoMediaItem
@@ -36,6 +38,7 @@ fun VideoPage(
   videoPageViewModel: VideoPageViewModel,
   onNavigateToMusicScreen: () -> Unit,
   context: Context = LocalContext.current,
+  activity: Activity? = LocalActivity.current,
 ) {
 
   val videoUiState = videoPageViewModel.uiState.collectAsStateWithLifecycle()
@@ -61,9 +64,9 @@ fun VideoPage(
           var isPermissionsGrant = Constant.videoPermission.all { context.isPermissionDenied(it) }
 
           if (isPermissionsGrant) {
-            if (Constant.videoPermission.all { context.shouldShowPermissionRationale(it) }) {
+            if (Constant.videoPermission.all { context.shouldShowPermissionRationale(it, activity) }) {
               activityResultApi34.launch(Constant.videoPermission)
-            } else if (Constant.videoPermission.all { context.shouldShowPermissionRationale(it) == false }) {
+            } else if (Constant.videoPermission.all { context.shouldShowPermissionRationale(it, activity) == false }) {
               context.openSetting(activityResult)
             }
             return@TopBarVideo
@@ -108,7 +111,7 @@ fun VideoPage(
                 VideoMediaItem(
                   item = videoMediaModel,
                   onItemClick = {
-                    navHostController.navigate(MainScreenNavigationModel.VideoPlayerScreen("")) {
+                    navHostController.navigate(MainNavRoute.VideoPlayerScreen("")) {
                       launchSingleTop = false
                     }
                     videoPageViewModel.startPlay(index, it.result)

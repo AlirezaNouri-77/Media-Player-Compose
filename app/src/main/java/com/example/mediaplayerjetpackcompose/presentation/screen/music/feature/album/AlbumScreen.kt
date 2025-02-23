@@ -1,6 +1,7 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.album
 
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.LinearEasing
@@ -25,9 +26,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.mediaplayerjetpackcompose.designSystem.EmptyPage
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.CategoryMusicModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.LocalBottomPadding
+import com.example.mediaplayerjetpackcompose.core.designSystem.EmptyPage
+import com.example.mediaplayerjetpackcompose.core.designSystem.Loading
+import com.example.mediaplayerjetpackcompose.core.model.CategoryMusic
+import com.example.mediaplayerjetpackcompose.util.LocalBottomPadding
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.CategoryListItem
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -58,6 +60,7 @@ fun SharedTransitionScope.AlbumRoute(
     navigateTo = {
       navigateToCategory(it)
     },
+    isLoading = albumViewModel.isLoading,
     animatedVisibilityScope = animatedVisibilityScope,
     sharedTransitionScope = this,
   )
@@ -68,8 +71,9 @@ fun SharedTransitionScope.AlbumRoute(
 @Composable
 private fun AlbumScreen(
   modifier: Modifier = Modifier,
-  albumListData: ImmutableList<CategoryMusicModel>,
+  albumListData: ImmutableList<CategoryMusic>,
   lazyListBottomPadding: Dp,
+  isLoading: Boolean,
   navigateTo: (String) -> Unit,
   animatedVisibilityScope: AnimatedVisibilityScope,
   sharedTransitionScope: SharedTransitionScope,
@@ -94,30 +98,37 @@ private fun AlbumScreen(
     },
   ) { innerPadding ->
 
-    if (albumListData.isNotEmpty()) {
-      LazyColumn(
-        modifier = Modifier
-          .fillMaxSize()
-          .padding(innerPadding),
-        contentPadding = PaddingValues(bottom = lazyListBottomPadding),
-      ) {
-        items(
-          items = albumListData,
-          key = { it.categoryName.hashCode() }
-        ) { item ->
-          CategoryListItem(
-            categoryName = item.categoryName,
-            musicListSize = item.categoryList.size,
-            onClick = { categoryName ->
-              navigateTo(categoryName)
-            },
-            sharedTransitionScope = sharedTransitionScope,
-            animatedVisibilityScope = animatedVisibilityScope,
-          )
-        }
-      }
+    Crossfade(isLoading) {
+      if (it) {
+        Loading(modifier = Modifier.fillMaxSize())
+      } else {
+        if (albumListData.isNotEmpty()) {
+          LazyColumn(
+            modifier = Modifier
+              .fillMaxSize()
+              .padding(innerPadding),
+            contentPadding = PaddingValues(bottom = lazyListBottomPadding),
+          ) {
+            items(
+              items = albumListData,
+              key = { it.categoryName.hashCode() }
+            ) { item ->
+              CategoryListItem(
+                categoryName = item.categoryName,
+                musicListSize = item.categoryList.size,
+                onClick = { categoryName ->
+                  navigateTo(categoryName)
+                },
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope,
+              )
+            }
+          }
 
-    } else EmptyPage()
+        } else EmptyPage()
+      }
+    }
+
 
   }
 }

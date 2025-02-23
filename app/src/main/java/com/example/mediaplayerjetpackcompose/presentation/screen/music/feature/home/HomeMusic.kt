@@ -41,11 +41,11 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.mediaplayerjetpackcompose.designSystem.EmptyPage
-import com.example.mediaplayerjetpackcompose.designSystem.Loading
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.LocalBottomPadding
+import com.example.mediaplayerjetpackcompose.core.designSystem.EmptyPage
+import com.example.mediaplayerjetpackcompose.core.designSystem.Loading
+import com.example.mediaplayerjetpackcompose.core.model.MusicModel
+import com.example.mediaplayerjetpackcompose.core.model.TabBarModel
+import com.example.mediaplayerjetpackcompose.util.LocalBottomPadding
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.CategoryListItem
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.MusicMediaItem
 import org.koin.androidx.compose.koinViewModel
@@ -133,6 +133,7 @@ fun SharedTransitionScope.HomeMusic(
         .fillMaxSize()
         .padding(paddingValue),
     ) {
+
       Crossfade(
         modifier = Modifier
           .fillMaxSize(),
@@ -154,7 +155,9 @@ fun SharedTransitionScope.HomeMusic(
 
               var list = remember(
                 homeViewModel.musicList, favoriteSongs
-              ) { if (page == 0) homeViewModel.musicList else favoriteSongs }
+              ) {
+                if (page == 0) homeViewModel.musicList else favoriteSongs
+              }
 
               if (list.isNotEmpty()) {
                 LazyColumn(
@@ -234,6 +237,7 @@ fun SharedTransitionScope.HomeMusic(
           }
         )
       }
+
     }
 
   }

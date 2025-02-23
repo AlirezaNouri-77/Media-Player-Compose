@@ -55,12 +55,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.example.mediaplayerjetpackcompose.data.util.Constant
-import com.example.mediaplayerjetpackcompose.data.util.Constant.MINI_PLAYER_HEIGHT
-import com.example.mediaplayerjetpackcompose.domain.model.navigation.MusicNavigationModel
-import com.example.mediaplayerjetpackcompose.domain.model.navigation.ParentRoute
-import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.LocalBottomPadding
+import com.example.mediaplayerjetpackcompose.util.Constant
+import com.example.mediaplayerjetpackcompose.util.Constant.MINI_PLAYER_HEIGHT
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.navigation.MusicNavigationRoute
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.navigation.ParentRoute
+import com.example.mediaplayerjetpackcompose.core.model.PlayerActions
+import com.example.mediaplayerjetpackcompose.util.LocalBottomPadding
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.bottomBar.MusicNavigationBar
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.album.AlbumRoute
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.artist.ArtistRoute
@@ -112,7 +112,7 @@ fun MusicScreen(
 
   val musicArtWorkColorAnimation by animateColorAsState(
     targetValue = Color(shareViewModel.musicArtworkColorPalette),
-    animationSpec = tween(durationMillis = 180, delayMillis = 120),
+    animationSpec = tween(durationMillis = 90, delayMillis = 40),
     label = "",
   )
 
@@ -275,12 +275,12 @@ fun MusicScreen(
               if (orientation == Configuration.ORIENTATION_LANDSCAPE) Modifier.displayCutoutPadding() else Modifier
             ),
           navController = navController,
-          startDestination = MusicNavigationModel.Home,
+          startDestination = MusicNavigationRoute.Home,
         ) {
 
-          composable<MusicNavigationModel.Home> {
+          composable<MusicNavigationRoute.Home> {
             HomeMusic(
-              navigateToCategoryPage = { navController.navigate(MusicNavigationModel.Category(it, ParentRoute.FOLDER)) },
+              navigateToCategoryPage = { navController.navigate(MusicNavigationRoute.Category(it, ParentRoute.FOLDER)) },
               onNavigateToVideoScreen = { onNavigateToVideoScreen() },
               currentPlayerMediaId = { currentMusicState.mediaId },
               currentPlayerPlayingState = { currentMusicState.isPlaying },
@@ -293,27 +293,27 @@ fun MusicScreen(
             )
           }
 
-          composable<MusicNavigationModel.Artist> {
+          composable<MusicNavigationRoute.Artist> {
             ArtistRoute(
               modifier = Modifier,
               animatedVisibilityScope = this@composable,
               navigateToCategory = {
-                navController.navigate(MusicNavigationModel.Category(it, ParentRoute.ARTIST))
+                navController.navigate(MusicNavigationRoute.Category(it, ParentRoute.ARTIST))
               }
             )
           }
 
-          composable<MusicNavigationModel.Album> {
+          composable<MusicNavigationRoute.Album> {
             AlbumRoute(
               modifier = Modifier,
               navigateToCategory = {
-                navController.navigate(MusicNavigationModel.Category(it, ParentRoute.ALBUM))
+                navController.navigate(MusicNavigationRoute.Category(it, ParentRoute.ALBUM))
               },
               animatedVisibilityScope = this@composable
             )
           }
 
-          composable<MusicNavigationModel.Search> {
+          composable<MusicNavigationRoute.Search> {
             SearchRoot(
               modifier = Modifier.imePadding(),
               currentPlayerMediaId = { currentMusicState.mediaId },
@@ -326,11 +326,11 @@ fun MusicScreen(
             )
           }
 
-          composable<MusicNavigationModel.Category> { backStackEntry ->
+          composable<MusicNavigationRoute.Category> { backStackEntry ->
             // for name of parent such as folder name or artist name ...
-            val categoryName = backStackEntry.toRoute<MusicNavigationModel.Category>().name
+            val categoryName = backStackEntry.toRoute<MusicNavigationRoute.Category>().name
             // for example if user in folder or artist page ...
-            val parentRoute = backStackEntry.toRoute<MusicNavigationModel.Category>().parentRoute
+            val parentRoute = backStackEntry.toRoute<MusicNavigationRoute.Category>().parentRoute
 
             CategoryRoute(
               categoryName = categoryName,

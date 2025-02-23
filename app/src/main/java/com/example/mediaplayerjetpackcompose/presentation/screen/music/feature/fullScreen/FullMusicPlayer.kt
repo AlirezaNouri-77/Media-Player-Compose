@@ -6,10 +6,10 @@ import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.example.mediaplayerjetpackcompose.data.util.Constant
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
-import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
-import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
+import com.example.mediaplayerjetpackcompose.util.Constant
+import com.example.mediaplayerjetpackcompose.core.model.MediaPlayerState
+import com.example.mediaplayerjetpackcompose.core.model.MusicModel
+import com.example.mediaplayerjetpackcompose.core.model.PlayerActions
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.fullScreen.component.FullscreenPlayerPager
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.fullScreen.component.HeaderSection
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.fullScreen.component.SliderSection

@@ -32,10 +32,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
-import com.example.mediaplayerjetpackcompose.domain.model.navigation.ParentRoute
-import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.LocalBottomPadding
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.navigation.ParentRoute
+import com.example.mediaplayerjetpackcompose.core.model.MediaPlayerState
+import com.example.mediaplayerjetpackcompose.core.model.MusicModel
+import com.example.mediaplayerjetpackcompose.util.LocalBottomPadding
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.MusicMediaItem
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList

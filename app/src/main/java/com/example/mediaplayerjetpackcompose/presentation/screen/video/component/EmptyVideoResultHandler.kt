@@ -5,9 +5,9 @@ import android.content.Context
 import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.data.util.Constant
-import com.example.mediaplayerjetpackcompose.designSystem.EmptyPage
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.isPermissionGrant
+import com.example.mediaplayerjetpackcompose.util.Constant
+import com.example.mediaplayerjetpackcompose.core.designSystem.EmptyPage
+import com.example.mediaplayerjetpackcompose.util.isPermissionGrant
 
 @Composable
 fun EmptyVideoResultHandler(

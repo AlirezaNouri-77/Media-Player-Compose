@@ -1,5 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.video.component
 
+import android.Manifest
 import android.content.Context
 import android.os.Build
 import androidx.compose.foundation.layout.size
@@ -20,8 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.data.util.Constant
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.isPermissionGrant
+import com.example.mediaplayerjetpackcompose.util.Constant
+import com.example.mediaplayerjetpackcompose.util.isPermissionGrant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,7 +56,7 @@ fun TopBarVideo(
       }
     },
     actions = {
-      if (Build.VERSION.SDK_INT >= Constant.API_34_UPSIDE_DOWN_CAKE_ANDROID_14 && !context.isPermissionGrant(android.Manifest.permission.READ_MEDIA_VIDEO)) {
+      if (Build.VERSION.SDK_INT >= Constant.API_34_UPSIDE_DOWN_CAKE_ANDROID_14 && !context.isPermissionGrant(Manifest.permission.READ_MEDIA_VIDEO)) {
         TextButton(
           modifier = Modifier
             .wrapContentWidth(),

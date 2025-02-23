@@ -16,8 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.SortTypeModel
-import com.example.mediaplayerjetpackcompose.domain.model.share.SortState
+import com.example.mediaplayerjetpackcompose.core.model.SortListType
+import com.example.mediaplayerjetpackcompose.core.model.SortState
 
 @Composable
 fun SortDropDownMenu(
@@ -25,7 +25,7 @@ fun SortDropDownMenu(
   isExpand: Boolean,
   onDismiss: () -> Unit,
   sortState: SortState,
-  onSortClick: (SortTypeModel) -> Unit,
+  onSortClick: (SortListType) -> Unit,
   onOrderClick: () -> Unit,
 ) {
   DropdownMenu(
@@ -35,7 +35,7 @@ fun SortDropDownMenu(
     onDismissRequest = { onDismiss() },
     containerColor = MaterialTheme.colorScheme.primaryContainer,
   ) {
-    SortTypeModel.entries.forEachIndexed { _, sortBarModel ->
+    SortListType.entries.forEachIndexed { _, sortBarModel ->
       DropdownMenuItem(
         modifier = Modifier.background(
           if (sortState.sortType == sortBarModel) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f) else Color.Transparent,

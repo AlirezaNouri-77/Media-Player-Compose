@@ -15,13 +15,13 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
-import com.example.mediaplayerjetpackcompose.data.mapper.toMediaItem
-import com.example.mediaplayerjetpackcompose.data.util.GetMediaMetaData
-import com.example.mediaplayerjetpackcompose.data.util.MediaThumbnailUtil
-import com.example.mediaplayerjetpackcompose.domain.api.MediaStoreRepositoryImpl
-import com.example.mediaplayerjetpackcompose.domain.model.repository.MediaStoreResult
-import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
-import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoItemModel
+import com.example.mediaplayerjetpackcompose.core.data.mapper.toMediaItem
+import com.example.mediaplayerjetpackcompose.core.data.VideoMediaVideoMediaMetaData
+import com.example.mediaplayerjetpackcompose.core.data.MediaThumbnailUtil
+import com.example.mediaplayerjetpackcompose.core.domain.api.VideoRepositoryImpl
+import com.example.mediaplayerjetpackcompose.core.model.MediaStoreResult
+import com.example.mediaplayerjetpackcompose.core.model.MediaPlayerState
+import com.example.mediaplayerjetpackcompose.core.model.VideoModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -41,15 +41,15 @@ import kotlinx.coroutines.launch
 
 @OptIn(UnstableApi::class)
 class VideoPageViewModel(
-  private var videoMediaStoreRepository: MediaStoreRepositoryImpl<VideoItemModel>,
-  private var getMediaMetaData: GetMediaMetaData,
+  private var videoMediaStoreRepository: VideoRepositoryImpl,
+  private var videoMediaMetaData: VideoMediaVideoMediaMetaData,
   private var mediaThumbnailUtil: MediaThumbnailUtil,
   private var exoPlayer: ExoPlayer,
 ) : ViewModel() {
 
   var playerResizeMode by mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT)
 
-  private var _uiState = MutableStateFlow<MediaStoreResult<VideoItemModel>>(MediaStoreResult.Loading)
+  private var _uiState = MutableStateFlow<MediaStoreResult<VideoModel>>(MediaStoreResult.Loading)
   var uiState = _uiState
     .onStart { getVideo() }
     .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), MediaStoreResult.Loading)
@@ -121,10 +121,10 @@ class VideoPageViewModel(
 
   fun getExoPlayer(): ExoPlayer = exoPlayer
 
-  fun startPlay(index: Int, videoList: List<VideoItemModel>) {
+  fun startPlay(index: Int, videoList: List<VideoModel>) {
     viewModelScope.launch {
       exoPlayer.apply {
-        this.setMediaItems(videoList.map(VideoItemModel::toMediaItem), index, 0L)
+        this.setMediaItems(videoList.map(VideoModel::toMediaItem), index, 0L)
         this.playWhenReady = true
         this.prepare()
         this.play()
@@ -134,7 +134,7 @@ class VideoPageViewModel(
 
   fun startPlayFromUri(uri: Uri) {
     viewModelScope.launch {
-      val metaData = getMediaMetaData.get(uri)
+      val metaData = videoMediaMetaData.get(uri)
       metaData?.let {
         exoPlayer.apply {
           this.addMediaItem(metaData.toMediaItem())
@@ -191,7 +191,7 @@ class VideoPageViewModel(
 
   fun getVideo() {
     viewModelScope.launch {
-      videoMediaStoreRepository.getMedia().collect {
+      videoMediaStoreRepository.getVideos().collect {
         _uiState.value = it
       }
     }

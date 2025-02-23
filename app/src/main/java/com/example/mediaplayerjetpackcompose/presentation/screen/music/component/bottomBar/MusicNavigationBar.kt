@@ -17,14 +17,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.mediaplayerjetpackcompose.domain.model.navigation.MusicNavigationModel
-import com.example.mediaplayerjetpackcompose.domain.model.navigation.NavigationBarModel
+import com.example.mediaplayerjetpackcompose.presentation.screen.music.navigation.MusicNavigationRoute
 
 @Composable
 fun MusicNavigationBar(
   modifier: Modifier = Modifier,
   navController: NavController,
-  navigateTo: (MusicNavigationModel) -> Unit,
+  navigateTo: (MusicNavigationRoute) -> Unit,
 ) {
 
   var navigationBarCurrentState = remember { mutableIntStateOf(0) }

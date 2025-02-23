@@ -24,9 +24,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.SortTypeModel
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.TabBarModel
-import com.example.mediaplayerjetpackcompose.domain.model.share.SortState
+import com.example.mediaplayerjetpackcompose.core.model.SortListType
+import com.example.mediaplayerjetpackcompose.core.model.TabBarModel
+import com.example.mediaplayerjetpackcompose.core.model.SortState
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.component.topBar.SortDropDownMenu
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 import kotlinx.coroutines.FlowPreview
@@ -41,7 +41,7 @@ fun HomePageTopBar(
   isDropDownMenuSortExpand: Boolean,
   onDismissDropDownMenu: () -> Unit,
   sortState: () -> SortState,
-  onSortClick: (SortTypeModel) -> Unit,
+  onSortClick: (SortListType) -> Unit,
   onOrderClick: () -> Unit,
 ) {
 
@@ -125,7 +125,7 @@ private fun PreviewTopBarMusic() {
       isDropDownMenuSortExpand = false,
       sortState = {
         SortState(
-          SortTypeModel.SIZE,
+          SortListType.SIZE,
           false,
         )
       },

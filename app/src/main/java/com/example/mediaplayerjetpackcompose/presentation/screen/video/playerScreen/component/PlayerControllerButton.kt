@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
+import com.example.mediaplayerjetpackcompose.util.NoRippleEffect
 
 @Composable
 fun PlayerControllerButton(

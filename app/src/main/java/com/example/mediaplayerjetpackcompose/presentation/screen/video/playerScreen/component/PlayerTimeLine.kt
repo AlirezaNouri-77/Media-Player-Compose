@@ -16,10 +16,10 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.example.mediaplayerjetpackcompose.data.util.Constant
-import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
-import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.NoRippleEffect
+import com.example.mediaplayerjetpackcompose.util.Constant
+import com.example.mediaplayerjetpackcompose.util.convertMilliSecondToTime
+import com.example.mediaplayerjetpackcompose.core.model.MediaPlayerState
+import com.example.mediaplayerjetpackcompose.util.NoRippleEffect
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 @OptIn(ExperimentalMaterial3Api::class)

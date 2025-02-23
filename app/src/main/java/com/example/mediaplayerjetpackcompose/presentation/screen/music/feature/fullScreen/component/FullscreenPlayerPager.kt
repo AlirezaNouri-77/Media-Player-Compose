@@ -19,11 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
-import com.example.mediaplayerjetpackcompose.designSystem.ThumbnailImage
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
-import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
-import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.PagerHandler
+import com.example.mediaplayerjetpackcompose.core.designSystem.ThumbnailImage
+import com.example.mediaplayerjetpackcompose.core.model.MediaPlayerState
+import com.example.mediaplayerjetpackcompose.core.model.MusicModel
+import com.example.mediaplayerjetpackcompose.core.model.PlayerActions
+import com.example.mediaplayerjetpackcompose.util.PagerHandler
 import kotlinx.collections.immutable.ImmutableList
 
 @OptIn(ExperimentalSharedTransitionApi::class)

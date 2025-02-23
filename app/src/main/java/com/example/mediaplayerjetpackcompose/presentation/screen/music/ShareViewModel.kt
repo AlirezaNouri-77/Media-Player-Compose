@@ -6,13 +6,13 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mediaplayerjetpackcompose.data.musicManager.FavoriteMusicManager
-import com.example.mediaplayerjetpackcompose.data.service.MusicServiceConnection
-import com.example.mediaplayerjetpackcompose.data.util.DeviceVolumeManager
-import com.example.mediaplayerjetpackcompose.data.util.MediaThumbnailUtil
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
-import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
-import com.example.mediaplayerjetpackcompose.domain.model.share.PlayerActions
+import com.example.mediaplayerjetpackcompose.core.data.FavoriteMusicManager
+import com.example.mediaplayerjetpackcompose.core.musicPlayer.MusicServiceConnection
+import com.example.mediaplayerjetpackcompose.core.data.DeviceVolumeManager
+import com.example.mediaplayerjetpackcompose.core.data.MediaThumbnailUtil
+import com.example.mediaplayerjetpackcompose.core.model.MediaPlayerState
+import com.example.mediaplayerjetpackcompose.core.model.MusicModel
+import com.example.mediaplayerjetpackcompose.core.model.PlayerActions
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -90,8 +90,8 @@ class ShareViewModel(
 
   fun getColorPaletteFromArtwork(uri: Uri) {
     viewModelScope.launch {
-      val bitmap = mediaThumbnailUtil.getMusicArt(uri)
-      musicArtworkColorPalette = MediaThumbnailUtil.getMainColorOfBitmap(bitmap)
+      val bitmap = mediaThumbnailUtil.getMusicThumbnail(uri)
+      musicArtworkColorPalette = mediaThumbnailUtil.getMainColorOfBitmap(bitmap)
     }
   }
 

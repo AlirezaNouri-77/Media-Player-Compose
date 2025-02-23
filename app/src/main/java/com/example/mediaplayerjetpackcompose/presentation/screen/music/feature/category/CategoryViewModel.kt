@@ -2,17 +2,17 @@ package com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.
 
 
 import androidx.lifecycle.ViewModel
-import com.example.mediaplayerjetpackcompose.data.repository.MusicSource
+import com.example.mediaplayerjetpackcompose.core.data.repository.MusicSourceRepository
 import kotlinx.coroutines.flow.combine
 
 class CategoryViewModel(
-  musicSource: MusicSource,
+  musicSourceRepository: MusicSourceRepository,
 ) : ViewModel() {
 
   var categoryList = combine(
-    musicSource.album(),
-    musicSource.folder(),
-    musicSource.artist(),
+    musicSourceRepository.album(),
+    musicSourceRepository.folder(),
+    musicSourceRepository.artist(),
   ) { album, folder, artist ->
     Category(
       album = album,

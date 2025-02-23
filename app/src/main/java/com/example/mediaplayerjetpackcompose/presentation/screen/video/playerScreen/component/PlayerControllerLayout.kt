@@ -33,9 +33,9 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
-import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
-import com.example.mediaplayerjetpackcompose.domain.model.videoSection.MiddleVideoPlayerIndicator
+import com.example.mediaplayerjetpackcompose.util.removeFileExtension
+import com.example.mediaplayerjetpackcompose.core.model.MediaPlayerState
+import com.example.mediaplayerjetpackcompose.core.model.MiddleVideoPlayerIndicator
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 

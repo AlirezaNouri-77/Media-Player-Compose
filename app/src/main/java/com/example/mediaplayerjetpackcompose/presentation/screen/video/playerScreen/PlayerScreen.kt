@@ -32,8 +32,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
-import com.example.mediaplayerjetpackcompose.domain.model.videoSection.FastSeekMode
-import com.example.mediaplayerjetpackcompose.domain.model.videoSection.MiddleVideoPlayerIndicator
+import com.example.mediaplayerjetpackcompose.core.model.FastSeekMode
+import com.example.mediaplayerjetpackcompose.core.model.MiddleVideoPlayerIndicator
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.playerScreen.component.MiddleInfoHandler
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.playerScreen.component.PlayerControllerLayout

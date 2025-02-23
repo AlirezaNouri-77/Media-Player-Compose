@@ -1,6 +1,7 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.music.feature.artist
 
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.LinearEasing
@@ -25,9 +26,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.mediaplayerjetpackcompose.designSystem.EmptyPage
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.CategoryMusicModel
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.LocalBottomPadding
+import com.example.mediaplayerjetpackcompose.core.designSystem.EmptyPage
+import com.example.mediaplayerjetpackcompose.core.designSystem.Loading
+import com.example.mediaplayerjetpackcompose.core.model.CategoryMusic
+import com.example.mediaplayerjetpackcompose.util.LocalBottomPadding
 import com.example.mediaplayerjetpackcompose.presentation.screen.music.item.CategoryListItem
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -54,6 +56,7 @@ fun SharedTransitionScope.ArtistRoute(
     ),
     listItems = listItem.value.toImmutableList(),
     animatedVisibilityScope = animatedVisibilityScope,
+    isLoading = artistViewModel.isLoading,
     navigateToCategory = {
       navigateToCategory(it)
     },
@@ -64,7 +67,8 @@ fun SharedTransitionScope.ArtistRoute(
 @Composable
 fun SharedTransitionScope.ArtistScreen(
   modifier: Modifier = Modifier,
-  listItems: ImmutableList<CategoryMusicModel>,
+  listItems: ImmutableList<CategoryMusic>,
+  isLoading: Boolean,
   bottomLazyListPadding: Dp = LocalBottomPadding.current,
   animatedVisibilityScope: AnimatedVisibilityScope,
   navigateToCategory: (String) -> Unit,
@@ -90,30 +94,36 @@ fun SharedTransitionScope.ArtistScreen(
     },
   ) { innerPadding ->
 
-    if (listItems.isNotEmpty()) {
-      LazyColumn(
-        modifier = Modifier
-          .fillMaxSize()
-          .padding(innerPadding),
-        contentPadding = PaddingValues(bottom = bottomLazyListPadding),
-      ) {
-        items(
-          items = listItems,
-          key = { it.categoryName.hashCode() }
-        ) { item ->
-          CategoryListItem(
-            categoryName = item.categoryName,
-            musicListSize = item.categoryList.size,
-            onClick = { categoryName ->
-              navigateToCategory(categoryName)
-            },
-            sharedTransitionScope = this@ArtistScreen,
-            animatedVisibilityScope = animatedVisibilityScope,
-          )
-        }
-      }
+    Crossfade(isLoading) {
+      if (it) {
+        Loading(modifier = Modifier.fillMaxSize())
+      } else {
+        if (listItems.isNotEmpty()) {
+          LazyColumn(
+            modifier = Modifier
+              .fillMaxSize()
+              .padding(innerPadding),
+            contentPadding = PaddingValues(bottom = bottomLazyListPadding),
+          ) {
+            items(
+              items = listItems,
+              key = { it.categoryName.hashCode() }
+            ) { item ->
+              CategoryListItem(
+                categoryName = item.categoryName,
+                musicListSize = item.categoryList.size,
+                onClick = { categoryName ->
+                  navigateToCategory(categoryName)
+                },
+                sharedTransitionScope = this@ArtistScreen,
+                animatedVisibilityScope = animatedVisibilityScope,
+              )
+            }
+          }
 
-    } else EmptyPage()
+        } else EmptyPage()
+      }
+    }
 
   }
 }

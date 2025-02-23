@@ -1,11 +1,13 @@
 package com.example.mediaplayerjetpackcompose.presentation
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -34,11 +36,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.mediaplayerjetpackcompose.data.util.Constant.musicPermission
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.navigation.MainNavController
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.getActivity
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.isPermissionGrant
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.openSetting
+import com.example.mediaplayerjetpackcompose.util.Constant.musicPermission
+import com.example.mediaplayerjetpackcompose.navigation.MainNavGraph
+import com.example.mediaplayerjetpackcompose.util.isPermissionGrant
+import com.example.mediaplayerjetpackcompose.util.openSetting
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.VideoPageViewModel
 import com.example.mediaplayerjetpackcompose.presentation.screen.video.playerScreen.VideoPlayer
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
@@ -90,7 +91,7 @@ class MainActivity : ComponentActivity() {
               when (permissionState) {
                 PermissionState.Initial -> {}
 
-                PermissionState.Grant -> MainNavController()
+                PermissionState.Grant -> MainNavGraph()
 
                 PermissionState.NotGrant -> {
 
@@ -182,6 +183,7 @@ fun CheckPermission(
   onGrant: () -> Unit,
   onDenied: () -> Unit,
   context: Context = LocalContext.current,
+  activity: Activity? = LocalActivity.current
 ) {
 
   val activityResult = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGrant ->
@@ -196,11 +198,11 @@ fun CheckPermission(
       onGrant()
     }
 
-    context.getActivity()?.let { mContext -> ActivityCompat.shouldShowRequestPermissionRationale(mContext, permission) } == true -> {
+    activity?.let { mContext -> ActivityCompat.shouldShowRequestPermissionRationale(mContext, permission) } == true -> {
       shouldShowPermissionRationale()
     }
 
-    context.getActivity()?.let { mContext -> ActivityCompat.shouldShowRequestPermissionRationale(mContext, permission) } == false -> {
+    activity?.let { mContext -> ActivityCompat.shouldShowRequestPermissionRationale(mContext, permission) } == false -> {
       SideEffect { activityResult.launch(permission) }
     }
 

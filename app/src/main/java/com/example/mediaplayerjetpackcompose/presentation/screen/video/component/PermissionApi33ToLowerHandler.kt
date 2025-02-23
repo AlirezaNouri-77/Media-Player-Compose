@@ -1,6 +1,8 @@
 package com.example.mediaplayerjetpackcompose.presentation.screen.video.component
 
+import android.app.Activity
 import android.content.Context
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -19,8 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.openSetting
-import com.example.mediaplayerjetpackcompose.presentation.screen.component.util.shouldShowPermissionRationale
+import com.example.mediaplayerjetpackcompose.util.openSetting
+import com.example.mediaplayerjetpackcompose.util.shouldShowPermissionRationale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,6 +32,7 @@ fun PermissionApi33ToLowerHandler(
   permission: String,
   onRefreshVideo: () -> Unit,
   onGrant: () -> Unit,
+  activity: Activity? = LocalActivity.current,
 ) {
 
   var activityResultPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGrant ->
@@ -57,9 +60,9 @@ fun PermissionApi33ToLowerHandler(
       )
       TextButton(
         onClick = {
-          if (context.shouldShowPermissionRationale(permission)) {
+          if (context.shouldShowPermissionRationale(permission, activity)) {
             context.openSetting(activityResult)
-          } else if (context.shouldShowPermissionRationale(permission) == false)
+          } else if (context.shouldShowPermissionRationale(permission, activity) == false)
             activityResultPermission.launch(permission)
         },
         border = BorderStroke(

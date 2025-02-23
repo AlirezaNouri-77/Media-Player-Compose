@@ -23,8 +23,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
-import com.example.mediaplayerjetpackcompose.domain.model.videoSection.MiddleVideoPlayerIndicator
+import com.example.mediaplayerjetpackcompose.util.convertMilliSecondToTime
+import com.example.mediaplayerjetpackcompose.core.model.MiddleVideoPlayerIndicator
 
 @Composable
 fun MiddleInfoHandler(

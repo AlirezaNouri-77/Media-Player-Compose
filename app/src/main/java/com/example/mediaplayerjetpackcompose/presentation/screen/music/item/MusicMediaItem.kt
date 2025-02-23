@@ -30,11 +30,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
-import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
-import com.example.mediaplayerjetpackcompose.designSystem.ThumbnailImage
-import com.example.mediaplayerjetpackcompose.designSystem.WaveForm
-import com.example.mediaplayerjetpackcompose.domain.model.musicSection.MusicModel
+import com.example.mediaplayerjetpackcompose.util.convertMilliSecondToTime
+import com.example.mediaplayerjetpackcompose.util.removeFileExtension
+import com.example.mediaplayerjetpackcompose.core.designSystem.ThumbnailImage
+import com.example.mediaplayerjetpackcompose.core.designSystem.WaveForm
+import com.example.mediaplayerjetpackcompose.core.model.MusicModel
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 @Composable

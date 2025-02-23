@@ -13,12 +13,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import com.example.mediaplayerjetpackcompose.data.util.Constant
-import com.example.mediaplayerjetpackcompose.data.util.convertByteToReadableSize
-import com.example.mediaplayerjetpackcompose.data.util.convertToKbps
-import com.example.mediaplayerjetpackcompose.data.util.extractFileExtension
-import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
-import com.example.mediaplayerjetpackcompose.domain.model.share.MediaPlayerState
+import com.example.mediaplayerjetpackcompose.util.Constant
+import com.example.mediaplayerjetpackcompose.util.convertByteToReadableSize
+import com.example.mediaplayerjetpackcompose.util.convertToKbps
+import com.example.mediaplayerjetpackcompose.util.extractFileExtension
+import com.example.mediaplayerjetpackcompose.util.removeFileExtension
+import com.example.mediaplayerjetpackcompose.core.model.MediaPlayerState
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 @Composable

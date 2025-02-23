@@ -38,16 +38,16 @@ import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import coil.request.videoFrameMillis
 import com.example.mediaplayerjetpackcompose.R
-import com.example.mediaplayerjetpackcompose.data.util.convertByteToReadableSize
-import com.example.mediaplayerjetpackcompose.data.util.convertMilliSecondToTime
-import com.example.mediaplayerjetpackcompose.data.util.extractFileExtension
-import com.example.mediaplayerjetpackcompose.data.util.removeFileExtension
-import com.example.mediaplayerjetpackcompose.domain.model.videoSection.VideoItemModel
+import com.example.mediaplayerjetpackcompose.util.convertByteToReadableSize
+import com.example.mediaplayerjetpackcompose.util.convertMilliSecondToTime
+import com.example.mediaplayerjetpackcompose.util.extractFileExtension
+import com.example.mediaplayerjetpackcompose.util.removeFileExtension
+import com.example.mediaplayerjetpackcompose.core.model.VideoModel
 import com.example.mediaplayerjetpackcompose.ui.theme.MediaPlayerJetpackComposeTheme
 
 @Composable
 fun VideoMediaItem(
-  item: VideoItemModel,
+  item: VideoModel,
   contextColor: Color = MaterialTheme.colorScheme.onPrimary,
   onItemClick: () -> Unit,
 ) {
@@ -149,7 +149,7 @@ private fun Preview() {
   MediaPlayerJetpackComposeTheme {
     Box(modifier = Modifier.background(MaterialTheme.colorScheme.primary)) {
       VideoMediaItem(
-        item = VideoItemModel.Dummy,
+        item = VideoModel.Dummy,
         contextColor = MaterialTheme.colorScheme.onPrimary,
         onItemClick = {},
       )
