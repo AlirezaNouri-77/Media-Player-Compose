@@ -15,4 +15,19 @@ dependencyResolutionManagement {
 
 rootProject.name = "MediaPlayerJetpackCompose"
 include(":app")
- 
+include(":core:common")
+include(":core:designSystem")
+include(":core:database")
+include(":feature")
+include(":feature:music-artist")
+include(":core:data")
+include(":core:domain")
+include(":core:model")
+include(":core:util")
+include(":feature:music-player")
+include(":feature:music-album")
+include(":feature:music-search")
+include(":feature:music-home")
+include(":feature:music-categorydetail")
+include(":core:music-media3")
+include(":feature:video")

@@ -22,12 +22,22 @@ pluginSerialization = "2.1.0"
 uiTestAndroid = "1.7.5"
 leakcanary = "2.14"
 immutable-collections-kotlin = "0.3.8"
+appcompat = "1.7.0"
+material = "1.12.0"
+jetbrainsKotlinJvm = "2.1.10"
+jetbrainsKotlinCoroutine = "1.10.1"
+
+minSdk = "28"
+compileSdk = "35"
+targetSdk = "35"
 
 [libraries]
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintLayout" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name="foundation"}
+
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
 
@@ -37,6 +47,7 @@ androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-
 
 jetbrains-kotlinx-immutableCollections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "immutable-collections-kotlin" }
 jetbrains-kotlinx-serialization = {group="org.jetbrains.kotlinx",name="kotlinx-serialization-json", version.ref = "serialization"}
+jetbrains-kotlinx-coroutine = {group="org.jetbrains.kotlinx",name="kotlinx-coroutines-core", version.ref = "jetbrainsKotlinCoroutine"}
 
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-palette-ktx = { module = "androidx.palette:palette-ktx", version.ref = "paletteKtx" }
@@ -66,10 +77,13 @@ coil-video = { module = "io.coil-kt:coil-video", version.ref = "coilCompose" }
 junit = { module = "junit:junit", version.ref = "junit" }
 
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
 
 androidx-ui-test-android = { group = "androidx.compose.ui", name = "ui-test-android", version.ref = "uiTestAndroid" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 
@@ -78,3 +92,5 @@ android-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-ksp = { id = "com.google.devtools.ksp", version.ref = "androidKsp" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }

@@ -2,18 +2,18 @@ plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.android.kotlin)
   alias(libs.plugins.android.ksp)
-  alias(libs.plugins.android.compose.plugin)
   alias(libs.plugins.android.plugin.serialization)
+  alias(libs.plugins.android.compose.plugin)
 }
 
 android {
   namespace = "com.example.mediaplayerjetpackcompose"
-  compileSdk = 35
+  compileSdk = libs.versions.compileSdk.get().toInt()
 
   defaultConfig {
     applicationId = "com.example.mediaplayerjetpackcompose"
-    minSdk = 28
-    targetSdk = 35
+    minSdk = libs.versions.minSdk.get().toInt()
+    targetSdk = libs.versions.targetSdk.get().toInt()
     versionCode = 1
     versionName = "1.0"
 
@@ -49,6 +49,18 @@ android {
   }
   composeOptions {
     kotlinCompilerExtensionVersion = "1.5.1"
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+      kotlinOptions.freeCompilerArgs += listOf(
+        "-P",
+        "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
+             project.buildDir.absolutePath + "/compose_metrics"
+      )
+      kotlinOptions.freeCompilerArgs += listOf(
+        "-P",
+        "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
+             project.buildDir.absolutePath + "/compose_metrics"
+      )
+    }
   }
 }
 
@@ -62,6 +74,7 @@ dependencies {
   implementation(libs.androidx.ui.tooling.preview)
   implementation(libs.androidx.material3)
   implementation(libs.androidx.ui.test.android)
+
   androidTestImplementation(platform(libs.androidx.compose.bom))
   debugImplementation(libs.androidx.ui.tooling)
 
@@ -89,10 +102,6 @@ dependencies {
   implementation(libs.jetbrains.kotlinx.immutableCollections)
   implementation(libs.jetbrains.kotlinx.serialization)
 
-  implementation(libs.androidx.room.ktx)
-  implementation(libs.androidx.room.runtime)
-  ksp(libs.androidx.room.compiler)
-
   implementation(libs.koin.android)
   implementation(libs.koin.androidx.compose)
   implementation(libs.koin.android.viewmodel)
@@ -102,4 +111,22 @@ dependencies {
   implementation(kotlin("script-runtime"))
 
   implementation(libs.androidx.palette.ktx)
+
+  implementation(project(":core:common"))
+  implementation(project(":core:designSystem"))
+  implementation(project(":core:music-media3"))
+  implementation(project(":core:database"))
+  implementation(project(":core:data"))
+  implementation(project(":core:model"))
+  implementation(project(":core:domain"))
+  implementation(project(":core:util"))
+
+  implementation(project(":feature:music-artist"))
+  implementation(project(":feature:music-home"))
+  implementation(project(":feature:music-album"))
+  implementation(project(":feature:music-player"))
+  implementation(project(":feature:music-search"))
+  implementation(project(":feature:music-categorydetail"))
+  implementation(project(":feature:video"))
+
 }

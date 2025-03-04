@@ -14,7 +14,7 @@
         android:minSdkVersion="34" />
 
     <application
-        android:name=".application.ApplicationClass"
+        android:name=".data.application.ApplicationClass"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
@@ -46,7 +46,7 @@
         </activity>
 
         <service
-            android:name=".core.musicPlayer.MusicPlayerService"
+            android:name="com.example.core.music_media3.MusicPlayerService"
             android:exported="true"
             android:foregroundServiceType="mediaPlayback"
             android:permission="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" >
