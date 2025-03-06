@@ -8,7 +8,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 
-var CoroutineModule = module {
+var CommonCoroutineModule = module {
 
   factory(named("CoroutineMain")) {
     CoroutineScope(SupervisorJob() + get<MainCoroutineDispatcher>(named("Main")))

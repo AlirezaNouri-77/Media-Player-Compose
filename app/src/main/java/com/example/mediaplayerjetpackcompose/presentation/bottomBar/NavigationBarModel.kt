@@ -1,7 +1,7 @@
 package com.example.mediaplayerjetpackcompose.presentation.bottomBar
 
-import com.example.mediaplayerjetpackcompose.R
 import com.example.core.model.navigation.MusicNavigationRoute
+import com.example.mediaplayerjetpackcompose.R
 
 enum class NavigationBarModel(val title: String, val icon: Int, val route: MusicNavigationRoute) {
   Home("Home", R.drawable.icon_home, MusicNavigationRoute.Home),

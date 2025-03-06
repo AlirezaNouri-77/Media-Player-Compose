@@ -26,7 +26,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -54,7 +56,8 @@ fun MiniMusicPlayer(
   currentPlayerMediaId: Long,
   currentPlayerDuration: Int,
   currentPlayerArtworkUri: Uri?,
-  isPlayerPlaying: Boolean,
+  isPlaying: Boolean,
+  musicArtWorkColorAnimation: Color,
   currentMusicPosition: () -> Long,
   onPlayerAction: (action: PlayerActions) -> Unit,
 ) {
@@ -78,7 +81,20 @@ fun MiniMusicPlayer(
   }
 
   Card(
-    modifier = modifier,
+    modifier = modifier
+      .drawWithCache {
+      onDrawBehind {
+        drawRoundRect(
+          color = Color.Black,
+          cornerRadius = CornerRadius(x = 25f, y = 25f),
+        )
+        drawRoundRect(
+          color = musicArtWorkColorAnimation,
+          cornerRadius = CornerRadius(x = 25f, y = 25f),
+          alpha = 0.3f,
+        )
+      }
+    },
     shape = RoundedCornerShape(0.dp),
     onClick = { onClick.invoke() },
     colors = CardDefaults.cardColors(
@@ -179,7 +195,7 @@ fun MiniMusicPlayer(
             .padding(7.dp)
             .size(18.dp),
           onClick = {
-            when (isPlayerPlaying) {
+            when (isPlaying) {
               true -> onPlayerAction(PlayerActions.PausePlayer)
               false -> onPlayerAction(PlayerActions.ResumePlayer)
             }
@@ -188,7 +204,7 @@ fun MiniMusicPlayer(
         ) {
           Icon(
             modifier = Modifier.fillMaxSize(),
-            painter = painterResource(id = if (isPlayerPlaying) R.drawable.icon_pause else R.drawable.icon_play),
+            painter = painterResource(id = if (isPlaying) R.drawable.icon_pause else R.drawable.icon_play),
             contentDescription = "",
             tint = Color.White,
           )
@@ -206,7 +222,7 @@ private fun Preview() {
   MediaPlayerJetpackComposeTheme {
     MiniMusicPlayer(
       onClick = {},
-      artworkPagerList = listOf(MusicModel.Empty).toImmutableList(),
+      artworkPagerList = listOf(MusicModel.Dummy).toImmutableList(),
       setCurrentPagerNumber = {},
       currentPagerPage = 0,
       currentMusicPosition = { 2000 },
@@ -217,7 +233,8 @@ private fun Preview() {
       currentPlayerMediaId = 0L,
       currentPlayerDuration = 207726,
       currentPlayerArtworkUri = Uri.EMPTY,
-      isPlayerPlaying = true,
+      isPlaying = true,
+      musicArtWorkColorAnimation = Color.Red,
     )
   }
 }

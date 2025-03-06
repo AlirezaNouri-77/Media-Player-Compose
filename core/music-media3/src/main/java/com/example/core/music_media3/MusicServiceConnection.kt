@@ -8,7 +8,7 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.example.core.data.mapper.toActiveMusicInfo
 import com.example.core.data.mapper.toMediaItem
-import com.example.core.data.model.ActiveMusicInfo
+import com.example.core.model.ActiveMusicInfo
 import com.example.core.model.MusicModel
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors

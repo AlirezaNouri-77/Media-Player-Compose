@@ -1,4 +1,4 @@
-package com.example.feature.video.playerScreen.component
+package com.example.feature.video_player.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.core.util.convertMilliSecondToTime
-import com.example.feature.video.model.MiddleVideoPlayerIndicator
+import com.example.feature.video_player.MiddleVideoPlayerIndicator
 
 @Composable
 fun MiddleInfoHandler(

@@ -4,7 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-var DispatcherModule = module {
+var CommonDispatcherModule = module {
 
   single(named("Main")) { Dispatchers.Main.immediate }
 

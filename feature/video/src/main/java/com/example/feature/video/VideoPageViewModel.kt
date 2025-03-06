@@ -7,20 +7,23 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.C
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
+import com.example.core.data.mapper.toActiveVideoInfo
+import com.example.core.data.mapper.toMediaItem
+import com.example.core.model.ActiveVideoInfo
 import com.example.core.data.util.MediaThumbnailUtil
 import com.example.core.data.util.VideoMediaMetaData
-import com.example.core.data.mapper.toMediaItem
 import com.example.core.domain.api.VideoSourceImpl
-import com.example.feature.video.model.VideoPlayerState
 import com.example.core.model.MediaStoreResult
 import com.example.core.model.VideoModel
+import com.example.feature.video.model.VideoPlayerState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -30,7 +33,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -43,7 +45,7 @@ class VideoPageViewModel(
   private var videoSource: VideoSourceImpl,
   private var videoMediaMetaData: VideoMediaMetaData,
   private var mediaThumbnailUtil: MediaThumbnailUtil,
-  private var exoPlayer: ExoPlayer,
+  private var videoExoPlayer: ExoPlayer,
 ) : ViewModel() {
 
   var playerResizeMode by mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT)
@@ -59,7 +61,7 @@ class VideoPageViewModel(
   private var getThumbnailJob: Job? = null
   private var currentPlayerPositionJob: Job? = null
 
-  lateinit var playerListener: Player.Listener
+  var playerListener: Player.Listener
 
   private var _currentState = MutableStateFlow<VideoPlayerState>(VideoPlayerState.Empty)
   val playerStateModel: StateFlow<VideoPlayerState> = _currentState.asStateFlow()
@@ -67,17 +69,15 @@ class VideoPageViewModel(
   private var _currentPlayerPosition = MutableStateFlow(0L)
   var currentPlayerPosition = _currentPlayerPosition
     .onStart {
-      getCurrentMediaPosition()
+      observeCurrentPlayerPosition()
     }.stateIn(
       viewModelScope,
       SharingStarted.WhileSubscribed(5_000L),
-      0
-    ).onCompletion {
-      currentPlayerPositionJob?.cancel()
-    }
+      0,
+    )
 
   init {
-    exoPlayer.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT
+
     playerListener = object : Player.Listener {
 
       override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
@@ -92,37 +92,33 @@ class VideoPageViewModel(
         }
       }
 
-      override fun onMediaItemTransition(mediaItem: androidx.media3.common.MediaItem?, reason: Int) {
-        viewModelScope.launch {
-          _currentState.update { it.copy(uri = mediaItem?.localConfiguration?.uri ?: Uri.EMPTY) }
+      override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+        _currentState.update {
+          it.copy(currentMediaInfo = mediaItem?.toActiveVideoInfo() ?: ActiveVideoInfo.Empty)
         }
       }
 
-      override fun onMediaMetadataChanged(mediaMetadata: androidx.media3.common.MediaMetadata) {
-        viewModelScope.launch {
-          _currentState.update { it.copy(metaData = mediaMetadata) }
-        }
-      }
     }
-    exoPlayer.addListener(playerListener)
+    videoExoPlayer.addListener(playerListener)
   }
 
   fun getSliderPreviewThumbnail(position: Long) {
-    if (_currentState.value.uri == Uri.EMPTY) return
-    getThumbnailJob?.cancel()
+    if (getThumbnailJob?.isActive == true) getThumbnailJob?.cancel()
+
     getThumbnailJob = viewModelScope.launch {
-      val thumbnailBitmap = mediaThumbnailUtil.getVideoThumbNail(_currentState.value.uri, position)
+      var videoUri = _currentState.value.currentMediaInfo.videoUri.toUri()
+      val thumbnailBitmap = mediaThumbnailUtil.getVideoThumbNail(videoUri, position)
       _previewSliderBitmap.send(thumbnailBitmap?.asImageBitmap())
     }
   }
 
-  fun pausePlayer() = viewModelScope.launch { exoPlayer.pause() }
+  fun pausePlayer() = viewModelScope.launch { videoExoPlayer.pause() }
 
-  fun getExoPlayer(): androidx.media3.exoplayer.ExoPlayer = exoPlayer
+  fun getExoPlayer(): ExoPlayer = videoExoPlayer
 
   fun startPlay(index: Int, videoList: List<VideoModel>) {
     viewModelScope.launch {
-      exoPlayer.apply {
+      videoExoPlayer.apply {
         this.setMediaItems(videoList.map(VideoModel::toMediaItem), index, 0L)
         this.playWhenReady = true
         this.prepare()
@@ -135,7 +131,7 @@ class VideoPageViewModel(
     viewModelScope.launch {
       val metaData = videoMediaMetaData.get(uri)
       metaData?.let {
-        exoPlayer.apply {
+        videoExoPlayer.apply {
           this.addMediaItem(metaData.toMediaItem())
           this.playWhenReady = true
           this.prepare()
@@ -145,59 +141,59 @@ class VideoPageViewModel(
     }
   }
 
-  private fun getCurrentMediaPosition() {
+  private fun observeCurrentPlayerPosition() {
     currentPlayerPositionJob = viewModelScope.launch {
       while (currentCoroutineContext().isActive && currentPlayerPositionJob?.isActive == true) {
         delay(50L)
-        if (exoPlayer.isPlaying) {
-          _currentPlayerPosition.value = exoPlayer.currentPosition
+        if (videoExoPlayer.isPlaying) {
+          _currentPlayerPosition.value = videoExoPlayer.currentPosition
         }
       }
     }
     currentPlayerPositionJob?.start()
   }
 
-  fun resumePlayer() = viewModelScope.launch { exoPlayer.play() }
+  fun resumePlayer() = viewModelScope.launch { videoExoPlayer.play() }
 
-  fun seekToNext() = viewModelScope.launch { exoPlayer.seekToNextMediaItem() }
+  fun seekToNext() = viewModelScope.launch { videoExoPlayer.seekToNextMediaItem() }
 
   fun fastForward(position: Long, currentPosition: Long) = viewModelScope.launch {
-    exoPlayer.seekTo(currentPosition + position)
+    videoExoPlayer.seekTo(currentPosition + position)
   }
 
   fun fastRewind(position: Long, currentPosition: Long) = viewModelScope.launch {
-    exoPlayer.seekTo(currentPosition - position)
+    videoExoPlayer.seekTo(currentPosition - position)
   }
 
-  fun seekToPrevious() = exoPlayer.seekToPreviousMediaItem()
+  fun seekToPrevious() = viewModelScope.launch { videoExoPlayer.seekToPreviousMediaItem() }
 
   fun seekToPosition(position: Long) = viewModelScope.launch {
-    exoPlayer.seekTo(position)
+    videoExoPlayer.seekTo(position)
     _currentPlayerPosition.update { position }
   }
 
-  fun releasePlayer() {
-    exoPlayer.pause()
-    exoPlayer.clearMediaItems()
-    exoPlayer.removeListener(playerListener)
-    exoPlayer.release()
+  fun releasePlayer() = viewModelScope.launch {
+    videoExoPlayer.pause()
+    videoExoPlayer.clearMediaItems()
+    videoExoPlayer.removeListener(playerListener)
+    videoExoPlayer.release()
   }
 
   fun stopPlayer() = viewModelScope.launch {
-    exoPlayer.pause()
-    exoPlayer.clearMediaItems()
+    videoExoPlayer.pause()
+    videoExoPlayer.clearMediaItems()
   }
 
-  fun getVideo() {
-    viewModelScope.launch {
-      videoSource.getVideos().collect {
-        _uiState.value = it
-      }
+  fun getVideo() = viewModelScope.launch {
+    videoSource.getVideos().collect {
+      _uiState.value = it
     }
   }
 
   override fun onCleared() {
     super.onCleared()
+    currentPlayerPositionJob?.cancel()
+    getThumbnailJob?.cancel()
     releasePlayer()
   }
 

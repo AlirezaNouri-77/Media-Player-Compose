@@ -1,4 +1,4 @@
-package com.example.feature.video.model
+package com.example.feature.video_player
 
 import com.example.feature.video.R
 

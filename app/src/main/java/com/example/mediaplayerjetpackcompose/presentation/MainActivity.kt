@@ -36,13 +36,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.mediaplayerjetpackcompose.presentation.util.Constant.musicPermission
-import com.example.mediaplayerjetpackcompose.presentation.navigation.MainNavGraph
-import com.example.feature.video.isPermissionGrant
-import com.example.feature.video.openSetting
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.feature.video.VideoPageViewModel
-import com.example.feature.video.playerScreen.VideoPlayer
+import com.example.feature.video.isPermissionGrant
+import com.example.feature.video.openSetting
+import com.example.feature.video_player.VideoPlayer
+import com.example.mediaplayerjetpackcompose.presentation.navigation.MainNavGraph
+import com.example.mediaplayerjetpackcompose.presentation.util.Constant.musicPermission
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
               VideoPlayer(
                 videoUri = videoUri.toString(),
                 videoPageViewModel = videoPageViewModel,
-                onBackClick = {
+                onBack = {
                   this.finishAffinity()
                 }
               )

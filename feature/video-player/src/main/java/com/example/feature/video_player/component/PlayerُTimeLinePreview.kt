@@ -1,4 +1,4 @@
-package com.example.feature.video.playerScreen.component
+package com.example.feature.video_player.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image

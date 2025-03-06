@@ -1,7 +1,7 @@
 package com.example.core.music_media3
 
 import androidx.compose.runtime.Immutable
-import com.example.core.data.model.ActiveMusicInfo
+import com.example.core.model.ActiveMusicInfo
 
 @Immutable
 data class PlayerStateModel(

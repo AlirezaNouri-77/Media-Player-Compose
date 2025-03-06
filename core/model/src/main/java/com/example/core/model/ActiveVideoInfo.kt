@@ -1,4 +1,4 @@
-package com.example.core.data.model
+package com.example.core.model
 
 data class ActiveVideoInfo(
   var title: String,

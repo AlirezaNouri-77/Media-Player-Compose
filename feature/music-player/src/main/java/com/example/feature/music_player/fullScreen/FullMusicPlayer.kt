@@ -1,10 +1,16 @@
 package com.example.feature.music_player.fullScreen
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
+import com.example.core.model.ActiveMusicInfo
 import com.example.core.music_media3.PlayerStateModel
 import com.example.feature.music_player.PlayerActions
 import com.example.feature.music_player.fullScreen.component.FullscreenPlayerPager
@@ -16,6 +22,8 @@ import com.example.feature.music_player.fullScreen.component.VolumeController
 import com.example.feature.music_player.fullScreen.component.decoupledConstraintLayout
 import com.example.core.model.MusicModel
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.immutableListOf
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -30,14 +38,14 @@ fun FullMusicPlayer(
   onBack: () -> Unit,
   onPlayerAction: (PlayerActions) -> Unit,
   setCurrentPagerNumber: (Int) -> Unit,
-  orientation: Int = LocalConfiguration.current.orientation,
   maxDeviceVolume: Int,
   currentVolume: Int,
   onVolumeChange: (Float) -> Unit,
+  orientation: Int = LocalConfiguration.current.orientation,
 ) {
 
-  androidx.constraintlayout.compose.ConstraintLayout(
-    modifier = modifier,
+  ConstraintLayout(
+    modifier = modifier.fillMaxSize(),
     constraintSet = decoupledConstraintLayout(orientation)
   ) {
 
@@ -91,20 +99,35 @@ fun FullMusicPlayer(
   }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(heightDp = 360, widthDp = 800)
-@androidx.compose.ui.tooling.preview.Preview(heightDp = 460, widthDp = 1000)
-@androidx.compose.ui.tooling.preview.Preview()
+@Preview(heightDp = 360, widthDp = 800)
+@Preview(heightDp = 460, widthDp = 1000)
+@Preview(heightDp = 460, widthDp = 600)
+@Preview()
 @Composable
 private fun FullScreenPreview() {
   MediaPlayerJetpackComposeTheme {
     FullMusicPlayer(
       modifier = Modifier,
       isFavorite = false,
-      playerStateModel = { PlayerStateModel.Companion.Empty },
+      playerStateModel = { PlayerStateModel(
+        currentMediaInfo = ActiveMusicInfo(
+          title = "Example Music name.mp3",
+          musicID = "0",
+          artworkUri = "",
+          musicUri = "",
+          artist = "Example Music artist",
+          duration = 240_000,
+          bitrate = 320_000,
+          size = 120_000,
+        ),
+        isPlaying = false,
+        isBuffering = false,
+        repeatMode = 0,
+      ) },
       repeatMode = 0,
       currentMusicPosition = { 10000L },
       currentPagerPage = 0,
-      pagerMusicList = emptyList<MusicModel>().toImmutableList(),
+      pagerMusicList = persistentListOf(MusicModel.Dummy),
       onBack = {},
       setCurrentPagerNumber = {},
       onPlayerAction = {},

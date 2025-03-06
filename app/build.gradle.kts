@@ -86,11 +86,6 @@ dependencies {
 
   debugImplementation(libs.squareup.leakcanary)
 
-  implementation(libs.androidx.media3.exoplayer)
-  implementation(libs.androidx.media3.exoplayer.dash)
-  implementation(libs.androidx.media3.ui)
-  implementation(libs.androidx.media3.session)
-
   implementation(libs.androidx.lifecycle.runtime.ktx)
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -110,8 +105,6 @@ dependencies {
   implementation(libs.coil.video)
   implementation(kotlin("script-runtime"))
 
-  implementation(libs.androidx.palette.ktx)
-
   implementation(project(":core:common"))
   implementation(project(":core:designSystem"))
   implementation(project(":core:music-media3"))
@@ -128,5 +121,6 @@ dependencies {
   implementation(project(":feature:music-search"))
   implementation(project(":feature:music-categorydetail"))
   implementation(project(":feature:video"))
+  implementation(project(":feature:video-player"))
 
 }

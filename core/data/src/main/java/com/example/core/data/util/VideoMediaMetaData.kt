@@ -30,7 +30,7 @@ class VideoMediaMetaData(
           uri = uri.toString(),
           name = documentFile.name.toString(),
           mimeType = mimeType.toString(),
-          duration = duration.toInt(),
+          duration = duration.toLong(),
           size = size,
           height = 0,
           width = 0,

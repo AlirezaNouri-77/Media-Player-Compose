@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -26,19 +27,18 @@ import com.example.feature.video.component.TopBarVideo
 import com.example.feature.video.item.VideoMediaItem
 import com.example.feature.video.util.Constant
 import com.example.core.model.MediaStoreResult
+import com.example.core.model.VideoModel
 
 @Composable
 fun VideoPage(
-  videoPageViewModel: VideoPageViewModel,
-  onNavigateToMusicScreen: () -> Unit,
-  onNavigateToVideoPlayer: () -> Unit,
+  modifier: Modifier = Modifier,
+  videoUiState: () -> State<MediaStoreResult<VideoModel>>,
+  onRefreshVideoList: () -> Unit,
+  onPlay: (Int, List<VideoModel>) -> Unit,
+  onBack: () -> Unit,
   context: Context = LocalContext.current,
   activity: Activity? = LocalActivity.current,
 ) {
-
-  val videoUiState = videoPageViewModel.uiState.collectAsStateWithLifecycle()
-
-  val onRefreshVideoList: () -> Unit = { videoPageViewModel.getVideo() }
 
   var activityResultApi34 = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
     onRefreshVideoList()
@@ -49,11 +49,12 @@ fun VideoPage(
   }
 
   Scaffold(
+    modifier = modifier,
     topBar = {
       TopBarVideo(
         context = context,
         onBackClick = {
-          onNavigateToMusicScreen()
+          onBack()
         },
         onSelectVideo = {
           var isPermissionsGrant = Constant.videoPermission.all { context.isPermissionDenied(it) }
@@ -85,7 +86,7 @@ fun VideoPage(
   ) { innerPadding ->
 
     AnimatedContent(
-      targetState = videoUiState.value,
+      targetState = videoUiState().value,
       modifier = Modifier.padding(innerPadding),
       transitionSpec = { fadeIn().togetherWith(fadeOut()) },
       label = ""
@@ -116,8 +117,7 @@ fun VideoPage(
                 VideoMediaItem(
                   item = videoMediaModel,
                   onItemClick = {
-                    onNavigateToVideoPlayer()
-                    videoPageViewModel.startPlay(index, it.result)
+                    onPlay(index, it.result)
                   },
                 )
               }
@@ -125,7 +125,6 @@ fun VideoPage(
           }
         }
 
-        else -> {}
       }
     }
   }

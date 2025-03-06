@@ -1,4 +1,4 @@
-package com.example.feature.video.playerScreen
+package com.example.feature.video_player
 
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
@@ -32,17 +32,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.PlayerView
 import com.example.feature.video.VideoPageViewModel
-import com.example.feature.video.model.FastSeekMode
-import com.example.feature.video.model.MiddleVideoPlayerIndicator
-import com.example.feature.video.playerScreen.component.MiddleInfoHandler
-import com.example.feature.video.playerScreen.component.PlayerControllerLayout
+import com.example.feature.video_player.component.MiddleInfoHandler
+import com.example.feature.video_player.component.PlayerControllerLayout
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 
-@OptIn(androidx.media3.common.util.UnstableApi::class)
+@OptIn(UnstableApi::class)
 @kotlin.OptIn(FlowPreview::class)
 @Composable
 fun VideoPlayer(
@@ -50,7 +48,7 @@ fun VideoPlayer(
   videoPageViewModel: VideoPageViewModel,
   lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
   orientation: Int = LocalConfiguration.current.orientation,
-  onBackClick: () -> Unit = {},
+  onBack: () -> Unit = {},
 ) {
 
   val currentPlayerPosition by videoPageViewModel.currentPlayerPosition.collectAsStateWithLifecycle(initialValue = 0)
@@ -76,6 +74,9 @@ fun VideoPlayer(
     mutableStateOf(false)
   }
 
+  BackHandler {
+    onBack()
+  }
   LaunchedEffect(key1 = showInfoMiddleScreen, key2 = sliderValuePosition) {
     delay(2500L)
     showInfoMiddleScreen = false
@@ -124,7 +125,7 @@ fun VideoPlayer(
 
   BackHandler(enabled = true) {
     videoPageViewModel.stopPlayer()
-    onBackClick.invoke()
+    onBack.invoke()
   }
 
   LaunchedEffect(
@@ -181,7 +182,7 @@ fun VideoPlayer(
     playerResizeMode = videoPageViewModel.playerResizeMode,
     previewSlider = previewSliderBitmap,
     onBackClick = {
-      onBackClick()
+      onBack()
       videoPageViewModel.stopPlayer()
     },
     currentPlayerState = { currentState },

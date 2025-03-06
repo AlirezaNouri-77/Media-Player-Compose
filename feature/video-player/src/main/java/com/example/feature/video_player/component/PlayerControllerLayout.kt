@@ -1,4 +1,4 @@
-package com.example.feature.video.playerScreen.component
+package com.example.feature.video_player.component
 
 import android.content.res.Configuration
 import androidx.annotation.OptIn
@@ -29,11 +29,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import com.example.core.util.removeFileExtension
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.example.feature.video.model.MiddleVideoPlayerIndicator
+import com.example.core.model.ActiveVideoInfo
+import com.example.feature.video_player.MiddleVideoPlayerIndicator
 import com.example.feature.video.model.VideoPlayerState
 import com.example.feature.video.R
 
@@ -73,7 +75,7 @@ fun PlayerControllerLayout(
     exit = fadeOut(),
   ) {
 
-    androidx.constraintlayout.compose.ConstraintLayout(
+    ConstraintLayout(
       modifier = Modifier
         .fillMaxSize()
         .padding(controllerLayoutPadding)
@@ -107,7 +109,7 @@ fun PlayerControllerLayout(
         },
         controllerLayoutPadding = controllerLayoutPadding,
         onBack = { onBackClick() },
-        title = currentPlayerState().metaData.title?.removeFileExtension() ?: "-",
+        title = currentPlayerState().currentMediaInfo.title.toString(),
       )
 
       Card(
@@ -136,7 +138,7 @@ fun PlayerControllerLayout(
           PlayerTimeLine(
             modifier = Modifier
               .fillMaxWidth(),
-            currentState = { currentPlayerState() },
+            currentPlayerState = { currentPlayerState() },
             currentMediaPosition = currentPlayerPosition().toInt(),
             slidePosition = { sliderValue },
             slideValueChangeFinished = {
@@ -207,7 +209,17 @@ private fun PreviewPlayerControllerLayout() {
   MediaPlayerJetpackComposeTheme {
     PlayerControllerLayout(
       isVisible = true,
-      currentPlayerState = { VideoPlayerState.Empty },
+      currentPlayerState = { VideoPlayerState(
+        currentMediaInfo = ActiveVideoInfo(
+          title = "Example Video",
+          videoID = "",
+          videoUri = "",
+          duration = 240_000
+        ),
+        isPlaying = false,
+        isBuffering = false,
+        repeatMode = 0,
+      ) },
       onResumePlayer = {},
       onPausePlayer = {},
       onBackClick = {},

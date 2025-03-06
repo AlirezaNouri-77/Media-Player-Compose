@@ -9,6 +9,7 @@ import android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC
 import android.net.Uri
 import android.os.Build
 import android.util.Size
+import androidx.core.graphics.scale
 import androidx.palette.graphics.Palette
 import com.example.core.domain.api.MediaThumbnailUtilImpl
 import kotlinx.coroutines.CoroutineDispatcher
@@ -40,7 +41,7 @@ class MediaThumbnailUtil(
             byteArray!!.size
           )
           mediaMetadataRetriever.close()
-          Bitmap.createScaledBitmap(bitmap, width, height, true)
+          bitmap.scale(width, height)
         }
       }.getOrNull()
     }
@@ -96,12 +97,7 @@ class MediaThumbnailUtil(
             byteArray!!.size
           )
           mediaMetadataRetriever.close()
-          Bitmap.createScaledBitmap(
-            bitmap,
-            VIDEO_WIDTH,
-            VIDEO_HEIGHT,
-            true
-          )
+          bitmap.scale(VIDEO_WIDTH, VIDEO_HEIGHT)
         }
       }.getOrNull()
     }

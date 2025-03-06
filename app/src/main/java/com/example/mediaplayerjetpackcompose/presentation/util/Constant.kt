@@ -2,8 +2,6 @@ package com.example.mediaplayerjetpackcompose.presentation.util
 
 import android.Manifest
 import android.os.Build
-import androidx.compose.ui.unit.dp
-import androidx.media3.common.Player
 
 object Constant {
 

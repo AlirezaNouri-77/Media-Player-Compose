@@ -5,8 +5,8 @@ import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import com.example.core.data.model.ActiveMusicInfo
-import com.example.core.data.model.ActiveVideoInfo
+import com.example.core.model.ActiveMusicInfo
+import com.example.core.model.ActiveVideoInfo
 import com.example.core.model.MusicModel
 import com.example.core.model.VideoModel
 

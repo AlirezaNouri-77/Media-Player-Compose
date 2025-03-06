@@ -49,6 +49,7 @@ dependencies {
   implementation(libs.androidx.ui)
   implementation(libs.androidx.ui.graphics)
   implementation(libs.androidx.ui.tooling.preview)
+  debugImplementation(libs.androidx.ui.tooling)
   implementation(libs.androidx.material3)
 
   implementation(libs.androidx.media3.exoplayer)
@@ -64,6 +65,8 @@ dependencies {
 
   implementation(libs.coil.compose)
   implementation(libs.coil.video)
+
+  implementation(libs.jetbrains.kotlinx.serialization)
 
   implementation(libs.koin.android)
 

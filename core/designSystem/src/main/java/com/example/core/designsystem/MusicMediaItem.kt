@@ -31,9 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
+import com.example.core.model.MusicModel
 import com.example.core.util.convertMilliSecondToTime
 import com.example.core.util.removeFileExtension
-import com.example.core.model.MusicModel
 
 @Composable
 fun MusicMediaItem(

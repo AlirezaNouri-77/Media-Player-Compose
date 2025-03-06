@@ -1,4 +1,4 @@
-package com.example.feature.video.playerScreen.component
+package com.example.feature.video_player.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.core.util.convertMilliSecondToTime
-import com.example.core.data.mapper.MEDIAMETADATA_BUNDLE_DURATION_KEY
 import com.example.core.designsystem.NoRippleEffect
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.feature.video.model.VideoPlayerState
@@ -26,7 +25,7 @@ import com.example.feature.video.model.VideoPlayerState
 fun PlayerTimeLine(
   modifier: Modifier = Modifier,
   slidePosition: () -> Float,
-  currentState: () -> VideoPlayerState,
+  currentPlayerState: () -> VideoPlayerState,
   currentMediaPosition: Int,
   slideValueChange: (Float) -> Unit,
   slideValueChangeFinished: () -> Unit,
@@ -57,8 +56,7 @@ fun PlayerTimeLine(
       onValueChange = { value ->
         slideValueChange(value)
       },
-      valueRange = 0f..(currentState().metaData.extras?.getInt(MEDIAMETADATA_BUNDLE_DURATION_KEY)?.toFloat()
-        ?: 0f),
+      valueRange = 0f..currentPlayerState().currentMediaInfo.duration.toFloat(),
 
       track = { sliderState ->
         SliderDefaults.Track(
@@ -104,7 +102,7 @@ fun PlayerTimeLine(
         bottom.linkTo(sliderRef.bottom)
         end.linkTo(endGuild)
       },
-      text = (currentState().metaData.extras?.getInt(MEDIAMETADATA_BUNDLE_DURATION_KEY) ?: 0f).toInt()
+      text = currentPlayerState().currentMediaInfo.duration.toInt()
         .convertMilliSecondToTime(),
       fontSize = 15.sp,
       fontWeight = FontWeight.Medium,
@@ -120,7 +118,7 @@ fun PlayerTimeLine(
 private fun PreviewPlayerTimeLine() {
   MediaPlayerJetpackComposeTheme {
     PlayerTimeLine(
-      currentState = { VideoPlayerState.Empty },
+      currentPlayerState = { VideoPlayerState.Empty },
       currentMediaPosition = 0,
       slideValueChange = {},
       slidePosition = { 0f },

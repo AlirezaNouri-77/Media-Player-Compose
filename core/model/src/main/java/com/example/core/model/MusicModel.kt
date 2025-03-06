@@ -29,5 +29,19 @@ data class MusicModel(
       album = "",
       folderName = "",
     )
+    var Dummy = MusicModel(
+      musicId = 0,
+      uri = "",
+      path = "",
+      mimeTypes = "",
+      name = "example music name.mp3",
+      duration = 240_000,
+      size = 0,
+      artworkUri = "",
+      bitrate = 0,
+      artist = "example artist",
+      album = "",
+      folderName = "",
+    )
   }
 }

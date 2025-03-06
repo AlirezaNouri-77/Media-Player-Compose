@@ -44,7 +44,7 @@ class VideoSource(
             val id = idColumn.let { cursor.getLong(it) }
             val mimeType = mimeColumn.let { cursor.getString(it) }
             val name = nameColumn.let { cursor.getString(it) }
-            val duration = durationColumn.let { cursor.getInt(it) }
+            val duration = durationColumn.let { cursor.getLong(it) }
             val size = sizeColumn.let { cursor.getInt(it) }
             val height = heightColumn.let { cursor.getInt(it) }
             val width = widthColumn.let { cursor.getInt(it) }

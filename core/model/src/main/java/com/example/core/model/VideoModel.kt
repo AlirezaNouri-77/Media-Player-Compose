@@ -5,7 +5,7 @@ data class VideoModel(
   val uri: String,
   val name: String,
   val mimeType: String,
-  val duration: Int,
+  val duration: Long,
   val size: Int,
   val height: Int,
   val width: Int,
