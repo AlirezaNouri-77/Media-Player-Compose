@@ -1,5 +1,5 @@
 [versions]
-androidGradlePlugin  = "8.7.2"
+androidGradlePlugin = "8.9.0"
 activityCompose = "1.10.0"
 coilCompose = "2.7.0"
 composeBom = "2025.02.00"
@@ -36,7 +36,7 @@ androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = 
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintLayout" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
-androidx-compose-foundation = { group = "androidx.compose.foundation", name="foundation"}
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
 
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
@@ -46,8 +46,8 @@ androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-ru
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleVersion" }
 
 jetbrains-kotlinx-immutableCollections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "immutable-collections-kotlin" }
-jetbrains-kotlinx-serialization = {group="org.jetbrains.kotlinx",name="kotlinx-serialization-json", version.ref = "serialization"}
-jetbrains-kotlinx-coroutine = {group="org.jetbrains.kotlinx",name="kotlinx-coroutines-core", version.ref = "jetbrainsKotlinCoroutine"}
+jetbrains-kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
+jetbrains-kotlinx-coroutine = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "jetbrainsKotlinCoroutine" }
 
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-palette-ktx = { module = "androidx.palette:palette-ktx", version.ref = "paletteKtx" }
@@ -68,7 +68,6 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
 
-
 androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
@@ -85,8 +84,11 @@ androidx-ui-test-android = { group = "androidx.compose.ui", name = "ui-test-andr
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
-[plugins]
+androidGradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
+kotlinGradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 
+
+[plugins]
 android-compose-plugin = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "pluginSerialization" }
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
@@ -94,3 +96,7 @@ android-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-ksp = { id = "com.google.devtools.ksp", version.ref = "androidKsp" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+
+# Custom Plugins
+mediaplayer-androidComposeConventionPlugin = { id = "com.mediaplayer.buildLogic.androidComposeConvention" }
+mediaplayer-featureModuleConventionPlugin = { id = "com.mediaplayer.buildLogic.featureModuleConvention" }

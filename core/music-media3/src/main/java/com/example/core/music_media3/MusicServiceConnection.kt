@@ -149,10 +149,6 @@ class MusicServiceConnection(
 
   private val exoPlayerListener = object : Player.Listener {
 
-//    override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-//      _playerState.update { it.copy(metaData = mediaMetadata) }
-//    }
-
     override fun onRepeatModeChanged(repeatMode: Int) {
       _playerState.update { it.copy(repeatMode = repeatMode) }
     }
@@ -166,10 +162,6 @@ class MusicServiceConnection(
         it.copy(
           currentMediaInfo = mediaItem?.toActiveMusicInfo() ?: ActiveMusicInfo.Empty
         )
-//        it.copy(
-//          mediaId = mediaItem?.mediaId ?: "",
-//          uri = mediaItem?.localConfiguration?.uri ?: Uri.EMPTY
-//        )
       }
     }
 

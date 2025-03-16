@@ -1,79 +1,24 @@
 plugins {
-  alias(libs.plugins.android.library)
-  alias(libs.plugins.android.kotlin)
-  alias(libs.plugins.android.compose.plugin)
+  alias(libs.plugins.mediaplayer.androidComposeConventionPlugin)
+  alias(libs.plugins.mediaplayer.featureModuleConventionPlugin)
 }
 
 android {
   namespace = "com.example.feature.video"
-  compileSdk = libs.versions.compileSdk.get().toInt()
-
-  defaultConfig {
-    minSdk = libs.versions.minSdk.get().toInt()
-
-    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    consumerProguardFiles("consumer-rules.pro")
-  }
-
-  buildTypes {
-    release {
-      isMinifyEnabled = false
-      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-    }
-  }
-  compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-  }
-  kotlinOptions {
-    jvmTarget = "11"
-  }
 }
 
 dependencies {
 
-  implementation(project(":core:designSystem"))
-  implementation(project(":core:data"))
-  implementation(project(":core:domain"))
-  implementation(project(":core:model"))
-  implementation(project(":core:util"))
-
-  implementation(libs.androidx.core.ktx)
-  implementation(libs.androidx.appcompat)
-  implementation(libs.material)
-
   implementation(libs.androidx.navigation.compose)
-
-  implementation(libs.androidx.activity.compose)
-  implementation(platform(libs.androidx.compose.bom))
-  implementation(libs.androidx.ui)
-  implementation(libs.androidx.ui.graphics)
-  implementation(libs.androidx.ui.tooling.preview)
-  debugImplementation(libs.androidx.ui.tooling)
-  implementation(libs.androidx.material3)
 
   implementation(libs.androidx.media3.exoplayer)
   implementation(libs.androidx.media3.exoplayer.dash)
   implementation(libs.androidx.media3.ui)
   implementation(libs.androidx.media3.session)
 
-  implementation(libs.androidx.lifecycle.runtime.ktx)
-  implementation(libs.androidx.lifecycle.runtime.compose)
-  implementation(libs.androidx.lifecycle.viewmodel.compose)
-
   implementation(libs.androidx.constraintlayout.compose)
 
   implementation(libs.coil.compose)
   implementation(libs.coil.video)
-
-  implementation(libs.jetbrains.kotlinx.serialization)
-
-  implementation(libs.koin.android)
-
-  implementation(libs.jetbrains.kotlinx.immutableCollections)
-
-  implementation(libs.koin.android)
-  implementation(libs.koin.androidx.compose)
-  implementation(libs.koin.android.viewmodel)
 
 }

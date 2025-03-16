@@ -48,7 +48,6 @@ android {
     }
   }
   composeOptions {
-    kotlinCompilerExtensionVersion = "1.5.1"
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
       kotlinOptions.freeCompilerArgs += listOf(
         "-P",
