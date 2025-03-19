@@ -99,5 +99,6 @@ jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrai
 
 # Custom Plugins
 mediaplayer-androidComposeConventionPlugin = { id = "com.mediaplayer.buildLogic.androidComposeConvention" }
+mediaplayer-androidConventionPlugin = { id = "com.mediaplayer.buildLogic.androidConvention" }
 mediaplayer-featureModuleConventionPlugin = { id = "com.mediaplayer.buildLogic.featureModuleConvention" }
 mediaplayer-roomConventionPlugin = { id = "com.mediaplayer.buildLogic.roomConvention" }

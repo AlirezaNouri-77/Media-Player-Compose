@@ -26,6 +26,10 @@ gradlePlugin {
       id = libs.plugins.mediaplayer.androidComposeConventionPlugin.get().pluginId
       implementationClass = "AndroidComposeConventionPlugin"
     }
+    register("android") {
+      id = libs.plugins.mediaplayer.androidConventionPlugin.get().pluginId
+      implementationClass = "AndroidConventionPlugin"
+    }
     register("featureModule") {
       id = libs.plugins.mediaplayer.featureModuleConventionPlugin.get().pluginId
       implementationClass = "FeatureConventionPlugin"
