@@ -11,7 +11,7 @@ java {
 
 kotlin {
   compilerOptions {
-    jvmTarget =  JvmTarget.JVM_11
+    jvmTarget = JvmTarget.JVM_11
   }
 }
 
@@ -22,13 +22,17 @@ dependencies {
 
 gradlePlugin {
   plugins {
-    register("androidCompose"){
+    register("androidCompose") {
       id = libs.plugins.mediaplayer.androidComposeConventionPlugin.get().pluginId
       implementationClass = "AndroidComposeConventionPlugin"
     }
-    register("featureModule"){
+    register("featureModule") {
       id = libs.plugins.mediaplayer.featureModuleConventionPlugin.get().pluginId
       implementationClass = "FeatureConventionPlugin"
+    }
+    register("RoomConvention") {
+      id = libs.plugins.mediaplayer.roomConventionPlugin.get().pluginId
+      implementationClass = "RoomConventionPlugin"
     }
   }
 }

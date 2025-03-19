@@ -64,9 +64,9 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 
 squareup-leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 
-androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
-androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
-androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
 
 androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
@@ -100,3 +100,4 @@ jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrai
 # Custom Plugins
 mediaplayer-androidComposeConventionPlugin = { id = "com.mediaplayer.buildLogic.androidComposeConvention" }
 mediaplayer-featureModuleConventionPlugin = { id = "com.mediaplayer.buildLogic.featureModuleConvention" }
+mediaplayer-roomConventionPlugin = { id = "com.mediaplayer.buildLogic.roomConvention" }

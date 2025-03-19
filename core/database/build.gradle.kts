@@ -1,8 +1,7 @@
 plugins {
   alias(libs.plugins.android.library)
   alias(libs.plugins.android.kotlin)
-  alias(libs.plugins.android.ksp)
-  alias(libs.plugins.android.compose.plugin)
+  alias(libs.plugins.mediaplayer.roomConventionPlugin)
 }
 
 android {
@@ -33,18 +32,6 @@ android {
 
 dependencies {
 
-//  implementation(libs.androidx.core.ktx)
-//  implementation(libs.androidx.appcompat)
-  implementation(libs.androidx.lifecycle.runtime.compose)
-
-  implementation(libs.androidx.room.ktx)
-  implementation(libs.androidx.room.runtime)
-  ksp(libs.androidx.room.compiler)
-
   implementation(libs.koin.android)
-
-  testImplementation(libs.junit)
-  androidTestImplementation(libs.androidx.junit)
-  androidTestImplementation(libs.androidx.espresso.core)
 
 }
