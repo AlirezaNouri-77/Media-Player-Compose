@@ -1,5 +1,4 @@
 plugins {
-  alias(libs.plugins.mediaplayer.androidComposeConventionPlugin)
   alias(libs.plugins.mediaplayer.featureModuleConventionPlugin)
 }
 
