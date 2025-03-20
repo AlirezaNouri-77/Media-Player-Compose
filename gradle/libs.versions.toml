@@ -24,6 +24,7 @@ leakcanary = "2.14"
 immutable-collections-kotlin = "0.3.8"
 appcompat = "1.7.0"
 material = "1.12.0"
+androidAnnotation = "1.9.1"
 jetbrainsKotlinJvm = "2.1.10"
 jetbrainsKotlinCoroutine = "1.10.1"
 
@@ -49,6 +50,7 @@ jetbrains-kotlinx-immutableCollections = { module = "org.jetbrains.kotlinx:kotli
 jetbrains-kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 jetbrains-kotlinx-coroutine = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "jetbrainsKotlinCoroutine" }
 
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidAnnotation" }
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-palette-ktx = { module = "androidx.palette:palette-ktx", version.ref = "paletteKtx" }
 androidx-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
