@@ -7,4 +7,6 @@ dependencies {
   implementation(platform(libs.androidx.compose.bom))
   implementation(libs.androidx.ui)
 
+  testImplementation(libs.junit)
+
 }
