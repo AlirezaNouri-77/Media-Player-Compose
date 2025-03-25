@@ -14,7 +14,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import com.example.core.music_media3.PlayerStateModel
 import com.example.core.util.convertByteToReadableSize
-import com.example.core.util.convertToKbps
+import com.example.core.util.convertToReadableBitrate
 import com.example.core.util.extractFileExtension
 import com.example.core.util.removeFileExtension
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
@@ -53,7 +53,7 @@ fun SongDetail(
     )
     val songDetail = listOf(
       currentPlayerStateModel().currentMediaInfo.title.extractFileExtension(),
-      currentPlayerStateModel().currentMediaInfo.duration.toInt().convertToKbps(),
+      currentPlayerStateModel().currentMediaInfo.bitrate.convertToReadableBitrate(),
       currentPlayerStateModel().currentMediaInfo.size.convertByteToReadableSize(),
     )
     Text(
