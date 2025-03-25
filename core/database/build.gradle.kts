@@ -11,4 +11,9 @@ dependencies {
 
   implementation(libs.koin.android)
 
+  testImplementation(libs.junit)
+  androidTestImplementation(libs.androidx.junit)
+  androidTestImplementation(libs.androidx.test.runner)
+  androidTestImplementation(libs.jetbrains.kotlinx.coroutine.test)
+
 }

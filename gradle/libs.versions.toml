@@ -27,6 +27,7 @@ material = "1.12.0"
 androidAnnotation = "1.9.1"
 jetbrainsKotlinJvm = "2.1.10"
 jetbrainsKotlinCoroutine = "1.10.1"
+androidRunnerTest = "1.4.0"
 
 minSdk = "28"
 compileSdk = "35"
@@ -76,6 +77,8 @@ androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 coil-video = { module = "io.coil-kt:coil-video", version.ref = "coilCompose" }
 junit = { module = "junit:junit", version.ref = "junit" }
+androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidRunnerTest" }
+jetbrains-kotlinx-coroutine-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "jetbrainsKotlinCoroutine" }
 
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
