@@ -1,12 +1,15 @@
 package com.example.feature.video
 
 import android.net.Uri
+import android.util.Log
 import androidx.annotation.OptIn
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +17,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.AspectRatioFrameLayout
+//import androidx.media3.ui.AspectRatioFrameLayout
 import com.example.core.data.mapper.toActiveVideoInfo
 import com.example.core.data.mapper.toMediaItem
 import com.example.core.model.ActiveVideoInfo
@@ -23,15 +26,18 @@ import com.example.core.data.util.VideoMediaMetaData
 import com.example.core.domain.api.VideoSourceImpl
 import com.example.core.model.MediaStoreResult
 import com.example.core.model.VideoModel
+import com.example.feature.video.model.MiddleVideoPlayerIndicator
 import com.example.feature.video.model.VideoPlayerState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -48,8 +54,6 @@ class VideoPageViewModel(
   private var videoExoPlayer: ExoPlayer,
 ) : ViewModel() {
 
-  var playerResizeMode by mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT)
-
   private var _uiState = MutableStateFlow<MediaStoreResult<VideoModel>>(MediaStoreResult.Loading)
   var uiState = _uiState
     .onStart { getVideo() }
@@ -58,12 +62,15 @@ class VideoPageViewModel(
   private var _previewSliderBitmap = Channel<ImageBitmap?>(onBufferOverflow = BufferOverflow.DROP_OLDEST)
   var previewSliderBitmap = _previewSliderBitmap.receiveAsFlow()
 
+  private var _middleVideoPlayerInfo = MutableSharedFlow<MiddleVideoPlayerIndicator>()
+  var middleVideoPlayerInfo = _middleVideoPlayerInfo.asSharedFlow()
+
   private var getThumbnailJob: Job? = null
   private var currentPlayerPositionJob: Job? = null
 
-  var playerListener: Player.Listener
+  private var playerListener: Player.Listener
 
-  private var _currentState = MutableStateFlow<VideoPlayerState>(VideoPlayerState.Empty)
+  private var _currentState = MutableStateFlow(VideoPlayerState.Empty)
   val playerStateModel: StateFlow<VideoPlayerState> = _currentState.asStateFlow()
 
   private var _currentPlayerPosition = MutableStateFlow(0L)
@@ -106,7 +113,7 @@ class VideoPageViewModel(
     if (getThumbnailJob?.isActive == true) getThumbnailJob?.cancel()
 
     getThumbnailJob = viewModelScope.launch {
-      var videoUri = _currentState.value.currentMediaInfo.videoUri.toUri()
+      val videoUri = _currentState.value.currentMediaInfo.videoUri.toUri()
       val thumbnailBitmap = mediaThumbnailUtil.getVideoThumbNail(videoUri, position)
       _previewSliderBitmap.send(thumbnailBitmap?.asImageBitmap())
     }
@@ -114,7 +121,7 @@ class VideoPageViewModel(
 
   fun pausePlayer() = viewModelScope.launch { videoExoPlayer.pause() }
 
-  fun getExoPlayer(): ExoPlayer = videoExoPlayer
+  val getExoPlayer: ExoPlayer = videoExoPlayer
 
   fun startPlay(index: Int, videoList: List<VideoModel>) {
     viewModelScope.launch {
@@ -161,6 +168,12 @@ class VideoPageViewModel(
     videoExoPlayer.seekTo(currentPosition + position)
   }
 
+  fun updateMiddleVideoPlayerInfo(middleVideoPlayerInfo: MiddleVideoPlayerIndicator) = viewModelScope.launch {
+    _middleVideoPlayerInfo.emit(middleVideoPlayerInfo)
+    delay(4_000L)
+    _middleVideoPlayerInfo.emit(MiddleVideoPlayerIndicator.Initial)
+  }
+
   fun fastRewind(position: Long, currentPosition: Long) = viewModelScope.launch {
     videoExoPlayer.seekTo(currentPosition - position)
   }
@@ -172,7 +185,7 @@ class VideoPageViewModel(
     _currentPlayerPosition.update { position }
   }
 
-  fun releasePlayer() = viewModelScope.launch {
+  private fun releasePlayer() = viewModelScope.launch {
     videoExoPlayer.pause()
     videoExoPlayer.clearMediaItems()
     videoExoPlayer.removeListener(playerListener)

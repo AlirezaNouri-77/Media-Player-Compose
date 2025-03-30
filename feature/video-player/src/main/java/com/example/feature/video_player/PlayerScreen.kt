@@ -1,75 +1,68 @@
 package com.example.feature.video_player
 
-import android.content.res.Configuration
+import android.view.Window
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.annotation.OptIn
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.layout.ContentScale
 import androidx.core.net.toUri
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.ui.PlayerView
+import androidx.media3.ui.compose.PlayerSurface
+import androidx.media3.ui.compose.SURFACE_TYPE_SURFACE_VIEW
+import androidx.media3.ui.compose.modifiers.resizeWithContentScale
+import androidx.media3.ui.compose.state.rememberPresentationState
 import com.example.feature.video.VideoPageViewModel
+import com.example.feature.video.model.MiddleVideoPlayerIndicator
 import com.example.feature.video_player.component.MiddleInfoHandler
 import com.example.feature.video_player.component.PlayerControllerLayout
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 
 @OptIn(UnstableApi::class)
-@kotlin.OptIn(FlowPreview::class)
 @Composable
 fun VideoPlayer(
   videoUri: String,
   videoPageViewModel: VideoPageViewModel,
   lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
-  orientation: Int = LocalConfiguration.current.orientation,
+  window: Window? = LocalActivity.current?.window,
   onBack: () -> Unit = {},
 ) {
 
   val currentPlayerPosition by videoPageViewModel.currentPlayerPosition.collectAsStateWithLifecycle(initialValue = 0)
   val currentState by videoPageViewModel.playerStateModel.collectAsStateWithLifecycle()
   val previewSliderBitmap by videoPageViewModel.previewSliderBitmap.collectAsStateWithLifecycle(null)
+  val middleVideoPlayerInfo by videoPageViewModel.middleVideoPlayerInfo.collectAsStateWithLifecycle(MiddleVideoPlayerIndicator.Initial)
 
-  val currentDeviceOrientation by remember(orientation) {
-    mutableIntStateOf(orientation)
-  }
-  var middleVideoPlayerIndicator by remember {
-    mutableStateOf<MiddleVideoPlayerIndicator>(MiddleVideoPlayerIndicator.Initial)
-  }
-  var controllerLayoutPadding by remember {
-    mutableStateOf(PaddingValues(start = 10.dp, end = 10.dp))
-  }
-  var sliderValuePosition by remember {
-    mutableFloatStateOf(0f)
-  }
-  var showInfoMiddleScreen by remember {
-    mutableStateOf(false)
-  }
   var playerControllerVisibility by remember {
     mutableStateOf(false)
   }
@@ -77,37 +70,25 @@ fun VideoPlayer(
   BackHandler {
     onBack()
   }
-  LaunchedEffect(key1 = showInfoMiddleScreen, key2 = sliderValuePosition) {
-    delay(2500L)
-    showInfoMiddleScreen = false
-  }
 
-  LaunchedEffect(key1 = sliderValuePosition) {
-    snapshotFlow {
-      sliderValuePosition
-    }.debounce(100L)
-      .distinctUntilChanged()
-      .collectLatest {
-        videoPageViewModel.getSliderPreviewThumbnail(sliderValuePosition.toLong())
+  DisposableEffect(Unit) {
+    window ?: return@DisposableEffect onDispose {}
+    val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+
+    insetsController.apply {
+      hide(WindowInsetsCompat.Type.statusBars())
+      hide(WindowInsetsCompat.Type.navigationBars())
+      systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+    }
+
+    onDispose {
+      insetsController.apply {
+        show(WindowInsetsCompat.Type.statusBars())
+        show(WindowInsetsCompat.Type.navigationBars())
+        systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
       }
+    }
   }
-
-  LaunchedEffect(
-    key1 = orientation,
-    block = {
-      when (orientation) {
-        Configuration.ORIENTATION_LANDSCAPE -> {
-          controllerLayoutPadding = PaddingValues(start = 25.dp, end = 25.dp)
-          videoPageViewModel.playerResizeMode = androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT
-        }
-
-        Configuration.ORIENTATION_PORTRAIT -> {
-          controllerLayoutPadding = PaddingValues(start = 10.dp, end = 10.dp)
-          videoPageViewModel.playerResizeMode = androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT
-        }
-      }
-    },
-  )
 
   DisposableEffect(key1 = lifecycleOwner, effect = {
     val observe = LifecycleEventObserver { _, event ->
@@ -137,7 +118,11 @@ fun VideoPlayer(
     },
   )
 
-  AndroidView(
+  val playerContentScale = remember { mutableStateOf(ContentScale.Fit) }
+  val presentationState = rememberPresentationState(videoPageViewModel.getExoPlayer)
+  val scaledModifier = Modifier.resizeWithContentScale(playerContentScale.value, presentationState.videoSizeDp)
+
+  Box(
     modifier = Modifier
       .fillMaxSize()
       .background(Color.Black)
@@ -150,59 +135,64 @@ fun VideoPlayer(
             when {
               offset.x > this.size.width / 2 -> {
                 videoPageViewModel.fastForward(15_000, currentPlayerPosition)
-                middleVideoPlayerIndicator = MiddleVideoPlayerIndicator.FastSeek(FastSeekMode.FastForward)
-                showInfoMiddleScreen = true
+                videoPageViewModel.updateMiddleVideoPlayerInfo(MiddleVideoPlayerIndicator.FastForward())
               }
 
               offset.x < this.size.width / 2 -> {
                 videoPageViewModel.fastRewind(15_000, currentPlayerPosition)
-                middleVideoPlayerIndicator = MiddleVideoPlayerIndicator.FastSeek(FastSeekMode.FastRewind)
-                showInfoMiddleScreen = true
+                videoPageViewModel.updateMiddleVideoPlayerInfo(MiddleVideoPlayerIndicator.FastRewind())
               }
             }
           }
         )
-      },
-    factory = {
-      PlayerView(it).apply {
-        player = videoPageViewModel.getExoPlayer()
-        useController = false
-        resizeMode = videoPageViewModel.playerResizeMode
       }
-    },
-    update = {
-      it.resizeMode = videoPageViewModel.playerResizeMode
-    }
-  )
+  ) {
+//    if (presentationState.coverSurface) {
+//      Box(modifier = Modifier
+//        .fillMaxSize()
+//        .background(Color.Black))
+//    }
+    PlayerSurface(
+      player = videoPageViewModel.getExoPlayer,
+      modifier = scaledModifier,
+      surfaceType = SURFACE_TYPE_SURFACE_VIEW,
+    )
+  }
 
-  PlayerControllerLayout(
-    isVisible = playerControllerVisibility,
-    controllerLayoutPadding = controllerLayoutPadding,
-    currentDeviceOrientation = currentDeviceOrientation,
-    playerResizeMode = videoPageViewModel.playerResizeMode,
-    previewSlider = previewSliderBitmap,
-    onBackClick = {
-      onBack()
-      videoPageViewModel.stopPlayer()
-    },
-    currentPlayerState = { currentState },
-    currentPlayerPosition = { currentPlayerPosition },
-    slideSeekPosition = { sliderValuePosition },
-    slidePositionChange = { sliderValuePosition = it },
-    playerResizeModeChange = { videoPageViewModel.playerResizeMode = it },
-    onMiddleVideoPlayerIndicator = { middleVideoPlayerIndicator = it },
-    onSeekToPrevious = videoPageViewModel::seekToPrevious,
-    onSeekToNext = videoPageViewModel::seekToNext,
-    onPausePlayer = videoPageViewModel::pausePlayer,
-    onResumePlayer = videoPageViewModel::resumePlayer,
-    onSeekToPosition = videoPageViewModel::seekToPosition,
-  )
+  AnimatedVisibility(
+    visible = playerControllerVisibility,
+  ) {
+    PlayerControllerLayout(
+      modifier = Modifier
+        .padding(
+          top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(),
+          bottom = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding(),
+        ),
+      playerResizeMode = { playerContentScale.value },
+      previewSlider = { previewSliderBitmap },
+      currentPlayerState = { currentState },
+      currentPlayerPosition = { currentPlayerPosition },
+      getPreviewSlider = { videoPageViewModel.getSliderPreviewThumbnail(it.toLong()) },
+      onBackClick = {
+        onBack()
+        videoPageViewModel.stopPlayer()
+      },
+      playerResizeModeChange = {
+        playerContentScale.value = if (playerContentScale.value == ContentScale.Fit) ContentScale.FillWidth else ContentScale.Fit
+      },
+      onSeekToPrevious = videoPageViewModel::seekToPrevious,
+      onSeekToNext = videoPageViewModel::seekToNext,
+      onPausePlayer = videoPageViewModel::pausePlayer,
+      onResumePlayer = videoPageViewModel::resumePlayer,
+      onSeekToPosition = videoPageViewModel::seekToPosition,
+    )
+  }
 
+  // show a info when fastforwar or fastrewind triggered
   MiddleInfoHandler(
     modifier = Modifier,
-    showInfoMiddleScreen = showInfoMiddleScreen,
-    seekPosition = sliderValuePosition.toLong(),
-    middleVideoPlayerIndicator = middleVideoPlayerIndicator,
+    showInfoMiddleScreen = middleVideoPlayerInfo != MiddleVideoPlayerIndicator.Initial,
+    middleVideoPlayerIndicator = middleVideoPlayerInfo,
   )
 
 }

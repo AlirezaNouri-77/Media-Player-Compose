@@ -15,9 +15,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.core.util.convertMilliSecondToTime
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.core.designsystem.NoRippleEffect
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
+import com.example.core.util.convertMilliSecondToTime
 import com.example.feature.video.model.VideoPlayerState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,7 +32,7 @@ fun PlayerTimeLine(
   slideValueChangeFinished: () -> Unit,
 ) {
 
-  androidx.constraintlayout.compose.ConstraintLayout(
+  ConstraintLayout(
     modifier = Modifier
       .fillMaxWidth()
       .wrapContentHeight()

@@ -1,17 +1,12 @@
 package com.example.mediaplayerjetpackcompose.presentation
 
-import android.os.Build
 import android.view.Window
-import android.view.WindowInsets
-import android.view.WindowInsetsController
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -27,33 +22,10 @@ fun MainVideoScreen(
   modifier: Modifier = Modifier,
   videoPageViewModel: VideoPageViewModel = koinViewModel(),
   onBack: () -> Unit,
-  window: Window? = LocalActivity.current?.window,
 ) {
 
-  var navController = rememberNavController()
-  val navBackStackEntry by navController.currentBackStackEntryAsState()
+  val navController = rememberNavController()
   val videoUiState = videoPageViewModel.uiState.collectAsStateWithLifecycle()
-
-  LaunchedEffect(navBackStackEntry?.destination?.route) {
-    window?.let {
-      if (navBackStackEntry?.destination?.hasRoute(VideoScreenRoutes.VideoPlayer::class) == true) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-          it.insetsController?.apply {
-            hide(WindowInsets.Type.statusBars())
-            hide(WindowInsets.Type.systemBars())
-            this.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-          }
-        }
-      } else {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-          it.insetsController?.apply {
-            show(WindowInsets.Type.statusBars())
-            show(WindowInsets.Type.systemBars())
-          }
-        }
-      }
-    }
-  }
 
   NavHost(
     modifier = Modifier.fillMaxSize(),

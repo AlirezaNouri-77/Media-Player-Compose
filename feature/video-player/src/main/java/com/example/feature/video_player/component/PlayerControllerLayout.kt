@@ -1,53 +1,59 @@
 package com.example.feature.video_player.component
 
 import android.content.res.Configuration
-import androidx.annotation.OptIn
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.displayCutoutPadding
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.media3.common.util.UnstableApi
-import androidx.media3.ui.AspectRatioFrameLayout
-import com.example.core.util.removeFileExtension
+import androidx.compose.ui.unit.sp
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.model.ActiveVideoInfo
-import com.example.feature.video_player.MiddleVideoPlayerIndicator
-import com.example.feature.video.model.VideoPlayerState
 import com.example.feature.video.R
+import com.example.feature.video.model.VideoPlayerState
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 
-@OptIn(UnstableApi::class)
+@OptIn(FlowPreview::class)
 @Composable
 fun PlayerControllerLayout(
   modifier: Modifier = Modifier,
-  isVisible: Boolean,
-  controllerLayoutPadding: PaddingValues,
-  currentDeviceOrientation: Int,
-  playerResizeMode: Int,
-  previewSlider: ImageBitmap?,
+  playerResizeMode: () -> ContentScale,
+  previewSlider: () -> ImageBitmap?,
   currentPlayerState: () -> VideoPlayerState,
   currentPlayerPosition: () -> Long,
   onBackClick: () -> Unit,
@@ -56,185 +62,234 @@ fun PlayerControllerLayout(
   onPausePlayer: () -> Unit,
   onResumePlayer: () -> Unit,
   onSeekToPosition: (Long) -> Unit,
+  playerResizeModeChange: () -> Unit,
+  getPreviewSlider: (position: Float) -> Unit,
+  orientation: Int = LocalConfiguration.current.orientation,
+) {
+
+  var sliderValuePosition by remember {
+    mutableFloatStateOf(0f)
+  }
+
+  LaunchedEffect(key1 = sliderValuePosition) {
+    snapshotFlow {
+      sliderValuePosition
+    }.debounce(100L)
+      .distinctUntilChanged()
+      .collectLatest {
+        getPreviewSlider(it)
+      }
+  }
+
+  val controllerPadding = remember(orientation) {
+    mutableStateOf(
+      if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        PaddingValues(horizontal = 20.dp)
+      } else {
+        PaddingValues(horizontal = 15.dp)
+      }
+    )
+  }
+
+  Box(
+    modifier = modifier
+      .fillMaxSize()
+      .padding(controllerPadding.value),
+  ) {
+    PlayerTopSection(
+      modifier = Modifier.align(Alignment.TopCenter),
+      onBack = { onBackClick() },
+      title = currentPlayerState().currentMediaInfo.title,
+    )
+    BottomSection(
+      modifier = Modifier.align(Alignment.BottomCenter),
+      previewSlider = previewSlider,
+      slideSeekPosition = { sliderValuePosition },
+      onSeekToPrevious = { onSeekToPrevious() },
+      onSeekToNext = { onSeekToNext() },
+      onPausePlayer = { onPausePlayer() },
+      onResumePlayer = { onResumePlayer() },
+      onSeekToPosition = { onSeekToPosition(it) },
+      slidePositionChange = { sliderValuePosition = it },
+      playerResizeModeChange = { playerResizeModeChange() },
+      currentPlayerState = { currentPlayerState() },
+      currentPlayerPosition = { currentPlayerPosition() },
+      playerResizeMode = { playerResizeMode() },
+    )
+  }
+
+}
+
+@Composable
+private fun BottomSection(
+  modifier: Modifier = Modifier,
+  previewSlider: () -> ImageBitmap?,
   slideSeekPosition: () -> Float,
+  onSeekToPrevious: () -> Unit,
+  onSeekToNext: () -> Unit,
+  onPausePlayer: () -> Unit,
+  onResumePlayer: () -> Unit,
+  onSeekToPosition: (Long) -> Unit,
   slidePositionChange: (Float) -> Unit,
-  playerResizeModeChange: (Int) -> Unit,
-  onMiddleVideoPlayerIndicator: (MiddleVideoPlayerIndicator) -> Unit,
+  playerResizeModeChange: () -> Unit,
+  currentPlayerState: () -> VideoPlayerState,
+  currentPlayerPosition: () -> Long,
+  playerResizeMode: () -> ContentScale,
+  orientation: Int = LocalConfiguration.current.orientation,
 ) {
 
   var isSliderInteraction by remember {
     mutableStateOf(false)
   }
 
-  val sliderValue = if (isSliderInteraction) slideSeekPosition() else currentPlayerPosition().toFloat()
-
-  AnimatedVisibility(
-    modifier = modifier.fillMaxSize(),
-    visible = isVisible,
-    enter = fadeIn(),
-    exit = fadeOut(),
+  Card(
+    modifier = modifier
+      .fillMaxWidth(),
+    shape = RoundedCornerShape(15.dp),
+    colors = CardDefaults.cardColors(
+      containerColor = Color.Black.copy(alpha = 0.5f),
+      contentColor = Color.White,
+    ),
   ) {
 
-    ConstraintLayout(
+    Column(
       modifier = Modifier
-        .fillMaxSize()
-        .padding(controllerLayoutPadding)
-        .then(
-          if (currentDeviceOrientation == Configuration.ORIENTATION_PORTRAIT) {
-            Modifier
-              .navigationBarsPadding()
-              .displayCutoutPadding()
-          } else Modifier
-        ),
+        .fillMaxWidth()
+        .padding(10.dp),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      val (topSec, bottomSec, sliderThumbnailPreview) = createRefs()
 
       PlayerTimeLinePreview(
-        modifier = Modifier.Companion
-          .constrainAs(sliderThumbnailPreview) {
-            bottom.linkTo(bottomSec.top)
-            start.linkTo(parent.start)
-            end.linkTo(parent.end)
-          },
-        shouldShow = previewSlider != null && isSliderInteraction,
-        previewBitmap = previewSlider,
+        shouldShow = previewSlider() != null && isSliderInteraction,
+        previewBitmap = previewSlider(),
         videoPosition = slideSeekPosition().toInt()
       )
 
-      PlayerTopSection(
-        modifier = Modifier.Companion.constrainAs(topSec) {
-          top.linkTo(parent.top, margin = 10.dp)
-          start.linkTo(parent.start)
-          end.linkTo(parent.end)
+      PlayerTimeLine(
+        modifier = Modifier
+          .fillMaxWidth(),
+        currentPlayerState = { currentPlayerState() },
+        currentMediaPosition = currentPlayerPosition().toInt(),
+        slidePosition = { if (isSliderInteraction) slideSeekPosition() else currentPlayerPosition().toFloat() },
+        slideValueChangeFinished = {
+          isSliderInteraction = false
+          onSeekToPosition(slideSeekPosition().toLong())
         },
-        controllerLayoutPadding = controllerLayoutPadding,
-        onBack = { onBackClick() },
-        title = currentPlayerState().currentMediaInfo.title.toString(),
+        slideValueChange = { slideValue ->
+          slidePositionChange(slideValue)
+          isSliderInteraction = true
+        },
       )
 
-      Card(
+      Box(
         modifier = Modifier
           .fillMaxWidth()
-          .constrainAs(bottomSec) {
-            start.linkTo(parent.start)
-            end.linkTo(parent.end)
-            bottom.linkTo(parent.bottom, margin = 10.dp)
-          },
-        shape = RoundedCornerShape(15.dp),
-        colors = CardDefaults.cardColors(
-          containerColor = Color.Black.copy(alpha = 0.5f),
-          contentColor = Color.White,
-        ),
+          .padding(horizontal = 10.dp),
+        contentAlignment = Alignment.Center,
       ) {
 
-        Column(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp),
-          verticalArrangement = Arrangement.Center,
-          horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+        PlayerController(
+          modifier = Modifier,
+          currentState = { currentPlayerState() },
+          onSeekToPrevious = { onSeekToPrevious() },
+          onSeekToNext = { onSeekToNext() },
+          onPause = { onPausePlayer() },
+          onResume = { onResumePlayer() },
+        )
 
-          PlayerTimeLine(
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+          PlayerControllerButton(
+            icon = if (playerResizeMode() == ContentScale.Fit) R.drawable.iocn_fullscreen_exit_24 else R.drawable.icon_fullscreen_24,
             modifier = Modifier
-              .fillMaxWidth(),
-            currentPlayerState = { currentPlayerState() },
-            currentMediaPosition = currentPlayerPosition().toInt(),
-            slidePosition = { sliderValue },
-            slideValueChangeFinished = {
-              isSliderInteraction = false
-              onSeekToPosition(slideSeekPosition().toLong())
-            },
-            slideValueChange = { slideValue ->
-              onMiddleVideoPlayerIndicator(MiddleVideoPlayerIndicator.Seek(slideValue.toLong()))
-              slidePositionChange(slideValue)
-              isSliderInteraction = true
+              .size(30.dp)
+              .align(Alignment.CenterEnd),
+            onClick = {
+              playerResizeModeChange()
             },
           )
-
-          Box(
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 10.dp),
-            contentAlignment = Alignment.Center,
-          ) {
-
-            PlayerController(
-              modifier = Modifier,
-              currentState = { currentPlayerState() },
-              onSeekToPrevious = { onSeekToPrevious() },
-              onSeekToNext = { onSeekToNext() },
-              onPause = { onPausePlayer() },
-              onResume = { onResumePlayer() },
-            )
-
-            if (currentDeviceOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-              var iconResizeMode = remember {
-                when (playerResizeMode) {
-                  AspectRatioFrameLayout.RESIZE_MODE_FILL -> R.drawable.icon_fullscreen_24
-                  AspectRatioFrameLayout.RESIZE_MODE_FIT -> R.drawable.iocn_fullscreen_exit_24
-                  else -> 0
-                }
-              }
-              PlayerControllerButton(
-                icon = iconResizeMode,
-                modifier = Modifier
-                  .size(30.dp)
-                  .align(Alignment.CenterEnd),
-                onClick = {
-                  if (playerResizeMode == AspectRatioFrameLayout.RESIZE_MODE_FILL) {
-                    playerResizeModeChange(AspectRatioFrameLayout.RESIZE_MODE_FIT)
-                  } else {
-                    playerResizeModeChange(AspectRatioFrameLayout.RESIZE_MODE_FILL)
-                    iconResizeMode = R.drawable.iocn_fullscreen_exit_24
-                  }
-                },
-              )
-            }
-
-          }
         }
 
       }
-
     }
-  }
 
+  }
 }
 
-@Preview
-@Preview(widthDp = 700, heightDp = 500)
+@Composable
+private fun PlayerTopSection(
+  modifier: Modifier = Modifier,
+  onBack: () -> Unit,
+  title: String,
+) {
+  Row(
+    modifier = modifier
+      .background(Color.Transparent)
+      .fillMaxWidth()
+      .drawBehind {
+        drawRoundRect(
+          color = Color.Black,
+          size = this.size,
+          alpha = 0.4f,
+          cornerRadius = CornerRadius(25f, 25f),
+        )
+      },
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(15.dp),
+  ) {
+    Image(
+      painter = painterResource(id = R.drawable.icon_back_24), contentDescription = "",
+      modifier = Modifier
+        .weight(0.1f)
+        .clickable {
+          onBack()
+        },
+    )
+    Text(
+      text = title,
+      fontSize = 16.sp,
+      fontWeight = FontWeight.Medium,
+      color = Color.White,
+      maxLines = 1,
+      modifier = Modifier
+        .fillMaxWidth()
+        .basicMarquee()
+        .padding(vertical = 5.dp)
+        .weight(0.9f),
+    )
+  }
+}
+
+@Preview(showSystemUi = true)
+@Preview(device = "spec:parent=pixel_5,orientation=landscape", showSystemUi = true)
 @Composable
 private fun PreviewPlayerControllerLayout() {
   MediaPlayerJetpackComposeTheme {
     PlayerControllerLayout(
-      isVisible = true,
-      currentPlayerState = { VideoPlayerState(
-        currentMediaInfo = ActiveVideoInfo(
-          title = "Example Video",
-          videoID = "",
-          videoUri = "",
-          duration = 240_000
-        ),
-        isPlaying = false,
-        isBuffering = false,
-        repeatMode = 0,
-      ) },
+      currentPlayerState = {
+        VideoPlayerState(
+          currentMediaInfo = ActiveVideoInfo(
+            title = "Example Video",
+            videoID = "",
+            videoUri = "",
+            duration = 240_000
+          ),
+          isPlaying = false,
+          isBuffering = false,
+          repeatMode = 0,
+        )
+      },
       onResumePlayer = {},
       onPausePlayer = {},
       onBackClick = {},
       onSeekToNext = {},
       onSeekToPosition = {},
       onSeekToPrevious = {},
-      onMiddleVideoPlayerIndicator = {},
       currentPlayerPosition = { 0L },
-      playerResizeMode = 0,
-      slidePositionChange = {},
-      slideSeekPosition = { 0f },
-      currentDeviceOrientation = 2,
+      playerResizeMode = { ContentScale.Fit },
       playerResizeModeChange = {},
-      previewSlider = null,
-      controllerLayoutPadding = PaddingValues(horizontal = 5.dp, vertical = 10.dp),
+      previewSlider = { null },
+      getPreviewSlider = {},
     )
   }
 }

@@ -9,37 +9,15 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import com.example.mediaplayerjetpackcompose.presentation.MainMusicScreen
 import com.example.mediaplayerjetpackcompose.presentation.MainVideoScreen
 
 @Composable
-fun MainNavGraph(
-// window: Window? = LocalActivity.current?.window,
-) {
+fun MainNavGraph() {
 
   val navHostController: NavHostController = rememberNavController()
-//  val navBackStackEntry by navHostController.currentBackStackEntryAsState()
-
-//  window?.let {
-//    if (navBackStackEntry?.destination?.hasRoute(MainNavRoute.VideoPlayerScreen::class) == true) {
-//      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//        it.insetsController?.apply {
-//          hide(WindowInsets.Type.statusBars())
-//          hide(WindowInsets.Type.systemBars())
-//          this.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-//        }
-//      }
-//    } else {
-//      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//        it.insetsController?.apply {
-//          show(WindowInsets.Type.statusBars())
-//          show(WindowInsets.Type.systemBars())
-//        }
-//      }
-//    }
-//  }
-
 
   NavHost(
     modifier = Modifier

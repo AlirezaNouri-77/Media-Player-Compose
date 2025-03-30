@@ -28,7 +28,7 @@ import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 
 @Composable
 fun PlayerTimeLinePreview(
-  modifier: Modifier,
+  modifier: Modifier = Modifier,
   shouldShow: Boolean,
   previewBitmap: ImageBitmap?,
   videoPosition: Int,
