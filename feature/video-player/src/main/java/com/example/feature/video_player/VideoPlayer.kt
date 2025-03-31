@@ -1,19 +1,14 @@
 package com.example.feature.video_player
 
-import android.view.Window
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.LocalActivity
 import androidx.annotation.OptIn
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -26,9 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.core.net.toUri
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -43,6 +35,7 @@ import com.example.feature.video.VideoPageViewModel
 import com.example.feature.video.model.MiddleVideoPlayerIndicator
 import com.example.feature.video_player.component.MiddleInfoHandler
 import com.example.feature.video_player.component.PlayerControllerLayout
+import com.example.feature.video_player.util.HideSystemWindowInset
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -50,7 +43,6 @@ fun VideoPlayer(
   videoUri: String,
   videoPageViewModel: VideoPageViewModel,
   lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
-  window: Window? = LocalActivity.current?.window,
   onBack: () -> Unit = {},
 ) {
 
@@ -67,24 +59,7 @@ fun VideoPlayer(
     onBack()
   }
 
-  DisposableEffect(Unit) {
-    window ?: return@DisposableEffect onDispose {}
-    val insetsController = WindowCompat.getInsetsController(window, window.decorView)
-
-    insetsController.apply {
-      hide(WindowInsetsCompat.Type.statusBars())
-      hide(WindowInsetsCompat.Type.navigationBars())
-      systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-    }
-
-    onDispose {
-      insetsController.apply {
-        show(WindowInsetsCompat.Type.statusBars())
-        show(WindowInsetsCompat.Type.navigationBars())
-        systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
-      }
-    }
-  }
+  HideSystemWindowInset()
 
   DisposableEffect(key1 = lifecycleOwner, effect = {
     val observe = LifecycleEventObserver { _, event ->
@@ -122,37 +97,31 @@ fun VideoPlayer(
     modifier = Modifier
       .fillMaxSize()
       .background(Color.Black)
-      .pointerInput(null) {
-        detectTapGestures(
-          onTap = {
-            playerControllerVisibility = !playerControllerVisibility
-          },
-          onDoubleTap = { offset ->
-            when {
-              offset.x > this.size.width / 2 -> {
-                videoPageViewModel.fastForward(15_000, currentPlayerPosition)
-                videoPageViewModel.updateMiddleVideoPlayerInfo(MiddleVideoPlayerIndicator.FastForward())
-              }
-
-              offset.x < this.size.width / 2 -> {
-                videoPageViewModel.fastRewind(15_000, currentPlayerPosition)
-                videoPageViewModel.updateMiddleVideoPlayerInfo(MiddleVideoPlayerIndicator.FastRewind())
-              }
-            }
-          }
-        )
-      }
+      .playerViewClickHandler(
+        onTapClick = { playerControllerVisibility = !playerControllerVisibility },
+        onRightDoubleClick = {
+          videoPageViewModel.fastForward(15_000, currentPlayerPosition)
+          videoPageViewModel.updateMiddleVideoPlayerInfo(MiddleVideoPlayerIndicator.FastForward())
+        },
+        onLeftDoubleClick = {
+          videoPageViewModel.fastRewind(15_000, currentPlayerPosition)
+          videoPageViewModel.updateMiddleVideoPlayerInfo(MiddleVideoPlayerIndicator.FastRewind())
+        }
+      )
   ) {
-//    if (presentationState.coverSurface) {
-//      Box(modifier = Modifier
-//        .fillMaxSize()
-//        .background(Color.Black))
-//    }
     PlayerSurface(
       player = videoPageViewModel.getExoPlayer,
       modifier = scaledModifier,
       surfaceType = SURFACE_TYPE_SURFACE_VIEW,
     )
+
+    if (presentationState.coverSurface) {
+      Box(
+        modifier = Modifier
+          .fillMaxSize()
+          .background(Color.Black)
+      )
+    }
   }
 
   AnimatedVisibility(
@@ -160,10 +129,8 @@ fun VideoPlayer(
   ) {
     PlayerControllerLayout(
       modifier = Modifier
-        .padding(
-          top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(),
-          bottom = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding(),
-        ),
+        .systemBarsPadding()
+        .statusBarsPadding(),
       playerResizeMode = { playerContentScale.value },
       previewSlider = { previewSliderBitmap },
       currentPlayerState = { currentState },
@@ -192,3 +159,24 @@ fun VideoPlayer(
   )
 
 }
+
+
+private fun Modifier.playerViewClickHandler(
+  onTapClick: () -> Unit,
+  onRightDoubleClick: () -> Unit,
+  onLeftDoubleClick: () -> Unit,
+): Modifier = this.then(
+  Modifier.pointerInput(null) {
+    detectTapGestures(
+      onTap = {
+        onTapClick()
+      },
+      onDoubleTap = { offset ->
+        when {
+          offset.x > this.size.width / 2 -> onRightDoubleClick()
+          offset.x < this.size.width / 2 -> onLeftDoubleClick()
+        }
+      }
+    )
+  }
+)

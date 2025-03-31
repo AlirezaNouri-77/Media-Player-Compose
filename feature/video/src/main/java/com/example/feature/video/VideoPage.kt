@@ -40,11 +40,11 @@ fun VideoPage(
   activity: Activity? = LocalActivity.current,
 ) {
 
-  var activityResultApi34 = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+  val activityResultApi34 = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
     onRefreshVideoList()
   }
 
-  var activityResult = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+  val activityResult = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
     onRefreshVideoList()
   }
 
@@ -67,12 +67,7 @@ fun VideoPage(
                 )
               }) {
               activityResultApi34.launch(Constant.videoPermission)
-            } else if (Constant.videoPermission.all {
-                context.shouldShowPermissionRationale(
-                  it,
-                  activity
-                ) == false
-              }) {
+            } else if (Constant.videoPermission.all { !context.shouldShowPermissionRationale(it, activity) }) {
               context.openSetting(activityResult)
             }
             return@TopBarVideo
