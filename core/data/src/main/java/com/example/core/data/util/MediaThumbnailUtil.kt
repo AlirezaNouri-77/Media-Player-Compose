@@ -48,64 +48,64 @@ class MediaThumbnailUtil(
   }
 
 
-  override suspend fun getVideoThumbNail(uri: Uri, position: Long): Bitmap? {
-    return withContext(defaultDispatcher) {
-      runCatching {
-        val mediaMetadataRetriever = MediaMetadataRetriever().apply { setDataSource(context, uri) }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-          mediaMetadataRetriever.use {
-            it.getScaledFrameAtTime(
-              position * 1000,
-              OPTION_CLOSEST_SYNC,
-              VIDEO_WIDTH,
-              VIDEO_HEIGHT,
-            )
-          }
-        } else {
-          var imageBitmap = mediaMetadataRetriever.getScaledFrameAtTime(
-            position * 1000,
-            OPTION_CLOSEST_SYNC,
-            VIDEO_WIDTH,
-            VIDEO_HEIGHT,
-          )
-          mediaMetadataRetriever.close()
-          imageBitmap
-        }
-      }.getOrNull()
-    }
-  }
+//  override suspend fun getVideoThumbNail(uri: Uri, position: Long): Bitmap? {
+//    return withContext(defaultDispatcher) {
+//      runCatching {
+//        val mediaMetadataRetriever = MediaMetadataRetriever().apply { setDataSource(context, uri) }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//          mediaMetadataRetriever.use {
+//            it.getScaledFrameAtTime(
+//              position * 1000,
+//              OPTION_CLOSEST_SYNC,
+//              VIDEO_WIDTH,
+//              VIDEO_HEIGHT,
+//            )
+//          }
+//        } else {
+//          var imageBitmap = mediaMetadataRetriever.getScaledFrameAtTime(
+//            position * 1000,
+//            OPTION_CLOSEST_SYNC,
+//            VIDEO_WIDTH,
+//            VIDEO_HEIGHT,
+//          )
+//          mediaMetadataRetriever.close()
+//          imageBitmap
+//        }
+//      }.getOrNull()
+//    }
+//  }
 
-  override suspend fun getVideoThumbNail(uri: Uri): Bitmap? {
-
-    return withContext(defaultDispatcher) {
-      runCatching {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-          context.contentResolver.loadThumbnail(
-            uri,
-            Size(
-              VIDEO_WIDTH,
-              VIDEO_HEIGHT
-            ),
-            null
-          )
-        } else {
-          val mediaMetadataRetriever = MediaMetadataRetriever().apply { setDataSource(context, uri) }
-          val byteArray = mediaMetadataRetriever.embeddedPicture
-          val bitmap = BitmapFactory.decodeByteArray(
-            byteArray,
-            0,
-            byteArray!!.size
-          )
-          mediaMetadataRetriever.close()
-          bitmap.scale(VIDEO_WIDTH, VIDEO_HEIGHT)
-        }
-      }.getOrNull()
-    }
-  }
+//  override suspend fun getVideoThumbNail(uri: Uri): Bitmap? {
+//
+//    return withContext(defaultDispatcher) {
+//      runCatching {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//          context.contentResolver.loadThumbnail(
+//            uri,
+//            Size(
+//              VIDEO_WIDTH,
+//              VIDEO_HEIGHT
+//            ),
+//            null
+//          )
+//        } else {
+//          val mediaMetadataRetriever = MediaMetadataRetriever().apply { setDataSource(context, uri) }
+//          val byteArray = mediaMetadataRetriever.embeddedPicture
+//          val bitmap = BitmapFactory.decodeByteArray(
+//            byteArray,
+//            0,
+//            byteArray!!.size
+//          )
+//          mediaMetadataRetriever.close()
+//          bitmap.scale(VIDEO_WIDTH, VIDEO_HEIGHT)
+//        }
+//      }.getOrNull()
+//    }
+//  }
 
   override suspend fun getMainColorOfBitmap(bitmap: Bitmap?): Int {
     return withContext(ioDispatcher) {
-      if (bitmap == null ) return@withContext DefaultColorPalette
+      if (bitmap == null) return@withContext DefaultColorPalette
 
       val palette = Palette.from(bitmap).generate()
 
@@ -123,9 +123,7 @@ class MediaThumbnailUtil(
   }
 
   companion object {
-    val DefaultColorPalette = Color.LTGRAY
-    const val VIDEO_WIDTH = 150
-    const val VIDEO_HEIGHT = 150
+    const val DefaultColorPalette = Color.LTGRAY
   }
 
 }

@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flowOn
 import java.util.concurrent.TimeUnit
 
-class MediaStoreRepository(
+class MusicRepository(
   private var contentResolver: ContentResolver,
 ) : MusicRepositoryImpl {
 

@@ -11,7 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.core.designsystem.R
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.example.feature.video.model.VideoPlayerState
+import com.example.video_media3.model.VideoPlayerState
 
 @Composable
 fun PlayerController(

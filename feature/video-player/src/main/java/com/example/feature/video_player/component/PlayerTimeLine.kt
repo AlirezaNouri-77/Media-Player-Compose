@@ -19,7 +19,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.core.designsystem.NoRippleEffect
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.util.convertMilliSecondToTime
-import com.example.feature.video.model.VideoPlayerState
+import com.example.video_media3.model.VideoPlayerState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.sp
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.model.ActiveVideoInfo
 import com.example.feature.video.R
-import com.example.feature.video.model.VideoPlayerState
+import com.example.video_media3.model.VideoPlayerState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce

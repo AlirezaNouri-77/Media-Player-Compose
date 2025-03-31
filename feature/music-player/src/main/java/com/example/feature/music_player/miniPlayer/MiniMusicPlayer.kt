@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.drawWithContent
@@ -83,18 +84,18 @@ fun MiniMusicPlayer(
   Card(
     modifier = modifier
       .drawWithCache {
-      onDrawBehind {
-        drawRoundRect(
-          color = Color.Black,
-          cornerRadius = CornerRadius(x = 25f, y = 25f),
-        )
-        drawRoundRect(
-          color = musicArtWorkColorAnimation,
-          cornerRadius = CornerRadius(x = 25f, y = 25f),
-          alpha = 0.3f,
-        )
-      }
-    },
+        onDrawBehind {
+          drawRoundRect(
+            color = Color.Black,
+            cornerRadius = CornerRadius(x = 25f, y = 25f),
+          )
+          drawRoundRect(
+            color = musicArtWorkColorAnimation,
+            cornerRadius = CornerRadius(x = 25f, y = 25f),
+            alpha = 0.6f,
+          )
+        }
+      },
     shape = RoundedCornerShape(0.dp),
     onClick = { onClick.invoke() },
     colors = CardDefaults.cardColors(

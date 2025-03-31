@@ -15,6 +15,7 @@ import com.example.core.database.di.DataBaseModule
 import com.example.core.music_media3.di.Media3Module
 import com.example.feature.video.di.VideoModule
 import com.example.mediaplayerjetpackcompose.data.di.appModule
+import com.example.video_media3.di.VideoMedia3Module
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -39,6 +40,7 @@ class ApplicationClass : Application(), ImageLoaderFactory {
         VideoModule,
         Media3Module,
         DataModule,
+        VideoMedia3Module,
       )
     }
   }

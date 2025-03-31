@@ -8,6 +8,8 @@ android {
 
 dependencies {
 
+  api(project(":core:video-media3"))
+
   implementation(libs.androidx.navigation.compose)
 
   implementation(libs.androidx.media3.exoplayer)

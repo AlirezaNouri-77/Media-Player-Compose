@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
             mutableStateOf(PermissionState.Initial)
           }
 
-          var context = LocalContext.current
+          val context = LocalContext.current
 
           intent?.let { mIntent ->
             if (mIntent.action == Intent.ACTION_VIEW) {
@@ -95,7 +95,7 @@ class MainActivity : ComponentActivity() {
 
                 PermissionState.NotGrant -> {
 
-                  var activityResult = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                  val activityResult = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                     if (context.isPermissionGrant(musicPermission)) permissionState = PermissionState.Grant
                   }
 

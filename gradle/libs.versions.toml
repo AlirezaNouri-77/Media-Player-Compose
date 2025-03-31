@@ -32,6 +32,7 @@ androidRunnerTest = "1.4.0"
 minSdk = "28"
 compileSdk = "35"
 targetSdk = "35"
+documentfile = "1.0.1"
 
 [libraries]
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
@@ -91,6 +92,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 
 androidGradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 kotlinGradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+androidx-documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "documentfile" }
 
 
 [plugins]

@@ -11,16 +11,16 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
 class FavoriteMusicSource(
-  private val favoriteFavoriteDao: FavoriteDao,
+  private val favoriteDao: FavoriteDao,
   private val musicSource: MusicSource,
   private val ioDispatcher: CoroutineDispatcher,
 ) : FavoriteMusicSourceImpl {
 
-  override var favoriteMusicMediaIdList = favoriteFavoriteDao.getFavoriteSongsMediaId().flowOn(ioDispatcher)
+  override var favoriteMusicMediaIdList = favoriteDao.getFavoriteSongsMediaId().flowOn(ioDispatcher)
 
   override var favoriteSongs: Flow<List<MusicModel>> =
-    combine(musicSource.songs, favoriteFavoriteDao.getFavoriteSongsMediaId()) { musicList, favoriteMediaIdList ->
-      musicList.filterIndexed { index, item ->
+    combine(musicSource.songs, favoriteDao.getFavoriteSongsMediaId()) { musicList, favoriteMediaIdList ->
+      musicList.filterIndexed { _, item ->
         item.musicId.toString() in favoriteMediaIdList
       }
     }.flowOn(ioDispatcher)
@@ -28,12 +28,12 @@ class FavoriteMusicSource(
   // return true if mediaId is not in favorite database
   override suspend fun handleFavoriteSongs(mediaId: String): Boolean {
     return withContext(ioDispatcher) {
-      var isFavorite = favoriteFavoriteDao.isFavorite(mediaId)
+      val isFavorite = favoriteDao.isFavorite(mediaId)
       if (isFavorite) {
-        favoriteFavoriteDao.deleteFavoriteSong(mediaId)
+        favoriteDao.deleteFavoriteSong(mediaId)
         return@withContext false
       } else {
-        favoriteFavoriteDao.insertFavoriteSong(FavoriteEntity(mediaId = mediaId))
+        favoriteDao.insertFavoriteSong(FavoriteEntity(mediaId = mediaId))
         return@withContext true
       }
     }

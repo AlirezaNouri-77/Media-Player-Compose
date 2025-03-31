@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.util.concurrent.TimeUnit
 
-class VideoSource(
+class VideoRepository(
   private var contentResolver: ContentResolver,
 ) : VideoSourceImpl {
 

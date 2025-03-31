@@ -12,7 +12,6 @@ import org.koin.dsl.module
 var appModule = module {
 
   viewModelOf(::PlayerViewModel)
- // viewModelOf(::VideoPageViewModel)
   viewModelOf(::AlbumViewModel)
   viewModelOf(::CategoryViewModel)
   viewModelOf(::ArtistViewModel)

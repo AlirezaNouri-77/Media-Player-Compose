@@ -65,7 +65,7 @@ class HomeViewModel(
 
   fun sortMusicListByCategory() {
     viewModelScope.launch {
-      var sortedList = sortMusic(list = musicList, isDescending = _sortSate.value.isDec, sortBy = _sortSate.value.sortType)
+      val sortedList = sortMusic(list = musicList, isDescending = _sortSate.value.isDec, sortBy = _sortSate.value.sortType)
       musicList.apply {
         clear()
         addAll(sortedList)

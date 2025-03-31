@@ -8,6 +8,4 @@ sealed interface MainNavRoute {
   data object VideoScreen : MainNavRoute
   @Serializable
   data object MusicScreen : MainNavRoute
-//  @Serializable
-//  data class VideoPlayerScreen(var videoUri:String="") : MainNavRoute
 }

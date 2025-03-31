@@ -19,7 +19,6 @@ class SearchMusicManager(
   private var _searchList = MutableStateFlow(emptyList<MusicModel>())
   override var searchList = _searchList.asStateFlow()
 
-  @OptIn(ExperimentalCoroutinesApi::class)
   override suspend fun search(input: String) {
     withContext(ioDispatcher) {
       if (input.isNotEmpty() || input.isNotBlank()) {

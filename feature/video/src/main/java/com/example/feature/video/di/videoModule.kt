@@ -10,8 +10,4 @@ var VideoModule = module {
 
   viewModelOf(::VideoPageViewModel)
 
-  single {
-    ExoPlayer.Builder(androidApplication().applicationContext).build()
-  }
-
 }
