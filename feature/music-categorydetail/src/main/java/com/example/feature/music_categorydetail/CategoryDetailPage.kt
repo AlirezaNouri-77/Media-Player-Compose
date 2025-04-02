@@ -32,7 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.core.util.LocalBottomPadding
+import com.example.core.designsystem.LocalBottomPadding
 import com.example.core.designsystem.MusicMediaItem
 import com.example.core.model.MusicModel
 import com.example.core.model.navigation.ParentCategoryRoute

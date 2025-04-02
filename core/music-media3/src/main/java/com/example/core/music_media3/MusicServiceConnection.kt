@@ -6,10 +6,10 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
-import com.example.core.data.mapper.toActiveMusicInfo
-import com.example.core.data.mapper.toMediaItem
 import com.example.core.model.ActiveMusicInfo
 import com.example.core.model.MusicModel
+import com.example.core.music_media3.mapper.toActiveMusicInfo
+import com.example.core.music_media3.mapper.toMediaItem
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.CoroutineScope
@@ -32,7 +32,7 @@ class MusicServiceConnection(
 ) {
 
   private var factory: ListenableFuture<MediaController>? = null
-  var mediaController: MediaController? = null
+  private var mediaController: MediaController? = null
 
   private var _playerState = MutableStateFlow(PlayerStateModel.Empty)
   var playerState: StateFlow<PlayerStateModel> = _playerState.asStateFlow()
@@ -112,7 +112,7 @@ class MusicServiceConnection(
     }
   }
 
-  fun setRepeatMode(repeatMode: Int) = mediaController?.repeatMode = repeatMode
+  fun setRepeatMode(repeatMode: Int) { mediaController?.repeatMode = repeatMode }
 
   fun setCurrentArtworkPagerIndex(index: Int) = _currentArtworkPagerIndex.update { index }
 

@@ -9,11 +9,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.music_media3.MusicServiceConnection
 import com.example.core.music_media3.PlayerStateModel
-import com.example.core.data.util.DeviceVolumeManager
-import com.example.core.data.util.MediaThumbnailUtil
-import com.example.core.domain.api.FavoriteMusicSourceImpl
-import com.example.core.domain.api.MediaThumbnailUtilImpl
+import com.example.core.music_media3.util.DeviceVolumeManager
+import com.example.core.music_media3.util.MusicThumbnailUtil
+import com.example.core.data.repository.FavoriteMusicSourceImpl
 import com.example.core.model.MusicModel
+import com.example.core.music_media3.util.MusicThumbnailUtilImpl
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -21,14 +21,14 @@ import kotlinx.coroutines.launch
 
 class PlayerViewModel(
   private var musicServiceConnection: MusicServiceConnection,
-  private var mediaThumbnailUtil: MediaThumbnailUtilImpl,
+  private var mediaThumbnailUtil: MusicThumbnailUtilImpl,
   private var deviceVolumeManager: DeviceVolumeManager,
   private var favoriteMusicSource: FavoriteMusicSourceImpl,
 ) : ViewModel() {
 
   var miniPlayerHeight = 70.dp
 
-  var musicArtworkColorPalette by mutableIntStateOf(MediaThumbnailUtil.DefaultColorPalette)
+  var musicArtworkColorPalette by mutableIntStateOf(MusicThumbnailUtil.DEFAULT_COLOR_PALETTE)
 
   var currentMusicState = musicServiceConnection.playerState
     .stateIn(

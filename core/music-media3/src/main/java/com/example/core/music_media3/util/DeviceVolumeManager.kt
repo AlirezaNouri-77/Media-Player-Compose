@@ -1,4 +1,4 @@
-package com.example.core.data.util
+package com.example.core.music_media3.util
 
 import android.content.Context
 import android.database.ContentObserver

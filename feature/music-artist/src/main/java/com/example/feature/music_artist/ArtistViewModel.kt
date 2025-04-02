@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.domain.api.MusicSourceImpl
+import com.example.core.data.repository.MusicSourceImpl
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.stateIn

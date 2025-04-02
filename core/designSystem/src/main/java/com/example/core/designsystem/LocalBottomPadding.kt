@@ -1,4 +1,4 @@
-package com.example.core.util
+package com.example.core.designsystem
 
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp

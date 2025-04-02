@@ -3,9 +3,9 @@ package com.example.core.data.di
 import com.example.core.data.repository.MusicRepository
 import com.example.core.data.repository.MusicSource
 import com.example.core.data.repository.VideoRepository
-import com.example.core.domain.api.MusicRepositoryImpl
-import com.example.core.domain.api.MusicSourceImpl
-import com.example.core.domain.api.VideoSourceImpl
+import com.example.core.data.repository.MusicRepositoryImpl
+import com.example.core.data.repository.MusicSourceImpl
+import com.example.core.domain.api.VideoRepositoryImpl
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
@@ -19,7 +19,7 @@ var RepositoryModule = module {
 
   single {
     VideoRepository(androidApplication().applicationContext.contentResolver)
-  } bind VideoSourceImpl::class
+  } bind VideoRepositoryImpl::class
 
   single { MusicSource(get(), get(named("IO"))) } bind MusicSourceImpl::class
 

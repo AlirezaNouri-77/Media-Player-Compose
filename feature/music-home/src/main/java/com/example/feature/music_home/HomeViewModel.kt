@@ -7,8 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.domain.api.FavoriteMusicSourceImpl
-import com.example.core.domain.api.MusicSourceImpl
+import com.example.core.data.repository.FavoriteMusicSourceImpl
+import com.example.core.data.repository.MusicSourceImpl
 import com.example.core.model.MusicModel
 import com.example.core.model.SortState
 import com.example.core.model.SortType

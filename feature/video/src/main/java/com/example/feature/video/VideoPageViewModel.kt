@@ -1,15 +1,13 @@
 package com.example.feature.video
 
 import android.net.Uri
-import androidx.annotation.OptIn
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
-import com.example.core.domain.api.VideoSourceImpl
+import com.example.core.domain.api.VideoRepositoryImpl
 import com.example.core.model.MediaStoreResult
 import com.example.core.model.VideoModel
 import com.example.feature.video.model.MiddleVideoPlayerIndicator
@@ -33,7 +31,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class VideoPageViewModel(
-  private var videoSource: VideoSourceImpl,
+  private var videoSource: VideoRepositoryImpl,
   private var videoThumbnailUtil: VideoThumbnailUtil,
   private var videoMedia3Controller: VideoMedia3Controller,
 ) : ViewModel() {

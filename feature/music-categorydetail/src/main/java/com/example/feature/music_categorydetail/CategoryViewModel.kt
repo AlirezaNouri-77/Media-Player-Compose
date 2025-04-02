@@ -1,7 +1,7 @@
 package com.example.feature.music_categorydetail
 
 import androidx.lifecycle.ViewModel
-import com.example.core.domain.api.MusicSourceImpl
+import com.example.core.data.repository.MusicSourceImpl
 import kotlinx.coroutines.flow.combine
 
 class CategoryViewModel(

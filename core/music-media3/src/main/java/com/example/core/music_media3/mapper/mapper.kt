@@ -1,4 +1,4 @@
-package com.example.core.data.mapper
+package com.example.core.music_media3.mapper
 
 import android.net.Uri
 import androidx.core.net.toUri
@@ -36,26 +36,6 @@ fun MediaItem.toActiveMusicInfo() = ActiveMusicInfo(
   bitrate = this.mediaMetadata.extras?.getInt(MEDIAMETADATA_BUNDLE_BITRATE_KEY) ?: 0,
   size = this.mediaMetadata.extras?.getLong(MEDIAMETADATA_BUNDLE_SIZE_KEY) ?: 0L,
 )
-
-//fun MediaItem.toActiveVideoInfo() = ActiveVideoInfo(
-//  title = this.mediaMetadata.title.toString(),
-//  videoID = this.mediaId,
-//  videoUri = (this.localConfiguration?.uri ?: Uri.EMPTY).toString(),
-//  duration = this.mediaMetadata.extras?.getLong(MEDIAMETADATA_BUNDLE_DURATION_KEY) ?: 0L,
-//)
-
-//fun VideoModel.toMediaItem(): MediaItem {
-//  return MediaItem.Builder().setUri(this.uri).setMediaId(videoId.toString()).setMediaMetadata(
-//    MediaMetadata.Builder()
-//      .setTitle(name)
-//      .setExtras(
-//        bundleOf(
-//          MEDIAMETADATA_BUNDLE_DURATION_KEY to this.duration,
-//        )
-//      )
-//      .build()
-//  ).build()
-//}
 
 const val MEDIAMETADATA_BUNDLE_DURATION_KEY = "Duration"
 const val MEDIAMETADATA_BUNDLE_BITRATE_KEY = "Bitrate"

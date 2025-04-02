@@ -2,7 +2,7 @@ package com.example.feature.music_search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.domain.api.FavoriteMusicSourceImpl
+import com.example.core.data.repository.FavoriteMusicSourceImpl
 import com.example.core.domain.api.SearchMusicManagerImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
