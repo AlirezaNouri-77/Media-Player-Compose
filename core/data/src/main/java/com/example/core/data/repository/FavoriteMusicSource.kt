@@ -11,7 +11,7 @@ import kotlinx.coroutines.withContext
 
 class FavoriteMusicSource(
   private val favoriteDao: FavoriteDao,
-  private val musicSource: MusicSource,
+  private val musicSource: MusicSourceImpl,
   private val ioDispatcher: CoroutineDispatcher,
 ) : FavoriteMusicSourceImpl {
 

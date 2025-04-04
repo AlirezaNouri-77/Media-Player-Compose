@@ -5,7 +5,6 @@ import android.content.ContentUris
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import com.example.core.domain.api.VideoRepositoryImpl
 import com.example.core.model.MediaStoreResult
 import com.example.core.model.VideoModel
 import kotlinx.coroutines.Dispatchers
