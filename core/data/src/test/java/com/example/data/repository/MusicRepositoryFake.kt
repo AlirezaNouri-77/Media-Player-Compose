@@ -80,7 +80,7 @@ val dummyList = listOf(
     artworkUri = "content://media/external/audio/albumart/404",
     bitrate = 441000,
     artist = "Ivory Keys",
-    album = "Silent Moments",
+    album = "Sunset Dreams",
     folderName = "Music 2"
   ),
 )
