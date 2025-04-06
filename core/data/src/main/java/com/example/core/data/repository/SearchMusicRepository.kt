@@ -1,7 +1,5 @@
-package com.example.core.data.util
+package com.example.core.data.repository
 
-import com.example.core.data.repository.MusicSourceImpl
-import com.example.core.domain.api.SearchMusicManagerImpl
 import com.example.core.model.MusicModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,10 +8,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
-class SearchMusicManager(
+class SearchMusicRepository(
   private var musicSource: MusicSourceImpl,
   private var ioDispatcher: CoroutineDispatcher,
-) : SearchMusicManagerImpl {
+) : SearchMusicRepositoryImpl {
 
   private var _searchList = MutableStateFlow(emptyList<MusicModel>())
   override var searchList = _searchList.asStateFlow()
