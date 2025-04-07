@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -35,11 +37,12 @@ class MusicSourceTest {
     val musicSource = musicSource.artist().first()
 
     assertEquals(4, musicSource.size)
-    assertEquals("Pop Parade", musicSource[0].categoryName)
-    assertEquals("Ivory Keys", musicSource[1].categoryName)
-    assertEquals(2, musicSource[1].categoryList.size)
-    assertEquals("The Rhythm Kings", musicSource[2].categoryName)
-    assertEquals("Quiet Shores", musicSource[3].categoryName)
+    assertEquals(2, musicSource.getValue("Ivory Keys").size)
+    assertNotNull(musicSource["Pop Parade"])
+    assertNotNull(musicSource["Ivory Keys"])
+    assertNotNull(musicSource["The Rhythm Kings"])
+    assertNotNull(musicSource["Quiet Shores"])
+    assertNull(musicSource["example artist"])
 
   }
 
@@ -49,11 +52,12 @@ class MusicSourceTest {
     val musicSource = musicSource.album().first()
 
     assertEquals(4, musicSource.size)
-    assertEquals("Bright Days", musicSource[0].categoryName)
-    assertEquals("Silent Moments", musicSource[1].categoryName)
-    assertEquals(2, musicSource[3].categoryList.size)
-    assertEquals("Dancing Shoes", musicSource[2].categoryName)
-    assertEquals("Sunset Dreams", musicSource[3].categoryName)
+    assertEquals(2, musicSource.getValue("Sunset Dreams").size)
+    assertNotNull(musicSource["Bright Days"])
+    assertNotNull(musicSource["Silent Moments"])
+    assertNotNull(musicSource["Dancing Shoes"])
+    assertNotNull(musicSource["Sunset Dreams"])
+    assertNull(musicSource["example album"])
 
   }
 
@@ -63,13 +67,10 @@ class MusicSourceTest {
     val musicSource = musicSource.folder().first()
 
     assertEquals(2, musicSource.size)
-    assertEquals("Music",musicSource[0].categoryName)
-    assertEquals(3,musicSource[0].categoryList.size)
-    assertEquals("Music 2",musicSource[1].categoryName)
-
-
-
-
+    assertEquals(3, musicSource.getValue("Music").size)
+    assertNotNull(musicSource["Music"])
+    assertNotNull(musicSource.getValue("Music 2"))
+    assertNull(musicSource["example folder"])
 
   }
 
