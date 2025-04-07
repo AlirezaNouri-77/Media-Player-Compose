@@ -26,13 +26,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.core.data.repository.albumName
 import com.example.core.designsystem.LocalBottomPadding
 import com.example.core.designsystem.CategoryListItem
 import com.example.core.designsystem.EmptyPage
 import com.example.core.designsystem.Loading
-import com.example.core.model.CategoryMusic
+import com.example.core.model.MusicModel
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
@@ -55,7 +58,7 @@ fun SharedTransitionScope.AlbumRoute(
       exit = fadeOut(tween(150, 20)),
       enter = fadeIn(tween(150, 150, easing = LinearEasing)),
     ),
-    albumListData = albumListData.value.toImmutableList(),
+    albumListData = albumListData.value.toImmutableMap(),
     lazyListBottomPadding = bottomPadding,
     navigateTo = {
       navigateToCategory(it)
@@ -71,7 +74,7 @@ fun SharedTransitionScope.AlbumRoute(
 @Composable
 private fun AlbumScreen(
   modifier: Modifier = Modifier,
-  albumListData: ImmutableList<CategoryMusic>,
+  albumListData: ImmutableMap<albumName, List<MusicModel>>,
   lazyListBottomPadding: Dp,
   isLoading: Boolean,
   navigateTo: (String) -> Unit,
@@ -110,12 +113,12 @@ private fun AlbumScreen(
             contentPadding = PaddingValues(bottom = lazyListBottomPadding),
           ) {
             items(
-              items = albumListData,
-              key = { it.categoryName.hashCode() }
+              items = albumListData.keys.toList(),
+              key = { it }
             ) { item ->
               CategoryListItem(
-                categoryName = item.categoryName,
-                musicListSize = item.categoryList.size,
+                categoryName = item,
+                musicListSize = albumListData.getValue(item).size,
                 onClick = { categoryName ->
                   navigateTo(categoryName)
                 },

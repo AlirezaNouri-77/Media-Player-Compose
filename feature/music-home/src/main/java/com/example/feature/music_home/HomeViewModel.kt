@@ -55,7 +55,7 @@ class HomeViewModel(
   var folder = musicSource.folder().stateIn(
     viewModelScope,
     SharingStarted.WhileSubscribed(5_000L),
-    emptyList(),
+    emptyMap(),
   )
 
 

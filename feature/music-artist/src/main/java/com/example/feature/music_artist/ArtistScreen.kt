@@ -26,13 +26,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.core.designsystem.LocalBottomPadding
+import com.example.core.data.repository.artistName
 import com.example.core.designsystem.CategoryListItem
 import com.example.core.designsystem.EmptyPage
 import com.example.core.designsystem.Loading
-import com.example.core.model.CategoryMusic
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
+import com.example.core.designsystem.LocalBottomPadding
+import com.example.core.model.MusicModel
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.toImmutableMap
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
@@ -54,7 +55,7 @@ fun SharedTransitionScope.ArtistRoute(
       exit = fadeOut(tween(150, 20)),
       enter = fadeIn(tween(150, 150, easing = LinearEasing)),
     ),
-    listItems = listItem.value.toImmutableList(),
+    listItems = listItem.value.toImmutableMap(),
     animatedVisibilityScope = animatedVisibilityScope,
     isLoading = artistViewModel.isLoading,
     navigateToCategory = {
@@ -67,7 +68,7 @@ fun SharedTransitionScope.ArtistRoute(
 @Composable
 fun SharedTransitionScope.ArtistScreen(
   modifier: Modifier = Modifier.Companion,
-  listItems: ImmutableList<CategoryMusic>,
+  listItems: ImmutableMap<artistName, List<MusicModel>>,
   isLoading: Boolean,
   bottomLazyListPadding: Dp = LocalBottomPadding.current,
   animatedVisibilityScope: AnimatedVisibilityScope,
@@ -106,12 +107,12 @@ fun SharedTransitionScope.ArtistScreen(
             contentPadding = PaddingValues(bottom = bottomLazyListPadding),
           ) {
             items(
-              items = listItems,
-              key = { it.categoryName.hashCode() }
+              items = listItems.keys.toList(),
+              key = { it }
             ) { item ->
               CategoryListItem(
-                categoryName = item.categoryName,
-                musicListSize = item.categoryList.size,
+                categoryName = item,
+                musicListSize = listItems[item]?.size ?: 0,
                 onClick = { categoryName ->
                   navigateToCategory(categoryName)
                 },

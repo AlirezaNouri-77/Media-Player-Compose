@@ -1,14 +1,13 @@
 package com.example.core.data.repository
 
-import com.example.core.model.CategoryMusic
+import com.example.core.model.MusicModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 
 class MusicSource(
-  musicMediaStoreRepository: MusicRepositoryImpl,
+  private var musicMediaStoreRepository: MusicRepositoryImpl,
   private var ioDispatcher: CoroutineDispatcher,
 ) : MusicSourceImpl {
 
@@ -16,24 +15,18 @@ class MusicSource(
     .getSongs()
     .flowOn(ioDispatcher)
 
-  override fun artist(): Flow<List<CategoryMusic>> = channelFlow {
-    songs.collectLatest { musicList ->
-      send(musicList.groupBy { by -> by.artist }.map { CategoryMusic(it.key, it.value) })
-    }
+  override fun artist(): Flow<Map<artistName, List<MusicModel>>> = musicMediaStoreRepository.getSongs().map {
+    it.groupBy { by -> by.artist }
   }.flowOn(ioDispatcher)
 
-  override fun album(): Flow<List<CategoryMusic>> = channelFlow {
-    songs.collectLatest { musicList ->
-      send(musicList.groupBy { by -> by.album }.map { CategoryMusic(it.key, it.value) })
-    }
+  override fun album(): Flow<Map<albumName, List<MusicModel>>> = musicMediaStoreRepository.getSongs().map {
+    it.groupBy { by -> by.album }
   }.flowOn(ioDispatcher)
 
-  override fun folder(): Flow<List<CategoryMusic>> = channelFlow {
-    songs.collectLatest { musicList ->
-      send(musicList.groupBy { by -> by.folderName }.map { CategoryMusic(it.key, it.value) })
-    }
-  }.flowOn(ioDispatcher)
 
+  override fun folder(): Flow<Map<folderName, List<MusicModel>>> = musicMediaStoreRepository.getSongs().map {
+    it.groupBy { by -> by.folderName }
+  }.flowOn(ioDispatcher)
 
 }
 

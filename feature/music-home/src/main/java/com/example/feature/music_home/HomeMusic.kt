@@ -75,12 +75,12 @@ fun SharedTransitionScope.HomeMusic(
   val favoriteSongs by homeViewModel.favoriteSongs.collectAsStateWithLifecycle()
   val favoriteSongsMediaId by homeViewModel.favoriteSongsMediaId.collectAsStateWithLifecycle()
 
-  var listStates = TabBarModel.entries.map {
+  val listStates = TabBarModel.entries.map {
     rememberLazyListState()
   }
   var tabBarHeight by remember { mutableStateOf(0.dp) }
 
-  var shouldHideTabBar = remember {
+  val shouldHideTabBar = remember {
     derivedStateOf {
       listStates[pagerState.currentPage].isScrollInProgress
            && (listStates[pagerState.currentPage].firstVisibleItemIndex >= 3)
@@ -89,7 +89,7 @@ fun SharedTransitionScope.HomeMusic(
   }
 
   LaunchedEffect(pagerState.settledPage) {
-    var currentTab = when (pagerState.currentPage) {
+    val currentTab = when (pagerState.currentPage) {
       0 -> TabBarModel.All
       1 -> TabBarModel.Favorite
       2 -> TabBarModel.Folder
@@ -153,9 +153,7 @@ fun SharedTransitionScope.HomeMusic(
 
             if (page == 0 || page == 1) {
 
-              var list = remember(
-                homeViewModel.musicList, favoriteSongs
-              ) {
+              val list = remember(homeViewModel.musicList, favoriteSongs) {
                 if (page == 0) homeViewModel.musicList else favoriteSongs
               }
 
@@ -193,12 +191,12 @@ fun SharedTransitionScope.HomeMusic(
                   contentPadding = PaddingValues(bottom = lazyListBottomPadding, top = tabBarHeight + 8.dp),
                 ) {
                   items(
-                    items = folder,
-                    key = { it.categoryName.hashCode() }
+                    items = folder.keys.toList(),
+                    key = { it }
                   ) { item ->
                     CategoryListItem(
-                      categoryName = item.categoryName,
-                      musicListSize = item.categoryList.size,
+                      categoryName = item,
+                      musicListSize = folder.getValue(item).size,
                       onClick = { categoryName ->
                         navigateToCategoryPage(categoryName)
                       },

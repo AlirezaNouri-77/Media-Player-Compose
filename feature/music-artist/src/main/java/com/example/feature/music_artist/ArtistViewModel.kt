@@ -21,7 +21,7 @@ class ArtistViewModel(
     .stateIn(
       viewModelScope,
       SharingStarted.WhileSubscribed(5_000L),
-      emptyList()
+      emptyMap()
     )
 
 }
