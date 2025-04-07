@@ -6,10 +6,10 @@ import org.koin.dsl.module
 
 var CommonDispatcherModule = module {
 
-  single(named("Main")) { Dispatchers.Main.immediate }
+  factory(named("Main")) { Dispatchers.Main.immediate }
 
-  single(named("IO")) { Dispatchers.IO }
+  factory(named("IO")) { Dispatchers.IO }
 
-  single(named("Default")) { Dispatchers.Default }
+  factory(named("Default")) { Dispatchers.Default }
 
 }
