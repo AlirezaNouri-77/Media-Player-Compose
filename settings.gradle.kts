@@ -25,6 +25,7 @@ include(":core:domain")
 include(":core:model")
 include(":core:util")
 include(":core:music-media3")
+include(":core:proto-datastore")
 
 include(":feature:music-artist")
 include(":feature:music-player")

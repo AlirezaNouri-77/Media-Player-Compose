@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+import "com/example/core/proto_datastore/Proto_SortType.proto";
+
+option java_package = "com.example.core.proto_datastore";
+option java_multiple_files = true;
+
+message SortPreferences {
+    bool songs_is_descending = 1;
+    Proto_SortType song_sort_type = 2;
+}
+
