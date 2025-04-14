@@ -1,0 +1,23 @@
+plugins {
+  alias(libs.plugins.mediaplayer.androidConventionPlugin)
+}
+
+android {
+  namespace = "com.example.core.datastore"
+}
+
+dependencies {
+
+  api(project(":core:proto-datastore"))
+  api(project(":core:model"))
+  api(libs.androidx.dataStore)
+
+  implementation(libs.koin.android)
+
+  androidTestImplementation(libs.jetbrains.kotlinx.coroutine.test)
+
+  androidTestImplementation(libs.junit)
+  androidTestImplementation(libs.androidx.test.core)
+  androidTestImplementation(libs.androidx.junit)
+  androidTestImplementation(libs.androidx.espresso.core)
+}
