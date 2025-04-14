@@ -28,6 +28,8 @@ androidAnnotation = "1.9.1"
 jetbrainsKotlinJvm = "2.1.10"
 jetbrainsKotlinCoroutine = "1.10.1"
 androidRunnerTest = "1.4.0"
+googlePortobuf = "4.29.2"
+googlePortobutPlugin = "0.9.4"
 
 minSdk = "28"
 compileSdk = "35"
@@ -53,6 +55,9 @@ jetbrains-kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kot
 jetbrains-kotlinx-coroutine = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "jetbrainsKotlinCoroutine" }
 
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidAnnotation" }
+google-porotbuf-javalite = { group = "com.google.protobuf", name = "protobuf-javalite", version.ref = "googlePortobuf" }
+google-porotbuf-kotlinLite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "googlePortobuf" }
+google-porotbuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "googlePortobuf" }
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-palette-ktx = { module = "androidx.palette:palette-ktx", version.ref = "paletteKtx" }
 androidx-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
@@ -103,6 +108,7 @@ android-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-ksp = { id = "com.google.devtools.ksp", version.ref = "androidKsp" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+google-protobuf = { id = "com.google.protobuf", version.ref = "googlePortobutPlugin" }
 
 # Custom Plugins
 mediaplayer-androidComposeConventionPlugin = { id = "com.mediaplayer.buildLogic.androidComposeConvention" }
