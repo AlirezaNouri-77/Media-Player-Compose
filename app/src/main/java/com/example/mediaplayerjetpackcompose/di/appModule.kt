@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.data.di
+package com.example.mediaplayerjetpackcompose.di
 
 import com.example.feature.music_album.AlbumViewModel
 import com.example.feature.music_artist.ArtistViewModel

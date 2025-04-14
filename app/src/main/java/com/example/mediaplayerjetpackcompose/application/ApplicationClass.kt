@@ -1,4 +1,4 @@
-package com.example.mediaplayerjetpackcompose.data.application
+package com.example.mediaplayerjetpackcompose.application
 
 import android.app.Application
 import coil.ImageLoader
@@ -13,8 +13,9 @@ import com.example.core.data.di.RepositoryModule
 import com.example.core.database.di.DataBaseDaoModule
 import com.example.core.database.di.DataBaseModule
 import com.example.core.music_media3.di.Media3Module
+import com.example.datastore.di.dataStoreModule
 import com.example.feature.video.di.VideoModule
-import com.example.mediaplayerjetpackcompose.data.di.appModule
+import com.example.mediaplayerjetpackcompose.di.appModule
 import com.example.video_media3.di.VideoMedia3Module
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
@@ -41,6 +42,7 @@ class ApplicationClass : Application(), ImageLoaderFactory {
         Media3Module,
         DataModule,
         VideoMedia3Module,
+        dataStoreModule,
       )
     }
   }
