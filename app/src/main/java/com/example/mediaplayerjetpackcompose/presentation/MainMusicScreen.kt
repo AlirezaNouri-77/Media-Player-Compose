@@ -85,10 +85,10 @@ fun MainMusicScreen(
 
   val navController: NavHostController = rememberNavController()
 
-  var bottomSheetState = rememberStandardBottomSheetState()
-  var bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState)
+  val bottomSheetState = rememberStandardBottomSheetState()
+  val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState)
 
-  var coroutineScope = rememberCoroutineScope()
+  val coroutineScope = rememberCoroutineScope()
 
   val currentMusicState by playerViewModel.currentMusicState.collectAsStateWithLifecycle()
 
@@ -100,11 +100,11 @@ fun MainMusicScreen(
 
   var bottomNavBarHeight by remember { mutableStateOf(0.dp) }
 
-  var bottomPadding by remember(bottomNavBarHeight) {
+  val bottomPadding by remember(bottomNavBarHeight) {
     mutableStateOf(playerViewModel.miniPlayerHeight + bottomNavBarHeight + 5.dp)
   }
 
-  var screenHeightPx = remember(screenHeight) {
+  val screenHeightPx = remember(screenHeight) {
     with(density) {
       screenHeight.toPx()
     }
@@ -125,7 +125,7 @@ fun MainMusicScreen(
   }
 
   BackHandler {
-    if (bottomSheetState.hasExpandedState == true) {
+    if (bottomSheetState.hasExpandedState) {
       coroutineScope.launch {
         bottomSheetScaffoldState.bottomSheetState.partialExpand()
       }
@@ -133,10 +133,10 @@ fun MainMusicScreen(
   }
 
   // used for hide or show mini player and bottomNavBar on bottomSheet interaction
-  var bottomSheetSwapFraction = remember(screenHeight) {
+  val bottomSheetSwapFraction = remember(screenHeight) {
     derivedStateOf {
       with(density) {
-        var swapOffset =
+        val swapOffset =
           screenHeightPx - playerViewModel.miniPlayerHeight.toPx() - bottomNavBarHeight.toPx() - runCatching { bottomSheetScaffoldState.bottomSheetState.requireOffset() }.getOrDefault(
             0f
           )
@@ -157,7 +157,7 @@ fun MainMusicScreen(
           },
         navController = navController,
         navigateTo = {
-          var currentDestination = navController.currentDestination?.id ?: navController.graph.findStartDestination().id
+          val currentDestination = navController.currentDestination?.id ?: navController.graph.findStartDestination().id
           navController.navigate(it) {
             this.popUpTo(currentDestination) {
               inclusive = true
@@ -178,7 +178,7 @@ fun MainMusicScreen(
           .padding(top = it.calculateTopPadding())
           .consumeWindowInsets(it),
         scaffoldState = bottomSheetScaffoldState,
-        sheetDragHandle = { null },
+        sheetDragHandle = {},
         sheetPeekHeight = playerViewModel.miniPlayerHeight + bottomNavBarHeight,
         sheetMaxWidth = Dp.Unspecified,
         sheetContent = {

@@ -6,9 +6,7 @@ import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import com.example.core.model.ActiveMusicInfo
-import com.example.core.model.ActiveVideoInfo
 import com.example.core.model.MusicModel
-import com.example.core.model.VideoModel
 
 fun MusicModel.toMediaItem() =
   MediaItem.Builder().setMediaId(this.musicId.toString()).setUri(this.uri)

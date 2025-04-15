@@ -46,7 +46,7 @@ fun MusicMediaItem(
 ) {
 
   Box(
-    modifier = Modifier.Companion
+    modifier = Modifier
       .fillMaxWidth()
       .clickable { onItemClick.invoke() }
       .background(
