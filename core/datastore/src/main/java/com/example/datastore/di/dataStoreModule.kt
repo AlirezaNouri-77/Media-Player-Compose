@@ -1,9 +1,8 @@
 package com.example.datastore.di
 
-import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
-import com.example.datastore.DataStoreManager
+import com.example.datastore.SongsSortDataStoreManager
 import com.example.datastore.SortPreferencesSerializer
 import kotlinx.coroutines.CoroutineScope
 import org.koin.android.ext.koin.androidApplication
@@ -26,7 +25,7 @@ var dataStoreModule = module {
   }
 
   single {
-    DataStoreManager(get())
+    SongsSortDataStoreManager(get())
   }
 
 }

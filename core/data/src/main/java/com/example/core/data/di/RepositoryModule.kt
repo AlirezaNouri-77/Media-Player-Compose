@@ -21,6 +21,6 @@ var RepositoryModule = module {
     VideoRepository(androidApplication().applicationContext.contentResolver)
   } bind VideoRepositoryImpl::class
 
-  single { MusicSource(get(), get(named("IO"))) } bind MusicSourceImpl::class
+  single { MusicSource(get(), get(named("IO")), get()) } bind MusicSourceImpl::class
 
 }

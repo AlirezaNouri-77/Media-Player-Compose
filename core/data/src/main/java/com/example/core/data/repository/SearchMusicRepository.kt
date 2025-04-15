@@ -1,6 +1,7 @@
 package com.example.core.data.repository
 
 import com.example.core.model.MusicModel
+import com.example.core.model.SortType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,10 +20,10 @@ class SearchMusicRepository(
   override suspend fun search(input: String) {
     withContext(ioDispatcher) {
       if (input.isNotEmpty() || input.isNotBlank()) {
-        val filteredList = musicSource.songs.first().filter { it.name.lowercase().contains(input.lowercase()) }
+        val filteredList = musicSource.songs().first().filter { it.name.lowercase().contains(input.lowercase()) }
         _searchList.update { filteredList }
       } else {
-        _searchList.update { musicSource.songs.first() }
+        _searchList.update { musicSource.songs().first() }
       }
     }
   }

@@ -69,8 +69,9 @@ fun SharedTransitionScope.HomeMusic(
 
   val pagerState = rememberPagerState(pageCount = { TabBarModel.entries.size })
 
-  val listSortState by homeViewModel.sortState.collectAsStateWithLifecycle()
+  val listSortState by homeViewModel.songSortModel.collectAsStateWithLifecycle()
 
+  val songs by homeViewModel.musicList.collectAsStateWithLifecycle()
   val folder by homeViewModel.folder.collectAsStateWithLifecycle()
   val favoriteSongs by homeViewModel.favoriteSongs.collectAsStateWithLifecycle()
   val favoriteSongsMediaId by homeViewModel.favoriteSongsMediaId.collectAsStateWithLifecycle()
@@ -114,15 +115,15 @@ fun SharedTransitionScope.HomeMusic(
         onVideoIconClick = { onNavigateToVideoScreen() },
         onSortIconClick = { showSortBar = true },
         isDropDownMenuSortExpand = showSortBar,
-        sortState = { listSortState },
+        songSortModel = { listSortState },
         onDismissDropDownMenu = { showSortBar = false },
         onSortClick = {
           homeViewModel.updateSortType(it)
-          homeViewModel.sortMusicListByCategory()
+         // homeViewModel.sortMusicListByCategory()
         },
         onOrderClick = {
           homeViewModel.updateSortIsDec(!listSortState.isDec)
-          homeViewModel.sortMusicListByCategory()
+         // homeViewModel.sortMusicListByCategory()
         },
       )
     },
@@ -152,9 +153,8 @@ fun SharedTransitionScope.HomeMusic(
           ) { page ->
 
             if (page == 0 || page == 1) {
-
-              val list = remember(homeViewModel.musicList, favoriteSongs) {
-                if (page == 0) homeViewModel.musicList else favoriteSongs
+              val list = remember(songs, favoriteSongs) {
+                if (page == 0) songs else favoriteSongs
               }
 
               if (list.isNotEmpty()) {

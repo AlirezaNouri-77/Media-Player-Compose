@@ -1,6 +1,6 @@
 package com.example.core.model
 
-data class SortState(
+data class SongSortModel(
   val sortType:SortType,
   val isDec:Boolean,
 )

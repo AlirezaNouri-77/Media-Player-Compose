@@ -3,6 +3,7 @@ package com.example.core.data.repository
 import com.example.core.database.dao.FavoriteDao
 import com.example.core.database.model.FavoriteEntity
 import com.example.core.model.MusicModel
+import com.example.core.model.SortType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -18,7 +19,7 @@ class FavoriteMusicSource(
   override var favoriteMusicMediaIdList = favoriteDao.getFavoriteSongsMediaId().flowOn(ioDispatcher)
 
   override var favoriteSongs: Flow<List<MusicModel>> =
-    combine(musicSource.songs, favoriteDao.getFavoriteSongsMediaId()) { musicList, favoriteMediaIdList ->
+    combine(musicSource.songs(), favoriteDao.getFavoriteSongsMediaId()) { musicList, favoriteMediaIdList ->
       musicList.filterIndexed { _, item ->
         item.musicId.toString() in favoriteMediaIdList
       }

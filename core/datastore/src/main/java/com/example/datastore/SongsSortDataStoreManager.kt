@@ -2,7 +2,7 @@ package com.example.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
-import com.example.core.model.SortState
+import com.example.core.model.SongSortModel
 import com.example.core.model.SortType
 import com.example.core.proto_datastore.SortPreferences
 import com.example.core.proto_datastore.Proto_SortType
@@ -12,11 +12,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
-class DataStoreManager(
+class SongsSortDataStoreManager(
   private var dataStore: DataStore<SortPreferences>,
 ) {
 
-  val songsSortState: Flow<SortState> = dataStore.data
+  val songsSortState: Flow<SongSortModel> = dataStore.data
     .catch { exception ->
       if (exception is IOException) {
         emit(SortPreferences.newBuilder().setSongSortType(Proto_SortType.PROTO_SORT_TYPE_NAME).setSongsIsDescending(true).build())
@@ -24,7 +24,7 @@ class DataStoreManager(
         throw exception
       }
     }.map {
-      SortState(
+      SongSortModel(
         sortType = it.songSortType.toSortType(),
         isDec = it.songsIsDescending,
       )

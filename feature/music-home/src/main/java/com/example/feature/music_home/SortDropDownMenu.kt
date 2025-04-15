@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.core.model.SortState
+import com.example.core.model.SongSortModel
 import com.example.core.model.SortType
 
 @Composable
@@ -23,7 +23,7 @@ fun SortDropDownMenu(
   modifier: Modifier = Modifier,
   isExpand: Boolean,
   onDismiss: () -> Unit,
-  sortState: SortState,
+  songSortModel: SongSortModel,
   onSortClick: (SortType) -> Unit,
   onOrderClick: () -> Unit,
 ) {
@@ -37,7 +37,7 @@ fun SortDropDownMenu(
     SortType.entries.forEachIndexed { _, sortBarModel ->
       DropdownMenuItem(
         modifier = Modifier.background(
-          if (sortState.sortType == sortBarModel) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f) else Color.Transparent,
+          if (songSortModel.sortType == sortBarModel) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f) else Color.Transparent,
           shape = RoundedCornerShape(10.dp),
         ),
         text = {
@@ -54,11 +54,11 @@ fun SortDropDownMenu(
     Spacer(Modifier.height(6.dp))
     DropdownMenuItem(
       text = {
-        Text(text = if (sortState.isDec) "Dec" else "Acs")
+        Text(text = if (songSortModel.isDec) "Dec" else "Acs")
       },
       trailingIcon = {
         Icon(
-          painter = painterResource(id = if (sortState.isDec) R.drawable.icon_sort_desc else R.drawable.icon_sort_asce),
+          painter = painterResource(id = if (songSortModel.isDec) R.drawable.icon_sort_desc else R.drawable.icon_sort_asce),
           contentDescription = ""
         )
       },

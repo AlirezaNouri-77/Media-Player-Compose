@@ -22,7 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.core.model.SortState
+import com.example.core.model.SongSortModel
 import com.example.core.model.SortType
 import com.example.core.model.TabBarModel
 import kotlinx.coroutines.FlowPreview
@@ -36,7 +36,7 @@ fun HomePageTopBar(
   onSortIconClick: () -> Unit,
   isDropDownMenuSortExpand: Boolean,
   onDismissDropDownMenu: () -> Unit,
-  sortState: () -> SortState,
+  songSortModel: () -> SongSortModel,
   onSortClick: (SortType) -> Unit,
   onOrderClick: () -> Unit,
 ) {
@@ -90,7 +90,7 @@ fun HomePageTopBar(
                 SortDropDownMenu(
                   isExpand = isDropDownMenuSortExpand,
                   onDismiss = { onDismissDropDownMenu() },
-                  sortState = sortState(),
+                  songSortModel = songSortModel(),
                   onSortClick = { onSortClick(it) },
                   onOrderClick = { onOrderClick() }
                 )
