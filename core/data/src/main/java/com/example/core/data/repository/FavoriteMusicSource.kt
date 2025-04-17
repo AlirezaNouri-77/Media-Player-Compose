@@ -3,7 +3,6 @@ package com.example.core.data.repository
 import com.example.core.database.dao.FavoriteDao
 import com.example.core.database.model.FavoriteEntity
 import com.example.core.model.MusicModel
-import com.example.core.model.SortType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

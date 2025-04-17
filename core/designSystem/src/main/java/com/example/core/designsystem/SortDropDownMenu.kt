@@ -1,4 +1,4 @@
-package com.example.feature.music_home
+package com.example.core.designsystem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
@@ -15,17 +15,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.core.model.SongSortModel
 import com.example.core.model.SortType
 
 @Composable
 fun SortDropDownMenu(
   modifier: Modifier = Modifier,
   isExpand: Boolean,
-  onDismiss: () -> Unit,
-  songSortModel: SongSortModel,
+  sortTypeList: List<SortType>,
+  isSortDescending: Boolean,
+  currentSortType: SortType,
   onSortClick: (SortType) -> Unit,
   onOrderClick: () -> Unit,
+  onDismiss: () -> Unit,
 ) {
   DropdownMenu(
     modifier = modifier,
@@ -34,31 +35,31 @@ fun SortDropDownMenu(
     onDismissRequest = { onDismiss() },
     containerColor = MaterialTheme.colorScheme.primaryContainer,
   ) {
-    SortType.entries.forEachIndexed { _, sortBarModel ->
+    sortTypeList.forEachIndexed { _, sortType ->
       DropdownMenuItem(
         modifier = Modifier.background(
-          if (songSortModel.sortType == sortBarModel) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f) else Color.Transparent,
+          if (currentSortType == sortType) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f) else Color.Transparent,
           shape = RoundedCornerShape(10.dp),
         ),
         text = {
-          Text(text = sortBarModel.sortName)
+          Text(text = sortType.getString())
         },
         onClick = {
-          onSortClick(sortBarModel)
+          onSortClick(sortType)
         },
         colors = MenuDefaults.itemColors(
           textColor = MaterialTheme.colorScheme.onPrimary,
         ),
       )
     }
-    Spacer(Modifier.height(6.dp))
+    Spacer(Modifier.height(5.dp))
     DropdownMenuItem(
       text = {
-        Text(text = if (songSortModel.isDec) "Dec" else "Acs")
+        Text(text = if (isSortDescending) "Dec" else "Acs")
       },
       trailingIcon = {
         Icon(
-          painter = painterResource(id = if (songSortModel.isDec) R.drawable.icon_sort_desc else R.drawable.icon_sort_asce),
+          painter = painterResource(id = if (isSortDescending) R.drawable.icon_sort_desc else R.drawable.icon_sort_asce),
           contentDescription = ""
         )
       },

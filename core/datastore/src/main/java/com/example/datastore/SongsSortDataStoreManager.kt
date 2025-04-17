@@ -3,7 +3,7 @@ package com.example.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
 import com.example.core.model.SongSortModel
-import com.example.core.model.SortType
+import com.example.core.model.SongsSortType
 import com.example.core.proto_datastore.SortPreferences
 import com.example.core.proto_datastore.Proto_SortType
 import com.example.datastore.mapper.toProtoSortType
@@ -25,14 +25,14 @@ class SongsSortDataStoreManager(
       }
     }.map {
       SongSortModel(
-        sortType = it.songSortType.toSortType(),
+        songsSortType = it.songSortType.toSortType(),
         isDec = it.songsIsDescending,
       )
     }
 
-  suspend fun updateSongsSortType(sortType: SortType) {
+  suspend fun updateSongsSortType(songsSortType: SongsSortType) {
     dataStore.updateData {
-      it.toBuilder().setSongSortType(sortType.toProtoSortType()).build()
+      it.toBuilder().setSongSortType(songsSortType.toProtoSortType()).build()
     }
   }
 

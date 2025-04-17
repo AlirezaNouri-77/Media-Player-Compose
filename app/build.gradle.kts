@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.android.kotlin)
@@ -18,9 +20,11 @@ android {
     versionName = "1.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
     vectorDrawables {
       useSupportLibrary = true
     }
+
   }
 
   buildTypes {
@@ -38,6 +42,7 @@ android {
   kotlinOptions {
     jvmTarget = "11"
   }
+
   buildFeatures {
     compose = true
   }
@@ -48,16 +53,16 @@ android {
     }
   }
   composeOptions {
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
-      kotlinOptions.freeCompilerArgs += listOf(
+    tasks.withType<KotlinJvmCompile>().all {
+      compilerOptions.freeCompilerArgs.addAll(
         "-P",
         "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
-             project.buildDir.absolutePath + "/compose_metrics"
+             project.layout.buildDirectory + "/compose_metrics"
       )
-      kotlinOptions.freeCompilerArgs += listOf(
+      compilerOptions.freeCompilerArgs.addAll(
         "-P",
         "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
-             project.buildDir.absolutePath + "/compose_metrics"
+             project.layout.buildDirectory + "/compose_metrics"
       )
     }
   }
@@ -91,8 +96,6 @@ dependencies {
 
   implementation(libs.androidx.navigation.compose)
 
-  implementation(libs.androidx.constraintlayout.compose)
-
   implementation(libs.jetbrains.kotlinx.immutableCollections)
   implementation(libs.jetbrains.kotlinx.serialization)
 
@@ -112,6 +115,8 @@ dependencies {
   implementation(project(":core:model"))
   implementation(project(":core:domain"))
   implementation(project(":core:util"))
+  implementation(project(":core:video-media3"))
+  implementation(project(":core:datastore"))
 
   implementation(project(":feature:music-artist"))
   implementation(project(":feature:music-home"))

@@ -20,12 +20,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.core.designsystem.SortDropDownMenu
 import com.example.core.model.SongSortModel
-import com.example.core.model.SortType
+import com.example.core.model.SongsSortType
 import com.example.core.model.TabBarModel
 import kotlinx.coroutines.FlowPreview
+import com.example.core.designsystem.R
 
 @OptIn(FlowPreview::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -37,7 +40,7 @@ fun HomePageTopBar(
   isDropDownMenuSortExpand: Boolean,
   onDismissDropDownMenu: () -> Unit,
   songSortModel: () -> SongSortModel,
-  onSortClick: (SortType) -> Unit,
+  onSortClick: (SongsSortType) -> Unit,
   onOrderClick: () -> Unit,
 ) {
 
@@ -89,10 +92,12 @@ fun HomePageTopBar(
                 }
                 SortDropDownMenu(
                   isExpand = isDropDownMenuSortExpand,
+                  sortTypeList = SongsSortType.entries.toList(),
+                  isSortDescending = songSortModel().isDec,
+                  currentSortType = songSortModel().songsSortType,
+                  onSortClick = { onSortClick(it as SongsSortType) },
+                  onOrderClick = { onOrderClick() },
                   onDismiss = { onDismissDropDownMenu() },
-                  songSortModel = songSortModel(),
-                  onSortClick = { onSortClick(it) },
-                  onOrderClick = { onOrderClick() }
                 )
               }
             }
@@ -109,7 +114,7 @@ fun HomePageTopBar(
   )
 
 }
-//
+
 //@Preview(showBackground = true, apiLevel = 34)
 //@Composable
 //private fun PreviewTopBarMusic() {

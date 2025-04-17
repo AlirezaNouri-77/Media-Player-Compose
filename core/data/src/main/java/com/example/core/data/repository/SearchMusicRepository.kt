@@ -1,7 +1,6 @@
 package com.example.core.data.repository
 
 import com.example.core.model.MusicModel
-import com.example.core.model.SortType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
