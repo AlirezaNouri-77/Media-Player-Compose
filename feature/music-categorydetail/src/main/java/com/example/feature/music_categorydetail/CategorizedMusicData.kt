@@ -8,7 +8,7 @@ import com.example.core.model.MusicModel
 
 @Immutable
 data class CategorizedMusicData(
-  val album: Map<albumName, List<MusicModel>>,
-  val artist: Map<artistName, List<MusicModel>>,
-  val folder: Map<folderName, List<MusicModel>>,
+  val album: List<Pair<albumName, List<MusicModel>>>,
+  val artist: List<Pair<artistName, List<MusicModel>>>,
+  val folder: List<Pair<artistName, List<MusicModel>>>,
 )

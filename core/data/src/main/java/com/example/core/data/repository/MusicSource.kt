@@ -31,8 +31,8 @@ class MusicSource(
   }.flowOn(ioDispatcher)
 
 
-  override fun folder(): Flow<Map<folderName, List<MusicModel>>> = songs().map {
-    it.groupBy { by -> by.folderName }
+  override fun folder(): Flow<List<Pair<folderName, List<MusicModel>>>> = songs().map {
+    it.groupBy { by -> by.folderName }.map { it.key to it.value }
   }.flowOn(ioDispatcher)
 
 }

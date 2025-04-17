@@ -58,12 +58,14 @@ fun SharedTransitionScope.CategoryDetailRoute(
     categoryViewModel.categorizedMusicDataList
       .map {
         when (parentCategoryRouteName) {
-          ParentCategoryRoute.FOLDER -> it.folder.getValue(categoryName)
-          ParentCategoryRoute.ARTIST -> it.artist.getValue(categoryName)
-          ParentCategoryRoute.ALBUM -> it.album.getValue(categoryName)
+          ParentCategoryRoute.FOLDER -> it.folder.find { it.first == categoryName }?.second
+          ParentCategoryRoute.ARTIST -> it.artist.find { it.first == categoryName }?.second
+          ParentCategoryRoute.ALBUM -> it.album.find { it.first == categoryName }?.second
         }
       }.collect {
-        value = it
+        it?.let { list ->
+          value = list
+        } ?: emptyList<MusicModel>()
       }
   }
 

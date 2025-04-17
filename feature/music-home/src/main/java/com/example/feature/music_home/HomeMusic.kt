@@ -189,12 +189,12 @@ fun SharedTransitionScope.HomeMusic(
                   contentPadding = PaddingValues(bottom = lazyListBottomPadding, top = tabBarHeight + 8.dp),
                 ) {
                   items(
-                    items = folder.keys.toList(),
+                    items = folder,
                     key = { it }
                   ) { item ->
                     CategoryListItem(
-                      categoryName = item,
-                      musicListSize = folder.getValue(item).size,
+                      categoryName = item.first,
+                      musicListSize = item.second.size,
                       onClick = { categoryName ->
                         navigateToCategoryPage(categoryName)
                       },

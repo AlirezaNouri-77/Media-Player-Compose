@@ -68,7 +68,7 @@ class HomeViewModel(
   var folder = musicSource.folder().stateIn(
     viewModelScope,
     SharingStarted.WhileSubscribed(5_000L),
-    emptyMap(),
+    emptyList(),
   )
 
   fun updateSortType(songsSortType: SongsSortType) = viewModelScope.launch {
