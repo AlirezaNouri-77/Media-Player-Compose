@@ -26,8 +26,8 @@ class MusicSource(
     it.groupBy { it.artist }.map { it.key to it.value }
   }.flowOn(ioDispatcher)
 
-  override fun album(): Flow<Map<albumName, List<MusicModel>>> = songs().map {
-    it.groupBy { by -> by.album }
+  override fun album(): Flow<List<Pair<albumName, List<MusicModel>>>> = songs().map {
+    it.groupBy { by -> by.album }.map { it.key to it.value }
   }.flowOn(ioDispatcher)
 
 
