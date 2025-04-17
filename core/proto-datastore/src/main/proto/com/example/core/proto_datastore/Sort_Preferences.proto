@@ -12,5 +12,8 @@ message SortPreferences {
 
     bool artist_is_descending = 3;
     Proto_DataStore_Folder artist_sort_type = 4;
+
+    bool album_is_descending = 5;
+    Proto_DataStore_Folder album_sort_type = 6;
 }
 
