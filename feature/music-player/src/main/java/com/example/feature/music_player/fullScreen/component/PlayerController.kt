@@ -22,11 +22,11 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import com.example.core.designsystem.NoRippleEffect
+import com.example.core.designsystem.R
+import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.music_media3.PlayerStateModel
 import com.example.core.music_media3.RepeatModes
-import com.example.core.designsystem.NoRippleEffect
-import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.example.core.designsystem.R
 
 @Composable
 fun SongController(

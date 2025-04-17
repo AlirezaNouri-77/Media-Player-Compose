@@ -12,12 +12,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
+import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.music_media3.PlayerStateModel
 import com.example.core.util.convertByteToReadableSize
 import com.example.core.util.convertToReadableBitrate
 import com.example.core.util.extractFileExtension
 import com.example.core.util.removeFileExtension
-import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 
 @Composable
 fun SongDetail(

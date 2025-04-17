@@ -5,11 +5,11 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.core.model.ActiveVideoInfo
-import com.example.video_media3.util.VideoMediaMetaData
 import com.example.core.model.VideoModel
 import com.example.video_media3.model.VideoPlayerState
 import com.example.video_media3.model.mapper.toActiveVideoInfo
 import com.example.video_media3.model.mapper.toMediaItem
+import com.example.video_media3.util.VideoMediaMetaData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

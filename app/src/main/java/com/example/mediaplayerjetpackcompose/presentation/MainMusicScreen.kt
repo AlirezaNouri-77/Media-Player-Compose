@@ -55,10 +55,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.example.core.designsystem.LocalBottomPadding
 import com.example.core.model.navigation.MusicNavigationRoute
 import com.example.core.model.navigation.ParentCategoryRoute
 import com.example.core.music_media3.PlayerStateModel
-import com.example.core.designsystem.LocalBottomPadding
 import com.example.feature.music_album.AlbumRoute
 import com.example.feature.music_artist.ArtistRoute
 import com.example.feature.music_categorydetail.CategoryDetailRoute

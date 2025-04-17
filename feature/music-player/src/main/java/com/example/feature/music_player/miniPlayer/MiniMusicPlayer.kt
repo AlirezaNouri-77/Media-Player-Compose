@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.drawWithContent
@@ -36,16 +35,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.core.util.removeFileExtension
 import com.example.core.designsystem.MusicThumbnail
 import com.example.core.designsystem.NoRippleEffect
+import com.example.core.designsystem.R
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
+import com.example.core.model.MusicModel
+import com.example.core.util.removeFileExtension
 import com.example.feature.music_player.PagerHandler
 import com.example.feature.music_player.PlayerActions
-import com.example.core.model.MusicModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import com.example.core.designsystem.R
 
 @Composable
 fun MiniMusicPlayer(

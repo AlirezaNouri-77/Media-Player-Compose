@@ -1,16 +1,15 @@
 package com.example.feature.music_player.fullScreen
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.model.ActiveMusicInfo
+import com.example.core.model.MusicModel
 import com.example.core.music_media3.PlayerStateModel
 import com.example.feature.music_player.PlayerActions
 import com.example.feature.music_player.fullScreen.component.FullscreenPlayerPager
@@ -20,11 +19,8 @@ import com.example.feature.music_player.fullScreen.component.SongController
 import com.example.feature.music_player.fullScreen.component.SongDetail
 import com.example.feature.music_player.fullScreen.component.VolumeController
 import com.example.feature.music_player.fullScreen.component.decoupledConstraintLayout
-import com.example.core.model.MusicModel
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.immutableListOf
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun FullMusicPlayer(

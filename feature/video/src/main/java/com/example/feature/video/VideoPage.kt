@@ -20,14 +20,13 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.designsystem.Loading
+import com.example.core.model.MediaStoreResult
+import com.example.core.model.VideoModel
 import com.example.feature.video.component.EmptyVideoResultHandler
 import com.example.feature.video.component.TopBarVideo
 import com.example.feature.video.item.VideoMediaItem
 import com.example.feature.video.util.Constant
-import com.example.core.model.MediaStoreResult
-import com.example.core.model.VideoModel
 
 @Composable
 fun VideoPage(

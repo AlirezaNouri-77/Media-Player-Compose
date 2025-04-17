@@ -1,10 +1,10 @@
 package com.example.core.data.di
 
 import com.example.core.data.repository.MusicRepository
-import com.example.core.data.repository.MusicSource
-import com.example.core.data.repository.VideoRepository
 import com.example.core.data.repository.MusicRepositoryImpl
+import com.example.core.data.repository.MusicSource
 import com.example.core.data.repository.MusicSourceImpl
+import com.example.core.data.repository.VideoRepository
 import com.example.core.data.repository.VideoRepositoryImpl
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.qualifier.named

@@ -1,8 +1,7 @@
 package com.example.feature.music_search
 
-import org.junit.Test
-
 import org.junit.Assert.*
+import org.junit.Test
 
 /**
  * Example local unit test, which will execute on the development machine (host).

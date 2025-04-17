@@ -7,12 +7,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.core.data.repository.FavoriteMusicSourceImpl
+import com.example.core.model.MusicModel
 import com.example.core.music_media3.MusicServiceConnection
 import com.example.core.music_media3.PlayerStateModel
 import com.example.core.music_media3.util.DeviceVolumeManager
 import com.example.core.music_media3.util.MusicThumbnailUtil
-import com.example.core.data.repository.FavoriteMusicSourceImpl
-import com.example.core.model.MusicModel
 import com.example.core.music_media3.util.MusicThumbnailUtilImpl
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart

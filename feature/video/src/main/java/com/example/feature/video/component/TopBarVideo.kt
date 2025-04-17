@@ -20,9 +20,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.feature.video.R
 import com.example.feature.video.isPermissionGrant
 import com.example.feature.video.util.Constant
-import com.example.feature.video.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
