@@ -1,25 +1,17 @@
 package com.example.feature.music_artist
 
-import android.util.Log
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.data.repository.MusicSourceImpl
-import com.example.core.data.repository.sortMapSort2
+import com.example.core.data.repository.sortMusic
 import com.example.core.model.FolderSortModel
 import com.example.core.model.FolderSortType
-import com.example.core.model.MusicModel
 import com.example.datastore.ArtistSortDataStoreManager
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -40,8 +32,8 @@ class ArtistViewModel(
     musicSource.artist(),
     artistSortDataStoreManager.artistSortState,
   ) { songs, sortState ->
-    val sortedData = sortMapSort2(
-      data = songs,
+    val sortedData = sortMusic(
+      list = songs,
       isDescending = sortState.isDec,
       sortType = sortState.sortType
     )

@@ -28,6 +28,7 @@ fun Sort(
   onClick: () -> Unit,
   onSortClick: (SortType) -> Unit,
   onOrderClick: () -> Unit,
+  sortTypeList: List<SortType>,
   isDropDownMenuSortExpand: Boolean,
   isOrderDec: Boolean,
   sortType: SortType,
@@ -49,7 +50,7 @@ fun Sort(
     }
     SortDropDownMenu(
       isExpand = isDropDownMenuSortExpand,
-      sortTypeList = SongsSortType.entries.toList(),
+      sortTypeList = sortTypeList,
       isSortDescending = isOrderDec,
       currentSortType = sortType,
       onSortClick = { onSortClick(it) },
@@ -74,6 +75,7 @@ private fun Preview() {
       isOrderDec = false,
       sortType = SongsSortType.DURATION,
       onDismissDropDownMenu = { isDropDownMenuShow = false },
+      sortTypeList = SongsSortType.entries.toList(),
     )
   }
 }
@@ -92,6 +94,7 @@ private fun Preview2() {
       isOrderDec = false,
       sortType = FolderSortType.NAME,
       onDismissDropDownMenu = { isDropDownMenuShow = false },
+      sortTypeList = FolderSortType.entries.toList(),
     )
   }
 }

@@ -49,7 +49,9 @@ import com.example.core.designsystem.LocalBottomPadding
 import com.example.core.designsystem.MainTopAppBar
 import com.example.core.designsystem.MusicMediaItem
 import com.example.core.designsystem.Sort
+import com.example.core.model.FolderSortType
 import com.example.core.model.MusicModel
+import com.example.core.model.SongsSortType
 import com.example.core.model.TabBarModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -69,13 +71,15 @@ fun SharedTransitionScope.HomeMusic(
 ) {
 
   var isSortDropDownMenuShow by remember { mutableStateOf(false) }
+  var currentTabBarPosition by remember { mutableStateOf(TabBarModel.All) }
 
   val pagerState = rememberPagerState(pageCount = { TabBarModel.entries.size })
 
-  val listSortState by homeViewModel.songSortModel.collectAsStateWithLifecycle()
+  val songsSortState by homeViewModel.songSortState.collectAsStateWithLifecycle()
+  val folderSortState by homeViewModel.folderSortState.collectAsStateWithLifecycle()
 
-  val songs by homeViewModel.musicList.collectAsStateWithLifecycle()
-  val folder by homeViewModel.folder.collectAsStateWithLifecycle()
+  val songs by homeViewModel.songsList.collectAsStateWithLifecycle()
+  val folder by homeViewModel.folderSongsData.collectAsStateWithLifecycle()
   val favoriteSongs by homeViewModel.favoriteSongs.collectAsStateWithLifecycle()
   val favoriteSongsMediaId by homeViewModel.favoriteSongsMediaId.collectAsStateWithLifecycle()
 
@@ -99,11 +103,11 @@ fun SharedTransitionScope.HomeMusic(
       2 -> TabBarModel.Folder
       else -> TabBarModel.All
     }
-    homeViewModel.tabBarState = currentTab
+    currentTabBarPosition = currentTab
   }
 
-  LaunchedEffect(homeViewModel.tabBarState) {
-    pagerState.animateScrollToPage(homeViewModel.tabBarState.id)
+  LaunchedEffect(currentTabBarPosition) {
+    pagerState.animateScrollToPage(currentTabBarPosition.id)
   }
 
   Scaffold(
@@ -122,15 +126,20 @@ fun SharedTransitionScope.HomeMusic(
               onNavigateToVideoScreen()
             },
           )
-          AnimatedVisibility(homeViewModel.tabBarState != TabBarModel.Favorite) {
+          AnimatedVisibility(currentTabBarPosition != TabBarModel.Favorite) {
             Sort(
               modifier = Modifier,
               onClick = { isSortDropDownMenuShow = true },
-              onSortClick = { homeViewModel.updateSortType(it) },
-              onOrderClick = { homeViewModel.updateSortIsDec(!listSortState.isDec) },
+              sortTypeList = if (currentTabBarPosition == TabBarModel.All) SongsSortType.entries else FolderSortType.entries,
+              onSortClick = {
+                homeViewModel.updateDataStoreSortType(currentTabBarPosition, it)
+              },
+              onOrderClick = {
+                homeViewModel.updateDataStoreOrder(currentTabBarPosition)
+              },
               isDropDownMenuSortExpand = isSortDropDownMenuShow,
-              isOrderDec = listSortState.isDec,
-              sortType = listSortState.songsSortType,
+              isOrderDec = if (currentTabBarPosition == TabBarModel.All) songsSortState.isDec else folderSortState.isDec,
+              sortType = if (currentTabBarPosition == TabBarModel.All) songsSortState.songsSortType else folderSortState.sortType,
               onDismissDropDownMenu = { isSortDropDownMenuShow = false },
             )
           }
@@ -239,9 +248,9 @@ fun SharedTransitionScope.HomeMusic(
                 it.size.height.toDp()
               }
             },
-          currentTabState = homeViewModel.tabBarState,
+          currentTabState = currentTabBarPosition,
           onTabClick = { tabBar, _ ->
-            homeViewModel.tabBarState = tabBar
+            currentTabBarPosition = tabBar
           }
         )
       }

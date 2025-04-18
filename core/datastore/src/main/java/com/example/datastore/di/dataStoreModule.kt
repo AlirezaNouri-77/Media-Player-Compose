@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
 import com.example.datastore.AlbumSortDataStoreManager
 import com.example.datastore.ArtistSortDataStoreManager
+import com.example.datastore.FolderSortDataStoreManager
 import com.example.datastore.SongsSortDataStoreManager
 import com.example.datastore.SortPreferencesSerializer
 import kotlinx.coroutines.CoroutineScope
@@ -36,6 +37,10 @@ var dataStoreModule = module {
 
   single {
     AlbumSortDataStoreManager(get())
+  }
+
+  single {
+    FolderSortDataStoreManager(get())
   }
 
 }

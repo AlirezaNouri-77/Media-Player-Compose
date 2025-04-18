@@ -37,10 +37,10 @@ class MusicSource(
 suspend inline fun sortMusic(
   list: List<MusicModel>,
   isDescending: Boolean,
-  songsSortType: SongsSortType,
+  sortType: SongsSortType,
 ): List<MusicModel> {
   return withContext(Dispatchers.Default) {
-    when (songsSortType) {
+    when (sortType) {
       SongsSortType.NAME -> if (isDescending) list.sortedByDescending { it.name } else list.sortedBy { it.name }
       SongsSortType.ARTIST -> if (isDescending) list.sortedByDescending { it.artist } else list.sortedBy { it.artist }
       SongsSortType.DURATION -> if (isDescending) list.sortedByDescending { it.duration } else list.sortedBy { it.duration }
@@ -49,15 +49,15 @@ suspend inline fun sortMusic(
   }
 }
 
-suspend inline fun sortMapSort2(
-  data: List<Pair<String, List<MusicModel>>>,
+suspend inline fun sortMusic(
+  list: List<Pair<String, List<MusicModel>>>,
   isDescending: Boolean,
   sortType: FolderSortType,
 ): List<Pair<String, List<MusicModel>>> {
   return withContext(Dispatchers.Default) {
     when (sortType) {
-      FolderSortType.NAME -> if (isDescending) data.sortedByDescending { it.first } else data.sortedBy { it.first }
-      FolderSortType.SongsCount -> if (isDescending) data.sortedByDescending { it.second.size } else data.sortedBy { it.second.size }
+      FolderSortType.NAME -> if (isDescending) list.sortedByDescending { it.first } else list.sortedBy { it.first }
+      FolderSortType.SongsCount -> if (isDescending) list.sortedByDescending { it.second.size } else list.sortedBy { it.second.size }
     }
   }
 }

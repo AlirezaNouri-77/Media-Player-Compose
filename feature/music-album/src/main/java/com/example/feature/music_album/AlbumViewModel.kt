@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.data.repository.MusicSourceImpl
 import com.example.core.data.repository.albumName
-import com.example.core.data.repository.sortMapSort2
+import com.example.core.data.repository.sortMusic
 import com.example.core.model.FolderSortModel
 import com.example.core.model.FolderSortType
 import com.example.core.model.MusicModel
@@ -35,8 +35,8 @@ class AlbumViewModel(
     musicSource.album(),
     albumSortDataStoreManager.albumSortState,
   ) { songs, sortState ->
-    val sortedData = sortMapSort2(
-      data = songs,
+    val sortedData = sortMusic(
+      list = songs,
       isDescending = sortState.isDec,
       sortType = sortState.sortType
     )
