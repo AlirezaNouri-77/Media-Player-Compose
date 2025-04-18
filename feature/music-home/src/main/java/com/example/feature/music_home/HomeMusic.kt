@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -45,12 +46,14 @@ import com.example.core.designsystem.CategoryListItem
 import com.example.core.designsystem.EmptyPage
 import com.example.core.designsystem.Loading
 import com.example.core.designsystem.LocalBottomPadding
+import com.example.core.designsystem.MainTopAppBar
 import com.example.core.designsystem.MusicMediaItem
+import com.example.core.designsystem.Sort
 import com.example.core.model.MusicModel
 import com.example.core.model.TabBarModel
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SharedTransitionScope.HomeMusic(
   modifier: Modifier = Modifier,
@@ -65,7 +68,7 @@ fun SharedTransitionScope.HomeMusic(
   density: Density = LocalDensity.current
 ) {
 
-  var showSortBar by remember { mutableStateOf(false) }
+  var isSortDropDownMenuShow by remember { mutableStateOf(false) }
 
   val pagerState = rememberPagerState(pageCount = { TabBarModel.entries.size })
 
@@ -110,19 +113,28 @@ fun SharedTransitionScope.HomeMusic(
       resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
     ),
     topBar = {
-      HomePageTopBar(
-        currentTabPosition = homeViewModel.tabBarState,
-        onVideoIconClick = { onNavigateToVideoScreen() },
-        onSortIconClick = { showSortBar = true },
-        isDropDownMenuSortExpand = showSortBar,
-        songSortModel = { listSortState },
-        onDismissDropDownMenu = { showSortBar = false },
-        onSortClick = {
-          homeViewModel.updateSortType(it)
-        },
-        onOrderClick = {
-          homeViewModel.updateSortIsDec(!listSortState.isDec)
-        },
+      MainTopAppBar(
+        modifier = Modifier,
+        title = "Home",
+        actions = {
+          VideoIconButton(
+            onClick = {
+              onNavigateToVideoScreen()
+            },
+          )
+          AnimatedVisibility(homeViewModel.tabBarState != TabBarModel.Favorite) {
+            Sort(
+              modifier = Modifier,
+              onClick = { isSortDropDownMenuShow = true },
+              onSortClick = { homeViewModel.updateSortType(it) },
+              onOrderClick = { homeViewModel.updateSortIsDec(!listSortState.isDec) },
+              isDropDownMenuSortExpand = isSortDropDownMenuShow,
+              isOrderDec = listSortState.isDec,
+              sortType = listSortState.songsSortType,
+              onDismissDropDownMenu = { isSortDropDownMenuShow = false },
+            )
+          }
+        }
       )
     },
   ) { paddingValue ->

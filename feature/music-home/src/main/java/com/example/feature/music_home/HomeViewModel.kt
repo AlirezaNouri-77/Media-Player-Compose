@@ -10,6 +10,7 @@ import com.example.core.data.repository.MusicSourceImpl
 import com.example.core.data.repository.sortMusic
 import com.example.core.model.SongSortModel
 import com.example.core.model.SongsSortType
+import com.example.core.model.SortType
 import com.example.core.model.TabBarModel
 import com.example.datastore.ArtistSortDataStoreManager
 import com.example.datastore.SongsSortDataStoreManager
@@ -71,7 +72,7 @@ class HomeViewModel(
     emptyList(),
   )
 
-  fun updateSortType(songsSortType: SongsSortType) = viewModelScope.launch {
+  fun updateSortType(songsSortType: SortType) = viewModelScope.launch {
     songsSortDataStoreManager.updateSongsSortType(songsSortType)
   }
 
