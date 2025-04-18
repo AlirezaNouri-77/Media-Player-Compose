@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.data.repository.MusicSourceImpl
-import com.example.core.data.repository.sortMusic
+import com.example.core.data.util.sortMusic
 import com.example.core.model.FolderSortModel
 import com.example.core.model.FolderSortType
 import com.example.datastore.ArtistSortDataStoreManager
