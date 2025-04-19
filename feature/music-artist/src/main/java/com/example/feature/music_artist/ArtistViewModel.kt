@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.data.repository.MusicSourceImpl
 import com.example.core.data.util.sortMusic
-import com.example.core.model.CategorizedSortModel
-import com.example.core.model.FolderSortType
+import com.example.core.model.datastore.CategorizedSortModel
+import com.example.core.model.datastore.CategorizedSortType
 import com.example.datastore.SortDataStoreManagerImpl
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -26,7 +26,7 @@ class ArtistViewModel(
   val sortState = artistSortDataStoreManager.sortState.stateIn(
     viewModelScope,
     SharingStarted.WhileSubscribed(5_000L),
-    CategorizedSortModel(FolderSortType.NAME, false)
+    CategorizedSortModel(CategorizedSortType.NAME, false)
   )
 
   val artist = combine(
@@ -46,7 +46,7 @@ class ArtistViewModel(
     emptyList(),
   )
 
-  fun updateSortType(songsSortType: FolderSortType) = viewModelScope.launch {
+  fun updateSortType(songsSortType: CategorizedSortType) = viewModelScope.launch {
     artistSortDataStoreManager.updateSortType(songsSortType)
   }
 

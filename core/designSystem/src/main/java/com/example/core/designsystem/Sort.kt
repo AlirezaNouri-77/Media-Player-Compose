@@ -18,9 +18,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.example.core.model.FolderSortType
-import com.example.core.model.SongsSortType
-import com.example.core.model.SortType
+import com.example.core.model.datastore.CategorizedSortType
+import com.example.core.model.datastore.SongsSortType
+import com.example.core.model.datastore.SortType
 
 @Composable
 fun Sort(
@@ -92,9 +92,9 @@ private fun Preview2() {
       onOrderClick = {},
       isDropDownMenuSortExpand = isDropDownMenuShow,
       isOrderDec = false,
-      sortType = FolderSortType.NAME,
+      sortType = CategorizedSortType.NAME,
       onDismissDropDownMenu = { isDropDownMenuShow = false },
-      sortTypeList = FolderSortType.entries.toList(),
+      sortTypeList = CategorizedSortType.entries.toList(),
     )
   }
 }

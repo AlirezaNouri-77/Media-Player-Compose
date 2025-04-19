@@ -1,6 +1,6 @@
-package com.example.core.model
+package com.example.core.model.datastore
 
-enum class FolderSortType() : SortType {
+enum class CategorizedSortType() : SortType {
   NAME {
     override fun getString(): String = "Name"
   },

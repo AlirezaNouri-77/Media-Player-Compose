@@ -2,9 +2,9 @@ package com.example.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
-import com.example.core.model.SongSortModel
-import com.example.core.model.SongsSortType
-import com.example.core.model.SortType
+import com.example.core.model.datastore.SongSortModel
+import com.example.core.model.datastore.SongsSortType
+import com.example.core.model.datastore.SortType
 import com.example.core.proto_datastore.Proto_SortType
 import com.example.core.proto_datastore.SortPreferences
 import com.example.datastore.mapper.toProtoSortType

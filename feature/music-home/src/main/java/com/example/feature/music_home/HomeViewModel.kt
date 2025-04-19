@@ -8,11 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.core.data.repository.FavoriteMusicSourceImpl
 import com.example.core.data.repository.MusicSourceImpl
 import com.example.core.data.util.sortMusic
-import com.example.core.model.CategorizedSortModel
-import com.example.core.model.FolderSortType
-import com.example.core.model.SongSortModel
-import com.example.core.model.SongsSortType
-import com.example.core.model.SortType
+import com.example.core.model.datastore.CategorizedSortModel
+import com.example.core.model.datastore.CategorizedSortType
+import com.example.core.model.datastore.SongSortModel
+import com.example.core.model.datastore.SongsSortType
+import com.example.core.model.datastore.SortType
 import com.example.core.model.TabBarModel
 import com.example.datastore.SortDataStoreManagerImpl
 import kotlinx.coroutines.flow.SharingStarted
@@ -74,7 +74,7 @@ class HomeViewModel(
     .stateIn(
       viewModelScope,
       SharingStarted.WhileSubscribed(5_000),
-      CategorizedSortModel(isDec = false, sortType = FolderSortType.NAME),
+      CategorizedSortModel(isDec = false, sortType = CategorizedSortType.NAME),
     )
 
   var favoriteSongsMediaId = favoriteMusicSource.favoriteMusicMediaIdList.stateIn(

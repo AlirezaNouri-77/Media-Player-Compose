@@ -44,7 +44,7 @@ import com.example.core.designsystem.Loading
 import com.example.core.designsystem.LocalBottomPadding
 import com.example.core.designsystem.R
 import com.example.core.designsystem.SortDropDownMenu
-import com.example.core.model.FolderSortType
+import com.example.core.model.datastore.CategorizedSortType
 import com.example.core.model.MusicModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -100,14 +100,14 @@ fun SharedTransitionScope.ArtistScreen(
   isLoading: Boolean,
   isDropDownMenuSortExpand: () -> Boolean,
   isSortDescending: Boolean,
-  currentSortType: FolderSortType,
+  currentSortType: CategorizedSortType,
   bottomLazyListPadding: Dp = LocalBottomPadding.current,
   animatedVisibilityScope: AnimatedVisibilityScope,
   navigateToCategory: (String) -> Unit,
   onSortIconClick: () -> Unit,
   onDismissDropDownMenu: () -> Unit,
   onOrderClick: () -> Unit,
-  onSortClick: (FolderSortType) -> Unit,
+  onSortClick: (CategorizedSortType) -> Unit,
 ) {
 
   Scaffold(
@@ -143,10 +143,10 @@ fun SharedTransitionScope.ArtistScreen(
             }
             SortDropDownMenu(
               isExpand = isDropDownMenuSortExpand(),
-              sortTypeList = FolderSortType.entries.toList(),
+              sortTypeList = CategorizedSortType.entries.toList(),
               isSortDescending = isSortDescending,
               currentSortType = currentSortType,
-              onSortClick = { onSortClick(it as FolderSortType) },
+              onSortClick = { onSortClick(it as CategorizedSortType) },
               onOrderClick = { onOrderClick() },
               onDismiss = { onDismissDropDownMenu() },
             )

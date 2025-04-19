@@ -2,11 +2,8 @@ package com.example.datastore.di
 
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
-import com.example.core.model.CategorizedSortModel
-import com.example.core.model.FolderSortType
-import com.example.core.model.SongSortModel
-import com.example.core.model.SongsSortType
-import com.example.core.model.SortStateModel
+import com.example.core.model.datastore.CategorizedSortModel
+import com.example.core.model.datastore.SongSortModel
 import com.example.datastore.AlbumSortDataStoreManager
 import com.example.datastore.ArtistSortDataStoreManager
 import com.example.datastore.FolderSortDataStoreManager

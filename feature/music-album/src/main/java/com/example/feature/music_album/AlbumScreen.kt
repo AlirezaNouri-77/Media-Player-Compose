@@ -43,7 +43,7 @@ import com.example.core.designsystem.Loading
 import com.example.core.designsystem.LocalBottomPadding
 import com.example.core.designsystem.R
 import com.example.core.designsystem.SortDropDownMenu
-import com.example.core.model.FolderSortType
+import com.example.core.model.datastore.CategorizedSortType
 import com.example.core.model.MusicModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -99,13 +99,13 @@ private fun AlbumScreen(
   albumListData: ImmutableList<Pair<String, List<MusicModel>>>,
   isLoading: Boolean,
   isSortDescending: Boolean,
-  currentSortType: FolderSortType,
+  currentSortType: CategorizedSortType,
   navigateTo: (String) -> Unit,
   isSortDropDownMenuExpanded: Boolean,
   onDismissDropDownMenu: () -> Unit,
   onOrderClick: () -> Unit,
   onSortIconClick: () -> Unit,
-  onSortClick: (FolderSortType) -> Unit,
+  onSortClick: (CategorizedSortType) -> Unit,
 ) {
   Scaffold(
     modifier = modifier,
@@ -140,10 +140,10 @@ private fun AlbumScreen(
             }
             SortDropDownMenu(
               isExpand = isSortDropDownMenuExpanded,
-              sortTypeList = FolderSortType.entries.toList(),
+              sortTypeList = CategorizedSortType.entries.toList(),
               isSortDescending = isSortDescending,
               currentSortType = currentSortType,
-              onSortClick = { onSortClick(it as FolderSortType) },
+              onSortClick = { onSortClick(it as CategorizedSortType) },
               onOrderClick = { onOrderClick() },
               onDismiss = { onDismissDropDownMenu() },
             )

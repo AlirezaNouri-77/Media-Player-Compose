@@ -1,7 +1,6 @@
 package com.example.datastore
 
-import com.example.core.model.SortStateModel
-import com.example.core.model.SortType
+import com.example.core.model.datastore.SortType
 import kotlinx.coroutines.flow.Flow
 
 interface SortDataStoreManagerImpl<T> {

@@ -1,4 +1,4 @@
-package com.example.core.model
+package com.example.core.model.datastore
 
 enum class SongsSortType : SortType {
   NAME {

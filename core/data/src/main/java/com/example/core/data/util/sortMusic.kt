@@ -1,8 +1,8 @@
 package com.example.core.data.util
 
-import com.example.core.model.FolderSortType
+import com.example.core.model.datastore.CategorizedSortType
 import com.example.core.model.MusicModel
-import com.example.core.model.SongsSortType
+import com.example.core.model.datastore.SongsSortType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -24,12 +24,12 @@ suspend inline fun sortMusic(
 suspend inline fun sortMusic(
   list: List<Pair<String, List<MusicModel>>>,
   isDescending: Boolean,
-  sortType: FolderSortType,
+  sortType: CategorizedSortType,
 ): List<Pair<String, List<MusicModel>>> {
   return withContext(Dispatchers.Default) {
     when (sortType) {
-      FolderSortType.NAME -> if (isDescending) list.sortedByDescending { it.first } else list.sortedBy { it.first }
-      FolderSortType.SongsCount -> if (isDescending) list.sortedByDescending { it.second.size } else list.sortedBy { it.second.size }
+      CategorizedSortType.NAME -> if (isDescending) list.sortedByDescending { it.first } else list.sortedBy { it.first }
+      CategorizedSortType.SongsCount -> if (isDescending) list.sortedByDescending { it.second.size } else list.sortedBy { it.second.size }
     }
   }
 }

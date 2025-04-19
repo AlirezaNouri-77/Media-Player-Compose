@@ -2,9 +2,9 @@ package com.example.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
-import com.example.core.model.CategorizedSortModel
-import com.example.core.model.FolderSortType
-import com.example.core.model.SortType
+import com.example.core.model.datastore.CategorizedSortModel
+import com.example.core.model.datastore.CategorizedSortType
+import com.example.core.model.datastore.SortType
 import com.example.core.proto_datastore.Proto_DataStore_Folder
 import com.example.core.proto_datastore.SortPreferences
 import com.example.datastore.mapper.toFolderSortType
@@ -38,7 +38,7 @@ class FolderSortDataStoreManager(
   override suspend fun updateSortType(sortType: SortType) {
     withContext(ioDispatcher) {
       dataStore.updateData {
-        it.toBuilder().setFolderSortType((sortType as FolderSortType).toProtoSortType()).build()
+        it.toBuilder().setFolderSortType((sortType as CategorizedSortType).toProtoSortType()).build()
       }
     }
   }

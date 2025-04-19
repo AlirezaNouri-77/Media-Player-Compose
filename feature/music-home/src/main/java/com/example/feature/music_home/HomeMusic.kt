@@ -49,9 +49,9 @@ import com.example.core.designsystem.LocalBottomPadding
 import com.example.core.designsystem.MainTopAppBar
 import com.example.core.designsystem.MusicMediaItem
 import com.example.core.designsystem.Sort
-import com.example.core.model.FolderSortType
+import com.example.core.model.datastore.CategorizedSortType
 import com.example.core.model.MusicModel
-import com.example.core.model.SongsSortType
+import com.example.core.model.datastore.SongsSortType
 import com.example.core.model.TabBarModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -130,7 +130,7 @@ fun SharedTransitionScope.HomeMusic(
             Sort(
               modifier = Modifier,
               onClick = { isSortDropDownMenuShow = true },
-              sortTypeList = if (currentTabBarPosition == TabBarModel.All) SongsSortType.entries else FolderSortType.entries,
+              sortTypeList = if (currentTabBarPosition == TabBarModel.All) SongsSortType.entries else CategorizedSortType.entries,
               onSortClick = {
                 homeViewModel.updateDataStoreSortType(currentTabBarPosition, it)
               },
