@@ -6,6 +6,7 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.core.model.datastore.CategorizedSortType
 import com.example.core.model.datastore.SongsSortType
 import com.example.core.proto_datastore.SortPreferences
 import com.example.datastore.serializer.SortPreferencesSerializer
@@ -44,6 +45,8 @@ class DataStoreTest {
   )
 
   var songsSortDataStoreManager = SongsSortDataStoreManager(testDataStore, dispatcher)
+  // because artist, folder & album datastore structured on the same way so we tested one of them
+  var artistSortDataStoreManager = ArtistSortDataStoreManager(testDataStore, dispatcher)
 
   @Test
   fun getSongsSortState() = runTest {
@@ -76,6 +79,40 @@ class DataStoreTest {
 
     assertFalse(afterUpdate.isDec)
     assertEquals(SongsSortType.SIZE, afterUpdate.sortType)
+
+  }
+
+  @Test
+  fun getCategorizedSortState() = runTest {
+
+    artistSortDataStoreManager.updateSortType(CategorizedSortType.SongsCount)
+    artistSortDataStoreManager.updateSortOrder(true)
+
+    var data = artistSortDataStoreManager.sortState.first()
+
+    assertTrue(data.isDec)
+    assertEquals(CategorizedSortType.SongsCount, data.sortType)
+
+  }
+
+  @Test
+  fun checkUpdateCategorizedDataStoreMethod() = runTest {
+
+    artistSortDataStoreManager.updateSortType(CategorizedSortType.SongsCount)
+    artistSortDataStoreManager.updateSortOrder(true)
+
+    var beforeUpdate = artistSortDataStoreManager.sortState.first()
+
+    assertTrue(beforeUpdate.isDec)
+    assertEquals(CategorizedSortType.SongsCount, beforeUpdate.sortType)
+
+    artistSortDataStoreManager.updateSortType(CategorizedSortType.NAME)
+    artistSortDataStoreManager.updateSortOrder(false)
+
+    var afterUpdate = artistSortDataStoreManager.sortState.first()
+
+    assertFalse(afterUpdate.isDec)
+    assertEquals(CategorizedSortType.NAME, afterUpdate.sortType)
 
   }
 
