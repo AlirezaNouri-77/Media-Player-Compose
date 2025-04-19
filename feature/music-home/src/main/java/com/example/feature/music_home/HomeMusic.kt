@@ -139,7 +139,7 @@ fun SharedTransitionScope.HomeMusic(
               },
               isDropDownMenuSortExpand = isSortDropDownMenuShow,
               isOrderDec = if (currentTabBarPosition == TabBarModel.All) songsSortState.isDec else folderSortState.isDec,
-              sortType = if (currentTabBarPosition == TabBarModel.All) songsSortState.songsSortType else folderSortState.sortType,
+              sortType = if (currentTabBarPosition == TabBarModel.All) songsSortState.sortType else folderSortState.sortType,
               onDismissDropDownMenu = { isSortDropDownMenuShow = false },
             )
           }

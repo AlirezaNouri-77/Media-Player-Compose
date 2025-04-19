@@ -4,19 +4,24 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
 import com.example.core.model.SongSortModel
 import com.example.core.model.SongsSortType
+import com.example.core.model.SortType
 import com.example.core.proto_datastore.Proto_SortType
 import com.example.core.proto_datastore.SortPreferences
 import com.example.datastore.mapper.toProtoSortType
 import com.example.datastore.mapper.toSortType
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 class SongsSortDataStoreManager(
-  private var dataStore: DataStore<SortPreferences>,
-) {
+  private val dataStore: DataStore<SortPreferences>,
+  private val ioDispatcher: CoroutineDispatcher,
+) : SortDataStoreManagerImpl<SongSortModel> {
 
-  val songsSortState: Flow<SongSortModel> = dataStore.data
+  override val sortState: Flow<SongSortModel> = dataStore.data
     .catch { exception ->
       if (exception is IOException) {
         emit(SortPreferences.newBuilder().setSongSortType(Proto_SortType.PROTO_SORT_TYPE_NAME).setSongsIsDescending(true).build())
@@ -25,20 +30,24 @@ class SongsSortDataStoreManager(
       }
     }.map {
       SongSortModel(
-        songsSortType = it.songSortType.toSortType(),
+        sortType = it.songSortType.toSortType(),
         isDec = it.songsIsDescending,
       )
-    }
+    }.flowOn(ioDispatcher)
 
-  suspend fun updateSongsSortType(songsSortType: SongsSortType) {
-    dataStore.updateData {
-      it.toBuilder().setSongSortType(songsSortType.toProtoSortType()).build()
+  override suspend fun updateSortType(sortType: SortType) {
+    withContext(ioDispatcher) {
+      dataStore.updateData {
+        it.toBuilder().setSongSortType((sortType as SongsSortType).toProtoSortType()).build()
+      }
     }
   }
 
-  suspend fun updateSongsIsDescending(boolean: Boolean) {
-    dataStore.updateData {
-      it.toBuilder().setSongsIsDescending(boolean).build()
+  override suspend fun updateSortOrder(boolean: Boolean) {
+    withContext(ioDispatcher) {
+      dataStore.updateData {
+        it.toBuilder().setSongsIsDescending(boolean).build()
+      }
     }
   }
 

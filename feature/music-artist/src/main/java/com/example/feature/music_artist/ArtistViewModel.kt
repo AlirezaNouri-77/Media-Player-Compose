@@ -7,9 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.data.repository.MusicSourceImpl
 import com.example.core.data.util.sortMusic
-import com.example.core.model.FolderSortModel
+import com.example.core.model.CategorizedSortModel
 import com.example.core.model.FolderSortType
-import com.example.datastore.ArtistSortDataStoreManager
+import com.example.datastore.SortDataStoreManagerImpl
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -17,20 +17,21 @@ import kotlinx.coroutines.launch
 
 class ArtistViewModel(
   private var musicSource: MusicSourceImpl,
-  private var artistSortDataStoreManager: ArtistSortDataStoreManager,
+  private var artistSortDataStoreManager: SortDataStoreManagerImpl<CategorizedSortModel>,
 ) : ViewModel() {
 
   var isLoading by mutableStateOf(true)
+    private set
 
-  val sortState = artistSortDataStoreManager.artistSortState.stateIn(
+  val sortState = artistSortDataStoreManager.sortState.stateIn(
     viewModelScope,
     SharingStarted.WhileSubscribed(5_000L),
-    FolderSortModel(FolderSortType.NAME, false)
+    CategorizedSortModel(FolderSortType.NAME, false)
   )
 
   val artist = combine(
     musicSource.artist(),
-    artistSortDataStoreManager.artistSortState,
+    artistSortDataStoreManager.sortState,
   ) { songs, sortState ->
     val sortedData = sortMusic(
       list = songs,
@@ -46,11 +47,11 @@ class ArtistViewModel(
   )
 
   fun updateSortType(songsSortType: FolderSortType) = viewModelScope.launch {
-    artistSortDataStoreManager.updateFolderSortType(songsSortType)
+    artistSortDataStoreManager.updateSortType(songsSortType)
   }
 
   fun updateSortIsDec(boolean: Boolean) = viewModelScope.launch {
-    artistSortDataStoreManager.updateArtistIsDescending(boolean)
+    artistSortDataStoreManager.updateSortOrder(boolean)
   }
 
 }
