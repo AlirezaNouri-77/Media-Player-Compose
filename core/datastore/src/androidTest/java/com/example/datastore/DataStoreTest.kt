@@ -6,20 +6,21 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.core.model.SortType
+import com.example.core.model.datastore.SongsSortType
 import com.example.core.proto_datastore.SortPreferences
+import com.example.datastore.serializer.SortPreferencesSerializer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-
-import org.junit.Test
-import org.junit.runner.RunWith
-
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
+import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import org.junit.runner.RunWith
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
@@ -42,39 +43,39 @@ class DataStoreTest {
     scope = coroutine
   )
 
-  var songsSortDataStoreManager = SongsSortDataStoreManager(testDataStore)
+  var songsSortDataStoreManager = SongsSortDataStoreManager(testDataStore, dispatcher)
 
   @Test
   fun getSongsSortState() = runTest {
 
-    songsSortDataStoreManager.updateSongsSortType(SortType.DURATION)
-    songsSortDataStoreManager.updateSongsIsDescending(true)
+    songsSortDataStoreManager.updateSortType(SongsSortType.DURATION)
+    songsSortDataStoreManager.updateSortOrder(true)
 
-    var data = songsSortDataStoreManager.songsSortState.first()
+    var data = songsSortDataStoreManager.sortState.first()
 
     assertTrue(data.isDec)
-    assertEquals(SortType.DURATION, data.sortType)
+    assertEquals(SongsSortType.DURATION, data.sortType)
 
   }
 
   @Test
   fun checkUpdateSongsDataStoreMethod() = runTest {
 
-    songsSortDataStoreManager.updateSongsSortType(SortType.DURATION)
-    songsSortDataStoreManager.updateSongsIsDescending(true)
+    songsSortDataStoreManager.updateSortType(SongsSortType.DURATION)
+    songsSortDataStoreManager.updateSortOrder(true)
 
-    var beforeUpdate = songsSortDataStoreManager.songsSortState.first()
+    var beforeUpdate = songsSortDataStoreManager.sortState.first()
 
     assertTrue(beforeUpdate.isDec)
-    assertEquals(SortType.DURATION, beforeUpdate.sortType)
+    assertEquals(SongsSortType.DURATION, beforeUpdate.sortType)
 
-    songsSortDataStoreManager.updateSongsSortType(SortType.SIZE)
-    songsSortDataStoreManager.updateSongsIsDescending(false)
+    songsSortDataStoreManager.updateSortType(SongsSortType.SIZE)
+    songsSortDataStoreManager.updateSortOrder(false)
 
-    var afterUpdate = songsSortDataStoreManager.songsSortState.first()
+    var afterUpdate = songsSortDataStoreManager.sortState.first()
 
     assertFalse(afterUpdate.isDec)
-    assertEquals(SortType.SIZE, afterUpdate.sortType)
+    assertEquals(SongsSortType.SIZE, afterUpdate.sortType)
 
   }
 
