@@ -22,7 +22,7 @@ class MusicSourceTest {
   @Test
   fun `get songs list`() = runTest {
 
-    val musicSource = musicSource.songs.first()
+    val musicSource = musicSource.songs().first()
 
     assertEquals(5, musicSource.size)
     assertEquals("Upbeat Pop", musicSource[0].name)
@@ -37,12 +37,11 @@ class MusicSourceTest {
     val musicSource = musicSource.artist().first()
 
     assertEquals(4, musicSource.size)
-    assertEquals(2, musicSource.getValue("Ivory Keys").size)
-    assertNotNull(musicSource["Pop Parade"])
-    assertNotNull(musicSource["Ivory Keys"])
-    assertNotNull(musicSource["The Rhythm Kings"])
-    assertNotNull(musicSource["Quiet Shores"])
-    assertNull(musicSource["example artist"])
+    assertEquals(2, musicSource.find { it.first == "Ivory Keys" }?.second?.size)
+    assertNotNull(musicSource.find { it.first == "Pop Parade" })
+    assertNotNull(musicSource.find { it.first == "The Rhythm Kings" })
+    assertNotNull(musicSource.find { it.first == "Quiet Shores" })
+    assertNull(musicSource.find { it.first == "example artist" })
 
   }
 
@@ -52,12 +51,12 @@ class MusicSourceTest {
     val musicSource = musicSource.album().first()
 
     assertEquals(4, musicSource.size)
-    assertEquals(2, musicSource.getValue("Sunset Dreams").size)
-    assertNotNull(musicSource["Bright Days"])
-    assertNotNull(musicSource["Silent Moments"])
-    assertNotNull(musicSource["Dancing Shoes"])
-    assertNotNull(musicSource["Sunset Dreams"])
-    assertNull(musicSource["example album"])
+    assertEquals(2, musicSource.find { it.first == "Sunset Dreams" }?.second?.size)
+    assertNotNull(musicSource.find { it.first == "Bright Days" })
+    assertNotNull(musicSource.find { it.first == "Silent Moments" })
+    assertNotNull(musicSource.find { it.first == "Dancing Shoes" })
+    assertNotNull(musicSource.find { it.first == "Sunset Dreams" })
+    assertNull(musicSource.find { it.first == "example album" })
 
   }
 
@@ -67,10 +66,10 @@ class MusicSourceTest {
     val musicSource = musicSource.folder().first()
 
     assertEquals(2, musicSource.size)
-    assertEquals(3, musicSource.getValue("Music").size)
-    assertNotNull(musicSource["Music"])
-    assertNotNull(musicSource.getValue("Music 2"))
-    assertNull(musicSource["example folder"])
+    assertEquals(3, musicSource.find { it.first == "Music" }?.second?.size)
+    assertNotNull(musicSource.find { it.first == "Music" })
+    assertNotNull(musicSource.find { it.first == "Music 2" })
+    assertNull(musicSource.find { it.first == "example folder" })
 
   }
 
