@@ -14,9 +14,14 @@ import com.example.core.music_media3.PlayerStateModel
 import com.example.core.music_media3.util.DeviceVolumeManager
 import com.example.core.music_media3.util.MusicThumbnailUtil
 import com.example.core.music_media3.util.MusicThumbnailUtilImpl
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
@@ -55,11 +60,23 @@ class PlayerViewModel(
     0,
   )
 
-  var currentMusicPosition = musicServiceConnection.currentMusicPosition.stateIn(
-    viewModelScope,
-    SharingStarted.Eagerly,
-    0L
-  )
+  private var _currentMusicPosition = MutableStateFlow(0L)
+  var currentMusicPosition = _currentMusicPosition.asStateFlow()
+    .onStart {
+      viewModelScope.launch {
+        while (currentCoroutineContext().isActive) {
+          if (currentMusicState.value.isPlaying == true) {
+            val position = musicServiceConnection.currentPlayerPosition()
+            _currentMusicPosition.value = position
+          }
+          delay(80L)
+        }
+      }
+    }.stateIn(
+      viewModelScope,
+      SharingStarted.WhileSubscribed(5_000L),
+      0L,
+    )
 
   var currentDeviceVolume = deviceVolumeManager.currentMusicLevelVolume
     .onStart {
@@ -79,9 +96,12 @@ class PlayerViewModel(
       PlayerActions.ResumePlayer -> musicServiceConnection.resumeMusic()
       is PlayerActions.OnFavoriteToggle -> handleFavoriteSongs(action.mediaId)
       is PlayerActions.PlaySongs -> playMusic(action.index, action.list)
-      is PlayerActions.SeekTo -> musicServiceConnection.seekToPosition(action.value)
+      is PlayerActions.SeekTo -> {
+        _currentMusicPosition.value = action.value
+        musicServiceConnection.seekToPosition(action.value)
+      }
       is PlayerActions.OnRepeatMode -> musicServiceConnection.setRepeatMode(action.value)
-      is PlayerActions.MovePreviousPlayer -> musicServiceConnection.moveToPrevious(action.seekToStart)
+      is PlayerActions.MovePreviousPlayer -> musicServiceConnection.moveToPrevious(action.seekToStart, currentMusicPosition.value)
       is PlayerActions.OnMoveToIndex -> musicServiceConnection.moveToMediaIndex(index = action.value)
       is PlayerActions.UpdateArtworkPageIndex -> musicServiceConnection.setCurrentArtworkPagerIndex(action.value)
     }

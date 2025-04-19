@@ -2,6 +2,7 @@ package com.example.core.music_media3
 
 import android.content.ComponentName
 import android.content.Context
+import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
@@ -13,22 +14,19 @@ import com.example.core.music_media3.mapper.toMediaItem
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 class MusicServiceConnection(
   private var context: Context,
-  private var coroutineScope: CoroutineScope,
 ) {
 
   private var factory: ListenableFuture<MediaController>? = null
@@ -43,28 +41,8 @@ class MusicServiceConnection(
   private var _artworkPagerList = MutableStateFlow(listOf<MusicModel>())
   var artworkPagerList = _artworkPagerList.asStateFlow()
 
-  private var _currentMusicPosition = MutableStateFlow(0L)
-  var currentMusicPosition =
-    _currentMusicPosition
-      .onStart {
-        musicPosition
-          .onEach {
-            _currentMusicPosition.value = it
-          }.launchIn(coroutineScope)
-      }
-
   init {
     initialExoPlayer()
-  }
-
-  private var musicPosition: Flow<Long> = flow {
-    while (currentCoroutineContext().isActive) {
-      delay(50L)
-      if (mediaController?.isPlaying == true) {
-        val position = mediaController?.currentPosition ?: 0L
-        emit(position)
-      }
-    }
   }
 
   private fun initialExoPlayer() {
@@ -84,17 +62,17 @@ class MusicServiceConnection(
     }
   }
 
+  fun currentPlayerPosition() = mediaController?.currentPosition ?: 0L
+
   fun pauseMusic() = mediaController?.pause()
 
   fun resumeMusic() = mediaController?.play()
 
   fun seekToPosition(position: Long) {
     mediaController?.seekTo(position)
-    _currentMusicPosition.update { position }
   }
 
   fun moveToMediaIndex(index: Int) {
-    _currentMusicPosition.update { 0 }
     mediaController?.apply {
       seekTo(index, 0L)
       prepare()
@@ -112,7 +90,9 @@ class MusicServiceConnection(
     }
   }
 
-  fun setRepeatMode(repeatMode: Int) { mediaController?.repeatMode = repeatMode }
+  fun setRepeatMode(repeatMode: Int) {
+    mediaController?.repeatMode = repeatMode
+  }
 
   fun setCurrentArtworkPagerIndex(index: Int) = _currentArtworkPagerIndex.update { index }
 
@@ -124,16 +104,14 @@ class MusicServiceConnection(
       prepare()
       play()
     }
-    _currentMusicPosition.update { 0 }
     _currentArtworkPagerIndex.update { it + 1 }
   }
 
-  fun moveToPrevious(seekToStart: Boolean = false) {
+  fun moveToPrevious(seekToStart: Boolean = false, currentMusicPosition: Long) {
     val hasPreviewItem = mediaController?.hasNextMediaItem() == true
     if (!hasPreviewItem) return
 
-    _currentMusicPosition.update { 0 }
-    if (_currentMusicPosition.value <= 15_000 || seekToStart) {
+    if (currentMusicPosition <= 15_000 || seekToStart) {
       mediaController?.apply {
         seekToPreviousMediaItem()
         prepare()
