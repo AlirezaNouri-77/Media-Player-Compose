@@ -38,5 +38,9 @@ gradlePlugin {
       id = libs.plugins.mediaplayer.roomConventionPlugin.get().pluginId
       implementationClass = "RoomConventionPlugin"
     }
+    register("composeMetricConvention") {
+      id = libs.plugins.mediaplayer.composeMetricConventionPlugin.get().pluginId
+      implementationClass = "ComposeMetricConventionPlugin"
+    }
   }
 }

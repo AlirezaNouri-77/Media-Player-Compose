@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.data.repository.FavoriteMusicSourceImpl
-import com.example.core.data.repository.MusicSourceImpl
+import com.example.core.domain.respository.FavoriteRepositoryImpl
+import com.example.core.domain.respository.MusicSourceImpl
 import com.example.core.data.util.sortMusic
 import com.example.core.model.datastore.CategorizedSortModel
 import com.example.core.model.datastore.CategorizedSortType
@@ -24,7 +24,7 @@ class HomeViewModel(
   private val musicSource: MusicSourceImpl,
   private val songsSortDataStoreManager: SortDataStoreManagerImpl<SongSortModel>,
   private val folderSortDataStoreManager: SortDataStoreManagerImpl<CategorizedSortModel>,
-  favoriteMusicSource: FavoriteMusicSourceImpl,
+  favoriteMusicSource: FavoriteRepositoryImpl,
 ) : ViewModel() {
 
   var isLoading by mutableStateOf(true)

@@ -5,11 +5,10 @@ import android.content.ContentUris
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import com.example.core.domain.respository.MusicRepositoryImpl
 import com.example.core.model.MusicModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.flowOn
 import java.util.concurrent.TimeUnit
 
 class MusicRepository(
@@ -86,7 +85,7 @@ class MusicRepository(
 
       send(resultList)
 
-    }.flowOn(Dispatchers.IO)
+    }
   }
 
   companion object {

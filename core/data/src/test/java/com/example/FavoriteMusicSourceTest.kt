@@ -1,8 +1,8 @@
 package com.example
 
-import com.example.core.data.repository.FavoriteMusicSource
+import com.example.core.data.repository.FavoriteRepository
 import com.example.core.data.repository.MusicSource
-import com.example.core.data.repository.MusicSourceImpl
+import com.example.core.domain.respository.MusicSourceImpl
 import com.example.data.dao.FavoriteDaoTest
 import com.example.data.repository.MusicRepositoryFake
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,7 +18,7 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class FavoriteMusicSourceTest {
 
-  private lateinit var favoriteMusicSource: FavoriteMusicSource
+  private lateinit var favoriteMusicSource: FavoriteRepository
   private lateinit var musicSourceTest: MusicSourceImpl
   private lateinit var musicRepositoryFake: MusicRepositoryFake
   private var dummyMediaIds = listOf("1000002", "1000003", "1000004")
@@ -31,7 +31,7 @@ class FavoriteMusicSourceTest {
     musicRepositoryFake = MusicRepositoryFake()
     musicSourceTest = MusicSource(musicRepositoryFake, dispatcher)
 
-    favoriteMusicSource = FavoriteMusicSource(
+    favoriteMusicSource = FavoriteRepository(
       favoriteDao = FavoriteDaoTest(),
       musicSource = musicSourceTest,
       ioDispatcher = dispatcher

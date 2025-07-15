@@ -6,4 +6,8 @@ android {
   namespace = "com.example.feature.music_categorydetail"
 }
 
-dependencies {}
+dependencies {
+
+  implementation(project(":core:domain"))
+
+}

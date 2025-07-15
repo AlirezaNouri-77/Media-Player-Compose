@@ -2,6 +2,8 @@ package com.example.core.data.repository
 
 import com.example.core.database.dao.FavoriteDao
 import com.example.core.database.model.FavoriteEntity
+import com.example.core.domain.respository.FavoriteRepositoryImpl
+import com.example.core.domain.respository.MusicSourceImpl
 import com.example.core.model.MusicModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -9,11 +11,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
-class FavoriteMusicSource(
+class FavoriteRepository(
   private val favoriteDao: FavoriteDao,
   private val musicSource: MusicSourceImpl,
   private val ioDispatcher: CoroutineDispatcher,
-) : FavoriteMusicSourceImpl {
+) : FavoriteRepositoryImpl {
 
   override var favoriteMusicMediaIdList = favoriteDao.getFavoriteSongsMediaId().flowOn(ioDispatcher)
 

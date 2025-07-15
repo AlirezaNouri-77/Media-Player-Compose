@@ -1,6 +1,6 @@
 package com.example.data.repository
 
-import com.example.core.data.repository.MusicRepositoryImpl
+import com.example.core.domain.respository.MusicRepositoryImpl
 import com.example.core.model.MusicModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

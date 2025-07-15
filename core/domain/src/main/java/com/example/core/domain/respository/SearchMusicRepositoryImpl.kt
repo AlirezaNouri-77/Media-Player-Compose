@@ -1,4 +1,4 @@
-package com.example.core.data.repository
+package com.example.core.domain.respository
 
 import com.example.core.model.MusicModel
 import kotlinx.coroutines.flow.StateFlow

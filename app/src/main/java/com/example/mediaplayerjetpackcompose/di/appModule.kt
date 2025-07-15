@@ -1,6 +1,5 @@
 package com.example.mediaplayerjetpackcompose.di
 
-import com.example.core.data.repository.FavoriteMusicSourceImpl
 import com.example.feature.music_album.AlbumViewModel
 import com.example.feature.music_artist.ArtistViewModel
 import com.example.feature.music_categorydetail.CategoryViewModel

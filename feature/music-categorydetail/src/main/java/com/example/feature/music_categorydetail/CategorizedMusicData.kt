@@ -1,8 +1,8 @@
 package com.example.feature.music_categorydetail
 
 import androidx.compose.runtime.Immutable
-import com.example.core.data.repository.albumName
-import com.example.core.data.repository.artistName
+import com.example.core.domain.respository.albumName
+import com.example.core.domain.respository.artistName
 import com.example.core.model.MusicModel
 
 @Immutable

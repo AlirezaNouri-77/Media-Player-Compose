@@ -114,7 +114,7 @@ fun SharedTransitionScope.CategoryDetailPage(
           Text(
             modifier = Modifier
               .sharedElement(
-                state = rememberSharedContentState("categoryKey$categoryName"),
+                sharedContentState = rememberSharedContentState("categoryKey$categoryName"),
                 animatedVisibilityScope = animatedVisibilityScope,
               )
               .basicMarquee(),

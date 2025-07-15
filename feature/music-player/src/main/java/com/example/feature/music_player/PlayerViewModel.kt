@@ -7,7 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.data.repository.FavoriteMusicSourceImpl
+import com.example.core.domain.respository.FavoriteRepositoryImpl
 import com.example.core.model.MusicModel
 import com.example.core.music_media3.MusicServiceConnection
 import com.example.core.music_media3.PlayerStateModel
@@ -28,7 +28,7 @@ class PlayerViewModel(
   private var musicServiceConnection: MusicServiceConnection,
   private var mediaThumbnailUtil: MusicThumbnailUtilImpl,
   private var deviceVolumeManager: DeviceVolumeManager,
-  private var favoriteMusicSource: FavoriteMusicSourceImpl,
+  private var favoriteMusicSource: FavoriteRepositoryImpl,
 ) : ViewModel() {
 
   var miniPlayerHeight = 70.dp

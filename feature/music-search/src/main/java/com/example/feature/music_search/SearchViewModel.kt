@@ -2,15 +2,15 @@ package com.example.feature.music_search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.data.repository.FavoriteMusicSourceImpl
-import com.example.core.data.repository.SearchMusicRepositoryImpl
+import com.example.core.domain.respository.FavoriteRepositoryImpl
+import com.example.core.domain.respository.SearchMusicRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
-  private var favoriteMusicManager: FavoriteMusicSourceImpl,
+  private var favoriteMusicManager: FavoriteRepositoryImpl,
   private var searchMusicManager: SearchMusicRepositoryImpl,
 ) : ViewModel() {
   

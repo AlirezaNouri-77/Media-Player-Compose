@@ -26,6 +26,4 @@ dependencies {
   testImplementation(libs.jetbrains.kotlinx.coroutine.test)
   testImplementation(libs.androidx.test.core)
 
-  androidTestImplementation(libs.io.mockk.android)
-
 }

@@ -45,9 +45,13 @@ fun CategoryListItem(
         Column {
           Text(
             modifier = Modifier.sharedElement(
-              state = rememberSharedContentState("categoryKey$categoryName"),
+              sharedContentState = rememberSharedContentState("categoryKey$categoryName"),
               animatedVisibilityScope = animatedVisibilityScope,
-            ), text = categoryName, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, maxLines = 2
+            ),
+            text = categoryName,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 2,
           )
           Text(
             text = "$musicListSize Music",

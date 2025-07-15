@@ -1,4 +1,4 @@
-package com.example.core.data.repository
+package com.example.core.domain.respository
 
 import com.example.core.model.MediaStoreResult
 import com.example.core.model.VideoModel

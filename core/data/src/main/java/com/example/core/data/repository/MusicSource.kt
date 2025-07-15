@@ -1,5 +1,10 @@
 package com.example.core.data.repository
 
+import com.example.core.domain.respository.MusicRepositoryImpl
+import com.example.core.domain.respository.MusicSourceImpl
+import com.example.core.domain.respository.albumName
+import com.example.core.domain.respository.artistName
+import com.example.core.domain.respository.folderName
 import com.example.core.model.MusicModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -15,17 +20,16 @@ class MusicSource(
     .getSongs()
     .flowOn(ioDispatcher)
 
-  override fun artist(): Flow<List<Pair<artistName, List<MusicModel>>>> = songs().map {
-    it.groupBy { it.artist }.map { it.key to it.value }
+  override fun artist(): Flow<List<Pair<artistName, List<MusicModel>>>> = songs().map { list ->
+    list.groupBy { it.artist }.map { it.key to it.value }
   }.flowOn(ioDispatcher)
 
-  override fun album(): Flow<List<Pair<albumName, List<MusicModel>>>> = songs().map {
-    it.groupBy { by -> by.album }.map { it.key to it.value }
+  override fun album(): Flow<List<Pair<albumName, List<MusicModel>>>> = songs().map { list ->
+    list.groupBy { by -> by.album }.map { it.key to it.value }
   }.flowOn(ioDispatcher)
 
-
-  override fun folder(): Flow<List<Pair<folderName, List<MusicModel>>>> = songs().map {
-    it.groupBy { by -> by.folderName }.map { it.key to it.value }
+  override fun folder(): Flow<List<Pair<folderName, List<MusicModel>>>> = songs().map { list ->
+    list.groupBy { by -> by.folderName }.map { it.key to it.value }
   }.flowOn(ioDispatcher)
 
 }

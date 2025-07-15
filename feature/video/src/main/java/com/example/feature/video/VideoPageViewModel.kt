@@ -7,7 +7,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.exoplayer.ExoPlayer
-import com.example.core.data.repository.VideoRepositoryImpl
+import com.example.core.domain.respository.VideoRepositoryImpl
 import com.example.core.model.MediaStoreResult
 import com.example.core.model.VideoModel
 import com.example.feature.video.model.MiddleVideoPlayerIndicator
