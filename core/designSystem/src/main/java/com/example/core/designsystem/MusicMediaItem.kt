@@ -38,7 +38,6 @@ import com.example.core.util.removeFileExtension
 @Composable
 fun MusicMediaItem(
   item: MusicModel,
-  isFav: Boolean,
   currentMediaId: String,
   isPlaying: () -> Boolean,
   contentColor: Color = MaterialTheme.colorScheme.onPrimary,
@@ -117,7 +116,7 @@ fun MusicMediaItem(
           color = contentColor,
           textAlign = TextAlign.Companion.End,
         )
-        if (isFav) {
+        if (item.isFavorite) {
           Icon(
             imageVector = Icons.Default.Favorite,
             contentDescription = "",
@@ -150,7 +149,6 @@ private fun PreviewMusicMediaItem() {
         folderName = "",
       ),
       isPlaying = { false },
-      isFav = true,
       currentMediaId = "",
       onItemClick = {}
     )

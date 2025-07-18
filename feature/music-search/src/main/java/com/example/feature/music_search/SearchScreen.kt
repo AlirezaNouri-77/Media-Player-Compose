@@ -47,13 +47,11 @@ fun SearchRoot(
   onMusicClick: (Int, List<MusicModel>) -> Unit,
 ) {
 
-  var searchListItem = searchViewModel.searchList.collectAsStateWithLifecycle()
-  var favoriteMusicMediaIdList = searchViewModel.favoriteMusicMediaIds.collectAsStateWithLifecycle()
+  val searchListItem = searchViewModel.searchList.collectAsStateWithLifecycle()
 
   SearchScreen(
     modifier = modifier,
     listItem = searchListItem.value.toImmutableList(),
-    favoriteMusicMediaIdList = { favoriteMusicMediaIdList.value.toImmutableList() },
     currentPlayerMediaId = currentPlayerMediaId,
     currentPlayerPlayingState = { currentPlayerPlayingState() },
     onMusicClick = { index, list ->
@@ -73,7 +71,7 @@ fun SearchRoot(
 fun SearchScreen(
   modifier: Modifier = Modifier,
   listItem: ImmutableList<MusicModel>,
-  favoriteMusicMediaIdList: () -> ImmutableList<String>,
+//  favoriteMusicMediaIdList: () -> ImmutableList<String>,
   currentPlayerMediaId: () -> String,
   currentPlayerPlayingState: () -> Boolean,
   onMusicClick: (Int, List<MusicModel>) -> Unit,
@@ -139,7 +137,6 @@ fun SearchScreen(
           ) { index, item ->
             MusicMediaItem(
               item = item,
-              isFav = item.musicId.toString() in favoriteMusicMediaIdList(),
               currentMediaId = currentPlayerMediaId(),
               onItemClick = {
                 onMusicClick(index, listItem)

@@ -9,7 +9,6 @@ import coil.util.DebugLogger
 import com.example.core.common.di.CommonCoroutineModule
 import com.example.core.common.di.CommonDispatcherModule
 import com.example.core.data.di.DataModule
-import com.example.core.data.di.RepositoryModule
 import com.example.core.database.di.DataBaseDaoModule
 import com.example.core.database.di.DataBaseModule
 import com.example.core.music_media3.di.Media3Module
@@ -30,17 +29,16 @@ class ApplicationClass : Application(), ImageLoaderFactory {
     startKoin {
       allowOverride(true)
       androidContext(this@ApplicationClass)
-      androidLogger(Level.INFO)
+      androidLogger(Level.ERROR)
       modules(
         appModule,
         CommonCoroutineModule,
         CommonDispatcherModule,
         DataBaseModule,
         DataBaseDaoModule,
-        RepositoryModule,
+        DataModule,
         VideoModule,
         Media3Module,
-        DataModule,
         VideoMedia3Module,
         dataStoreModule,
       )

@@ -13,6 +13,7 @@ data class MusicModel(
   val artist: String,
   val album: String,
   val folderName: String,
+  val isFavorite: Boolean = false,
 ) {
   companion object {
     var Empty = MusicModel(

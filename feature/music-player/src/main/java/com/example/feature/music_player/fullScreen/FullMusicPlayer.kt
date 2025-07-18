@@ -115,6 +115,7 @@ private fun FullScreenPreview() {
           duration = 240_000,
           bitrate = 320_000,
           size = 120_000,
+          isFavorite = false,
         ),
         isPlaying = false,
         isBuffering = false,

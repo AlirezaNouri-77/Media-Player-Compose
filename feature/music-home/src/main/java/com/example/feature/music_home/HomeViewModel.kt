@@ -5,15 +5,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.domain.respository.FavoriteRepositoryImpl
-import com.example.core.domain.respository.MusicSourceImpl
 import com.example.core.data.util.sortMusic
+import com.example.core.domain.respository.MusicSourceImpl
+import com.example.core.model.TabBarModel
 import com.example.core.model.datastore.CategorizedSortModel
 import com.example.core.model.datastore.CategorizedSortType
 import com.example.core.model.datastore.SongSortModel
 import com.example.core.model.datastore.SongsSortType
 import com.example.core.model.datastore.SortType
-import com.example.core.model.TabBarModel
 import com.example.datastore.SortDataStoreManagerImpl
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -24,7 +23,6 @@ class HomeViewModel(
   private val musicSource: MusicSourceImpl,
   private val songsSortDataStoreManager: SortDataStoreManagerImpl<SongSortModel>,
   private val folderSortDataStoreManager: SortDataStoreManagerImpl<CategorizedSortModel>,
-  favoriteMusicSource: FavoriteRepositoryImpl,
 ) : ViewModel() {
 
   var isLoading by mutableStateOf(true)
@@ -77,17 +75,12 @@ class HomeViewModel(
       CategorizedSortModel(isDec = false, sortType = CategorizedSortType.NAME),
     )
 
-  var favoriteSongsMediaId = favoriteMusicSource.favoriteMusicMediaIdList.stateIn(
-    viewModelScope,
-    SharingStarted.WhileSubscribed(5_000L),
-    emptyList(),
-  )
-
-  var favoriteSongs = favoriteMusicSource.favoriteSongs.stateIn(
-    viewModelScope,
-    SharingStarted.WhileSubscribed(5_000L),
-    emptyList(),
-  )
+  var favoriteSongs = musicSource.favorite()
+    .stateIn(
+      viewModelScope,
+      SharingStarted.WhileSubscribed(5_000L),
+      emptyList(),
+    )
 
   fun updateDataStoreSortType(tabBarPosition: TabBarModel, sortType: SortType) = viewModelScope.launch {
     if (tabBarPosition == TabBarModel.All) {

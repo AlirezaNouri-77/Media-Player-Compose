@@ -20,9 +20,27 @@ fun MusicModel.toMediaItem() =
             MEDIAMETADATA_BUNDLE_DURATION_KEY to this.duration,
             MEDIAMETADATA_BUNDLE_BITRATE_KEY to this.bitrate,
             MEDIAMETADATA_BUNDLE_SIZE_KEY to this.size,
+            MEDIAMETADATA_BUNDLE_ISFAVORITE_KEY to this.isFavorite,
+            MEDIAMETADATA_BUNDLE_FOLDER_KEY to this.folderName,
           )
         ).build()
     ).build()
+
+fun MediaItem.toMusicModel() = MusicModel(
+  musicId = this.mediaId.toLong(),
+  uri = (this.localConfiguration?.uri ?: Uri.EMPTY).toString(),
+  mimeTypes = (this.localConfiguration?.mimeType ?: Uri.EMPTY).toString(),
+  name = (this.mediaMetadata.title ?: "None").toString(),
+  duration = this.mediaMetadata.extras?.getLong(MEDIAMETADATA_BUNDLE_DURATION_KEY) ?: 0L,
+  size = this.mediaMetadata.extras?.getLong(MEDIAMETADATA_BUNDLE_DURATION_KEY) ?: 0L,
+  artworkUri = (this.mediaMetadata.artworkUri ?: Uri.EMPTY).toString(),
+  bitrate = this.mediaMetadata.extras?.getInt(MEDIAMETADATA_BUNDLE_BITRATE_KEY) ?: 0,
+  artist = (this.mediaMetadata.artist ?: "None").toString(),
+  isFavorite = this.mediaMetadata.extras?.getBoolean(MEDIAMETADATA_BUNDLE_ISFAVORITE_KEY) ?: false,
+  path = (this.mediaMetadata.title ?: "None").toString(),
+  album = (this.mediaMetadata.albumTitle ?: "None").toString(),
+  folderName = this.mediaMetadata.extras?.getString(MEDIAMETADATA_BUNDLE_FOLDER_KEY) ?: "None",
+)
 
 fun MediaItem.toActiveMusicInfo() = ActiveMusicInfo(
   title = (this.mediaMetadata.title ?: "None").toString(),
@@ -32,9 +50,12 @@ fun MediaItem.toActiveMusicInfo() = ActiveMusicInfo(
   artist = this.mediaMetadata.artist.toString(),
   duration = this.mediaMetadata.extras?.getLong(MEDIAMETADATA_BUNDLE_DURATION_KEY) ?: 0L,
   bitrate = this.mediaMetadata.extras?.getInt(MEDIAMETADATA_BUNDLE_BITRATE_KEY) ?: 0,
-  size = this.mediaMetadata.extras?.getLong(MEDIAMETADATA_BUNDLE_SIZE_KEY) ?: 0L,
+  size = this.mediaMetadata.extras?.getLong(MEDIAMETADATA_BUNDLE_DURATION_KEY) ?: 0L,
+  isFavorite = this.mediaMetadata.extras?.getBoolean(MEDIAMETADATA_BUNDLE_ISFAVORITE_KEY) ?: false,
 )
 
 const val MEDIAMETADATA_BUNDLE_DURATION_KEY = "Duration"
 const val MEDIAMETADATA_BUNDLE_BITRATE_KEY = "Bitrate"
 const val MEDIAMETADATA_BUNDLE_SIZE_KEY = "Size"
+const val MEDIAMETADATA_BUNDLE_ISFAVORITE_KEY = "Size"
+const val MEDIAMETADATA_BUNDLE_FOLDER_KEY = "Folder"

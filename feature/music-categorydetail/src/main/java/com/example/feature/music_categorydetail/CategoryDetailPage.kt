@@ -54,13 +54,13 @@ fun SharedTransitionScope.CategoryDetailRoute(
   animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
 
-  var listItem = produceState(emptyList<MusicModel>(), key1 = categoryName, key2 = parentCategoryRouteName) {
+  val listItem = produceState(emptyList(), key1 = categoryName, key2 = parentCategoryRouteName) {
     categoryViewModel.categorizedMusicDataList
-      .map {
+      .map { categoryMusicData ->
         when (parentCategoryRouteName) {
-          ParentCategoryRoute.FOLDER -> it.folder.find { it.first == categoryName }?.second
-          ParentCategoryRoute.ARTIST -> it.artist.find { it.first == categoryName }?.second
-          ParentCategoryRoute.ALBUM -> it.album.find { it.first == categoryName }?.second
+          ParentCategoryRoute.FOLDER -> categoryMusicData.folder.find { it.first == categoryName }?.second
+          ParentCategoryRoute.ARTIST -> categoryMusicData.artist.find { it.first == categoryName }?.second
+          ParentCategoryRoute.ALBUM -> categoryMusicData.album.find { it.first == categoryName }?.second
         }
       }.collect {
         it?.let { list ->
@@ -153,7 +153,6 @@ fun SharedTransitionScope.CategoryDetailPage(
       ) { index, item ->
         MusicMediaItem(
           item = item,
-          isFav = false,
           currentMediaId = currentMusicId,
           onItemClick = {
             onMusicClick.invoke(index)

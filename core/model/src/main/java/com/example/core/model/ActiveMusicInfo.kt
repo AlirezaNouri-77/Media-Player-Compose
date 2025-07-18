@@ -9,6 +9,7 @@ data class ActiveMusicInfo(
   var duration: Long,
   var bitrate: Int,
   var size: Long,
+  val isFavorite: Boolean,
 ) {
   companion object {
     var Empty = ActiveMusicInfo(
@@ -20,6 +21,7 @@ data class ActiveMusicInfo(
       duration = 0,
       bitrate = 0,
       size = 0,
+      isFavorite = false,
     )
   }
 }

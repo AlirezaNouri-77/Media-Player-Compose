@@ -48,12 +48,6 @@ class PlayerViewModel(
     emptyList(),
   )
 
-  var favoriteSongsMediaId = favoriteMusicSource.favoriteMusicMediaIdList.stateIn(
-    viewModelScope,
-    SharingStarted.WhileSubscribed(5_000L),
-    emptyList(),
-  )
-
   var currentArtworkPagerIndex = musicServiceConnection.currentArtworkPagerIndex.stateIn(
     viewModelScope,
     SharingStarted.Eagerly,
@@ -65,7 +59,7 @@ class PlayerViewModel(
     .onStart {
       viewModelScope.launch {
         while (currentCoroutineContext().isActive) {
-          if (currentMusicState.value.isPlaying == true) {
+          if (currentMusicState.value.isPlaying) {
             val position = musicServiceConnection.currentPlayerPosition()
             _currentMusicPosition.value = position
           }
@@ -100,6 +94,7 @@ class PlayerViewModel(
         _currentMusicPosition.value = action.value
         musicServiceConnection.seekToPosition(action.value)
       }
+
       is PlayerActions.OnRepeatMode -> musicServiceConnection.setRepeatMode(action.value)
       is PlayerActions.MovePreviousPlayer -> musicServiceConnection.moveToPrevious(action.seekToStart, currentMusicPosition.value)
       is PlayerActions.OnMoveToIndex -> musicServiceConnection.moveToMediaIndex(index = action.value)
@@ -120,7 +115,8 @@ class PlayerViewModel(
 
   private fun handleFavoriteSongs(mediaId: String) {
     viewModelScope.launch {
-      favoriteMusicSource.handleFavoriteSongs(mediaId)
+      val update = favoriteMusicSource.handleFavoriteSongs(mediaId)
+      musicServiceConnection.updateCurrentMusicFavorite(update)
     }
   }
 

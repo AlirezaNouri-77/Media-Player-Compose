@@ -43,8 +43,8 @@ import com.example.core.designsystem.Loading
 import com.example.core.designsystem.LocalBottomPadding
 import com.example.core.designsystem.R
 import com.example.core.designsystem.SortDropDownMenu
-import com.example.core.model.datastore.CategorizedSortType
 import com.example.core.model.MusicModel
+import com.example.core.model.datastore.CategorizedSortType
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import org.koin.androidx.compose.koinViewModel

@@ -21,12 +21,6 @@ class SearchViewModel(
       emptyList(),
     )
 
-  var favoriteMusicMediaIds = favoriteMusicManager.favoriteMusicMediaIdList.stateIn(
-    viewModelScope,
-    SharingStarted.WhileSubscribed(5_000),
-    emptyList(),
-  )
-
   fun searchMusic(input: String) = viewModelScope.launch(Dispatchers.Default) {
     searchMusicManager.search(input)
   }

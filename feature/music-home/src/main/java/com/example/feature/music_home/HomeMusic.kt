@@ -49,10 +49,10 @@ import com.example.core.designsystem.LocalBottomPadding
 import com.example.core.designsystem.MainTopAppBar
 import com.example.core.designsystem.MusicMediaItem
 import com.example.core.designsystem.Sort
-import com.example.core.model.datastore.CategorizedSortType
 import com.example.core.model.MusicModel
-import com.example.core.model.datastore.SongsSortType
 import com.example.core.model.TabBarModel
+import com.example.core.model.datastore.CategorizedSortType
+import com.example.core.model.datastore.SongsSortType
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
@@ -81,7 +81,7 @@ fun SharedTransitionScope.HomeMusic(
   val songs by homeViewModel.songsList.collectAsStateWithLifecycle()
   val folder by homeViewModel.folderSongsData.collectAsStateWithLifecycle()
   val favoriteSongs by homeViewModel.favoriteSongs.collectAsStateWithLifecycle()
-  val favoriteSongsMediaId by homeViewModel.favoriteSongsMediaId.collectAsStateWithLifecycle()
+//  val favoriteSongsMediaId by homeViewModel.favoriteSongsMediaId.collectAsStateWithLifecycle()
 
   val listStates = TabBarModel.entries.map {
     rememberLazyListState()
@@ -189,7 +189,6 @@ fun SharedTransitionScope.HomeMusic(
                   ) { index, item ->
                     MusicMediaItem(
                       item = item,
-                      isFav = item.musicId.toString() in favoriteSongsMediaId,
                       currentMediaId = currentPlayerMediaId(),
                       onItemClick = {
                         onMusicClick(index, list)

@@ -1,7 +1,7 @@
 package com.example.core.data.util
 
-import com.example.core.model.datastore.CategorizedSortType
 import com.example.core.model.MusicModel
+import com.example.core.model.datastore.CategorizedSortType
 import com.example.core.model.datastore.SongsSortType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

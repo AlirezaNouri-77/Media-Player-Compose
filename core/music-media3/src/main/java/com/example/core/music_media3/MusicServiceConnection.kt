@@ -2,7 +2,6 @@ package com.example.core.music_media3
 
 import android.content.ComponentName
 import android.content.Context
-import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
@@ -11,19 +10,13 @@ import com.example.core.model.ActiveMusicInfo
 import com.example.core.model.MusicModel
 import com.example.core.music_media3.mapper.toActiveMusicInfo
 import com.example.core.music_media3.mapper.toMediaItem
+import com.example.core.music_media3.mapper.toMusicModel
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 
 class MusicServiceConnection(
   private var context: Context,
@@ -59,6 +52,14 @@ class MusicServiceConnection(
           MoreExecutors.directExecutor(),
         )
       }
+    }
+  }
+
+  fun updateCurrentMusicFavorite(isFavorite: Boolean) {
+    val currentMediaItem = mediaController?.currentMediaItem
+    val updatedFavoriteMusic = currentMediaItem?.toMusicModel()?.copy(isFavorite = isFavorite)
+    updatedFavoriteMusic?.let {
+      mediaController?.replaceMediaItem(mediaController?.currentMediaItemIndex ?: 0,updatedFavoriteMusic.toMediaItem())
     }
   }
 

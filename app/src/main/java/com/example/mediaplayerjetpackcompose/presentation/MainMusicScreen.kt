@@ -30,10 +30,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -96,7 +96,6 @@ fun MainMusicScreen(
   val currentDeviceVolume by playerViewModel.currentDeviceVolume.collectAsStateWithLifecycle()
   val currentArtworkPagerIndex by playerViewModel.currentArtworkPagerIndex.collectAsStateWithLifecycle()
   val artworkPagerList by playerViewModel.artworkPagerList.collectAsStateWithLifecycle()
-  val favoriteSongsMediaId by playerViewModel.favoriteSongsMediaId.collectAsStateWithLifecycle()
 
   var bottomNavBarHeight by remember { mutableStateOf(0.dp) }
 
@@ -210,7 +209,7 @@ fun MainMusicScreen(
                   }
                   .navigationBarsPadding()
                   .padding(top = playerViewModel.miniPlayerHeight),
-                isFavorite = currentMusicState.currentMediaInfo.musicID in favoriteSongsMediaId,
+                isFavorite = currentMusicState.currentMediaInfo.isFavorite,
                 pagerMusicList = artworkPagerList.toImmutableList(),
                 repeatMode = currentMusicState.repeatMode,
                 currentPagerPage = currentArtworkPagerIndex,

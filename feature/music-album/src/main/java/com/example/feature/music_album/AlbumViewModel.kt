@@ -5,12 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.core.data.util.sortMusic
 import com.example.core.domain.respository.MusicSourceImpl
 import com.example.core.domain.respository.albumName
-import com.example.core.data.util.sortMusic
+import com.example.core.model.MusicModel
 import com.example.core.model.datastore.CategorizedSortModel
 import com.example.core.model.datastore.CategorizedSortType
-import com.example.core.model.MusicModel
 import com.example.datastore.SortDataStoreManagerImpl
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
