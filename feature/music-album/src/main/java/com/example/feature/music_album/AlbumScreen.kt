@@ -58,11 +58,7 @@ fun SharedTransitionScope.AlbumRoute(
   animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
 
-  var albumListData = albumViewModel.album.collectAsStateWithLifecycle()
-  val sortState by albumViewModel.sortState.collectAsStateWithLifecycle()
-  var isSortDropDownMenuExpanded by remember {
-    mutableStateOf(false)
-  }
+  val uiState by albumViewModel.albumScreenUiState.collectAsStateWithLifecycle()
 
   AlbumScreen(
     modifier.sharedBounds(
@@ -74,18 +70,16 @@ fun SharedTransitionScope.AlbumRoute(
     ),
     sharedTransitionScope = this,
     animatedVisibilityScope = animatedVisibilityScope,
-    albumListData = albumListData.value.toImmutableList(),
-    navigateTo = {
-      navigateToCategory(it)
-    },
-    isLoading = albumViewModel.isLoading,
-    isSortDescending = sortState.isDec,
-    currentSortType = sortState.sortType,
-    isSortDropDownMenuExpanded = isSortDropDownMenuExpanded,
-    onDismissDropDownMenu = { isSortDropDownMenuExpanded = false },
-    onSortIconClick = { isSortDropDownMenuExpanded = true },
-    onOrderClick = { albumViewModel.updateSortIsDec(!sortState.isDec) },
-    onSortClick = { albumViewModel.updateSortType(it) },
+    albumListData = uiState.albumList.toImmutableList(),
+    navigateTo = navigateToCategory,
+    isLoading = uiState.isLoading,
+    isSortDescending = uiState.sortState.isDec,
+    currentSortType = uiState.sortState.sortType,
+    isSortDropDownMenuExpanded = uiState.isSortDropDownMenuShow,
+    onSortIconClick = { albumViewModel.onEvent(AlbumUiEvent.ShowSortDropDownMenu) },
+    onDismissDropDownMenu = { albumViewModel.onEvent(AlbumUiEvent.HideSortDropDownMenu) },
+    onOrderClick = { albumViewModel.onEvent(AlbumUiEvent.UpdateSortOrder(!uiState.sortState.isDec)) },
+    onSortClick = { albumViewModel.onEvent(AlbumUiEvent.UpdateSortType(it)) }
   )
 
 }
@@ -162,7 +156,7 @@ private fun AlbumScreen(
             modifier = Modifier
               .fillMaxSize()
               .padding(innerPadding),
-            contentPadding = PaddingValues(bottom = LocalBottomPadding.current),
+            contentPadding = PaddingValues(bottom = LocalBottomPadding.current.calculateBottomPadding()),
           ) {
             items(
               items = albumListData,

@@ -16,7 +16,6 @@ class FeatureConventionPlugin : Plugin<Project> {
         "implementation"(project(":core:domain"))
         "implementation"(project(":core:datastore"))
         "implementation"(project(":core:model"))
-        "implementation"(project(":core:util"))
 
         "implementation"(getLibs.findLibrary("koin.android").get())
         "implementation"(getLibs.findLibrary("koin.android.viewmodel").get())

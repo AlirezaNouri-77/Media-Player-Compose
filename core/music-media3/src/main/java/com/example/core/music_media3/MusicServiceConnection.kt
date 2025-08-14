@@ -24,7 +24,6 @@ class MusicServiceConnection(
 
   private var factory: ListenableFuture<MediaController>? = null
   private var mediaController: MediaController? = null
-
   private var _playerState = MutableStateFlow(PlayerStateModel.Empty)
   var playerState: StateFlow<PlayerStateModel> = _playerState.asStateFlow()
 
@@ -59,7 +58,7 @@ class MusicServiceConnection(
     val currentMediaItem = mediaController?.currentMediaItem
     val updatedFavoriteMusic = currentMediaItem?.toMusicModel()?.copy(isFavorite = isFavorite)
     updatedFavoriteMusic?.let {
-      mediaController?.replaceMediaItem(mediaController?.currentMediaItemIndex ?: 0,updatedFavoriteMusic.toMediaItem())
+      mediaController?.replaceMediaItem(mediaController?.currentMediaItemIndex ?: 0, updatedFavoriteMusic.toMediaItem())
     }
   }
 
@@ -69,9 +68,7 @@ class MusicServiceConnection(
 
   fun resumeMusic() = mediaController?.play()
 
-  fun seekToPosition(position: Long) {
-    mediaController?.seekTo(position)
-  }
+  fun seekToPosition(position: Long) = mediaController?.seekTo(position)
 
   fun moveToMediaIndex(index: Int) {
     mediaController?.apply {
@@ -91,9 +88,7 @@ class MusicServiceConnection(
     }
   }
 
-  fun setRepeatMode(repeatMode: Int) {
-    mediaController?.repeatMode = repeatMode
-  }
+  fun setRepeatMode(repeatMode: Int) = mediaController?.repeatMode = repeatMode
 
   fun setCurrentArtworkPagerIndex(index: Int) = _currentArtworkPagerIndex.update { index }
 
@@ -137,11 +132,7 @@ class MusicServiceConnection(
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-      _playerState.update {
-        it.copy(
-          currentMediaInfo = mediaItem?.toActiveMusicInfo() ?: ActiveMusicInfo.Empty
-        )
-      }
+      _playerState.update { it.copy(currentMediaInfo = mediaItem?.toActiveMusicInfo() ?: ActiveMusicInfo.Empty) }
     }
 
     override fun onPlaybackStateChanged(playbackState: Int) {

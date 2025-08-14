@@ -1,6 +1,8 @@
 *.iml
 .gradle
 .idea/*
+.idea
+app/.idea
 /.idea
 *.apk
 
@@ -21,6 +23,7 @@ app/.idea/caches/deviceStreaming.xml
 *.salive
 app/.idea/vcs.xml
 app/.idea/.name
+/.idea
 /.idea
 /.idea
 /.idea

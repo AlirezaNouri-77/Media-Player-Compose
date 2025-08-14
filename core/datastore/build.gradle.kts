@@ -13,6 +13,8 @@ dependencies {
 
   api(project(":core:proto-datastore"))
   api(project(":core:model"))
+  api(project(":core:common"))
+
   api(libs.androidx.dataStore)
 
   implementation(libs.koin.android)

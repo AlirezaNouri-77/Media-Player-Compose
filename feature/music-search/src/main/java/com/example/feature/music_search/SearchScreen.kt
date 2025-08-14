@@ -14,15 +14,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -30,11 +26,10 @@ import com.example.core.designsystem.EmptyPage
 import com.example.core.designsystem.LocalBottomPadding
 import com.example.core.designsystem.MusicMediaItem
 import com.example.core.model.MusicModel
+import com.example.feature.music_search.component.SearchTextFieldSection
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(FlowPreview::class, ExperimentalMaterial3Api::class)
@@ -42,27 +37,23 @@ import org.koin.androidx.compose.koinViewModel
 fun SearchRoot(
   modifier: Modifier = Modifier,
   searchViewModel: SearchViewModel = koinViewModel<SearchViewModel>(),
-  currentPlayerMediaId: () -> String,
-  currentPlayerPlayingState: () -> Boolean,
+  currentPlayerMediaId: String,
+  currentPlayerPlayingState: Boolean,
   onMusicClick: (Int, List<MusicModel>) -> Unit,
 ) {
 
-  val searchListItem = searchViewModel.searchList.collectAsStateWithLifecycle()
+  val uiState by searchViewModel.searchScreenUiState.collectAsStateWithLifecycle()
 
   SearchScreen(
     modifier = modifier,
-    listItem = searchListItem.value.toImmutableList(),
+    listItem = uiState.searchList.toImmutableList(),
     currentPlayerMediaId = currentPlayerMediaId,
-    currentPlayerPlayingState = { currentPlayerPlayingState() },
-    onMusicClick = { index, list ->
-      onMusicClick(index, list)
-    },
-    onSearch = {
-      searchViewModel.searchMusic(it)
-    },
-    lazyListBottomPadding = LocalBottomPadding.current
+    currentPlayerPlayingState = currentPlayerPlayingState,
+    onMusicClick = { index, list -> onMusicClick(index, list) },
+    searchTextFieldValue = uiState.searchTextFieldValue,
+    onSearchTextFieldValueChange = { searchViewModel.onEvent(SearchScreenUiEvent.OnSearchTextField(it)) },
+    onClearSearchTextField = { searchViewModel.onEvent(SearchScreenUiEvent.OnClearSearchTextField) },
   )
-
 
 }
 
@@ -71,26 +62,13 @@ fun SearchRoot(
 fun SearchScreen(
   modifier: Modifier = Modifier,
   listItem: ImmutableList<MusicModel>,
-//  favoriteMusicMediaIdList: () -> ImmutableList<String>,
-  currentPlayerMediaId: () -> String,
-  currentPlayerPlayingState: () -> Boolean,
+  searchTextFieldValue: String,
+  currentPlayerMediaId: String,
+  currentPlayerPlayingState: Boolean,
   onMusicClick: (Int, List<MusicModel>) -> Unit,
-  onSearch: (String) -> Unit,
-  lazyListBottomPadding: Dp,
+  onSearchTextFieldValueChange: (String) -> Unit,
+  onClearSearchTextField: () -> Unit,
 ) {
-  val searchTextFieldValue = rememberSaveable { mutableStateOf("") }
-
-  LaunchedEffect(
-    key1 = searchTextFieldValue.value,
-    block = {
-      snapshotFlow { searchTextFieldValue }
-        .debounce(500)
-        .collectLatest {
-          onSearch(it.value.trim())
-        }
-    },
-  )
-
   Scaffold(
     topBar = {
       TopAppBar(
@@ -118,18 +96,16 @@ fun SearchScreen(
     ) {
 
       SearchTextFieldSection(
-        textFieldValue = searchTextFieldValue.value,
-        onTextFieldChange = { searchTextFieldValue.value = it },
-        onClear = {
-          searchTextFieldValue.value = ""
-        },
+        textFieldValue = searchTextFieldValue,
+        onTextFieldChange = onSearchTextFieldValueChange,
+        onClear = onClearSearchTextField,
       )
 
       if (listItem.isNotEmpty()) {
         LazyColumn(
           modifier = modifier
             .fillMaxSize(),
-          contentPadding = PaddingValues(bottom = lazyListBottomPadding)
+          contentPadding = PaddingValues(bottom = LocalBottomPadding.current.calculateBottomPadding())
         ) {
           itemsIndexed(
             items = listItem,
@@ -137,11 +113,9 @@ fun SearchScreen(
           ) { index, item ->
             MusicMediaItem(
               item = item,
-              currentMediaId = currentPlayerMediaId(),
-              onItemClick = {
-                onMusicClick(index, listItem)
-              },
-              isPlaying = { currentPlayerPlayingState() },
+              currentMediaId = currentPlayerMediaId,
+              onItemClick = { onMusicClick(index, listItem) },
+              isPlaying = { currentPlayerPlayingState },
             )
           }
         }

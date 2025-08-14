@@ -2,6 +2,7 @@ package com.example.datastore.di
 
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
+import com.example.core.common.di.DispatcherType
 import com.example.core.model.datastore.CategorizedSortModel
 import com.example.core.model.datastore.SongSortModel
 import com.example.datastore.AlbumSortDataStoreManager
@@ -31,19 +32,19 @@ var dataStoreModule = module {
   }
 
   single<SortDataStoreManagerImpl<SongSortModel>>(named("SongsSortDataStore")) {
-    SongsSortDataStoreManager(get(), get(named("IO")))
+    SongsSortDataStoreManager(get(), get(DispatcherType.DEFAULT.qualifier))
   }
 
   single<SortDataStoreManagerImpl<CategorizedSortModel>>(named("ArtistSortDataStore")) {
-    ArtistSortDataStoreManager(get(), get(named("IO")))
+    ArtistSortDataStoreManager(get(), get(DispatcherType.DEFAULT.qualifier))
   }
 
   single<SortDataStoreManagerImpl<CategorizedSortModel>>(named("AlbumSortDataStore")) {
-    AlbumSortDataStoreManager(get(), get(named("IO")))
+    AlbumSortDataStoreManager(get(), get(DispatcherType.DEFAULT.qualifier))
   }
 
   single<SortDataStoreManagerImpl<CategorizedSortModel>>(named("FolderSortDataStore")) {
-    FolderSortDataStoreManager(get(), get(named("IO")))
+    FolderSortDataStoreManager(get(), get(DispatcherType.DEFAULT.qualifier))
   }
 
 }

@@ -9,7 +9,7 @@ android {
 dependencies {
 
   implementation(project(":core:model"))
-  implementation(project(":core:util"))
+  implementation(project(":core:common"))
 
   implementation(libs.coil.compose)
 

@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.designsystem.LocalBottomPadding
 import com.example.core.designsystem.MusicMediaItem
 import com.example.core.model.MusicModel
@@ -44,9 +46,8 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.CategoryDetailRoute(
-  categoryViewModel: CategoryViewModel = koinViewModel<CategoryViewModel>(),
+  categoryViewModel: CategoryViewModel,
   categoryName: String,
-  parentCategoryRouteName: ParentCategoryRoute,
   currentMusicId: String,
   isPlayerPlaying: () -> Boolean,
   onMusicClick: (index: Int, list: List<MusicModel>) -> Unit,
@@ -54,20 +55,7 @@ fun SharedTransitionScope.CategoryDetailRoute(
   animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
 
-  val listItem = produceState(emptyList(), key1 = categoryName, key2 = parentCategoryRouteName) {
-    categoryViewModel.categorizedMusicDataList
-      .map { categoryMusicData ->
-        when (parentCategoryRouteName) {
-          ParentCategoryRoute.FOLDER -> categoryMusicData.folder.find { it.first == categoryName }?.second
-          ParentCategoryRoute.ARTIST -> categoryMusicData.artist.find { it.first == categoryName }?.second
-          ParentCategoryRoute.ALBUM -> categoryMusicData.album.find { it.first == categoryName }?.second
-        }
-      }.collect {
-        it?.let { list ->
-          value = list
-        } ?: emptyList<MusicModel>()
-      }
-  }
+  val uiState by categoryViewModel.uiState.collectAsStateWithLifecycle()
 
   CategoryDetailPage(
     modifier = Modifier.sharedBounds(
@@ -78,16 +66,12 @@ fun SharedTransitionScope.CategoryDetailRoute(
       enter = fadeIn(tween(150, 150, easing = LinearEasing)),
     ),
     categoryName = categoryName,
-    listItem = listItem.value.toImmutableList(),
-    lazyListBottomPadding = LocalBottomPadding.current,
+    listItem = uiState.songList.toImmutableList(),
+    lazyListBottomPadding = LocalBottomPadding.current.calculateBottomPadding(),
     currentMusicId = currentMusicId,
     isPlayerPlaying = { isPlayerPlaying() },
-    onMusicClick = {
-      onMusicClick(it, listItem.value)
-    },
-    onBackClick = {
-      onBackClick()
-    },
+    onMusicClick = { onMusicClick(it, uiState.songList) },
+    onBackClick = onBackClick,
     animatedVisibilityScope = animatedVisibilityScope,
   )
 

@@ -31,8 +31,6 @@ class PlayerViewModel(
   private var favoriteMusicSource: FavoriteRepositoryImpl,
 ) : ViewModel() {
 
-  var miniPlayerHeight = 70.dp
-
   var musicArtworkColorPalette by mutableIntStateOf(MusicThumbnailUtil.DEFAULT_COLOR_PALETTE)
 
   var currentMusicState = musicServiceConnection.playerState
@@ -94,7 +92,6 @@ class PlayerViewModel(
         _currentMusicPosition.value = action.value
         musicServiceConnection.seekToPosition(action.value)
       }
-
       is PlayerActions.OnRepeatMode -> musicServiceConnection.setRepeatMode(action.value)
       is PlayerActions.MovePreviousPlayer -> musicServiceConnection.moveToPrevious(action.seekToStart, currentMusicPosition.value)
       is PlayerActions.OnMoveToIndex -> musicServiceConnection.moveToMediaIndex(index = action.value)
@@ -120,9 +117,7 @@ class PlayerViewModel(
     }
   }
 
-  private fun playMusic(index: Int, musicList: List<MusicModel>) = viewModelScope.launch {
-    musicServiceConnection.playSongs(index, musicList)
-  }
+  private fun playMusic(index: Int, musicList: List<MusicModel>) = musicServiceConnection.playSongs(index, musicList)
 
   override fun onCleared() {
     super.onCleared()

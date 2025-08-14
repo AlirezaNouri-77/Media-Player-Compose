@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -36,10 +37,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.designsystem.CategoryListItem
@@ -50,9 +51,12 @@ import com.example.core.designsystem.MainTopAppBar
 import com.example.core.designsystem.MusicMediaItem
 import com.example.core.designsystem.Sort
 import com.example.core.model.MusicModel
-import com.example.core.model.TabBarModel
+import com.example.feature.music_home.model.TabBarModel
 import com.example.core.model.datastore.CategorizedSortType
 import com.example.core.model.datastore.SongsSortType
+import com.example.feature.music_home.component.CategorySection
+import com.example.feature.music_home.component.VideoIconButton
+import com.example.feature.music_home.component.categoryHeight
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
@@ -60,33 +64,19 @@ import org.koin.androidx.compose.koinViewModel
 fun SharedTransitionScope.HomeMusic(
   modifier: Modifier = Modifier,
   homeViewModel: HomeViewModel = koinViewModel<HomeViewModel>(),
-  currentPlayerMediaId: () -> String,
-  currentPlayerPlayingState: () -> Boolean,
+  currentPlayerMediaId: String,
+  isPlaying: Boolean,
   navigateToCategoryPage: (String) -> Unit,
   onNavigateToVideoScreen: () -> Unit,
   onMusicClick: (Int, List<MusicModel>) -> Unit,
   animatedVisibilityScope: AnimatedVisibilityScope,
-  lazyListBottomPadding: Dp = LocalBottomPadding.current,
   density: Density = LocalDensity.current
 ) {
-
-  var isSortDropDownMenuShow by remember { mutableStateOf(false) }
-  var currentTabBarPosition by remember { mutableStateOf(TabBarModel.All) }
-
   val pagerState = rememberPagerState(pageCount = { TabBarModel.entries.size })
 
-  val songsSortState by homeViewModel.songSortState.collectAsStateWithLifecycle()
-  val folderSortState by homeViewModel.folderSortState.collectAsStateWithLifecycle()
+  val uiState by homeViewModel.homeScreenUiState.collectAsStateWithLifecycle()
 
-  val songs by homeViewModel.songsList.collectAsStateWithLifecycle()
-  val folder by homeViewModel.folderSongsData.collectAsStateWithLifecycle()
-  val favoriteSongs by homeViewModel.favoriteSongs.collectAsStateWithLifecycle()
-//  val favoriteSongsMediaId by homeViewModel.favoriteSongsMediaId.collectAsStateWithLifecycle()
-
-  val listStates = TabBarModel.entries.map {
-    rememberLazyListState()
-  }
-  var tabBarHeight by remember { mutableStateOf(0.dp) }
+  val listStates = TabBarModel.entries.map { rememberLazyListState() }
 
   val shouldHideTabBar = remember {
     derivedStateOf {
@@ -103,11 +93,11 @@ fun SharedTransitionScope.HomeMusic(
       2 -> TabBarModel.Folder
       else -> TabBarModel.All
     }
-    currentTabBarPosition = currentTab
+    homeViewModel.onEvent(HomeUiEvent.UpdateTabBarPosition(currentTab))
   }
 
-  LaunchedEffect(currentTabBarPosition) {
-    pagerState.animateScrollToPage(currentTabBarPosition.id)
+  LaunchedEffect(uiState.currentTabBarPosition) {
+    pagerState.animateScrollToPage(uiState.currentTabBarPosition.id)
   }
 
   Scaffold(
@@ -121,26 +111,18 @@ fun SharedTransitionScope.HomeMusic(
         modifier = Modifier,
         title = "Home",
         actions = {
-          VideoIconButton(
-            onClick = {
-              onNavigateToVideoScreen()
-            },
-          )
-          AnimatedVisibility(currentTabBarPosition != TabBarModel.Favorite) {
+          VideoIconButton(onClick = onNavigateToVideoScreen,)
+          AnimatedVisibility(uiState.currentTabBarPosition != TabBarModel.Favorite) {
             Sort(
               modifier = Modifier,
-              onClick = { isSortDropDownMenuShow = true },
-              sortTypeList = if (currentTabBarPosition == TabBarModel.All) SongsSortType.entries else CategorizedSortType.entries,
-              onSortClick = {
-                homeViewModel.updateDataStoreSortType(currentTabBarPosition, it)
-              },
-              onOrderClick = {
-                homeViewModel.updateDataStoreOrder(currentTabBarPosition)
-              },
-              isDropDownMenuSortExpand = isSortDropDownMenuShow,
-              isOrderDec = if (currentTabBarPosition == TabBarModel.All) songsSortState.isDec else folderSortState.isDec,
-              sortType = if (currentTabBarPosition == TabBarModel.All) songsSortState.sortType else folderSortState.sortType,
-              onDismissDropDownMenu = { isSortDropDownMenuShow = false },
+              isDropDownMenuSortExpand = uiState.isSortDropDownMenuShow,
+              sortTypeList = if (uiState.currentTabBarPosition == TabBarModel.All) SongsSortType.entries else CategorizedSortType.entries,
+              onSortClick = { homeViewModel.onEvent(HomeUiEvent.UpdateSortState(uiState.currentTabBarPosition, it)) },
+              onOrderClick = { homeViewModel.onEvent(HomeUiEvent.UpdateSortOrder(uiState.currentTabBarPosition)) },
+              isOrderDec = if (uiState.currentTabBarPosition == TabBarModel.All) uiState.songsSortState.isDec else uiState.folderSortState.isDec,
+              sortType = if (uiState.currentTabBarPosition == TabBarModel.All) uiState.songsSortState.sortType else uiState.folderSortState.sortType,
+              onClick = { homeViewModel.onEvent(HomeUiEvent.ShowSortDropDownMenu) },
+              onDismissDropDownMenu = { homeViewModel.onEvent(HomeUiEvent.HideSortDropDownMenu) },
             )
           }
         }
@@ -157,7 +139,7 @@ fun SharedTransitionScope.HomeMusic(
       Crossfade(
         modifier = Modifier
           .fillMaxSize(),
-        targetState = homeViewModel.isLoading,
+        targetState = uiState.isLoading,
         label = "",
       ) { target ->
         if (target) {
@@ -172,16 +154,15 @@ fun SharedTransitionScope.HomeMusic(
           ) { page ->
 
             if (page == 0 || page == 1) {
-              val list = remember(songs, favoriteSongs) {
-                if (page == 0) songs else favoriteSongs
+              val list = remember(uiState.songsList, uiState.favoritesList) {
+                if (page == 0) uiState.songsList else uiState.favoritesList
               }
 
               if (list.isNotEmpty()) {
                 LazyColumn(
+                  modifier = Modifier.fillMaxSize(),
                   state = listStates[page],
-                  modifier = Modifier
-                    .fillMaxSize(),
-                  contentPadding = PaddingValues(bottom = lazyListBottomPadding, top = tabBarHeight + 8.dp),
+                  contentPadding = PaddingValues(top = categoryHeight.dp + 8.dp),
                 ) {
                   itemsIndexed(
                     items = list,
@@ -189,11 +170,9 @@ fun SharedTransitionScope.HomeMusic(
                   ) { index, item ->
                     MusicMediaItem(
                       item = item,
-                      currentMediaId = currentPlayerMediaId(),
-                      onItemClick = {
-                        onMusicClick(index, list)
-                      },
-                      isPlaying = { currentPlayerPlayingState() },
+                      currentMediaId = currentPlayerMediaId,
+                      onItemClick = { onMusicClick(index, list) },
+                      isPlaying = { isPlaying },
                     )
                   }
                 }
@@ -201,15 +180,15 @@ fun SharedTransitionScope.HomeMusic(
 
             } else {
 
-              if (folder.isNotEmpty()) {
+              if (uiState.folderSongsList.isNotEmpty()) {
                 LazyColumn(
                   state = listStates[page],
                   modifier = Modifier
                     .fillMaxSize(),
-                  contentPadding = PaddingValues(bottom = lazyListBottomPadding, top = tabBarHeight + 8.dp),
+                  contentPadding = PaddingValues(top = categoryHeight.dp),
                 ) {
                   items(
-                    items = folder,
+                    items = uiState.folderSongsList,
                     key = { it }
                   ) { item ->
                     CategoryListItem(
@@ -241,15 +220,10 @@ fun SharedTransitionScope.HomeMusic(
         CategorySection(
           modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
-            .onGloballyPositioned { it ->
-              tabBarHeight = with(density) {
-                it.size.height.toDp()
-              }
-            },
-          currentTabState = currentTabBarPosition,
+            .background(MaterialTheme.colorScheme.background),
+          currentTabState = uiState.currentTabBarPosition,
           onTabClick = { tabBar, _ ->
-            currentTabBarPosition = tabBar
+            homeViewModel.onEvent(HomeUiEvent.UpdateTabBarPosition(tabBar))
           }
         )
       }

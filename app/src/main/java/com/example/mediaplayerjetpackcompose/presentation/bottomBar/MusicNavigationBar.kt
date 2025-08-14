@@ -1,19 +1,23 @@
 package com.example.mediaplayerjetpackcompose.presentation.bottomBar
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -25,38 +29,23 @@ fun MusicNavigationBar(
   navController: NavController,
   navigateTo: (MusicNavigationRoute) -> Unit,
 ) {
-
-  var navigationBarCurrentState = remember { mutableIntStateOf(0) }
-
-  var backStackEntry = navController.currentBackStackEntryAsState()
-
-  LaunchedEffect(backStackEntry.value?.destination) {
-    var index = NavigationBarModel.entries.indexOfFirst { backStackEntry.value?.destination?.hasRoute(it.route::class) == true }
-    if (index < 0) return@LaunchedEffect
-
-    navigationBarCurrentState.intValue = index
-  }
+  val backStackEntry by navController.currentBackStackEntryAsState()
 
   NavigationBar(
     modifier = modifier,
     containerColor = MaterialTheme.colorScheme.secondary,
   ) {
     NavigationBarModel.entries.forEachIndexed { index, item ->
+      val isSelected = NavigationBarModel.entries.any { backStackEntry?.destination?.hasRoute(item.route::class) == true }
       NavigationBarItem(
-        selected = navigationBarCurrentState.intValue == index,
+        selected = isSelected,
         onClick = {
-          var isDuplicateDestination = backStackEntry.value?.destination?.hasRoute(item.route::class) == true
+          val isDuplicateDestination = backStackEntry?.destination?.hasRoute(item.route::class) == true
 
-          if (!isDuplicateDestination) {
-            navigateTo(item.route)
-          }
+          if (!isDuplicateDestination) { navigateTo(item.route) }
         },
-        icon = {
-          Icon(painter = painterResource(item.icon), contentDescription = null)
-        },
-        label = {
-          Text(item.title)
-        },
+        icon = { Icon(painter = painterResource(item.icon), contentDescription = null) },
+        label = { Text(item.title) },
         alwaysShowLabel = true,
         colors = NavigationBarItemDefaults.colors(
           indicatorColor = if (isSystemInDarkTheme()) Color.White else Color.Black,

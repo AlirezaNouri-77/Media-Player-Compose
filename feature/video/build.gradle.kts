@@ -9,6 +9,7 @@ android {
 dependencies {
 
   api(project(":core:video-media3"))
+  implementation(project(":core:common"))
 
   implementation(libs.androidx.navigation.compose)
 

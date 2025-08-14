@@ -1,5 +1,6 @@
 package com.example.core.data.di
 
+import com.example.core.common.di.DispatcherType
 import com.example.core.data.repository.FavoriteRepository
 import com.example.core.data.repository.MusicRepository
 import com.example.core.data.repository.MusicSource
@@ -18,11 +19,11 @@ import org.koin.dsl.module
 var DataModule = module {
 
   single {
-    SearchMusicRepository(get(), get(named("IO")))
+    SearchMusicRepository(get(), get(DispatcherType.IO.qualifier))
   } bind SearchMusicRepositoryImpl::class
 
   single {
-    FavoriteRepository(get(), get(named("IO")))
+    FavoriteRepository(get(), get(DispatcherType.IO.qualifier))
   } bind FavoriteRepositoryImpl::class
 
   single {
@@ -34,7 +35,7 @@ var DataModule = module {
   } bind VideoRepositoryImpl::class
 
   single {
-    MusicSource(get(), get(named("IO")),get())
+    MusicSource(get(), get(DispatcherType.IO.qualifier),get())
   } bind MusicSourceImpl::class
 
 }

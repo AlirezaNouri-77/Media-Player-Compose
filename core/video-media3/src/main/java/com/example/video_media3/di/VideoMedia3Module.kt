@@ -1,6 +1,7 @@
 package com.example.video_media3.di
 
 import androidx.media3.exoplayer.ExoPlayer
+import com.example.core.common.di.DispatcherType
 import com.example.video_media3.VideoMedia3Controller
 import com.example.video_media3.model.VideoMediaMetaDataImpl
 import com.example.video_media3.model.VideoThumbnailUtilImpl
@@ -17,8 +18,8 @@ var VideoMedia3Module = module {
     ExoPlayer.Builder(androidApplication().applicationContext).build()
   }
 
-  single { VideoMediaMetaData(androidApplication().applicationContext, get(named("IO"))) } bind VideoMediaMetaDataImpl::class
-  single { VideoThumbnailUtil(get(named("Default")),androidApplication().applicationContext) } bind VideoThumbnailUtilImpl::class
+  single { VideoMediaMetaData(androidApplication().applicationContext, get(DispatcherType.IO.qualifier)) } bind VideoMediaMetaDataImpl::class
+  single { VideoThumbnailUtil(get(DispatcherType.DEFAULT.qualifier),androidApplication().applicationContext) } bind VideoThumbnailUtilImpl::class
 
   single { VideoMedia3Controller(get(), get()) }
 

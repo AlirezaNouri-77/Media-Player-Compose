@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -31,7 +34,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.example.core.util.convertMilliSecondToTime
+import com.example.core.common.util.convertMilliSecondToTime
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
@@ -81,7 +84,7 @@ fun SliderSection(
       horizontalAlignment = Alignment.Start,
       verticalArrangement = Arrangement.spacedBy(1.dp),
     ) {
-      androidx.compose.material3.Text(
+      Text(
         modifier = Modifier
           .offset {
             IntOffset(x = sliderOffsetX - (seekTimeTextWidth / 2), y = (-10 - sliderTrackHeight.value.toInt()))
@@ -103,7 +106,7 @@ fun SliderSection(
             sliderWidth = it.size.width.toFloat()
           },
       ) {
-        androidx.compose.material3.Slider(
+        Slider(
           modifier = Modifier.matchParentSize(),
           value = sliderValue,
           interactionSource = sliderInteractionSource,
@@ -116,13 +119,14 @@ fun SliderSection(
           },
           thumb = {},
           track = { sliderState ->
-            androidx.compose.material3.SliderDefaults.Track(
+            SliderDefaults.Track(
               sliderState = sliderState,
               modifier = modifier
                 .height(sliderTrackHeight)
                 .clip(androidx.compose.foundation.shape.RoundedCornerShape(5.dp)),
-              colors = androidx.compose.material3.SliderDefaults.colors(
+              colors = SliderDefaults.colors(
                 activeTrackColor = Color.White,
+                thumbColor = Color.White,
                 inactiveTrackColor = Color.White.copy(alpha = 0.2f),
               ),
               drawStopIndicator = null,
@@ -140,7 +144,7 @@ fun SliderSection(
         horizontalArrangement = Arrangement.Absolute.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
       ) {
-        androidx.compose.material3.Text(
+        Text(
           modifier = Modifier.alpha(1f - seekTimeTextAlpha),
           text = sliderValue.convertMilliSecondToTime(),
           fontSize = 13.sp,

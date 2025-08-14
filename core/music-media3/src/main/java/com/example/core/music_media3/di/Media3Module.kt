@@ -1,5 +1,6 @@
 package com.example.core.music_media3.di
 
+import com.example.core.common.di.DispatcherType
 import com.example.core.music_media3.MusicServiceConnection
 import com.example.core.music_media3.util.DeviceVolumeManager
 import com.example.core.music_media3.util.MusicThumbnailUtil
@@ -18,8 +19,8 @@ var Media3Module = module {
   single {
     MusicThumbnailUtil(
       androidApplication().applicationContext,
-      get(named("Default")),
-      get(named("IO"))
+      get(DispatcherType.DEFAULT.qualifier),
+      get(DispatcherType.IO.qualifier)
     )
   } bind MusicThumbnailUtilImpl::class
 

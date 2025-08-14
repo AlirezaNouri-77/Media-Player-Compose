@@ -40,12 +40,13 @@ import com.example.core.designsystem.NoRippleEffect
 import com.example.core.designsystem.R
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.model.MusicModel
-import com.example.core.util.removeFileExtension
+import com.example.core.common.util.removeFileExtension
 import com.example.feature.music_player.PagerHandler
 import com.example.feature.music_player.PlayerActions
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
+const val MiniPlayerHeight = 70
 @Composable
 fun MiniMusicPlayer(
   modifier: Modifier,
@@ -96,27 +97,26 @@ fun MiniMusicPlayer(
         }
       },
     shape = RoundedCornerShape(0.dp),
-    onClick = { onClick.invoke() },
+    onClick = onClick,
     colors = CardDefaults.cardColors(
       containerColor = Color.Transparent,
     ),
     interactionSource = NoRippleEffect,
   ) {
     Column(
-      modifier = Modifier
-        .fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth(),
       verticalArrangement = Arrangement.Center,
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Row(
         modifier = Modifier
           .fillMaxWidth()
-          .padding(vertical = 8.dp, horizontal = 10.dp)
+          .padding(vertical = 8.dp, horizontal = 4.dp)
           .drawWithContent {
             drawContent()
 
             // margin times by 2 because i applied 15.dp to end and start
-            var margin = 15.dp.toPx()
+            val margin = 15.dp.toPx()
 
             val progress = (currentMusicPosition() * (this.size.width - margin.times(2))) / currentPlayerDuration
 

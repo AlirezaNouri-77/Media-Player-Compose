@@ -36,12 +36,12 @@ import androidx.compose.ui.unit.sp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import coil.request.videoFrameMillis
+import com.example.core.common.util.convertByteToReadableSize
+import com.example.core.common.util.convertMilliSecondToTime
+import com.example.core.common.util.extractFileExtension
+import com.example.core.common.util.removeFileExtension
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.model.VideoModel
-import com.example.core.util.convertByteToReadableSize
-import com.example.core.util.convertMilliSecondToTime
-import com.example.core.util.extractFileExtension
-import com.example.core.util.removeFileExtension
 import com.example.feature.video.R
 
 @Composable

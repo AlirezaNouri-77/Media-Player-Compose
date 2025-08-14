@@ -1,8 +1,5 @@
 package com.example.feature.music_artist
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.data.util.sortMusic
@@ -10,9 +7,13 @@ import com.example.core.domain.respository.MusicSourceImpl
 import com.example.core.model.datastore.CategorizedSortModel
 import com.example.core.model.datastore.CategorizedSortType
 import com.example.datastore.SortDataStoreManagerImpl
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ArtistViewModel(
@@ -20,37 +21,50 @@ class ArtistViewModel(
   private var artistSortDataStoreManager: SortDataStoreManagerImpl<CategorizedSortModel>,
 ) : ViewModel() {
 
-  var isLoading by mutableStateOf(true)
-    private set
-
-  val sortState = artistSortDataStoreManager.sortState.stateIn(
-    viewModelScope,
-    SharingStarted.WhileSubscribed(5_000L),
-    CategorizedSortModel(CategorizedSortType.NAME, false)
-  )
-
-  val artist = combine(
-    musicSource.artist(),
-    artistSortDataStoreManager.sortState,
-  ) { songs, sortState ->
-    val sortedData = sortMusic(
-      list = songs,
-      isDescending = sortState.isDec,
-      sortType = sortState.sortType
+  private var mUiState = MutableStateFlow(ArtistScreenUiState())
+  val artistScreenUiState = mUiState
+    .onStart {
+      loadArtistDate()
+      getSortState()
+    }.stateIn(
+      viewModelScope,
+      SharingStarted.WhileSubscribed(5_000L),
+      ArtistScreenUiState(),
     )
-    isLoading = false
-    sortedData
-  }.stateIn(
-    viewModelScope,
-    SharingStarted.WhileSubscribed(5_000L),
-    emptyList(),
-  )
 
-  fun updateSortType(songsSortType: CategorizedSortType) = viewModelScope.launch {
+  fun onEvent(event: ArtistUiEvent) {
+    when (event) {
+      ArtistUiEvent.HideSortDropDownMenu -> mUiState.update { it.copy(isSortDropDownMenuShow = false) }
+      ArtistUiEvent.ShowSortDropDownMenu -> mUiState.update { it.copy(isSortDropDownMenuShow = true) }
+      is ArtistUiEvent.UpdateSortOrder -> updateSortOrder(event.isDec)
+      is ArtistUiEvent.UpdateSortType -> updateSortType(event.sortType)
+    }
+  }
+
+  private fun getSortState() = viewModelScope.launch {
+    artistSortDataStoreManager.sortState.collectLatest { sort ->
+      mUiState.update { it.copy(sortState = sort) }
+    }
+  }
+
+  private fun loadArtistDate() = viewModelScope.launch {
+    combine(
+      musicSource.artist(),
+      artistSortDataStoreManager.sortState,
+    ) { songs, sortState ->
+      sortMusic(list = songs, isDescending = sortState.isDec, sortType = sortState.sortType)
+    }.collect { artistData ->
+      mUiState.update {
+        it.copy(isLoading = false, artistList = artistData)
+      }
+    }
+  }
+
+  private fun updateSortType(songsSortType: CategorizedSortType) = viewModelScope.launch {
     artistSortDataStoreManager.updateSortType(songsSortType)
   }
 
-  fun updateSortIsDec(boolean: Boolean) = viewModelScope.launch {
+  private fun updateSortOrder(boolean: Boolean) = viewModelScope.launch {
     artistSortDataStoreManager.updateSortOrder(boolean)
   }
 

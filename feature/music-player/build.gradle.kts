@@ -9,6 +9,8 @@ android {
 dependencies {
 
   implementation(project(":core:music-media3"))
+  implementation(project(":core:common"))
+
   implementation(libs.androidx.constraintlayout.compose)
 
 }

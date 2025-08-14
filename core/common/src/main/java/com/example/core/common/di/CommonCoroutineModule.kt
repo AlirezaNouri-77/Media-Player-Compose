@@ -11,15 +11,15 @@ import org.koin.dsl.module
 var CommonCoroutineModule = module {
 
   factory(named("CoroutineMain")) {
-    CoroutineScope(SupervisorJob() + get<MainCoroutineDispatcher>(named("Main")))
+    CoroutineScope(SupervisorJob() + get<MainCoroutineDispatcher>(DispatcherType.MAIN.qualifier))
   }
 
   factory(named("CoroutineIO")) {
-    CoroutineScope(SupervisorJob() + get<CoroutineDispatcher>(named("IO")))
+    CoroutineScope(SupervisorJob() + get<CoroutineDispatcher>(DispatcherType.IO.qualifier))
   }
 
   factory(named("CoroutineDefault")) {
-    CoroutineScope(SupervisorJob() + get<CoroutineDispatcher>(named("Default")))
+    CoroutineScope(SupervisorJob() + get<CoroutineDispatcher>(DispatcherType.DEFAULT.qualifier))
   }
 
 }

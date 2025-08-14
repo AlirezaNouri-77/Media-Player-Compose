@@ -26,9 +26,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -57,11 +54,7 @@ fun SharedTransitionScope.ArtistRoute(
   navigateToCategory: (String) -> Unit,
 ) {
 
-  val sortState by artistViewModel.sortState.collectAsStateWithLifecycle()
-  val artistList by artistViewModel.artist.collectAsStateWithLifecycle()
-  var isSortDropDownMenuExpanded by remember {
-    mutableStateOf(false)
-  }
+  val uiState by artistViewModel.artistScreenUiState.collectAsStateWithLifecycle()
 
   ArtistScreen(
     modifier = modifier.sharedBounds(
@@ -71,23 +64,17 @@ fun SharedTransitionScope.ArtistRoute(
       exit = fadeOut(tween(150, 20)),
       enter = fadeIn(tween(150, 150, easing = LinearEasing)),
     ),
-    listItems = artistList,
+    listItems = uiState.artistList,
+    isLoading = uiState.isLoading,
     animatedVisibilityScope = animatedVisibilityScope,
-    isLoading = artistViewModel.isLoading,
-    navigateToCategory = {
-      navigateToCategory(it)
-    },
-    isDropDownMenuSortExpand = { isSortDropDownMenuExpanded },
-    isSortDescending = sortState.isDec,
-    currentSortType = sortState.sortType,
-    onSortIconClick = {
-      isSortDropDownMenuExpanded = true
-    },
-    onDismissDropDownMenu = {
-      isSortDropDownMenuExpanded = false
-    },
-    onOrderClick = { artistViewModel.updateSortIsDec(!sortState.isDec) },
-    onSortClick = { artistViewModel.updateSortType(it) },
+    navigateToCategory = navigateToCategory,
+    isDropDownMenuSortExpand = { uiState.isSortDropDownMenuShow },
+    isSortDescending = uiState.sortState.isDec,
+    currentSortType = uiState.sortState.sortType,
+    onSortIconClick = { artistViewModel.onEvent(ArtistUiEvent.ShowSortDropDownMenu) },
+    onDismissDropDownMenu = { artistViewModel.onEvent(ArtistUiEvent.HideSortDropDownMenu) },
+    onOrderClick = { artistViewModel.onEvent(ArtistUiEvent.UpdateSortOrder(!uiState.sortState.isDec)) },
+    onSortClick = { artistViewModel.onEvent(ArtistUiEvent.UpdateSortType(it)) }
   )
 
 }
@@ -101,7 +88,6 @@ fun SharedTransitionScope.ArtistScreen(
   isDropDownMenuSortExpand: () -> Boolean,
   isSortDescending: Boolean,
   currentSortType: CategorizedSortType,
-  bottomLazyListPadding: Dp = LocalBottomPadding.current,
   animatedVisibilityScope: AnimatedVisibilityScope,
   navigateToCategory: (String) -> Unit,
   onSortIconClick: () -> Unit,
@@ -165,11 +151,11 @@ fun SharedTransitionScope.ArtistScreen(
             modifier = Modifier
               .fillMaxSize()
               .padding(innerPadding),
-            contentPadding = PaddingValues(bottom = bottomLazyListPadding),
+            contentPadding = PaddingValues(bottom = LocalBottomPadding.current.calculateBottomPadding()),
           ) {
             items(
               items = listItems,
-              key = { it.first }
+              key = { key -> key.first }
             ) { item ->
               CategoryListItem(
                 categoryName = item.first,
