@@ -81,18 +81,6 @@ class HomeViewModel(
     }.launchIn(viewModelScope)
   }
 
-//  private fun getSongsSortState() = viewModelScope.launch {
-//    songsSortDataStoreManager.sortState.collect { sortState ->
-//      mUiState.update { it.copy(songsSortState = sortState) }
-//    }
-//  }
-//
-//  private fun getFavoriteSortStates() = viewModelScope.launch {
-//    folderSortDataStoreManager.sortState.collect { sortState ->
-//      mUiState.update { it.copy(folderSortState = sortState) }
-//    }
-//  }
-
   private fun getFavoriteSongs() = viewModelScope.launch {
     musicSource.favorite().collect { favoriteSongs ->
       mUiState.update { it.copy(favoritesList = favoriteSongs) }

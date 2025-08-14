@@ -1,25 +1,20 @@
 package com.example.mediaplayerjetpackcompose.presentation.bottomBar
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.core.model.navigation.MusicNavigationRoute
 
@@ -40,9 +35,8 @@ fun MusicNavigationBar(
       NavigationBarItem(
         selected = isSelected,
         onClick = {
-          val isDuplicateDestination = backStackEntry?.destination?.hasRoute(item.route::class) == true
-
-          if (!isDuplicateDestination) { navigateTo(item.route) }
+          val isInSameRoute = backStackEntry?.destination?.hasRoute(item.route::class) == true
+          if (!isInSameRoute) { navigateTo(item.route) }
         },
         icon = { Icon(painter = painterResource(item.icon), contentDescription = null) },
         label = { Text(item.title) },
