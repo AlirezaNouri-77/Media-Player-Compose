@@ -1,4 +1,4 @@
-package com.example.core.music_media3
+package com.example.core.music_media3.model
 
 import androidx.media3.common.Player
 

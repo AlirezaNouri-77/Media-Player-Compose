@@ -1,5 +1,9 @@
 plugins {
-  alias(libs.plugins.jetbrains.kotlin.jvm)
+  alias(libs.plugins.mediaplayer.androidComposeConventionPlugin)
+}
+
+android {
+  namespace = "com.example.core.common"
 }
 
 dependencies {
@@ -7,6 +11,8 @@ dependencies {
   implementation(libs.jetbrains.kotlinx.coroutine)
   implementation(platform(libs.androidx.compose.bom))
   implementation(libs.androidx.ui)
+
+  implementation(libs.androidx.palette.ktx)
 
   testImplementation(libs.junit)
 }

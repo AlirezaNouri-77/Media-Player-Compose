@@ -1,4 +1,4 @@
-package com.example.core.music_media3.util
+package com.example.core.common.util
 
 import android.content.Context
 import android.graphics.Bitmap

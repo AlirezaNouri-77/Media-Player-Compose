@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.dp
 import com.example.core.designsystem.NoRippleEffect
 import com.example.core.designsystem.R
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.example.core.music_media3.PlayerStateModel
-import com.example.core.music_media3.RepeatModes
+import com.example.core.music_media3.model.PlayerStateModel
+import com.example.core.music_media3.model.RepeatModes
 
 @Composable
 fun SongController(

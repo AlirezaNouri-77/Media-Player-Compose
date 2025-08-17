@@ -10,7 +10,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.model.ActiveMusicInfo
 import com.example.core.model.MusicModel
-import com.example.core.music_media3.PlayerStateModel
+import com.example.core.music_media3.model.PlayerStateModel
 import com.example.feature.music_player.PlayerActions
 import com.example.feature.music_player.fullScreen.component.FullscreenPlayerPager
 import com.example.feature.music_player.fullScreen.component.HeaderSection

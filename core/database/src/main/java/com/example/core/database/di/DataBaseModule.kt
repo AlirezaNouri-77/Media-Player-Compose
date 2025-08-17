@@ -8,6 +8,8 @@ import org.koin.dsl.module
 
 var DataBaseModule = module {
 
+  single { get<MediaPlayerDataBase>().dataBaseDao() }
+
   single {
     Room.databaseBuilder(
       context = androidApplication().applicationContext,

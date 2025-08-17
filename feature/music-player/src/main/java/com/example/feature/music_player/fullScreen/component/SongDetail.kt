@@ -13,7 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.example.core.music_media3.PlayerStateModel
+import com.example.core.music_media3.model.PlayerStateModel
 import com.example.core.common.util.convertByteToReadableSize
 import com.example.core.common.util.convertToReadableBitrate
 import com.example.core.common.util.extractFileExtension

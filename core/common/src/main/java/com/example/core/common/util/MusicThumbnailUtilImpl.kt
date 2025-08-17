@@ -1,4 +1,4 @@
-package com.example.core.music_media3.util
+package com.example.core.common.util
 
 import android.graphics.Bitmap
 import android.net.Uri

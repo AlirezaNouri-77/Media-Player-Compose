@@ -1,4 +1,4 @@
-package com.example.core.music_media3
+package com.example.core.music_media3.model
 
 import com.example.core.model.ActiveMusicInfo
 

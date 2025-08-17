@@ -4,22 +4,29 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainCoroutineDispatcher
 import kotlinx.coroutines.SupervisorJob
+import org.koin.core.qualifier.StringQualifier
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 
 var CommonCoroutineModule = module {
 
-  factory(named("CoroutineMain")) {
+  factory(CoroutineType.MAIN.qualifier) {
     CoroutineScope(SupervisorJob() + get<MainCoroutineDispatcher>(DispatcherType.MAIN.qualifier))
   }
 
-  factory(named("CoroutineIO")) {
+  factory(CoroutineType.IO.qualifier) {
     CoroutineScope(SupervisorJob() + get<CoroutineDispatcher>(DispatcherType.IO.qualifier))
   }
 
-  factory(named("CoroutineDefault")) {
+  factory(CoroutineType.DEFAULT.qualifier) {
     CoroutineScope(SupervisorJob() + get<CoroutineDispatcher>(DispatcherType.DEFAULT.qualifier))
   }
 
+}
+
+enum class CoroutineType(val qualifier: StringQualifier) {
+  MAIN(StringQualifier("CoroutineMain")),
+  IO(StringQualifier("CoroutineIO")),
+  DEFAULT(StringQualifier("CoroutineDefault")),
 }

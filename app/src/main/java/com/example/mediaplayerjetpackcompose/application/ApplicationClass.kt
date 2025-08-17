@@ -9,7 +9,6 @@ import coil.util.DebugLogger
 import com.example.core.common.di.CommonCoroutineModule
 import com.example.core.common.di.CommonDispatcherModule
 import com.example.core.data.di.DataModule
-import com.example.core.database.di.DataBaseDaoModule
 import com.example.core.database.di.DataBaseModule
 import com.example.core.music_media3.di.Media3Module
 import com.example.datastore.di.dataStoreModule
@@ -35,7 +34,6 @@ class ApplicationClass : Application(), ImageLoaderFactory {
         CommonCoroutineModule,
         CommonDispatcherModule,
         DataBaseModule,
-        DataBaseDaoModule,
         DataModule,
         VideoModule,
         Media3Module,

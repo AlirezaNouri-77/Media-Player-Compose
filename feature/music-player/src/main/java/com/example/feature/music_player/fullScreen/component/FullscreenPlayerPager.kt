@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.example.core.designsystem.MusicThumbnail
 import com.example.core.model.MusicModel
-import com.example.core.music_media3.PlayerStateModel
+import com.example.core.music_media3.model.PlayerStateModel
 import com.example.feature.music_player.PagerHandler
 import com.example.feature.music_player.PlayerActions
 import kotlinx.collections.immutable.ImmutableList
