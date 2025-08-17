@@ -2,7 +2,6 @@ package com.example.datastore.di
 
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
-import com.example.core.common.di.CoroutineType
 import com.example.core.common.di.DispatcherType
 import com.example.core.model.datastore.CategorizedSortModel
 import com.example.core.model.datastore.SongSortModel
@@ -26,7 +25,7 @@ var dataStoreModule = module {
   single {
     DataStoreFactory.create(
       serializer = get<SortPreferencesSerializer>(),
-      scope = get<CoroutineScope>(CoroutineType.IO.qualifier),
+      scope = get<CoroutineScope>(named("CoroutineIO")),
     ) {
       androidApplication().applicationContext.dataStoreFile("SortDataStore.db")
     }

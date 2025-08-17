@@ -83,6 +83,7 @@ fun MiniMusicPlayer(
 
   Card(
     modifier = modifier
+      .height(MiniPlayerHeight.dp)
       .drawWithCache {
         onDrawBehind {
           drawRoundRect(

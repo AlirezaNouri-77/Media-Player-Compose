@@ -210,6 +210,7 @@ fun CheckPermission(
   }
 }
 
+
 enum class PermissionState {
   Initial, NotGrant, Grant, ShouldShowRationale
 }

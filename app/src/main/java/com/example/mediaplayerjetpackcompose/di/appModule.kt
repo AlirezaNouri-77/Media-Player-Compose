@@ -1,16 +1,30 @@
 package com.example.mediaplayerjetpackcompose.di
 
+import com.example.core.common.di.DispatcherType
+import com.example.core.data.util.MusicThumbnailUtil
+import com.example.core.data.util.MusicThumbnailUtilImpl
 import com.example.feature.music_album.AlbumViewModel
 import com.example.feature.music_artist.ArtistViewModel
 import com.example.feature.music_categorydetail.CategoryViewModel
 import com.example.feature.music_home.HomeViewModel
 import com.example.feature.music_player.PlayerViewModel
 import com.example.feature.music_search.SearchViewModel
+import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 var appModule = module {
+
+
+  single {
+    MusicThumbnailUtil(
+      androidApplication().applicationContext,
+      get(DispatcherType.DEFAULT.qualifier),
+      get(DispatcherType.IO.qualifier)
+    )
+  } bind MusicThumbnailUtilImpl::class
 
   viewModelOf(::PlayerViewModel)
   viewModelOf(::CategoryViewModel)

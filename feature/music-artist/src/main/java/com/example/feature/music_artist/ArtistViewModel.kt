@@ -29,7 +29,7 @@ class ArtistViewModel(
     }.stateIn(
       viewModelScope,
       SharingStarted.WhileSubscribed(5_000L),
-      ArtistScreenUiState(isLoading = true),
+      ArtistScreenUiState(),
     )
 
   fun onEvent(event: ArtistUiEvent) {

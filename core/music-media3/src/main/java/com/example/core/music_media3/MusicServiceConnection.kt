@@ -2,6 +2,7 @@ package com.example.core.music_media3
 
 import android.content.ComponentName
 import android.content.Context
+import androidx.core.content.ContextCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
@@ -13,7 +14,6 @@ import com.example.core.music_media3.mapper.toMediaItem
 import com.example.core.music_media3.mapper.toMusicModel
 import com.example.core.music_media3.model.PlayerStateModel
 import com.google.common.util.concurrent.ListenableFuture
-import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -49,7 +49,7 @@ class MusicServiceConnection(
           {
             mediaController = factory?.get().also { it?.addListener(exoPlayerListener) }
           },
-          MoreExecutors.directExecutor(),
+          ContextCompat.getMainExecutor(context),
         )
       }
     }

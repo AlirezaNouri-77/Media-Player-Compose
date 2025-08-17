@@ -115,7 +115,7 @@ fun SearchScreen(
               item = item,
               currentMediaId = currentPlayerMediaId,
               onItemClick = { onMusicClick(index, listItem) },
-              isPlaying = { currentPlayerPlayingState },
+              isPlaying = currentPlayerPlayingState,
             )
           }
         }

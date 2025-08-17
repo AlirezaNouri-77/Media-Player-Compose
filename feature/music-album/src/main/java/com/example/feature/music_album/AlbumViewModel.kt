@@ -29,7 +29,7 @@ class AlbumViewModel(
     }.stateIn(
       viewModelScope,
       SharingStarted.WhileSubscribed(5_000L),
-      AlbumScreenUiState(isLoading = true),
+      AlbumScreenUiState(),
     )
 
   fun onEvent(event: AlbumUiEvent) {

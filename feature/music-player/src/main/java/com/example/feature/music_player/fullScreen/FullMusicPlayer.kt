@@ -47,9 +47,7 @@ fun FullMusicPlayer(
 
     HeaderSection(
       modifier = Modifier.layoutId("header"),
-      onBackClick = {
-        onBack.invoke()
-      },
+      onBackClick = onBack,
     )
     FullscreenPlayerPager(
       modifier = Modifier
@@ -63,7 +61,7 @@ fun FullMusicPlayer(
     SongDetail(
       modifier = Modifier
         .layoutId("songDetail"),
-      currentPlayerStateModel = { playerStateModel() },
+      currentPlayerStateModel = playerStateModel,
     )
     SliderSection(
       modifier = Modifier

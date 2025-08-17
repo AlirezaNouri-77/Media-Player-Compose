@@ -1,4 +1,4 @@
-package com.example.core.common.util
+package com.example.core.domain.respository
 
 import android.graphics.Bitmap
 import android.net.Uri

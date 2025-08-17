@@ -43,10 +43,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.designsystem.CategoryListItem
 import com.example.core.designsystem.EmptyPage
 import com.example.core.designsystem.Loading
+import com.example.core.designsystem.LocalBottomPadding
 import com.example.core.designsystem.MainTopAppBar
 import com.example.core.designsystem.MusicMediaItem
-import com.example.core.designsystem.R
 import com.example.core.designsystem.Sort
+import com.example.core.designsystem.R
 import com.example.core.model.MusicModel
 import com.example.core.model.datastore.CategorizedSortType
 import com.example.core.model.datastore.SongsSortType
@@ -149,21 +150,27 @@ fun SharedTransitionScope.HomeMusic(
         if (target) {
           Loading(modifier = Modifier)
         } else {
+
           HorizontalPager(
             modifier = Modifier
               .fillMaxSize(),
             state = pagerState,
             key = { it },
           ) { page ->
+
             if (page == 0 || page == 1) {
               val list = remember(uiState.songsList, uiState.favoritesList) {
                 if (page == 0) uiState.songsList else uiState.favoritesList
               }
+
               if (list.isNotEmpty()) {
                 LazyColumn(
                   modifier = Modifier.fillMaxSize(),
                   state = listStates[page],
-                  contentPadding = PaddingValues(top = categoryHeight.dp + 8.dp),
+                  contentPadding = PaddingValues(
+                    top = categoryHeight.dp + 8.dp, 
+                    bottom = LocalBottomPadding.current.calculateBottomPadding() + 70.dp
+                  ),
                 ) {
                   itemsIndexed(
                     items = list,
@@ -173,12 +180,14 @@ fun SharedTransitionScope.HomeMusic(
                       item = item,
                       currentMediaId = currentPlayerMediaId,
                       onItemClick = { onMusicClick(index, list) },
-                      isPlaying = { isPlaying },
+                      isPlaying = isPlaying,
                     )
                   }
                 }
               } else EmptyPage()
+
             } else {
+
               if (uiState.folderSongsList.isNotEmpty()) {
                 LazyColumn(
                   state = listStates[page],
@@ -201,8 +210,11 @@ fun SharedTransitionScope.HomeMusic(
                     )
                   }
                 }
+
               } else EmptyPage()
+
             }
+
           }
         }
       }
@@ -225,5 +237,7 @@ fun SharedTransitionScope.HomeMusic(
       }
 
     }
+
   }
+
 }

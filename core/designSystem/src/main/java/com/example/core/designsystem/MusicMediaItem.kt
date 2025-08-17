@@ -39,7 +39,7 @@ import com.example.core.model.MusicModel
 fun MusicMediaItem(
   item: MusicModel,
   currentMediaId: String,
-  isPlaying: () -> Boolean,
+  isPlaying: Boolean,
   contentColor: Color = MaterialTheme.colorScheme.onPrimary,
   onItemClick: () -> Unit,
 ) {
@@ -74,7 +74,7 @@ fun MusicMediaItem(
               .clip(androidx.compose.foundation.shape.RoundedCornerShape(5.dp))
               .background(color = Color.Companion.Black.copy(alpha = 0.4f)),
             size = 55.dp,
-            enable = isPlaying(),
+            enable = isPlaying,
           )
         }
       }
@@ -149,7 +149,7 @@ private fun PreviewMusicMediaItem() {
         album = "Example",
         folderName = "",
       ),
-      isPlaying = { false },
+      isPlaying = false,
       currentMediaId = "",
       onItemClick = {}
     )

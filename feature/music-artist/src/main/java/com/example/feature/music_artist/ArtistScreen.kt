@@ -10,7 +10,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -69,7 +68,7 @@ fun SharedTransitionScope.ArtistRoute(
     isLoading = uiState.isLoading,
     animatedVisibilityScope = animatedVisibilityScope,
     navigateToCategory = navigateToCategory,
-    isDropDownMenuSortExpand = uiState.isSortDropDownMenuShow,
+    isDropDownMenuSortExpand = { uiState.isSortDropDownMenuShow },
     isSortDescending = uiState.sortState.isDec,
     currentSortType = uiState.sortState.sortType,
     onSortIconClick = { artistViewModel.onEvent(ArtistUiEvent.ShowSortDropDownMenu) },
@@ -86,7 +85,7 @@ fun SharedTransitionScope.ArtistScreen(
   modifier: Modifier = Modifier,
   listItems: List<Pair<String, List<MusicModel>>>,
   isLoading: Boolean,
-  isDropDownMenuSortExpand: Boolean,
+  isDropDownMenuSortExpand: () -> Boolean,
   isSortDescending: Boolean,
   currentSortType: CategorizedSortType,
   animatedVisibilityScope: AnimatedVisibilityScope,
@@ -129,7 +128,7 @@ fun SharedTransitionScope.ArtistScreen(
               )
             }
             SortDropDownMenu(
-              isExpand = isDropDownMenuSortExpand,
+              isExpand = isDropDownMenuSortExpand(),
               sortTypeList = CategorizedSortType.entries.toList(),
               isSortDescending = isSortDescending,
               currentSortType = currentSortType,
@@ -151,8 +150,7 @@ fun SharedTransitionScope.ArtistScreen(
           LazyColumn(
             modifier = Modifier
               .fillMaxSize()
-              .padding(innerPadding)
-              .consumeWindowInsets(innerPadding),
+              .padding(innerPadding),
             contentPadding = PaddingValues(bottom = LocalBottomPadding.current.calculateBottomPadding()),
           ) {
             items(
