@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.core.common.util.convertMilliSecondToTime
 import com.example.core.data.util.MusicThumbnailUtilImpl
 import com.example.core.domain.respository.MusicSourceImpl
 import com.example.core.model.navigation.ParentCategoryRoute
@@ -15,6 +16,8 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.collections.map
+import kotlin.collections.reduce
 
 class CategoryViewModel(
   private val musicSource: MusicSourceImpl,
@@ -60,7 +63,8 @@ class CategoryViewModel(
         ParentCategoryRoute.ALBUM -> categoryMusicData.album.find { it.first == categoryName }?.second
       } ?: emptyList()
     }.collect { songs ->
-      mCategoryUiState.update { it.copy(songList = songs) }
+      val detail = "${songs.size} music, ${songs.map { it.duration }.reduce { acc, duration -> duration + acc }.convertMilliSecondToTime()}"
+      mCategoryUiState.update { it.copy(songList = songs, detail = detail) }
       getColorPaletteFromArtwork(songs.firstOrNull{it.artworkUri.isNotEmpty()}?.uri?.toUri() ?: Uri.EMPTY)
     }
   }

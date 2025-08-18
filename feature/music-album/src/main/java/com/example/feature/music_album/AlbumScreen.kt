@@ -26,9 +26,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,7 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.designsystem.CategoryListItem
 import com.example.core.designsystem.EmptyPage
 import com.example.core.designsystem.Loading
-import com.example.core.designsystem.LocalBottomPadding
+import com.example.core.designsystem.LocalParentScaffoldPadding
 import com.example.core.designsystem.R
 import com.example.core.designsystem.SortDropDownMenu
 import com.example.core.model.MusicModel
@@ -156,7 +153,7 @@ private fun AlbumScreen(
             modifier = Modifier
               .fillMaxSize()
               .padding(innerPadding),
-            contentPadding = PaddingValues(bottom = LocalBottomPadding.current.calculateBottomPadding()),
+            contentPadding = PaddingValues(bottom = LocalParentScaffoldPadding.current.calculateBottomPadding()),
           ) {
             items(
               items = albumListData,

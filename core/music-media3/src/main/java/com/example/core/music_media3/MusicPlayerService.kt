@@ -1,9 +1,7 @@
 package com.example.core.music_media3
 
 import android.content.Intent
-import android.util.Log
 import androidx.annotation.OptIn
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession

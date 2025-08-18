@@ -40,9 +40,7 @@ fun MainNavGraph() {
       },
     ) {
       MainVideoScreen(
-        onBack = {
-          navHostController.popBackStack()
-        }
+        onBack = navHostController::popBackStack
       )
     }
 

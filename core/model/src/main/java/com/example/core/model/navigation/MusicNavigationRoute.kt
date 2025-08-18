@@ -5,23 +5,27 @@ import kotlinx.serialization.Serializable
 
 @Keep
 sealed interface MusicNavigationRoute {
-  @Serializable
-  data object Home : MusicNavigationRoute
+    @Serializable
+    data object Home : MusicNavigationRoute
 
-  @Serializable
-  data object Album : MusicNavigationRoute
+    @Serializable
+    data object Album : MusicNavigationRoute
 
-  @Serializable
-  data object Artist : MusicNavigationRoute
+    @Serializable
+    data object Artist : MusicNavigationRoute
 
-  @Serializable
-  data object Search : MusicNavigationRoute
+    @Serializable
+    data object Search : MusicNavigationRoute
 
-  @Serializable
-  data class Category(var name: String, var parentCategoryRoute: ParentCategoryRoute) : MusicNavigationRoute
+    @Serializable
+    data class Category(
+        val name: String,
+        val parentCategoryRoute: ParentCategoryRoute,
+        val displayWithVisuals: Boolean = true,
+    ) : MusicNavigationRoute
 }
 
 @Keep
 enum class ParentCategoryRoute {
-  FOLDER, ARTIST, ALBUM
+    FOLDER, ARTIST, ALBUM
 }

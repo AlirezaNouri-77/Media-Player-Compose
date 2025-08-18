@@ -8,7 +8,6 @@ import com.example.video_media3.model.VideoThumbnailUtilImpl
 import com.example.video_media3.util.VideoMediaMetaData
 import com.example.video_media3.util.VideoThumbnailUtil
 import org.koin.android.ext.koin.androidApplication
-import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
