@@ -224,8 +224,8 @@ fun MainMusicScreen(
                                         drawRect(
                                             Brush.verticalGradient(
                                                 0.4f to musicArtWorkColorAnimation.copy(alpha = 0.8f),
-                                                0.7f to musicArtWorkColorAnimation.copy(alpha = 0.3f),
-                                                1f to Color.Black,
+                                                0.85f to musicArtWorkColorAnimation.copy(alpha = 0.3f),
+                                                1f to Color.Transparent,
                                             )
                                         )
                                     }
