@@ -7,8 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.common.util.MusicThumbnailUtil
-import com.example.core.domain.respository.MusicThumbnailUtilImpl
 import com.example.core.domain.respository.FavoriteRepositoryImpl
+import com.example.core.domain.respository.MusicThumbnailUtilImpl
 import com.example.core.model.MusicModel
 import com.example.core.music_media3.MusicServiceConnection
 import com.example.core.music_media3.model.PlayerStateModel

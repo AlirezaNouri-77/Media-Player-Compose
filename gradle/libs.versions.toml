@@ -138,3 +138,4 @@ mediaplayer-androidComposeConventionPlugin = { id = "com.mediaplayer.buildLogic.
 mediaplayer-androidConventionPlugin = { id = "com.mediaplayer.buildLogic.androidConvention" }
 mediaplayer-featureModuleConventionPlugin = { id = "com.mediaplayer.buildLogic.featureModuleConvention" }
 mediaplayer-roomConventionPlugin = { id = "com.mediaplayer.buildLogic.roomConvention" }
+mediaplayer-AndroidApplicationPlugin = { id = "com.mediaplayer.buildLogic.androidApplication" }

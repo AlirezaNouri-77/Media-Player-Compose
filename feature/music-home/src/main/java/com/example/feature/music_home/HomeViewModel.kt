@@ -4,18 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.data.util.sortMusic
 import com.example.core.domain.respository.MusicSourceImpl
-import com.example.feature.music_home.model.TabBarModel
 import com.example.core.model.datastore.CategorizedSortModel
-import com.example.core.model.datastore.CategorizedSortType
 import com.example.core.model.datastore.SongSortModel
-import com.example.core.model.datastore.SongsSortType
 import com.example.core.model.datastore.SortType
 import com.example.datastore.SortDataStoreManagerImpl
+import com.example.feature.music_home.model.TabBarModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -80,18 +77,6 @@ class HomeViewModel(
       mUiState.update { it.copy(songsSortState = songs, folderSortState = folder) }
     }.launchIn(viewModelScope)
   }
-
-//  private fun getSongsSortState() = viewModelScope.launch {
-//    songsSortDataStoreManager.sortState.collect { sortState ->
-//      mUiState.update { it.copy(songsSortState = sortState) }
-//    }
-//  }
-//
-//  private fun getFavoriteSortStates() = viewModelScope.launch {
-//    folderSortDataStoreManager.sortState.collect { sortState ->
-//      mUiState.update { it.copy(folderSortState = sortState) }
-//    }
-//  }
 
   private fun getFavoriteSongs() = viewModelScope.launch {
     musicSource.favorite().collect { favoriteSongs ->

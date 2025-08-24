@@ -1,7 +1,6 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
-
 plugins {
   alias(libs.plugins.android.application)
+  alias(libs.plugins.mediaplayer.androidApplicationPlugin)
   alias(libs.plugins.android.kotlin)
   alias(libs.plugins.android.ksp)
   alias(libs.plugins.android.plugin.serialization)
@@ -10,16 +9,12 @@ plugins {
 
 android {
   namespace = "com.example.mediaplayerjetpackcompose"
-  compileSdk = libs.versions.compileSdk.get().toInt()
 
   defaultConfig {
     applicationId = "com.example.mediaplayerjetpackcompose"
-    minSdk = libs.versions.minSdk.get().toInt()
     targetSdk = libs.versions.targetSdk.get().toInt()
     versionCode = 1
     versionName = "1.0"
-
-    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
     vectorDrawables {
       useSupportLibrary = true
@@ -27,45 +22,21 @@ android {
 
   }
 
-  buildTypes {
-    release {
-      isMinifyEnabled = true
-      isShrinkResources = true
-      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-      signingConfig = signingConfigs.getByName("debug")
-    }
-  }
-  compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-  }
-  kotlinOptions {
-    jvmTarget = "11"
-  }
+//  composeOptions {
+//    tasks.withType<KotlinJvmCompile>().all {
+//      compilerOptions.freeCompilerArgs.addAll(
+//        "-P",
+//        "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
+//             project.layout.buildDirectory + "/compose_metrics"
+//      )
+//      compilerOptions.freeCompilerArgs.addAll(
+//        "-P",
+//        "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
+//             project.layout.buildDirectory + "/compose_metrics"
+//      )
+//    }
+//  }
 
-  buildFeatures {
-    compose = true
-  }
-
-  packaging {
-    resources {
-      excludes += "/META-INF/{AL2.0,LGPL2.1}"
-    }
-  }
-  composeOptions {
-    tasks.withType<KotlinJvmCompile>().all {
-      compilerOptions.freeCompilerArgs.addAll(
-        "-P",
-        "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
-             project.layout.buildDirectory + "/compose_metrics"
-      )
-      compilerOptions.freeCompilerArgs.addAll(
-        "-P",
-        "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
-             project.layout.buildDirectory + "/compose_metrics"
-      )
-    }
-  }
 }
 
 dependencies {

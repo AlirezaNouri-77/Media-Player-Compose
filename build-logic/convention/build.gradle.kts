@@ -38,5 +38,9 @@ gradlePlugin {
       id = libs.plugins.mediaplayer.roomConventionPlugin.get().pluginId
       implementationClass = "RoomConventionPlugin"
     }
+    register("androidApplication") {
+      id = libs.plugins.mediaplayer.androidApplicationPlugin.get().pluginId
+      implementationClass = "AndroidApplication"
+    }
   }
 }

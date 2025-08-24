@@ -12,11 +12,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
-import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.common.util.convertByteToReadableSize
 import com.example.core.common.util.convertToReadableBitrate
 import com.example.core.common.util.extractFileExtension
 import com.example.core.common.util.removeFileExtension
+import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.music_media3.model.PlayerStateModel
 
 @Composable

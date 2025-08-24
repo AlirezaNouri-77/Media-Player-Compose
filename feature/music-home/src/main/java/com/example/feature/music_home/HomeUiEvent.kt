@@ -1,7 +1,7 @@
 package com.example.feature.music_home
 
-import com.example.feature.music_home.model.TabBarModel
 import com.example.core.model.datastore.SortType
+import com.example.feature.music_home.model.TabBarModel
 
 sealed interface HomeUiEvent {
   object HideSortDropDownMenu : HomeUiEvent

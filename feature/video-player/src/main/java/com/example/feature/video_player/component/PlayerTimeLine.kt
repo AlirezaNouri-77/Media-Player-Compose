@@ -16,9 +16,9 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.example.core.common.util.convertMilliSecondToTime
 import com.example.core.designsystem.NoRippleEffect
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.example.core.common.util.convertMilliSecondToTime
 import com.example.video_media3.model.VideoPlayerState
 
 @OptIn(ExperimentalMaterial3Api::class)

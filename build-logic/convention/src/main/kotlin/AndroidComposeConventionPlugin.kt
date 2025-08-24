@@ -1,5 +1,4 @@
 import com.android.build.gradle.LibraryExtension
-import configuration.configKotlinJvm
 import configuration.getLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -16,7 +15,9 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
 
       extensions.configure<LibraryExtension> {
         setupAndroidSdkConfig(this)
-        configKotlinJvm(this)
+        buildFeatures {
+          compose = true
+        }
       }
 
       this.dependencies {
