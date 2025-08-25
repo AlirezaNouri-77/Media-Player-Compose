@@ -1,4 +1,5 @@
 import com.android.build.gradle.LibraryExtension
+import configuration.configComposeMetric
 import configuration.getLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -15,6 +16,7 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
 
       extensions.configure<LibraryExtension> {
         setupAndroidSdkConfig(this)
+        configComposeMetric(this)
         buildFeatures {
           compose = true
         }

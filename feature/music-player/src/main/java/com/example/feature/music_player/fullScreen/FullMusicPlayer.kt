@@ -59,13 +59,11 @@ fun FullMusicPlayer(
       currentPagerPage = currentPagerPage,
     )
     SongDetail(
-      modifier = Modifier
-        .layoutId("songDetail"),
+      modifier = Modifier.layoutId("songDetail"),
       currentPlayerStateModel = playerStateModel,
     )
     SliderSection(
-      modifier = Modifier
-        .layoutId("slider"),
+      modifier = Modifier.layoutId("slider"),
       currentMusicPosition = { currentMusicPosition() },
       seekTo = { onPlayerAction(PlayerActions.SeekTo(it)) },
       duration = playerStateModel().currentMediaInfo.duration.toFloat(),
@@ -86,9 +84,7 @@ fun FullMusicPlayer(
       modifier = Modifier.layoutId("volumeSlider"),
       maxDeviceVolume = maxDeviceVolume,
       currentVolume = { currentVolume },
-      onVolumeChange = {
-        onVolumeChange(it)
-      }
+      onVolumeChange = onVolumeChange,
     )
   }
 }

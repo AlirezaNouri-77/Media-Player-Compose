@@ -3,6 +3,7 @@ package com.example.feature.music_player.fullScreen.component
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,12 +16,10 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -30,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,26 +50,17 @@ fun SliderSection(
   }
 
   val sliderInteractionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
-  var isSliderInteraction by remember { mutableStateOf(false) }
-
-  LaunchedEffect(sliderInteractionSource) {
-    sliderInteractionSource.interactions.collect { interaction ->
-      when (interaction) {
-        is androidx.compose.foundation.interaction.DragInteraction.Start -> isSliderInteraction = true
-        is androidx.compose.foundation.interaction.DragInteraction.Cancel, is androidx.compose.foundation.interaction.DragInteraction.Stop -> isSliderInteraction = false
-      }
-    }
-  }
+  val isSliderDragging by sliderInteractionSource.collectIsDraggedAsState()
 
   var sliderWidth by remember { mutableFloatStateOf(0f) }
   var sliderOffsetX by remember { mutableIntStateOf(0) }
-  val sliderTrackHeight = animateDpAsState(targetValue = if (isSliderInteraction) 38.dp else 10.dp, label = "").value
-  val seekTimeTextAlpha = animateFloatAsState(targetValue = if (isSliderInteraction) 1f else 0f, label = "").value
+  val sliderTrackHeight = animateDpAsState(targetValue = if (isSliderDragging) 38.dp else 10.dp, label = "").value
+  val seekTimeTextAlpha = animateFloatAsState(targetValue = if (isSliderDragging) 1f else 0f, label = "").value
   var seekTimeTextWidth by remember { mutableIntStateOf(0) }
 
   val sliderValue by remember {
     derivedStateOf {
-      when (isSliderInteraction) {
+      when (isSliderDragging) {
         true -> seekPosition.floatValue
         false -> currentMusicPosition().toFloat()
       }
@@ -151,7 +142,7 @@ fun SliderSection(
           fontWeight = FontWeight.Normal,
           color = Color.White,
         )
-        androidx.compose.material3.Text(
+        Text(
           modifier = Modifier.alpha(1f - seekTimeTextAlpha),
           text = duration.convertMilliSecondToTime(),
           fontSize = 13.sp,
@@ -164,7 +155,7 @@ fun SliderSection(
   }
 }
 
-@androidx.compose.ui.tooling.preview.Preview
+@Preview
 @Composable
 private fun Preview() {
   MediaPlayerJetpackComposeTheme {

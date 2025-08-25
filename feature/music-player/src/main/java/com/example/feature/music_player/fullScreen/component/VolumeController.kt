@@ -1,9 +1,9 @@
 package com.example.feature.music_player.fullScreen.component
 
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.interaction.DragInteraction
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,11 +15,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,30 +38,12 @@ fun VolumeController(
   onVolumeChange: (Float) -> Unit,
 ) {
   val interactionSource = remember { MutableInteractionSource() }
-  var isInteract by remember { mutableStateOf(false) }
+  val isDragged by interactionSource.collectIsDraggedAsState()
 
-  val sliderThumbWidth = animateDpAsState(targetValue = if (isInteract) 7.dp else 5.dp, label = "").value
-  val sliderTrackHeight = animateDpAsState(targetValue = if (isInteract) 4.dp else 8.dp, label = "").value
+  val sliderThumbWidth = animateDpAsState(targetValue = if (isDragged) 8.dp else 4.dp, label = "").value
+  val sliderTrackHeight = animateDpAsState(targetValue = if (isDragged) 4.dp else 8.dp, label = "").value
 
-  val iconsScale = remember {
-    Animatable(1f)
-  }
-
-  LaunchedEffect(isInteract, currentVolume()) {
-    if ((currentVolume() == maxDeviceVolume || currentVolume() == 0) && !isInteract) {
-      iconsScale.animateTo(1.35f)
-      iconsScale.animateTo(1f)
-    }
-  }
-
-  LaunchedEffect(interactionSource) {
-    interactionSource.interactions.collect { interaction ->
-      when (interaction) {
-        is DragInteraction.Start -> isInteract = true
-        is DragInteraction.Stop, is DragInteraction.Cancel -> isInteract = false
-      }
-    }
-  }
+  val iconsScale = animateFloatAsState(if (isDragged) 1.4f else 1f)
 
   Row(
     modifier = modifier,

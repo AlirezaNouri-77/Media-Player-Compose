@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -22,8 +23,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import com.example.core.designsystem.NoRippleEffect
 import com.example.core.designsystem.R
+import com.example.core.designsystem.bounceClickEffect
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.music_media3.model.PlayerStateModel
 import com.example.core.music_media3.model.RepeatModes
@@ -50,7 +51,7 @@ fun SongController(
   }
 
   Row(
-    modifier = modifier.fillMaxWidth(),
+    modifier = modifier.fillMaxWidth().heightIn(min = 60.dp),
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.SpaceEvenly,
   ) {
@@ -64,14 +65,12 @@ fun SongController(
       icon = R.drawable.icon_previous,
       size = DpSize(26.dp, 26.dp),
       contentDescription = "Next",
-      onClick = {
-        onMovePreviousMusic.invoke()
-      },
+      onClick = onMovePreviousMusic,
     )
     ButtonOfFullScreenPlayer(
       modifier = Modifier.padding(horizontal = 5.dp),
       icon = if (playerStateModel().isPlaying) R.drawable.icon_pause else R.drawable.icon_play,
-      size = DpSize(42.dp, 42.dp),
+      size = DpSize(48.dp,48.dp),
       contentDescription = "Play and Pause",
       onClick = {
         when (playerStateModel().isPlaying) {
@@ -84,9 +83,7 @@ fun SongController(
       icon = R.drawable.icon_next,
       size = DpSize(26.dp, 26.dp),
       contentDescription = "Next",
-      onClick = {
-        onMoveNextMusic.invoke()
-      },
+      onClick = onMoveNextMusic,
     )
     ButtonOfFullScreenPlayer(
       icon = when (repeatMode) {
@@ -118,9 +115,8 @@ private fun ButtonOfFullScreenPlayer(
   onClick: () -> Unit,
 ) {
   IconButton(
-    modifier = modifier.size(size),
+    modifier = modifier.size(size).bounceClickEffect(),
     onClick = { onClick.invoke() },
-    interactionSource = NoRippleEffect,
     colors = IconButtonDefaults.iconButtonColors(
       containerColor = Color.Transparent,
       contentColor = Color.White,

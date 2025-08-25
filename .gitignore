@@ -1,5 +1,8 @@
 .gradle
 /.idea
 /build
+/.kotlin
 *.apk
 local.properties
+/compose-reports
+/compose-metrics

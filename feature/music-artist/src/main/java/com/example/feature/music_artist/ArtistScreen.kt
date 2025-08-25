@@ -42,6 +42,8 @@ import com.example.core.designsystem.R
 import com.example.core.designsystem.SortDropDownMenu
 import com.example.core.model.MusicModel
 import com.example.core.model.datastore.CategorizedSortType
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
@@ -52,9 +54,8 @@ fun SharedTransitionScope.ArtistRoute(
   animatedVisibilityScope: AnimatedVisibilityScope,
   navigateToCategory: (String) -> Unit,
 ) {
-
   val uiState by artistViewModel.artistScreenUiState.collectAsStateWithLifecycle()
-
+  
   ArtistScreen(
     modifier = modifier.sharedBounds(
       sharedContentState = rememberSharedContentState("bound"),
@@ -63,7 +64,7 @@ fun SharedTransitionScope.ArtistRoute(
       exit = fadeOut(tween(150, 20)),
       enter = fadeIn(tween(150, 150, easing = LinearEasing)),
     ),
-    listItems = uiState.artistList,
+    listItems = uiState.artistList.toImmutableList(),
     isLoading = uiState.isLoading,
     animatedVisibilityScope = animatedVisibilityScope,
     navigateToCategory = navigateToCategory,
@@ -82,7 +83,7 @@ fun SharedTransitionScope.ArtistRoute(
 @Composable
 fun SharedTransitionScope.ArtistScreen(
   modifier: Modifier = Modifier,
-  listItems: List<Pair<String, List<MusicModel>>>,
+  listItems: ImmutableList<Pair<String, List<MusicModel>>>,
   isLoading: Boolean,
   isDropDownMenuSortExpand: () -> Boolean,
   isSortDescending: Boolean,

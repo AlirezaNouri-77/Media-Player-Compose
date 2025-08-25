@@ -22,21 +22,6 @@ android {
 
   }
 
-//  composeOptions {
-//    tasks.withType<KotlinJvmCompile>().all {
-//      compilerOptions.freeCompilerArgs.addAll(
-//        "-P",
-//        "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
-//             project.layout.buildDirectory + "/compose_metrics"
-//      )
-//      compilerOptions.freeCompilerArgs.addAll(
-//        "-P",
-//        "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
-//             project.layout.buildDirectory + "/compose_metrics"
-//      )
-//    }
-//  }
-
 }
 
 dependencies {

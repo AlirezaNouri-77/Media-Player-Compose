@@ -12,6 +12,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.core.designsystem.NoRippleEffect
 import com.example.core.designsystem.R
+import com.example.core.designsystem.bounceClickEffect
 
 @Composable
 fun MiniPlayerActions(
@@ -20,7 +21,7 @@ fun MiniPlayerActions(
     onClickPlayAndPause:()->Unit,
 ) {
     IconButton(
-        modifier = modifier
+        modifier = modifier.bounceClickEffect()
             .padding(6.dp)
             .size(18.dp),
         onClick = onClickPlayAndPause,

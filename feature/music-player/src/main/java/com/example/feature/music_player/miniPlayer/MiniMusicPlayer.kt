@@ -111,8 +111,7 @@ fun MiniMusicPlayer(
                 artworkList = artworkPagerList,
             )
             MiniPlayerActions(
-                modifier = Modifier
-                    .weight(0.1f),
+                modifier = Modifier.weight(0.1f),
                 onClickPlayAndPause = {
                     when (isPlaying) {
                         true -> onPlayerAction(PlayerActions.PausePlayer)
