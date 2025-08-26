@@ -42,7 +42,7 @@ fun PlayerController(
     ) {
       PlayerControllerButton(
         icon = it,
-        modifier = Modifier.size(30.dp),
+        modifier = Modifier.size(42.dp),
         onClick = {
           when (currentState().isPlaying) {
             true -> onPause()

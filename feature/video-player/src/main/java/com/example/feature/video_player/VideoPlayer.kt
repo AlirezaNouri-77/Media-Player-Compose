@@ -7,8 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -51,6 +51,8 @@ fun VideoPlayer(
   val previewSliderBitmap by videoPageViewModel.previewSliderBitmap.collectAsStateWithLifecycle(null)
   val middleVideoPlayerInfo by videoPageViewModel.middleVideoPlayerInfo.collectAsStateWithLifecycle(MiddleVideoPlayerIndicator.Initial)
 
+  HideSystemWindowInset()
+
   var playerControllerVisibility by remember {
     mutableStateOf(false)
   }
@@ -58,8 +60,6 @@ fun VideoPlayer(
   BackHandler {
     onBack()
   }
-
-  HideSystemWindowInset()
 
   DisposableEffect(key1 = lifecycleOwner, effect = {
     val observe = LifecycleEventObserver { _, event ->
@@ -126,16 +126,19 @@ fun VideoPlayer(
 
   AnimatedVisibility(
     visible = playerControllerVisibility,
+    modifier = Modifier.padding(vertical = 25.dp),
   ) {
     PlayerControllerLayout(
-      modifier = Modifier
-        .systemBarsPadding()
-        .statusBarsPadding(),
       playerResizeMode = { playerContentScale.value },
       previewSlider = { previewSliderBitmap },
       currentPlayerState = { currentState },
       currentPlayerPosition = { currentPlayerPosition },
-      getPreviewSlider = { videoPageViewModel.getSliderPreviewThumbnail(it.toLong()) },
+      getPreviewSlider =  videoPageViewModel::getSliderPreviewThumbnail ,
+      onSeekToPrevious = videoPageViewModel::seekToPrevious,
+      onSeekToNext = videoPageViewModel::seekToNext,
+      onPausePlayer = videoPageViewModel::pausePlayer,
+      onResumePlayer = videoPageViewModel::resumePlayer,
+      onSeekToPosition = videoPageViewModel::seekToPosition,
       onBackClick = {
         onBack()
         videoPageViewModel.stopPlayer()
@@ -143,11 +146,6 @@ fun VideoPlayer(
       playerResizeModeChange = {
         playerContentScale.value = if (playerContentScale.value == ContentScale.Fit) ContentScale.FillWidth else ContentScale.Fit
       },
-      onSeekToPrevious = videoPageViewModel::seekToPrevious,
-      onSeekToNext = videoPageViewModel::seekToNext,
-      onPausePlayer = videoPageViewModel::pausePlayer,
-      onResumePlayer = videoPageViewModel::resumePlayer,
-      onSeekToPosition = videoPageViewModel::seekToPosition,
     )
   }
 
@@ -168,9 +166,7 @@ private fun Modifier.playerViewClickHandler(
 ): Modifier = this.then(
   Modifier.pointerInput(null) {
     detectTapGestures(
-      onTap = {
-        onTapClick()
-      },
+      onTap = { onTapClick() },
       onDoubleTap = { offset ->
         when {
           offset.x > this.size.width / 2 -> onRightDoubleClick()

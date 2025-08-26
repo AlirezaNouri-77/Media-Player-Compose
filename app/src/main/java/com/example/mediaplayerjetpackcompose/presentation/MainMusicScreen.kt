@@ -212,7 +212,9 @@ fun MainMusicScreen(
                             initialOffsetY = { int -> int / 2 }),
                         exit = slideOutVertically(
                             animationSpec = tween(400, 100),
-                            targetOffsetY = { int -> int / 2 }) + fadeOut(tween(200, delayMillis = 90))
+                            targetOffsetY = { int -> int / 2 }) + fadeOut(
+                            tween(200, delayMillis = 90),
+                        )
                     ) {
                         Box {
                             FullMusicPlayer(
@@ -225,6 +227,12 @@ fun MainMusicScreen(
                                             Brush.verticalGradient(
                                                 0.4f to musicArtWorkColorAnimation.copy(alpha = 0.8f),
                                                 0.85f to musicArtWorkColorAnimation.copy(alpha = 0.3f),
+                                                1f to Color.Transparent,
+                                            )
+                                        )
+                                        drawRect(
+                                            Brush.verticalGradient(
+                                                0.5f to Color.Black.copy(alpha = 0.5f),
                                                 1f to Color.Transparent,
                                             )
                                         )
@@ -287,9 +295,9 @@ fun MainMusicScreen(
                         }
                     }
                 },
-                sheetMaxWidth = 1000.dp,
                 sheetContainerColor = Color.Transparent,
                 containerColor = Color.Transparent,
+                sheetTonalElevation = 0.dp,
                 sheetShadowElevation = 0.dp,
             ) { bottomSheetScaffoldPadding ->
 

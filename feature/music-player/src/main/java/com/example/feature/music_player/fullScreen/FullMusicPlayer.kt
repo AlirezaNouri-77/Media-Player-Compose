@@ -39,19 +39,16 @@ fun FullMusicPlayer(
   onVolumeChange: (Float) -> Unit,
   orientation: Int = LocalConfiguration.current.orientation,
 ) {
-
   ConstraintLayout(
     modifier = modifier.fillMaxSize(),
     constraintSet = decoupledConstraintLayout(orientation)
   ) {
-
     HeaderSection(
       modifier = Modifier.layoutId("header"),
       onBackClick = onBack,
     )
     FullscreenPlayerPager(
-      modifier = Modifier
-        .layoutId("pagerArtwork"),
+      modifier = Modifier.layoutId("pagerArtwork"),
       pagerItem = pagerMusicList,
       playerStateModel = playerStateModel(),
       onPlayerAction = { onPlayerAction(it) },

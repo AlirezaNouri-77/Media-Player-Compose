@@ -44,7 +44,6 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
@@ -53,7 +52,6 @@ import com.example.core.designsystem.LocalMiniPlayerHeight
 import com.example.core.designsystem.LocalParentScaffoldPadding
 import com.example.core.designsystem.MusicMediaItem
 import com.example.core.designsystem.MusicThumbnail
-import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.model.MusicModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
@@ -133,11 +131,18 @@ fun SharedTransitionScope.CategoryDetailPage(
                 onDrawWithContent {
                     drawRect(
                         brush = Brush.verticalGradient(
-                            0.4f to animatedColor.copy(alpha = 0.8f),
-                            0.7f to animatedColor.copy(alpha = 0.7f),
+                            0.4f to animatedColor.copy(alpha = 0.5f),
+                            0.7f to animatedColor.copy(alpha = 0.3f),
                             1f to Color.Transparent,
-                            endY = this.size.height,
                         ),
+                    )
+                    drawRect(
+                        Brush.verticalGradient(
+                            0.3f to Color.Black.copy(alpha = 0.5f),
+                            1f to Color.Transparent,
+                            startY = this.size.height,
+                            endY = 0f
+                        )
                     )
                     drawContent()
                 }
@@ -222,24 +227,5 @@ fun SharedTransitionScope.CategoryDetailPage(
             }
         }
 
-    }
-}
-
-@Composable
-fun CategoryDetailTopbar(
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier) {
-
-    }
-}
-
-@Preview
-@Composable
-private fun CategoryDetailTopbarPreview() {
-    MediaPlayerJetpackComposeTheme {
-        CategoryDetailTopbar(
-
-        )
     }
 }

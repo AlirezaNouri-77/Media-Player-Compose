@@ -70,7 +70,11 @@ class VideoMedia3Controller(
         }
     }
 
-    fun unRegisterMedia3Listener() = exoPlayer.removeListener(exoPlayerEventListener)
+    fun unRegisterMedia3Listener() {
+        if (::exoPlayerEventListener.isInitialized){
+            exoPlayer.removeListener(exoPlayerEventListener)
+        }
+    }
 
     fun registerMedia3Listener() {
 

@@ -5,8 +5,8 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.common.util.convertMilliSecondToTime
-import com.example.core.data.util.MusicThumbnailUtilImpl
 import com.example.core.domain.respository.MusicSourceImpl
+import com.example.core.domain.respository.MusicThumbnailUtilImpl
 import com.example.core.model.navigation.ParentCategoryRoute
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

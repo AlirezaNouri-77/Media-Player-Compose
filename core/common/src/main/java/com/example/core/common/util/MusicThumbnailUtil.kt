@@ -67,7 +67,7 @@ class MusicThumbnailUtil(
     }
 
     companion object {
-        const val DEFAULT_COLOR_PALETTE = Color.LTGRAY
+        const val DEFAULT_COLOR_PALETTE = Color.DKGRAY
     }
 
 }

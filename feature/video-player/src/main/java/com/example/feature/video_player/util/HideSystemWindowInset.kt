@@ -10,24 +10,22 @@ import androidx.core.view.WindowInsetsControllerCompat
 
 @Composable
 fun HideSystemWindowInset(
-  window: Window? = LocalActivity.current?.window,
+    window: Window? = LocalActivity.current?.window,
 ) {
-  DisposableEffect(Unit) {
-    window ?: return@DisposableEffect onDispose {}
-    val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+    DisposableEffect(Unit) {
+        window ?: return@DisposableEffect onDispose {}
+        val insetsController = WindowCompat.getInsetsController(window, window.decorView)
 
-    insetsController.apply {
-      hide(WindowInsetsCompat.Type.statusBars())
-      hide(WindowInsetsCompat.Type.systemBars())
-      systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-    }
+        insetsController.apply {
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            hide(WindowInsetsCompat.Type.systemBars())
+        }
 
-    onDispose {
-      insetsController.apply {
-        show(WindowInsetsCompat.Type.statusBars())
-        show(WindowInsetsCompat.Type.systemBars())
-        systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
-      }
+        onDispose {
+            insetsController.apply {
+                systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
+                show(WindowInsetsCompat.Type.systemBars())
+            }
+        }
     }
-  }
 }

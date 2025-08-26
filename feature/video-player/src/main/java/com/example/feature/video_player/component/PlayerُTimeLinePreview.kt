@@ -29,14 +29,14 @@ import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 @Composable
 fun PlayerTimeLinePreview(
   modifier: Modifier = Modifier,
-  shouldShow: Boolean,
+  isVisible: Boolean,
   previewBitmap: ImageBitmap?,
-  videoPosition: Int,
+  videoPosition: Long,
 ) {
 
   AnimatedVisibility(
     modifier = modifier,
-    visible = shouldShow,
+    visible = isVisible,
   ) {
     Card(
       modifier = Modifier
@@ -88,7 +88,7 @@ private fun PreviewPlayerControllerLayout() {
   MediaPlayerJetpackComposeTheme {
     PlayerTimeLinePreview(
       modifier = Modifier,
-      shouldShow = true,
+      isVisible = true,
       previewBitmap = null,
       videoPosition = 10000,
     )

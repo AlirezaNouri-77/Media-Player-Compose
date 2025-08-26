@@ -1,69 +1,95 @@
 package com.example.feature.video_player.component
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.core.common.util.convertMilliSecondToTime
 import com.example.core.designsystem.NoRippleEffect
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.example.video_media3.model.VideoPlayerState
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 fun PlayerTimeLine(
   modifier: Modifier = Modifier,
-  slidePosition: () -> Float,
-  currentPlayerState: () -> VideoPlayerState,
-  currentMediaPosition: Int,
-  slideValueChange: (Float) -> Unit,
-  slideValueChangeFinished: () -> Unit,
+  currentMediaDuration: Long,
+  currentPlayerPosition: Long,
+  onSeekTo: (Long) -> Unit,
+  getPreviewSlider: (position: Long) -> Unit,
+  previewSlider: ImageBitmap?,
 ) {
 
-  ConstraintLayout(
-    modifier = Modifier
-      .fillMaxWidth()
-      .wrapContentHeight()
+  var draggingSliderPosition by rememberSaveable {
+    mutableLongStateOf(0L)
+  }
+
+  val sliderInteraction = remember { MutableInteractionSource() }
+  val isSliderDragging by sliderInteraction.collectIsDraggedAsState()
+
+  val sliderPosition = remember(draggingSliderPosition,currentPlayerPosition) {
+    if (isSliderDragging) draggingSliderPosition else currentPlayerPosition
+  }
+
+  LaunchedEffect(key1 = draggingSliderPosition) {
+    snapshotFlow {
+      draggingSliderPosition
+    }.debounce(100L)
+      .distinctUntilChanged()
+      .collectLatest {
+        getPreviewSlider(it)
+      }
+  }
+
+  Column(
+    modifier = Modifier.fillMaxWidth(),
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    val (sliderRef, durationRef, currentPositionRef) = createRefs()
-
-    val endGuild = createGuidelineFromEnd(10.dp)
-    val startGuild = createGuidelineFromStart(10.dp)
-
+    PlayerTimeLinePreview(
+      isVisible = previewSlider != null && isSliderDragging,
+      previewBitmap = previewSlider,
+      videoPosition = sliderPosition,
+    )
     Slider(
-      modifier = modifier
-        .fillMaxWidth()
-        .constrainAs(sliderRef) {
-          top.linkTo(parent.top)
-          end.linkTo(parent.end)
-          start.linkTo(parent.start)
-        },
-      value = slidePosition(),
-      onValueChangeFinished = {
-        slideValueChangeFinished()
-      },
-      onValueChange = { value ->
-        slideValueChange(value)
-      },
-      valueRange = 0f..currentPlayerState().currentMediaInfo.duration.toFloat(),
-
+      modifier = modifier.fillMaxWidth(),
+      value = sliderPosition.toFloat(),
+      interactionSource = sliderInteraction,
+      onValueChangeFinished = { onSeekTo(draggingSliderPosition) },
+      onValueChange = { value -> draggingSliderPosition = value.toLong() },
+      valueRange = 0f..currentMediaDuration.toFloat(),
       track = { sliderState ->
         SliderDefaults.Track(
           sliderState = sliderState,
           modifier = Modifier.graphicsLayer {
-            scaleY = 0.6f
+            scaleY = 0.7f
           },
           drawStopIndicator = {},
           colors = SliderDefaults.colors(
@@ -85,30 +111,25 @@ fun PlayerTimeLine(
       }
     )
 
-    Text(
-      modifier = Modifier.Companion.constrainAs(currentPositionRef) {
-        top.linkTo(sliderRef.bottom, margin = 3.dp)
-        bottom.linkTo(sliderRef.bottom)
-        start.linkTo(startGuild)
-      },
-      text = currentMediaPosition.convertMilliSecondToTime(),
-      fontSize = 15.sp,
-      fontWeight = FontWeight.Medium,
-      color = Color.White,
-    )
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.Absolute.SpaceBetween,
+    ) {
+      Text(
+        text = currentPlayerPosition.convertMilliSecondToTime(),
+        fontSize = 15.sp,
+        fontWeight = FontWeight.Medium,
+        color = Color.White,
+      )
 
-    Text(
-      modifier = Modifier.Companion.constrainAs(durationRef) {
-        top.linkTo(sliderRef.bottom, margin = 3.dp)
-        bottom.linkTo(sliderRef.bottom)
-        end.linkTo(endGuild)
-      },
-      text = currentPlayerState().currentMediaInfo.duration.toInt()
-        .convertMilliSecondToTime(),
-      fontSize = 15.sp,
-      fontWeight = FontWeight.Medium,
-      color = Color.White,
-    )
+      Text(
+        text = currentMediaDuration.toInt().convertMilliSecondToTime(),
+        fontSize = 15.sp,
+        fontWeight = FontWeight.Medium,
+        color = Color.White,
+      )
+    }
 
   }
 
@@ -119,11 +140,11 @@ fun PlayerTimeLine(
 private fun PreviewPlayerTimeLine() {
   MediaPlayerJetpackComposeTheme {
     PlayerTimeLine(
-      currentPlayerState = { VideoPlayerState.Empty },
-      currentMediaPosition = 0,
-      slideValueChange = {},
-      slidePosition = { 0f },
-      slideValueChangeFinished = {},
+        currentPlayerPosition = 0,
+        onSeekTo = {},
+        previewSlider = null,
+        getPreviewSlider = {},
+        currentMediaDuration = 10000,
     )
   }
 }
