@@ -6,7 +6,7 @@ import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.sp
 import com.example.core.designsystem.EmptyPage
-import com.example.feature.video.isPermissionGrant
+import com.example.feature.video.util.isPermissionGrant
 import com.example.feature.video.util.Constant
 
 @Composable

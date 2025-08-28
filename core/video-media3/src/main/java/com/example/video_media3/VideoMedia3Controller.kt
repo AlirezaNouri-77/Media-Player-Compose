@@ -10,14 +10,18 @@ import com.example.video_media3.model.VideoPlayerState
 import com.example.video_media3.model.mapper.toActiveVideoInfo
 import com.example.video_media3.model.mapper.toMediaItem
 import com.example.video_media3.util.VideoMediaMetaData
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 
 class VideoMedia3Controller(
     private var videoMediaMetaData: VideoMediaMetaData,
-    private var exoPlayer: ExoPlayer,
+    var exoPlayer: ExoPlayer,
 ) {
 
     private var _videoPlayerStateStateFlow = MutableStateFlow(VideoPlayerState.Empty)
@@ -41,11 +45,9 @@ class VideoMedia3Controller(
 
     fun seekToNextMediaItem() = exoPlayer.seekToNextMediaItem()
 
-    fun fastForward(position: Long, currentPosition: Long) =
-        exoPlayer.seekTo(currentPosition + position)
+    fun fastForward(position: Long, currentPosition: Long) = exoPlayer.seekTo(currentPosition + position)
 
-    fun fastRewind(position: Long, currentPosition: Long) =
-        exoPlayer.seekTo(currentPosition - position)
+    fun fastRewind(position: Long, currentPosition: Long) = exoPlayer.seekTo(currentPosition - position)
 
     fun pausePlayer() = exoPlayer.pause()
 
@@ -71,10 +73,11 @@ class VideoMedia3Controller(
     }
 
     fun unRegisterMedia3Listener() {
-        if (::exoPlayerEventListener.isInitialized){
+        if (::exoPlayerEventListener.isInitialized) {
             exoPlayer.removeListener(exoPlayerEventListener)
         }
     }
+
 
     fun registerMedia3Listener() {
 
@@ -86,23 +89,17 @@ class VideoMedia3Controller(
 
             override fun onPlaybackStateChanged(playbackState: Int) {
                 when (playbackState) {
-                    Player.STATE_BUFFERING -> _videoPlayerStateStateFlow.update {
-                        it.copy(
-                            isBuffering = true
-                        )
-                    }
-
-                    Player.STATE_READY -> _videoPlayerStateStateFlow.update { it.copy(isBuffering = false) }
+                    Player.STATE_BUFFERING ->
+                        _videoPlayerStateStateFlow.update { it.copy(isBuffering = true) }
+                    Player.STATE_READY ->
+                        _videoPlayerStateStateFlow.update { it.copy(isBuffering = false) }
                     else -> {}
                 }
             }
 
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 if (mediaItem == null) return
-
-                _videoPlayerStateStateFlow.update {
-                    it.copy(currentMediaInfo = mediaItem.toActiveVideoInfo())
-                }
+                _videoPlayerStateStateFlow.update { it.copy(currentMediaInfo = mediaItem.toActiveVideoInfo()) }
             }
 
         }

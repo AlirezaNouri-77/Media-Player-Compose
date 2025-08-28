@@ -7,8 +7,6 @@ data class ActiveVideoInfo(
   var duration: Long,
 ) {
   companion object {
-    var Empty = ActiveVideoInfo(
-      title = "", videoID = "", videoUri = "", duration = 0,
-    )
+    var Empty = ActiveVideoInfo(title = "", videoID = "", videoUri = "", duration = 0)
   }
 }

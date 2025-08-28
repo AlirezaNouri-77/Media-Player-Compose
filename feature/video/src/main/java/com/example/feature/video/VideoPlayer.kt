@@ -32,7 +32,7 @@ import androidx.media3.ui.compose.PlayerSurface
 import androidx.media3.ui.compose.SURFACE_TYPE_SURFACE_VIEW
 import androidx.media3.ui.compose.modifiers.resizeWithContentScale
 import androidx.media3.ui.compose.state.rememberPresentationState
-import com.example.feature.video.model.MiddleVideoPlayerIndicator
+import com.example.feature.video.model.VideoPlayerOverlayState
 import com.example.feature.video.component.MiddleInfoHandler
 import com.example.feature.video.component.PlayerControllerLayout
 import com.example.feature.video.util.hideSystemBars
@@ -47,14 +47,13 @@ fun VideoPlayer(
     onBack: () -> Unit = {},
 ) {
     val window = LocalActivity.current?.window
-    val currentPlayerPosition by videoViewModel.currentPlayerPosition.collectAsStateWithLifecycle(initialValue = 0)
-    val currentState by videoViewModel.currentPlayerState.collectAsStateWithLifecycle()
     val previewSliderBitmap by videoViewModel.previewSliderBitmap.collectAsStateWithLifecycle(null)
-    val middleVideoPlayerInfo by videoViewModel.middleVideoPlayerInfo.collectAsStateWithLifecycle(MiddleVideoPlayerIndicator.Initial)
 
-    var playerControllerVisibility by remember {
-        mutableStateOf(false)
-    }
+    val uiState by videoViewModel.uiState.collectAsStateWithLifecycle()
+
+//    var playerControllerVisibility by remember {
+//        mutableStateOf(false)
+//    }
 
     val onBack: () -> Unit = {
         videoViewModel.stopPlayer()
@@ -62,8 +61,8 @@ fun VideoPlayer(
         onBack()
     }
 
-    LaunchedEffect(playerControllerVisibility) {
-        if (playerControllerVisibility) showSystemBars(window) else hideSystemBars(window)
+    LaunchedEffect(uiState.isVideoPlayerOverlayControllerVisible) {
+        if (uiState.isVideoPlayerOverlayControllerVisible) showSystemBars(window) else hideSystemBars(window)
     }
 
     DisposableEffect(key1 = lifecycleOwner, effect = {
@@ -102,14 +101,16 @@ fun VideoPlayer(
             .fillMaxSize()
             .background(Color.Black)
             .playerViewTapHandler(
-                onTapClick = { playerControllerVisibility = !playerControllerVisibility },
+                onTapClick = {
+                    videoViewModel.setVideoPlayerOverlayControllerVisibility(!uiState.isVideoPlayerOverlayControllerVisible)
+                },
                 onRightDoubleClick = {
-                    videoViewModel.fastForward(15_000, currentPlayerPosition)
-                    videoViewModel.updateMiddleVideoPlayerInfo(MiddleVideoPlayerIndicator.FastForward())
+                    videoViewModel.fastForward(15_000, uiState.currentPlayerPosition)
+                    videoViewModel.updateMiddleVideoPlayerInfo(VideoPlayerOverlayState.FastForward())
                 },
                 onLeftDoubleClick = {
-                    videoViewModel.fastRewind(15_000, currentPlayerPosition)
-                    videoViewModel.updateMiddleVideoPlayerInfo(MiddleVideoPlayerIndicator.FastRewind())
+                    videoViewModel.fastRewind(15_000, uiState.currentPlayerPosition)
+                    videoViewModel.updateMiddleVideoPlayerInfo(VideoPlayerOverlayState.FastRewind())
                 }
             )
     ) {
@@ -129,7 +130,7 @@ fun VideoPlayer(
     }
 
     AnimatedVisibility(
-        visible = playerControllerVisibility,
+        visible = uiState.isVideoPlayerOverlayControllerVisible,
         modifier = Modifier
             .statusBarsPadding()
             .navigationBarsPadding(),
@@ -137,8 +138,8 @@ fun VideoPlayer(
         PlayerControllerLayout(
             playerResizeMode = { playerContentScale.value },
             previewSlider = { previewSliderBitmap },
-            currentPlayerState = { currentState },
-            currentPlayerPosition = { currentPlayerPosition },
+            currentPlayerState = uiState.videoPlayerState,
+            currentPlayerPosition = uiState.currentPlayerPosition,
             getPreviewSlider = videoViewModel::getSliderPreviewThumbnail,
             onSeekToPrevious = videoViewModel::seekToPrevious,
             onSeekToNext = videoViewModel::seekToNext,
@@ -156,8 +157,8 @@ fun VideoPlayer(
     // show a info when fastforwar or fastrewind triggered
     MiddleInfoHandler(
         modifier = Modifier,
-        showInfoMiddleScreen = middleVideoPlayerInfo != MiddleVideoPlayerIndicator.Initial,
-        middleVideoPlayerIndicator = middleVideoPlayerInfo,
+        showInfoMiddleScreen = uiState.videoPlayerOverlayState != VideoPlayerOverlayState.Initial,
+        videoPlayerOverlayState = uiState.videoPlayerOverlayState,
     )
 
 }

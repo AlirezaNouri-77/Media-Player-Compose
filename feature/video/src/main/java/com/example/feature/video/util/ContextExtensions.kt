@@ -1,4 +1,4 @@
-package com.example.feature.video
+package com.example.feature.video.util
 
 import android.app.Activity
 import android.content.Context

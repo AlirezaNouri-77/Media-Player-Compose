@@ -39,8 +39,8 @@ import androidx.core.content.ContextCompat
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.feature.video.VideoViewModel
 import com.example.feature.video.VideoPlayer
-import com.example.feature.video.isPermissionGrant
-import com.example.feature.video.openSetting
+import com.example.feature.video.util.isPermissionGrant
+import com.example.feature.video.util.openSetting
 import com.example.mediaplayerjetpackcompose.presentation.navigation.MainNavGraph
 import com.example.mediaplayerjetpackcompose.presentation.util.Constant.musicPermission
 import org.koin.androidx.compose.koinViewModel

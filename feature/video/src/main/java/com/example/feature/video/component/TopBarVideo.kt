@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.feature.video.R
-import com.example.feature.video.isPermissionGrant
+import com.example.feature.video.util.isPermissionGrant
 import com.example.feature.video.util.Constant
 
 @OptIn(ExperimentalMaterial3Api::class)

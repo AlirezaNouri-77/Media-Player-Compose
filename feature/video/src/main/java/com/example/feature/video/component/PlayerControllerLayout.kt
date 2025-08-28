@@ -46,8 +46,8 @@ fun PlayerControllerLayout(
     modifier: Modifier = Modifier,
     playerResizeMode: () -> ContentScale,
     previewSlider: () -> ImageBitmap?,
-    currentPlayerState: () -> VideoPlayerState,
-    currentPlayerPosition: () -> Long,
+    currentPlayerState: VideoPlayerState,
+    currentPlayerPosition: Long,
     onBackClick: () -> Unit,
     onSeekToPrevious: () -> Unit,
     onSeekToNext: () -> Unit,
@@ -77,7 +77,7 @@ fun PlayerControllerLayout(
                 .fillMaxWidth(0.9f)
                 .align(Alignment.TopCenter),
             onBack = { onBackClick() },
-            title = currentPlayerState().currentMediaInfo.title,
+            title = currentPlayerState.currentMediaInfo.title,
         )
         BottomSection(
             modifier = Modifier
@@ -90,8 +90,8 @@ fun PlayerControllerLayout(
             onResumePlayer = { onResumePlayer() },
             onSeekToPosition = { onSeekToPosition(it) },
             playerResizeModeChange = { playerResizeModeChange() },
-            currentPlayerState = { currentPlayerState() },
-            currentPlayerPosition = { currentPlayerPosition() },
+            currentPlayerState = { currentPlayerState },
+            currentPlayerPosition = { currentPlayerPosition },
             playerResizeMode = { playerResizeMode() },
             getPreviewSlider = getPreviewSlider,
         )
@@ -215,8 +215,7 @@ private fun PlayerTopSection(
 private fun PreviewPlayerControllerLayout() {
     MediaPlayerJetpackComposeTheme {
         PlayerControllerLayout(
-            currentPlayerState = {
-                VideoPlayerState(
+            currentPlayerState = VideoPlayerState(
                     currentMediaInfo = ActiveVideoInfo(
                         title = "Example Video",
                         videoID = "",
@@ -226,15 +225,14 @@ private fun PreviewPlayerControllerLayout() {
                     isPlaying = false,
                     isBuffering = false,
                     repeatMode = 0,
-                )
-            },
+                ),
             onResumePlayer = {},
             onPausePlayer = {},
             onBackClick = {},
             onSeekToNext = {},
             onSeekToPosition = {},
             onSeekToPrevious = {},
-            currentPlayerPosition = { 0L },
+            currentPlayerPosition = 0L,
             playerResizeMode = { ContentScale.Fit },
             playerResizeModeChange = {},
             previewSlider = { null },

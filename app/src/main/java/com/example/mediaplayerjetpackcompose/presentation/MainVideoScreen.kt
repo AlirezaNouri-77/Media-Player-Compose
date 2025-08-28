@@ -2,6 +2,7 @@ package com.example.mediaplayerjetpackcompose.presentation
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
@@ -21,7 +22,7 @@ fun MainVideoScreen(
 ) {
 
   val navController = rememberNavController()
-  val videoUiState = videoViewModel.uiState.collectAsStateWithLifecycle()
+  val videoUiState by videoViewModel.uiState.collectAsStateWithLifecycle()
 
   NavHost(
     modifier = Modifier.fillMaxSize(),
@@ -32,13 +33,13 @@ fun MainVideoScreen(
     composable<VideoScreenRoutes.VideoPage> {
       VideoPage(
         modifier = modifier,
-        videoUiState = { videoUiState },
+        videoUiState = videoUiState,
         onRefreshVideoList = videoViewModel::getVideo,
         onPlay = { index, list ->
           navController.navigate(VideoScreenRoutes.VideoPlayer)
           videoViewModel.startPlay(index, list)
         },
-        onBack = { onBack() },
+        onBack = onBack,
       )
     }
 
@@ -46,15 +47,10 @@ fun MainVideoScreen(
       VideoPlayer(
         videoUri = "",
         videoViewModel = videoViewModel,
-        onBack = {
-          videoViewModel.stopPlayer()
-          navController.popBackStack()
-        },
+        onBack = navController::popBackStack,
       )
     }
-
   }
-
 
 }
 

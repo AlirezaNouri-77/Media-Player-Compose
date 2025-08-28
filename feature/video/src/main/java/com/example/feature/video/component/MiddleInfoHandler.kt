@@ -27,23 +27,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.feature.video.R
-import com.example.feature.video.model.MiddleVideoPlayerIndicator
+import com.example.feature.video.model.VideoPlayerOverlayState
 
 @Composable
 fun MiddleInfoHandler(
   modifier: Modifier,
   showInfoMiddleScreen: Boolean,
-  middleVideoPlayerIndicator: MiddleVideoPlayerIndicator,
+  videoPlayerOverlayState: VideoPlayerOverlayState,
 ) {
   var icon by remember {
     mutableIntStateOf(R.drawable.icon_fast_forward_24)
   }
 
-  LaunchedEffect(middleVideoPlayerIndicator) {
-    when (middleVideoPlayerIndicator) {
-      is MiddleVideoPlayerIndicator.FastForward -> icon = middleVideoPlayerIndicator.icon
-      is MiddleVideoPlayerIndicator.FastRewind -> icon = middleVideoPlayerIndicator.icon
-      MiddleVideoPlayerIndicator.Initial -> {}
+  LaunchedEffect(videoPlayerOverlayState) {
+    when (videoPlayerOverlayState) {
+      is VideoPlayerOverlayState.FastForward -> icon = videoPlayerOverlayState.icon
+      is VideoPlayerOverlayState.FastRewind -> icon = videoPlayerOverlayState.icon
+      VideoPlayerOverlayState.Initial -> {}
     }
   }
 

@@ -21,8 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.feature.video.openSetting
-import com.example.feature.video.shouldShowPermissionRationale
+import com.example.feature.video.util.openSetting
+import com.example.feature.video.util.shouldShowPermissionRationale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
