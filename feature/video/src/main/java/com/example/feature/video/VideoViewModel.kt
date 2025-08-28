@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-class VideoPageViewModel(
+class VideoViewModel(
   private var videoSource: VideoRepositoryImpl,
   private var videoThumbnailUtil: VideoThumbnailUtil,
   private var videoMedia3Controller: VideoMedia3Controller,
@@ -48,7 +48,6 @@ class VideoPageViewModel(
   var middleVideoPlayerInfo = _middleVideoPlayerInfo.asSharedFlow()
 
   private var getThumbnailJob: Job? = null
-  private var currentPlayerPositionJob: Job? = null
 
   val currentPlayerState = videoMedia3Controller.videoPlayerStateStateFlow
     .onStart { videoMedia3Controller.registerMedia3Listener() }
@@ -87,15 +86,14 @@ class VideoPageViewModel(
   }
 
   private fun observeCurrentPlayerPosition() {
-    currentPlayerPositionJob = viewModelScope.launch {
-      while (currentCoroutineContext().isActive && currentPlayerPositionJob?.isActive == true) {
+    viewModelScope.launch {
+      while (currentCoroutineContext().isActive) {
         delay(50L)
         if (currentPlayerState.value.isPlaying) {
           _currentPlayerPosition.value = videoMedia3Controller.getPlayer.currentPosition
         }
       }
     }
-    currentPlayerPositionJob?.start()
   }
 
   fun resumePlayer() = viewModelScope.launch { videoMedia3Controller.resumePlayer() }
@@ -135,7 +133,6 @@ class VideoPageViewModel(
 
   override fun onCleared() {
     super.onCleared()
-    currentPlayerPositionJob?.cancel()
     getThumbnailJob?.cancel()
     videoMedia3Controller.unRegisterMedia3Listener()
   }

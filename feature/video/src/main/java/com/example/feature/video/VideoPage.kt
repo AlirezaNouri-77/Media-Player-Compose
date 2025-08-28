@@ -52,11 +52,9 @@ fun VideoPage(
     topBar = {
       TopBarVideo(
         context = context,
-        onBackClick = {
-          onBack()
-        },
+        onBackClick = onBack,
         onSelectVideo = {
-          var isPermissionsGrant = Constant.videoPermission.all { context.isPermissionDenied(it) }
+          val isPermissionsGrant = Constant.videoPermission.all { context.isPermissionDenied(it) }
 
           if (isPermissionsGrant) {
             if (Constant.videoPermission.all {

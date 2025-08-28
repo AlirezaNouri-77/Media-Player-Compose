@@ -19,7 +19,7 @@ fun EmptyVideoResultHandler(
     Build.VERSION.SDK_INT >= Constant.API_34_UPSIDE_DOWN_CAKE_ANDROID_14 -> {
 
       EmptyPage(
-        message = if (context.isPermissionGrant(Manifest.permission.READ_MEDIA_VIDEO) == true || context.isPermissionGrant(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) == true) {
+        message = if (context.isPermissionGrant(Manifest.permission.READ_MEDIA_VIDEO) || context.isPermissionGrant(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)) {
           "Empty"
         } else {
           "You need grant permission or select videos"
@@ -29,7 +29,7 @@ fun EmptyVideoResultHandler(
       )
     }
 
-    Build.VERSION.SDK_INT >= Constant.API_33_TIRAMISU_ANDROID_13 && context.isPermissionGrant(Manifest.permission.READ_MEDIA_VIDEO) == false -> {
+    Build.VERSION.SDK_INT >= Constant.API_33_TIRAMISU_ANDROID_13 && !context.isPermissionGrant(Manifest.permission.READ_MEDIA_VIDEO) -> {
       PermissionApi33ToLowerHandler(
         context = context,
         message = "Video storage Permission isn't granted",
@@ -43,7 +43,7 @@ fun EmptyVideoResultHandler(
       )
     }
 
-    Build.VERSION.SDK_INT < Constant.API_33_TIRAMISU_ANDROID_13 && context.isPermissionGrant(Manifest.permission.READ_EXTERNAL_STORAGE) == false -> {
+    Build.VERSION.SDK_INT < Constant.API_33_TIRAMISU_ANDROID_13 && !context.isPermissionGrant(Manifest.permission.READ_EXTERNAL_STORAGE) -> {
       PermissionApi33ToLowerHandler(
         context = context,
         message = "Storage Permission isn't granted",

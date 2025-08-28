@@ -22,6 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
@@ -46,98 +48,85 @@ import com.example.feature.video.R
 
 @Composable
 fun VideoMediaItem(
-  item: VideoModel,
-  contextColor: Color = MaterialTheme.colorScheme.onPrimary,
-  onItemClick: () -> Unit,
+    item: VideoModel,
+    contentColor: Color = MaterialTheme.colorScheme.onPrimary,
+    onItemClick: () -> Unit,
 ) {
-
-  Surface(
-    onClick = { onItemClick.invoke() },
-    modifier = Modifier
-      .fillMaxWidth(),
-    color = Color.Transparent,
-  ) {
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.Start,
-      modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+    Surface(
+        onClick = onItemClick,
+        modifier = Modifier.fillMaxWidth(),
+        color = Color.Transparent,
     ) {
-      androidx.constraintlayout.compose.ConstraintLayout {
-        val (imageArt, duration) = createRefs()
-
-        SubcomposeAsyncImage(
-          model = ImageRequest.Builder(LocalContext.current).data(item.uri).videoFrameMillis(15_000L).build(),
-          contentDescription = "",
-          contentScale = ContentScale.FillBounds,
-          modifier = Modifier
-            .constrainAs(imageArt) {
-              top.linkTo(parent.top)
-              bottom.linkTo(parent.bottom)
-              end.linkTo(parent.end)
-              start.linkTo(parent.start)
-            }
-            .size(110.dp, 70.dp)
-            .clip(RoundedCornerShape(10.dp)),
-          loading = {
-            Box(
-              contentAlignment = Alignment.Center,
-              modifier = Modifier.background(color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f)),
-            ) {
-              Image(
-                painter = painterResource(R.drawable.icon_video),
-                colorFilter = ColorFilter.tint(Color.White),
-                contentDescription = ""
-              )
-            }
-          },
-        )
-        Text(
-          text = item.duration.convertMilliSecondToTime(),
-          modifier = Modifier.Companion
-            .constrainAs(duration) {
-              bottom.linkTo(parent.bottom, 3.dp)
-              end.linkTo(parent.end, 3.dp)
-            }
-            .drawWithCache {
-              onDrawBehind {
-                drawRoundRect(
-                  color = Color.Black,
-                  alpha = 0.4f,
-                  cornerRadius = CornerRadius(x = 15f, y = 15f),
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
+        ) {
+            Box(modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)) {
+                SubcomposeAsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current).data(item.uri).videoFrameMillis(15_000L).build(),
+                    contentDescription = "",
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier
+                      .align(Alignment.Center)
+                      .size(120.dp, 80.dp)
+                      .clip(RoundedCornerShape(8.dp)),
+                    loading = {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.background(color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f)),
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.icon_video),
+                                colorFilter = ColorFilter.tint(Color.White),
+                                contentDescription = ""
+                            )
+                        }
+                    },
                 )
-              }
-            },
-          textAlign = TextAlign.Start,
-          fontSize = 11.sp,
-          color = Color.White,
-        )
-      }
-      Spacer(modifier = Modifier.width(10.dp))
-      Column {
-        Text(
-          modifier = Modifier.fillMaxWidth(),
-          text = item.name.removeFileExtension(),
-          maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
-          fontSize = 16.sp,
-          color = contextColor,
-          fontWeight = FontWeight.Medium,
-        )
-        val detail = listOf(
-          item.width.toString() + "x" + item.height.toString(),
-          item.size.convertByteToReadableSize(),
-          item.name.extractFileExtension(),
-        )
-        Text(
-          text = detail.reduce { acc, string -> "$acc, $string" }.toString(),
-          modifier = Modifier.fillMaxWidth(),
-          textAlign = TextAlign.Start,
-          fontSize = 12.sp,
-          color = contextColor.copy(alpha = 0.6f),
-        )
-      }
+                Text(
+                    text = item.duration.convertMilliSecondToTime(),
+                    modifier = Modifier
+                      .align(Alignment.BottomEnd)
+                      .padding(end = 4.dp, bottom = 4.dp)
+                      .drawWithCache {
+                        onDrawBehind {
+                          drawRoundRect(
+                            color = Color.Black,
+                            topLeft = Offset(x = -10f, y = 0f),
+                            size = Size(width = this.size.width + 10f, height = this.size.height),
+                            alpha = 0.4f,
+                            cornerRadius = CornerRadius(x = 12f, y = 12f),
+                          )
+                        }
+                      },
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 12.sp,
+                    color = Color.White,
+                )
+            }
+            Spacer(modifier = Modifier.width(4.dp))
+            Column {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = item.name.removeFileExtension(),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontSize = 16.sp,
+                    color = contentColor,
+                    fontWeight = FontWeight.Medium,
+                )
+                Text(
+                    text = "${item.height}x${item.width}, ${item.size.convertByteToReadableSize()}, ${item.name.extractFileExtension()}",
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Start,
+                    fontSize = 12.sp,
+                    color = contentColor.copy(alpha = 0.6f),
+                )
+            }
+        }
     }
-  }
 
 }
 
@@ -145,13 +134,13 @@ fun VideoMediaItem(
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun Preview() {
-  MediaPlayerJetpackComposeTheme {
-    Box(modifier = Modifier.background(MaterialTheme.colorScheme.primary)) {
-      VideoMediaItem(
-        item = VideoModel.Dummy,
-        contextColor = MaterialTheme.colorScheme.onPrimary,
-        onItemClick = {},
-      )
+    MediaPlayerJetpackComposeTheme {
+        Box(modifier = Modifier.background(MaterialTheme.colorScheme.primary)) {
+            VideoMediaItem(
+                item = VideoModel.Dummy,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                onItemClick = {},
+            )
+        }
     }
-  }
 }

@@ -1,4 +1,4 @@
-package com.example.feature.video_player.component
+package com.example.feature.video.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,10 +35,6 @@ fun MiddleInfoHandler(
   showInfoMiddleScreen: Boolean,
   middleVideoPlayerIndicator: MiddleVideoPlayerIndicator,
 ) {
-
-  val text by remember {
-    mutableStateOf("15")
-  }
   var icon by remember {
     mutableIntStateOf(R.drawable.icon_fast_forward_24)
   }
@@ -59,7 +54,6 @@ fun MiddleInfoHandler(
     modifier = modifier
   ) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-
       Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
@@ -81,7 +75,7 @@ fun MiddleInfoHandler(
           tint = Color.White
         )
         Text(
-          text = text,
+          text = "15",
           fontSize = 18.sp,
           fontWeight = FontWeight.SemiBold,
           color = Color.White,

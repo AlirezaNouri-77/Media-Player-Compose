@@ -35,5 +35,4 @@ include(":feature:music-search")
 include(":feature:music-home")
 include(":feature:music-categorydetail")
 include(":feature:video")
-include(":feature:video-player")
 

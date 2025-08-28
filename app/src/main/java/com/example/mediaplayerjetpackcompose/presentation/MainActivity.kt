@@ -37,10 +37,10 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.example.feature.video.VideoPageViewModel
+import com.example.feature.video.VideoViewModel
+import com.example.feature.video.VideoPlayer
 import com.example.feature.video.isPermissionGrant
 import com.example.feature.video.openSetting
-import com.example.feature.video_player.VideoPlayer
 import com.example.mediaplayerjetpackcompose.presentation.navigation.MainNavGraph
 import com.example.mediaplayerjetpackcompose.presentation.util.Constant.musicPermission
 import org.koin.androidx.compose.koinViewModel
@@ -65,10 +65,10 @@ class MainActivity : ComponentActivity() {
           intent?.let { mIntent ->
             if (mIntent.action == Intent.ACTION_VIEW) {
               val videoUri = mIntent.data ?: Uri.EMPTY
-              val videoPageViewModel: VideoPageViewModel = koinViewModel()
+              val videoViewModel: VideoViewModel = koinViewModel()
               VideoPlayer(
                 videoUri = videoUri.toString(),
-                videoPageViewModel = videoPageViewModel,
+                videoViewModel = videoViewModel,
                 onBack = {
                   this.finishAffinity()
                 }

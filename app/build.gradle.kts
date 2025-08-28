@@ -80,6 +80,5 @@ dependencies {
   implementation(project(":feature:music-search"))
   implementation(project(":feature:music-categorydetail"))
   implementation(project(":feature:video"))
-  implementation(project(":feature:video-player"))
 
 }

@@ -8,20 +8,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.feature.video.VideoPage
-import com.example.feature.video.VideoPageViewModel
-import com.example.feature.video_player.VideoPlayer
+import com.example.feature.video.VideoViewModel
+import com.example.feature.video.VideoPlayer
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MainVideoScreen(
   modifier: Modifier = Modifier,
-  videoPageViewModel: VideoPageViewModel = koinViewModel(),
+  videoViewModel: VideoViewModel = koinViewModel(),
   onBack: () -> Unit,
 ) {
 
   val navController = rememberNavController()
-  val videoUiState = videoPageViewModel.uiState.collectAsStateWithLifecycle()
+  val videoUiState = videoViewModel.uiState.collectAsStateWithLifecycle()
 
   NavHost(
     modifier = Modifier.fillMaxSize(),
@@ -33,10 +33,10 @@ fun MainVideoScreen(
       VideoPage(
         modifier = modifier,
         videoUiState = { videoUiState },
-        onRefreshVideoList = videoPageViewModel::getVideo,
+        onRefreshVideoList = videoViewModel::getVideo,
         onPlay = { index, list ->
           navController.navigate(VideoScreenRoutes.VideoPlayer)
-          videoPageViewModel.startPlay(index, list)
+          videoViewModel.startPlay(index, list)
         },
         onBack = { onBack() },
       )
@@ -45,9 +45,9 @@ fun MainVideoScreen(
     composable<VideoScreenRoutes.VideoPlayer> {
       VideoPlayer(
         videoUri = "",
-        videoPageViewModel = videoPageViewModel,
+        videoViewModel = videoViewModel,
         onBack = {
-          videoPageViewModel.stopPlayer()
+          videoViewModel.stopPlayer()
           navController.popBackStack()
         },
       )

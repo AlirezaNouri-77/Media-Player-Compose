@@ -1,4 +1,4 @@
-package com.example.feature.video_player.component
+package com.example.feature.video.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

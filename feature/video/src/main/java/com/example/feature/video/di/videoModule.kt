@@ -1,11 +1,11 @@
 package com.example.feature.video.di
 
-import com.example.feature.video.VideoPageViewModel
+import com.example.feature.video.VideoViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 var VideoModule = module {
 
-  viewModelOf(::VideoPageViewModel)
+  viewModelOf(::VideoViewModel)
 
 }
