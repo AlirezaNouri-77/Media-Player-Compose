@@ -34,6 +34,7 @@ composeFoundation = "1.9.0"
 dataStore = "1.1.7"
 googlePortobuf = "4.32.0"
 googlePortobutPlugin = "0.9.4"
+ktlint = "13.1.0"
 
 minSdk = "28"
 compileSdk = "36"
@@ -132,6 +133,7 @@ android-ksp = { id = "com.google.devtools.ksp", version.ref = "androidKsp" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
 google-protobuf = { id = "com.google.protobuf", version.ref = "googlePortobutPlugin" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 
 # Custom Plugins
 mediaplayer-androidComposeConventionPlugin = { id = "com.mediaplayer.buildLogic.androidComposeConvention" }
