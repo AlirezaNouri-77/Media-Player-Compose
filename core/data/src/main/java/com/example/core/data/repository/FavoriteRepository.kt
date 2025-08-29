@@ -4,12 +4,17 @@ import com.example.core.database.dao.FavoriteDao
 import com.example.core.database.model.FavoriteEntity
 import com.example.core.domain.respository.FavoriteRepositoryImpl
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 class FavoriteRepository(
     private val favoriteDao: FavoriteDao,
     private val ioDispatcher: CoroutineDispatcher,
 ) : FavoriteRepositoryImpl {
+    override fun favoritesMediaIdList(): Flow<List<String>> {
+        return favoriteDao.getFavoriteSongsMediaId()
+    }
+
     override suspend fun handleFavoriteSongs(mediaId: String): Boolean {
         return withContext(ioDispatcher) {
             val isFavorite = favoriteDao.isFavorite(mediaId)

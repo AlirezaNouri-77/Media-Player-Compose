@@ -34,6 +34,6 @@ var DataModule = module {
     } bind VideoRepositoryImpl::class
 
     single {
-        MusicSource(get(), get(DispatcherType.IO.qualifier), get())
+        MusicSource(get(), get(), get(DispatcherType.IO.qualifier))
     } bind MusicSourceImpl::class
 }

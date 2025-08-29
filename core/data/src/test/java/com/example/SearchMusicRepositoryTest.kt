@@ -1,7 +1,9 @@
 package com.example
 
+import com.example.core.data.repository.FavoriteRepository
 import com.example.core.data.repository.MusicSource
 import com.example.core.data.repository.SearchMusicRepository
+import com.example.data.dao.FavoriteDaoTest
 import com.example.data.repository.MusicRepositoryFake
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -12,9 +14,11 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchMusicRepositoryTest {
-    var dispatcher = UnconfinedTestDispatcher()
-    var musicRepositoryFake = MusicRepositoryFake()
-    var musicSource = MusicSource(musicRepositoryFake, dispatcher)
+    private val dispatcher = UnconfinedTestDispatcher()
+    private val favoriteDaoTest = FavoriteDaoTest()
+    private val musicRepositoryFake = MusicRepositoryFake()
+    private val favoriteMusicSource = FavoriteRepository(favoriteDao = favoriteDaoTest, ioDispatcher = dispatcher)
+    private val musicSource = MusicSource(musicRepositoryFake, favoriteMusicSource, dispatcher)
 
     var searchMusicRepository = SearchMusicRepository(
         musicSource = musicSource,
@@ -23,11 +27,11 @@ class SearchMusicRepositoryTest {
 
     @Test
     fun `search name should not empty`() = runTest(dispatcher) {
-        var searchString = "d"
+        val searchString = "d"
 
         searchMusicRepository.search(searchString)
 
-        var resultList = searchMusicRepository.searchList.first()
+        val resultList = searchMusicRepository.searchList.first()
 
         // check result size
         assertEquals(3, resultList.size)
@@ -39,11 +43,11 @@ class SearchMusicRepositoryTest {
 
     @Test
     fun `search name should return empty`() = runTest(dispatcher) {
-        var searchString = "good"
+        val searchString = "good"
 
         searchMusicRepository.search(searchString)
 
-        var resultList = searchMusicRepository.searchList.first()
+        val resultList = searchMusicRepository.searchList.first()
 
         assertEquals(0, resultList.size)
     }

@@ -1,6 +1,6 @@
 package com.example.core.data.repository
 
-import com.example.core.database.dao.FavoriteDao
+import com.example.core.domain.respository.FavoriteRepositoryImpl
 import com.example.core.domain.respository.MusicRepositoryImpl
 import com.example.core.domain.respository.MusicSourceImpl
 import com.example.core.domain.respository.albumName
@@ -14,13 +14,13 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class MusicSource(
-    private var musicMediaStoreRepository: MusicRepositoryImpl,
-    private var ioDispatcher: CoroutineDispatcher,
-    private val favoriteDao: FavoriteDao,
+    private val musicMediaStoreRepository: MusicRepositoryImpl,
+    private val favoriteRepository: FavoriteRepositoryImpl,
+    private val ioDispatcher: CoroutineDispatcher,
 ) : MusicSourceImpl {
     override fun songs(): Flow<List<MusicModel>> = combine(
         musicMediaStoreRepository.getSongs(),
-        favoriteDao.getFavoriteSongsMediaId(),
+        favoriteRepository.favoritesMediaIdList(),
     ) { musics, favoriteIds ->
         musics.map {
             it.copy(isFavorite = favoriteIds.contains(it.musicId.toString()))
@@ -41,7 +41,7 @@ class MusicSource(
 
     override fun favorite(): Flow<List<MusicModel>> = combine(
         songs(),
-        favoriteDao.getFavoriteSongsMediaId(),
+        favoriteRepository.favoritesMediaIdList(),
     ) { musicList, favoriteMediaIdList ->
         musicList.filterIndexed { _, item ->
             item.musicId.toString() in favoriteMediaIdList
