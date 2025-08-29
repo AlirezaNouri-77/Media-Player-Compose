@@ -7,21 +7,19 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
 class FavoriteRepository(
-  private val favoriteDao: FavoriteDao,
-  private val ioDispatcher: CoroutineDispatcher,
+    private val favoriteDao: FavoriteDao,
+    private val ioDispatcher: CoroutineDispatcher,
 ) : FavoriteRepositoryImpl {
-
-  override suspend fun handleFavoriteSongs(mediaId: String): Boolean {
-    return withContext(ioDispatcher) {
-      val isFavorite = favoriteDao.isFavorite(mediaId)
-      if (isFavorite) {
-        favoriteDao.deleteFavoriteSong(mediaId)
-        return@withContext false
-      } else {
-        favoriteDao.insertFavoriteSong(FavoriteEntity(mediaId = mediaId))
-        return@withContext true
-      }
+    override suspend fun handleFavoriteSongs(mediaId: String): Boolean {
+        return withContext(ioDispatcher) {
+            val isFavorite = favoriteDao.isFavorite(mediaId)
+            if (isFavorite) {
+                favoriteDao.deleteFavoriteSong(mediaId)
+                return@withContext false
+            } else {
+                favoriteDao.insertFavoriteSong(FavoriteEntity(mediaId = mediaId))
+                return@withContext true
+            }
+        }
     }
-  }
-
 }

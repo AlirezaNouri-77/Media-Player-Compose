@@ -37,8 +37,8 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.example.feature.video.VideoViewModel
 import com.example.feature.video.VideoPlayer
+import com.example.feature.video.VideoViewModel
 import com.example.feature.video.util.isPermissionGrant
 import com.example.feature.video.util.openSetting
 import com.example.mediaplayerjetpackcompose.presentation.navigation.MainNavGraph
@@ -46,172 +46,162 @@ import com.example.mediaplayerjetpackcompose.presentation.util.Constant.musicPer
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
-  override fun onCreate(savedInstanceState: Bundle?) {
-    enableEdgeToEdge()
-    super.onCreate(savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
 
-    setContent {
-      MediaPlayerJetpackComposeTheme {
-        Surface(
-          color = MaterialTheme.colorScheme.background,
-        ) {
-
-          var permissionState by remember {
-            mutableStateOf(PermissionState.Initial)
-          }
-
-          val context = LocalContext.current
-
-          intent?.let { mIntent ->
-            if (mIntent.action == Intent.ACTION_VIEW) {
-              val videoUri = mIntent.data ?: Uri.EMPTY
-              val videoViewModel: VideoViewModel = koinViewModel()
-              VideoPlayer(
-                videoUri = videoUri.toString(),
-                videoViewModel = videoViewModel,
-                onBack = {
-                  this.finishAffinity()
-                }
-              )
-            } else {
-
-              CheckPermission(
-                permission = musicPermission,
-                shouldShowPermissionRationale = {
-                  permissionState = PermissionState.ShouldShowRationale
-                },
-                onGrant = {
-                  permissionState = PermissionState.Grant
-                },
-                onDenied = {
-                  permissionState = PermissionState.NotGrant
-                },
-              )
-
-              when (permissionState) {
-                PermissionState.Initial -> {}
-
-                PermissionState.Grant -> MainNavGraph()
-
-                PermissionState.NotGrant -> {
-
-                  val activityResult = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                    if (context.isPermissionGrant(musicPermission)) permissionState = PermissionState.Grant
-                  }
-
-                  ShowMessage(
-                    message = "The permission to access music is denied",
-                    actionMessage = "Open Setting",
-                    onAction = {
-                      context.openSetting(activityResult)
-                    }
-                  )
-
-                }
-
-                PermissionState.ShouldShowRationale -> {
-
-                  val activityResult =
-                    rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
-                      permissionState = if (it) PermissionState.Grant else PermissionState.NotGrant
+        setContent {
+            MediaPlayerJetpackComposeTheme {
+                Surface(
+                    color = MaterialTheme.colorScheme.background,
+                ) {
+                    var permissionState by remember {
+                        mutableStateOf(PermissionState.Initial)
                     }
 
-                  ShowMessage(
-                    message = "The permission to access music is not granted",
-                    actionMessage = "Grant",
-                    onAction = {
-                      activityResult.launch(musicPermission)
-                    },
-                  )
+                    val context = LocalContext.current
 
+                    intent?.let { mIntent ->
+                        if (mIntent.action == Intent.ACTION_VIEW) {
+                            val videoUri = mIntent.data ?: Uri.EMPTY
+                            val videoViewModel: VideoViewModel = koinViewModel()
+                            VideoPlayer(
+                                videoUri = videoUri.toString(),
+                                videoViewModel = videoViewModel,
+                                onBack = {
+                                    this.finishAffinity()
+                                },
+                            )
+                        } else {
+                            CheckPermission(
+                                permission = musicPermission,
+                                shouldShowPermissionRationale = {
+                                    permissionState = PermissionState.ShouldShowRationale
+                                },
+                                onGrant = {
+                                    permissionState = PermissionState.Grant
+                                },
+                                onDenied = {
+                                    permissionState = PermissionState.NotGrant
+                                },
+                            )
+
+                            when (permissionState) {
+                                PermissionState.Initial -> {}
+
+                                PermissionState.Grant -> MainNavGraph()
+
+                                PermissionState.NotGrant -> {
+                                    val activityResult =
+                                        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                                            if (context.isPermissionGrant(musicPermission)) permissionState = PermissionState.Grant
+                                        }
+
+                                    ShowMessage(
+                                        message = "The permission to access music is denied",
+                                        actionMessage = "Open Setting",
+                                        onAction = {
+                                            context.openSetting(activityResult)
+                                        },
+                                    )
+                                }
+
+                                PermissionState.ShouldShowRationale -> {
+                                    val activityResult =
+                                        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
+                                            permissionState = if (it) PermissionState.Grant else PermissionState.NotGrant
+                                        }
+
+                                    ShowMessage(
+                                        message = "The permission to access music is not granted",
+                                        actionMessage = "Grant",
+                                        onAction = {
+                                            activityResult.launch(musicPermission)
+                                        },
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
-
-              }
             }
-          }
-
         }
-
-      }
-
     }
-
-  }
 }
 
 @Composable
 private fun ShowMessage(
-  modifier: Modifier = Modifier,
-  message: String,
-  actionMessage: String,
-  onAction: () -> Unit,
+    modifier: Modifier = Modifier,
+    message: String,
+    actionMessage: String,
+    onAction: () -> Unit,
 ) {
-  Box(
-    modifier = modifier
-      .fillMaxSize(),
-    contentAlignment = Alignment.Center,
-  ) {
-    Column(
-      modifier = Modifier.fillMaxWidth(),
-      verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
-      horizontalAlignment = Alignment.CenterHorizontally,
+    Box(
+        modifier = modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center,
     ) {
-      Text(
-        text = message,
-        fontSize = 15.sp,
-        fontWeight = FontWeight.SemiBold,
-      )
-      TextButton(
-        onClick = {
-          onAction()
-        },
-        border = BorderStroke(
-          width = 1.dp,
-          color = MaterialTheme.colorScheme.onPrimary,
-        ),
-      ) {
-        Text(text = actionMessage, color = MaterialTheme.colorScheme.onPrimary)
-      }
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = message,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
+            TextButton(
+                onClick = {
+                    onAction()
+                },
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                ),
+            ) {
+                Text(text = actionMessage, color = MaterialTheme.colorScheme.onPrimary)
+            }
+        }
     }
-  }
 }
 
 @Composable
 fun CheckPermission(
-  permission: String,
-  shouldShowPermissionRationale: () -> Unit,
-  onGrant: () -> Unit,
-  onDenied: () -> Unit,
-  context: Context = LocalContext.current,
-  activity: Activity? = LocalActivity.current
+    permission: String,
+    shouldShowPermissionRationale: () -> Unit,
+    onGrant: () -> Unit,
+    onDenied: () -> Unit,
+    context: Context = LocalContext.current,
+    activity: Activity? = LocalActivity.current,
 ) {
-
-  val activityResult = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGrant ->
-    when (isGrant) {
-      true -> onGrant()
-      false -> onDenied()
-    }
-  }
-
-  when {
-    ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED -> {
-      onGrant()
+    val activityResult = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGrant ->
+        when (isGrant) {
+            true -> onGrant()
+            false -> onDenied()
+        }
     }
 
-    activity?.let { mContext -> ActivityCompat.shouldShowRequestPermissionRationale(mContext, permission) } == true -> {
-      shouldShowPermissionRationale()
-    }
+    when {
+        ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED -> {
+            onGrant()
+        }
 
-    activity?.let { mContext -> ActivityCompat.shouldShowRequestPermissionRationale(mContext, permission) } == false -> {
-      SideEffect { activityResult.launch(permission) }
-    }
+        activity?.let { mContext -> ActivityCompat.shouldShowRequestPermissionRationale(mContext, permission) } == true -> {
+            shouldShowPermissionRationale()
+        }
 
-    else -> SideEffect { activityResult.launch(permission) }
-  }
+        activity?.let { mContext -> ActivityCompat.shouldShowRequestPermissionRationale(mContext, permission) } == false -> {
+            SideEffect { activityResult.launch(permission) }
+        }
+
+        else -> SideEffect { activityResult.launch(permission) }
+    }
 }
-
 
 enum class PermissionState {
-  Initial, NotGrant, Grant, ShouldShowRationale
+    Initial,
+    NotGrant,
+    Grant,
+    ShouldShowRationale,
 }
-

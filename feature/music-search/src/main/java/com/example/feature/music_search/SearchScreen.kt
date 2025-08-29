@@ -1,6 +1,5 @@
 package com.example.feature.music_search
 
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -42,7 +41,6 @@ fun SearchRoot(
     currentPlayerPlayingState: Boolean,
     onMusicClick: (Int, List<MusicModel>) -> Unit,
 ) {
-
     val uiState by searchViewModel.searchScreenUiState.collectAsStateWithLifecycle()
 
     SearchScreen(
@@ -55,13 +53,12 @@ fun SearchRoot(
         onSearchTextFieldValueChange = {
             searchViewModel.onEvent(
                 SearchScreenUiEvent.OnSearchTextField(
-                    it
-                )
+                    it,
+                ),
             )
         },
         onClearSearchTextField = { searchViewModel.onEvent(SearchScreenUiEvent.OnClearSearchTextField) },
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
@@ -89,19 +86,18 @@ fun SearchScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
-                )
+                ),
             )
         },
     ) { innerPadding ->
 
         Column(
             modifier = Modifier
-              .fillMaxSize()
-              .padding(innerPadding),
+                .fillMaxSize()
+                .padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-
             SearchTextFieldSection(
                 textFieldValue = searchTextFieldValue,
                 onTextFieldChange = onSearchTextFieldValueChange,
@@ -112,7 +108,9 @@ fun SearchScreen(
                 LazyColumn(
                     modifier = modifier
                         .fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + LocalMiniPlayerHeight.current)
+                    contentPadding = PaddingValues(
+                        bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + LocalMiniPlayerHeight.current,
+                    ),
                 ) {
                     itemsIndexed(
                         items = listItem,
@@ -129,8 +127,6 @@ fun SearchScreen(
             } else if (searchTextFieldValue.isNotEmpty()) {
                 EmptyPage(message = "Nothing found")
             }
-
         }
-
     }
 }

@@ -1,9 +1,9 @@
 plugins {
-  alias(libs.plugins.mediaplayer.featureModuleConventionPlugin)
+    alias(libs.plugins.mediaplayer.featureModuleConventionPlugin)
 }
 
 android {
-  namespace = "com.example.feature.music_artist"
+    namespace = "com.example.feature.music_artist"
 }
 
 dependencies {}

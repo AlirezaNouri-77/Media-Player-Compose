@@ -6,6 +6,5 @@ import org.koin.dsl.module
 
 var VideoModule = module {
 
-  viewModelOf(::VideoViewModel)
-
+    viewModelOf(::VideoViewModel)
 }

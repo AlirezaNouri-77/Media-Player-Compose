@@ -21,7 +21,6 @@ class MusicThumbnailUtil(
     private var defaultDispatcher: CoroutineDispatcher,
     private var ioDispatcher: CoroutineDispatcher,
 ) : MusicThumbnailUtilImpl {
-
     override suspend fun getMusicThumbnail(uri: Uri, width: Int, height: Int): Bitmap? {
         return withContext(defaultDispatcher) {
             runCatching {
@@ -29,7 +28,7 @@ class MusicThumbnailUtil(
                     context.contentResolver.loadThumbnail(
                         uri,
                         Size(width, height),
-                        null
+                        null,
                     )
                 } else {
                     val mediaMetadataRetriever =
@@ -38,7 +37,7 @@ class MusicThumbnailUtil(
                     val bitmap = BitmapFactory.decodeByteArray(
                         byteArray,
                         0,
-                        byteArray!!.size
+                        byteArray!!.size,
                     )
                     mediaMetadataRetriever.close()
                     bitmap.scale(width, height)
@@ -69,8 +68,4 @@ class MusicThumbnailUtil(
     companion object {
         const val DEFAULT_COLOR_PALETTE = Color.DKGRAY
     }
-
 }
-
-
-

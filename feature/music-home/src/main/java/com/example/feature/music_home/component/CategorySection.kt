@@ -29,65 +29,67 @@ const val categoryHeight = 60
 
 @Composable
 fun CategorySection(
-  modifier: Modifier = Modifier,
-  currentTabState: TabBarModel,
-  onTabClick: (TabBarModel, Int) -> Unit,
+    modifier: Modifier = Modifier,
+    currentTabState: TabBarModel,
+    onTabClick: (TabBarModel, Int) -> Unit,
 ) {
-
-  Row(
-    modifier = modifier
-      .height(categoryHeight.dp)
-      .padding(horizontal = 4.dp, vertical = 4.dp),
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterHorizontally)
-  ) {
-    TabBarModel.entries.forEachIndexed { index, item ->
-      Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-          .fillMaxWidth()
-          .weight(0.5f)
-          .background(
-            color = if (currentTabState.id == index) {
-              if (isSystemInDarkTheme()) Color.White else Color.Black
-            } else MaterialTheme.colorScheme.secondary,
-            shape = RoundedCornerShape(10.dp),
-          )
-          .clickable(
-            onClick = {
-              onTabClick(item, index)
-            },
-          )
-
-      ) {
-        Text(
-          modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp),
-          text = item.enuName,
-          color = if (currentTabState.id == index) {
-            if (isSystemInDarkTheme()) Color.Black else Color.White
-          } else MaterialTheme.colorScheme.onSecondary,
-          fontSize = 14.sp,
-          fontWeight = FontWeight.SemiBold,
-        )
-      }
+    Row(
+        modifier = modifier
+            .height(categoryHeight.dp)
+            .padding(horizontal = 4.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterHorizontally),
+    ) {
+        TabBarModel.entries.forEachIndexed { index, item ->
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.5f)
+                    .background(
+                        color = if (currentTabState.id == index) {
+                            if (isSystemInDarkTheme()) Color.White else Color.Black
+                        } else {
+                            MaterialTheme.colorScheme.secondary
+                        },
+                        shape = RoundedCornerShape(10.dp),
+                    )
+                    .clickable(
+                        onClick = {
+                            onTabClick(item, index)
+                        },
+                    ),
+            ) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp),
+                    text = item.enuName,
+                    color = if (currentTabState.id == index) {
+                        if (isSystemInDarkTheme()) Color.Black else Color.White
+                    } else {
+                        MaterialTheme.colorScheme.onSecondary
+                    },
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+        }
     }
-  }
-
 }
 
 @Preview(showBackground = true)
 @Preview(
-  uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
-  name = "Dark", showBackground = true
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
+    name = "Dark",
+    showBackground = true,
 )
 @Composable
 private fun Preview() {
-  MediaPlayerJetpackComposeTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      CategorySection(
-        currentTabState = TabBarModel.All,
-        onTabClick = { _, _ -> },
-      )
+    MediaPlayerJetpackComposeTheme {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            CategorySection(
+                currentTabState = TabBarModel.All,
+                onTabClick = { _, _ -> },
+            )
+        }
     }
-  }
 }

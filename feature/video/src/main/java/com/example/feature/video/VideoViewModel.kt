@@ -32,7 +32,6 @@ class VideoViewModel(
     private var videoThumbnailUtil: VideoThumbnailUtil,
     private var videoMedia3Controller: VideoMedia3Controller,
 ) : ViewModel() {
-
     private var _uiState = MutableStateFlow(VideoUiState())
     var uiState = _uiState
         .onStart {
@@ -116,7 +115,7 @@ class VideoViewModel(
         videoMedia3Controller.stop()
     }
 
-    fun setVideoPlayerOverlayControllerVisibility(boolean: Boolean){
+    fun setVideoPlayerOverlayControllerVisibility(boolean: Boolean) {
         _uiState.update { it.copy(isVideoPlayerOverlayControllerVisible = boolean) }
     }
 
@@ -140,5 +139,4 @@ class VideoViewModel(
         getThumbnailJob?.cancel()
         videoMedia3Controller.unRegisterMedia3Listener()
     }
-
 }

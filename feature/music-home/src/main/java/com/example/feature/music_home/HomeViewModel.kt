@@ -19,85 +19,83 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-  private val musicSource: MusicSourceImpl,
-  private val songsSortDataStoreManager: SortDataStoreManagerImpl<SongSortModel>,
-  private val folderSortDataStoreManager: SortDataStoreManagerImpl<CategorizedSortModel>,
+    private val musicSource: MusicSourceImpl,
+    private val songsSortDataStoreManager: SortDataStoreManagerImpl<SongSortModel>,
+    private val folderSortDataStoreManager: SortDataStoreManagerImpl<CategorizedSortModel>,
 ) : ViewModel() {
+    private var mUiState = MutableStateFlow(HomeScreenUiState())
+    val homeScreenUiState = mUiState
+        .onStart {
+            getFavoriteSongs()
+            getSongs()
+            getFolderSongs()
+            getSortStates()
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000L),
+            HomeScreenUiState(isLoading = true),
+        )
 
-  private var mUiState = MutableStateFlow(HomeScreenUiState())
-  val homeScreenUiState = mUiState
-    .onStart {
-      getFavoriteSongs()
-      getSongs()
-      getFolderSongs()
-      getSortStates()
-    }.stateIn(
-      viewModelScope,
-      SharingStarted.WhileSubscribed(5_000L),
-      HomeScreenUiState(isLoading = true),
-    )
-
-  fun onEvent(event: HomeUiEvent) {
-    when (event) {
-      is HomeUiEvent.UpdateSortOrder -> updateSortOrder(event.tabBarPosition)
-      is HomeUiEvent.UpdateSortState -> updateSortType(event.tabBarPosition, event.sortType)
-      is HomeUiEvent.UpdateTabBarPosition -> mUiState.update { it.copy(currentTabBarPosition = event.tabBarPosition) }
-      HomeUiEvent.HideSortDropDownMenu -> mUiState.update { it.copy(isSortDropDownMenuShow = false) }
-      HomeUiEvent.ShowSortDropDownMenu -> mUiState.update { it.copy(isSortDropDownMenuShow = true) }
+    fun onEvent(event: HomeUiEvent) {
+        when (event) {
+            is HomeUiEvent.UpdateSortOrder -> updateSortOrder(event.tabBarPosition)
+            is HomeUiEvent.UpdateSortState -> updateSortType(event.tabBarPosition, event.sortType)
+            is HomeUiEvent.UpdateTabBarPosition -> mUiState.update { it.copy(currentTabBarPosition = event.tabBarPosition) }
+            HomeUiEvent.HideSortDropDownMenu -> mUiState.update { it.copy(isSortDropDownMenuShow = false) }
+            HomeUiEvent.ShowSortDropDownMenu -> mUiState.update { it.copy(isSortDropDownMenuShow = true) }
+        }
     }
-  }
 
-  private fun getSongs() = viewModelScope.launch {
-    combine(
-      musicSource.songs(),
-      songsSortDataStoreManager.sortState,
-    ) { songs, sortState ->
-      sortMusic(list = songs, isDescending = sortState.isDec, sortType = sortState.sortType)
-    }.collect { songs ->
-      mUiState.update { it.copy(isLoading = false, songsList = songs) }
+    private fun getSongs() = viewModelScope.launch {
+        combine(
+            musicSource.songs(),
+            songsSortDataStoreManager.sortState,
+        ) { songs, sortState ->
+            sortMusic(list = songs, isDescending = sortState.isDec, sortType = sortState.sortType)
+        }.collect { songs ->
+            mUiState.update { it.copy(isLoading = false, songsList = songs) }
+        }
     }
-  }
 
-  private fun getFolderSongs() = viewModelScope.launch {
-    combine(
-      musicSource.folder(),
-      folderSortDataStoreManager.sortState,
-    ) { songs, sortState ->
-      sortMusic(list = songs, isDescending = sortState.isDec, sortType = sortState.sortType)
-    }.collect { favorite ->
-      mUiState.update { it.copy(folderSongsList = favorite) }
+    private fun getFolderSongs() = viewModelScope.launch {
+        combine(
+            musicSource.folder(),
+            folderSortDataStoreManager.sortState,
+        ) { songs, sortState ->
+            sortMusic(list = songs, isDescending = sortState.isDec, sortType = sortState.sortType)
+        }.collect { favorite ->
+            mUiState.update { it.copy(folderSongsList = favorite) }
+        }
     }
-  }
 
-  private fun getSortStates() {
-    combine(
-      songsSortDataStoreManager.sortState,
-      folderSortDataStoreManager.sortState
-    ) { songs, folder ->
-      mUiState.update { it.copy(songsSortState = songs, folderSortState = folder) }
-    }.launchIn(viewModelScope)
-  }
-
-  private fun getFavoriteSongs() = viewModelScope.launch {
-    musicSource.favorite().collect { favoriteSongs ->
-      mUiState.update { it.copy(favoritesList = favoriteSongs) }
+    private fun getSortStates() {
+        combine(
+            songsSortDataStoreManager.sortState,
+            folderSortDataStoreManager.sortState,
+        ) { songs, folder ->
+            mUiState.update { it.copy(songsSortState = songs, folderSortState = folder) }
+        }.launchIn(viewModelScope)
     }
-  }
 
-  private fun updateSortType(tabBarPosition: TabBarModel, sortType: SortType) = viewModelScope.launch {
-    if (tabBarPosition == TabBarModel.All) {
-      songsSortDataStoreManager.updateSortType(sortType)
-    } else if (tabBarPosition == TabBarModel.Folder) {
-      folderSortDataStoreManager.updateSortType(sortType)
+    private fun getFavoriteSongs() = viewModelScope.launch {
+        musicSource.favorite().collect { favoriteSongs ->
+            mUiState.update { it.copy(favoritesList = favoriteSongs) }
+        }
     }
-  }
 
-  private fun updateSortOrder(tabBarPosition: TabBarModel) = viewModelScope.launch {
-    if (tabBarPosition == TabBarModel.All) {
-      songsSortDataStoreManager.updateSortOrder(!mUiState.value.songsSortState.isDec)
-    } else if (tabBarPosition == TabBarModel.Folder) {
-      folderSortDataStoreManager.updateSortOrder(!mUiState.value.folderSortState.isDec)
+    private fun updateSortType(tabBarPosition: TabBarModel, sortType: SortType) = viewModelScope.launch {
+        if (tabBarPosition == TabBarModel.All) {
+            songsSortDataStoreManager.updateSortType(sortType)
+        } else if (tabBarPosition == TabBarModel.Folder) {
+            folderSortDataStoreManager.updateSortType(sortType)
+        }
     }
-  }
 
+    private fun updateSortOrder(tabBarPosition: TabBarModel) = viewModelScope.launch {
+        if (tabBarPosition == TabBarModel.All) {
+            songsSortDataStoreManager.updateSortOrder(!mUiState.value.songsSortState.isDec)
+        } else if (tabBarPosition == TabBarModel.Folder) {
+            folderSortDataStoreManager.updateSortOrder(!mUiState.value.folderSortState.isDec)
+        }
+    }
 }

@@ -28,69 +28,67 @@ import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 
 @Composable
 fun PlayerTimeLinePreview(
-  modifier: Modifier = Modifier,
-  isVisible: Boolean,
-  previewBitmap: ImageBitmap?,
-  videoPosition: Long,
+    modifier: Modifier = Modifier,
+    isVisible: Boolean,
+    previewBitmap: ImageBitmap?,
+    videoPosition: Long,
 ) {
-
-  AnimatedVisibility(
-    modifier = modifier,
-    visible = isVisible,
-  ) {
-    Card(
-      modifier = Modifier
-        .size(width = 170.dp, height = 140.dp),
-      shape = RoundedCornerShape(5.dp),
-      colors = CardDefaults.cardColors(
-        containerColor = Color.Black.copy(alpha = 0.5f),
-      )
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = isVisible,
     ) {
-      Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-      ) {
-        if (LocalInspectionMode.current) {
-          Box(modifier = Modifier
-            .matchParentSize()
-            .background(Color.Red)
-          )
-        } else if (previewBitmap != null) {
-          Image(
-            bitmap = previewBitmap,
-            modifier = Modifier.matchParentSize(),
-            contentDescription = "",
-            contentScale = ContentScale.FillBounds,
-          )
+        Card(
+            modifier = Modifier
+                .size(width = 170.dp, height = 140.dp),
+            shape = RoundedCornerShape(5.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.Black.copy(alpha = 0.5f),
+            ),
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (LocalInspectionMode.current) {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .background(Color.Red),
+                    )
+                } else if (previewBitmap != null) {
+                    Image(
+                        bitmap = previewBitmap,
+                        modifier = Modifier.matchParentSize(),
+                        contentDescription = "",
+                        contentScale = ContentScale.FillBounds,
+                    )
+                }
+                Text(
+                    text = videoPosition.convertMilliSecondToTime(),
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 5.dp)
+                        .background(color = Color.Black.copy(0.7f), RoundedCornerShape(5.dp))
+                        .padding(horizontal = 4.dp),
+                    fontSize = 15.sp,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.White,
+                )
+            }
         }
-        Text(
-          text = videoPosition.convertMilliSecondToTime(),
-          modifier = Modifier
-            .align(Alignment.BottomCenter)
-            .padding(bottom = 5.dp)
-            .background(color = Color.Black.copy(0.7f), RoundedCornerShape(5.dp))
-            .padding(horizontal = 4.dp),
-          fontSize = 15.sp,
-          textAlign = TextAlign.Center,
-          fontWeight = FontWeight.Medium,
-          color = Color.White,
-        )
-      }
     }
-
-  }
-
 }
 
 @Preview
 @Composable
 private fun PreviewPlayerControllerLayout() {
-  MediaPlayerJetpackComposeTheme {
-    PlayerTimeLinePreview(
-      modifier = Modifier,
-      isVisible = true,
-      previewBitmap = null,
-      videoPosition = 10000,
-    )
-  }
+    MediaPlayerJetpackComposeTheme {
+        PlayerTimeLinePreview(
+            modifier = Modifier,
+            isVisible = true,
+            previewBitmap = null,
+            videoPosition = 10000,
+        )
+    }
 }

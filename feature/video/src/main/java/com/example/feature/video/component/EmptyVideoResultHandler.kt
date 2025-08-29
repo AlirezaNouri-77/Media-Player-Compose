@@ -6,58 +6,62 @@ import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.sp
 import com.example.core.designsystem.EmptyPage
-import com.example.feature.video.util.isPermissionGrant
 import com.example.feature.video.util.Constant
+import com.example.feature.video.util.isPermissionGrant
 
 @Composable
 fun EmptyVideoResultHandler(
-  context: Context,
-  onRefreshVideoList: () -> Unit
+    context: Context,
+    onRefreshVideoList: () -> Unit,
 ) {
-
-  when {
-    Build.VERSION.SDK_INT >= Constant.API_34_UPSIDE_DOWN_CAKE_ANDROID_14 -> {
-
-      EmptyPage(
-        message = if (context.isPermissionGrant(Manifest.permission.READ_MEDIA_VIDEO) || context.isPermissionGrant(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)) {
-          "Empty"
-        } else {
-          "You need grant permission or select videos"
-        },
-        textSize = 16.sp,
-        textAlpha = 0.8f,
-      )
-    }
-
-    Build.VERSION.SDK_INT >= Constant.API_33_TIRAMISU_ANDROID_13 && !context.isPermissionGrant(Manifest.permission.READ_MEDIA_VIDEO) -> {
-      PermissionApi33ToLowerHandler(
-        context = context,
-        message = "Video storage Permission isn't granted",
-        permission = Manifest.permission.READ_MEDIA_VIDEO,
-        onGrant = {
-          onRefreshVideoList()
-        },
-        onRefreshVideo = {
-          onRefreshVideoList()
+    when {
+        Build.VERSION.SDK_INT >= Constant.API_34_UPSIDE_DOWN_CAKE_ANDROID_14 -> {
+            EmptyPage(
+                message = if (context.isPermissionGrant(
+                        Manifest.permission.READ_MEDIA_VIDEO,
+                    ) || context.isPermissionGrant(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
+                ) {
+                    "Empty"
+                } else {
+                    "You need grant permission or select videos"
+                },
+                textSize = 16.sp,
+                textAlpha = 0.8f,
+            )
         }
-      )
-    }
 
-    Build.VERSION.SDK_INT < Constant.API_33_TIRAMISU_ANDROID_13 && !context.isPermissionGrant(Manifest.permission.READ_EXTERNAL_STORAGE) -> {
-      PermissionApi33ToLowerHandler(
-        context = context,
-        message = "Storage Permission isn't granted",
-        permission = Manifest.permission.READ_EXTERNAL_STORAGE,
-        onGrant = {
-          onRefreshVideoList()
-        },
-        onRefreshVideo = {
-          onRefreshVideoList()
+        Build.VERSION.SDK_INT >= Constant.API_33_TIRAMISU_ANDROID_13 && !context.isPermissionGrant(
+            Manifest.permission.READ_MEDIA_VIDEO,
+        ) -> {
+            PermissionApi33ToLowerHandler(
+                context = context,
+                message = "Video storage Permission isn't granted",
+                permission = Manifest.permission.READ_MEDIA_VIDEO,
+                onGrant = {
+                    onRefreshVideoList()
+                },
+                onRefreshVideo = {
+                    onRefreshVideoList()
+                },
+            )
         }
-      )
+
+        Build.VERSION.SDK_INT < Constant.API_33_TIRAMISU_ANDROID_13 && !context.isPermissionGrant(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+        ) -> {
+            PermissionApi33ToLowerHandler(
+                context = context,
+                message = "Storage Permission isn't granted",
+                permission = Manifest.permission.READ_EXTERNAL_STORAGE,
+                onGrant = {
+                    onRefreshVideoList()
+                },
+                onRefreshVideo = {
+                    onRefreshVideoList()
+                },
+            )
+        }
+
+        else -> EmptyPage()
     }
-
-    else -> EmptyPage()
-
-  }
 }

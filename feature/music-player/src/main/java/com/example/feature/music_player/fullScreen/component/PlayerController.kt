@@ -31,129 +31,126 @@ import com.example.core.music_media3.model.RepeatModes
 
 @Composable
 fun SongController(
-  modifier: Modifier = Modifier,
-  playerStateModel: () -> PlayerStateModel,
-  isFavorite: Boolean,
-  repeatMode: Int,
-  onMovePreviousMusic: () -> Unit,
-  onPauseMusic: () -> Unit,
-  onResumeMusic: () -> Unit,
-  onMoveNextMusic: () -> Unit,
-  onRepeatMode: (Int) -> Unit,
-  onFavoriteToggle: () -> Unit,
+    modifier: Modifier = Modifier,
+    playerStateModel: () -> PlayerStateModel,
+    isFavorite: Boolean,
+    repeatMode: Int,
+    onMovePreviousMusic: () -> Unit,
+    onPauseMusic: () -> Unit,
+    onResumeMusic: () -> Unit,
+    onMoveNextMusic: () -> Unit,
+    onRepeatMode: (Int) -> Unit,
+    onFavoriteToggle: () -> Unit,
 ) {
-
-  val favIcon = remember(playerStateModel().currentMediaInfo.musicID, isFavorite) {
-    when (isFavorite) {
-      true -> Icons.Default.Favorite
-      false -> Icons.Default.FavoriteBorder
+    val favIcon = remember(playerStateModel().currentMediaInfo.musicID, isFavorite) {
+        when (isFavorite) {
+            true -> Icons.Default.Favorite
+            false -> Icons.Default.FavoriteBorder
+        }
     }
-  }
 
-  Row(
-    modifier = modifier.fillMaxWidth().heightIn(min = 60.dp),
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.SpaceEvenly,
-  ) {
-    ButtonOfFullScreenPlayer(
-      icon = favIcon,
-      size = DpSize(24.dp, 24.dp),
-      contentDescription = "Fav Music",
-      onClick = { onFavoriteToggle.invoke() },
-    )
-    ButtonOfFullScreenPlayer(
-      icon = R.drawable.icon_previous,
-      size = DpSize(26.dp, 26.dp),
-      contentDescription = "Next",
-      onClick = onMovePreviousMusic,
-    )
-    ButtonOfFullScreenPlayer(
-      modifier = Modifier.padding(horizontal = 5.dp),
-      icon = if (playerStateModel().isPlaying) R.drawable.icon_pause else R.drawable.icon_play,
-      size = DpSize(48.dp,48.dp),
-      contentDescription = "Play and Pause",
-      onClick = {
-        when (playerStateModel().isPlaying) {
-          true -> onPauseMusic.invoke()
-          false -> onResumeMusic.invoke()
-        }
-      }
-    )
-    ButtonOfFullScreenPlayer(
-      icon = R.drawable.icon_next,
-      size = DpSize(26.dp, 26.dp),
-      contentDescription = "Next",
-      onClick = onMoveNextMusic,
-    )
-    ButtonOfFullScreenPlayer(
-      icon = when (repeatMode) {
-        0 -> R.drawable.icon_repeat_off
-        1 -> R.drawable.icon_repeat_once
-        2 -> R.drawable.icon_repeat_all
-        else -> -1
-      },
-      size = DpSize(24.dp, 24.dp),
-      contentDescription = "RepeatMode",
-      onClick = {
-        if (repeatMode == RepeatModes.entries.toMutableList().lastIndex) {
-          onRepeatMode.invoke(0)
-        } else {
-          onRepeatMode.invoke(repeatMode + 1)
-        }
-      },
-    )
-  }
+    Row(
+        modifier = modifier.fillMaxWidth().heightIn(min = 60.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+    ) {
+        ButtonOfFullScreenPlayer(
+            icon = favIcon,
+            size = DpSize(24.dp, 24.dp),
+            contentDescription = "Fav Music",
+            onClick = { onFavoriteToggle.invoke() },
+        )
+        ButtonOfFullScreenPlayer(
+            icon = R.drawable.icon_previous,
+            size = DpSize(26.dp, 26.dp),
+            contentDescription = "Next",
+            onClick = onMovePreviousMusic,
+        )
+        ButtonOfFullScreenPlayer(
+            modifier = Modifier.padding(horizontal = 5.dp),
+            icon = if (playerStateModel().isPlaying) R.drawable.icon_pause else R.drawable.icon_play,
+            size = DpSize(48.dp, 48.dp),
+            contentDescription = "Play and Pause",
+            onClick = {
+                when (playerStateModel().isPlaying) {
+                    true -> onPauseMusic.invoke()
+                    false -> onResumeMusic.invoke()
+                }
+            },
+        )
+        ButtonOfFullScreenPlayer(
+            icon = R.drawable.icon_next,
+            size = DpSize(26.dp, 26.dp),
+            contentDescription = "Next",
+            onClick = onMoveNextMusic,
+        )
+        ButtonOfFullScreenPlayer(
+            icon = when (repeatMode) {
+                0 -> R.drawable.icon_repeat_off
+                1 -> R.drawable.icon_repeat_once
+                2 -> R.drawable.icon_repeat_all
+                else -> -1
+            },
+            size = DpSize(24.dp, 24.dp),
+            contentDescription = "RepeatMode",
+            onClick = {
+                if (repeatMode == RepeatModes.entries.toMutableList().lastIndex) {
+                    onRepeatMode.invoke(0)
+                } else {
+                    onRepeatMode.invoke(repeatMode + 1)
+                }
+            },
+        )
+    }
 }
-
 
 @Composable
 private fun ButtonOfFullScreenPlayer(
-  modifier: Modifier = Modifier,
-  icon: Any,
-  size: DpSize,
-  contentDescription: String,
-  onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    icon: Any,
+    size: DpSize,
+    contentDescription: String,
+    onClick: () -> Unit,
 ) {
-  IconButton(
-    modifier = modifier.size(size).bounceClickEffect(),
-    onClick = { onClick.invoke() },
-    colors = IconButtonDefaults.iconButtonColors(
-      containerColor = Color.Transparent,
-      contentColor = Color.White,
-    ),
-  ) {
-    if (icon is Int) {
-      Icon(
-        modifier = Modifier.fillMaxSize(0.9f),
-        imageVector = ImageVector.vectorResource(icon),
-        contentDescription = contentDescription,
-      )
-    } else if (icon is ImageVector) {
-      Icon(
-        modifier = Modifier.fillMaxSize(0.9f),
-        imageVector = icon,
-        contentDescription = contentDescription,
-      )
+    IconButton(
+        modifier = modifier.size(size).bounceClickEffect(),
+        onClick = { onClick.invoke() },
+        colors = IconButtonDefaults.iconButtonColors(
+            containerColor = Color.Transparent,
+            contentColor = Color.White,
+        ),
+    ) {
+        if (icon is Int) {
+            Icon(
+                modifier = Modifier.fillMaxSize(0.9f),
+                imageVector = ImageVector.vectorResource(icon),
+                contentDescription = contentDescription,
+            )
+        } else if (icon is ImageVector) {
+            Icon(
+                modifier = Modifier.fillMaxSize(0.9f),
+                imageVector = icon,
+                contentDescription = contentDescription,
+            )
+        }
     }
-  }
 }
-
 
 @Preview
 @Composable
 private fun Preview() {
-  MediaPlayerJetpackComposeTheme {
-    SongController(
-      modifier = Modifier,
-      playerStateModel = { PlayerStateModel.Empty },
-      isFavorite = false,
-      repeatMode = 0,
-      onMovePreviousMusic = {},
-      onPauseMusic = {},
-      onResumeMusic = {},
-      onMoveNextMusic = {},
-      onRepeatMode = {},
-      onFavoriteToggle = {},
-    )
-  }
+    MediaPlayerJetpackComposeTheme {
+        SongController(
+            modifier = Modifier,
+            playerStateModel = { PlayerStateModel.Empty },
+            isFavorite = false,
+            repeatMode = 0,
+            onMovePreviousMusic = {},
+            onPauseMusic = {},
+            onResumeMusic = {},
+            onMoveNextMusic = {},
+            onRepeatMode = {},
+            onFavoriteToggle = {},
+        )
+    }
 }

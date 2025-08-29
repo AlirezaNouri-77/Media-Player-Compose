@@ -15,63 +15,61 @@ import com.example.video_media3.model.VideoPlayerState
 
 @Composable
 fun PlayerController(
-  modifier: Modifier = Modifier,
-  currentState: () -> VideoPlayerState,
-  onSeekToPrevious: () -> Unit,
-  onSeekToNext: () -> Unit,
-  onPause: () -> Unit,
-  onResume: () -> Unit,
+    modifier: Modifier = Modifier,
+    currentState: () -> VideoPlayerState,
+    onSeekToPrevious: () -> Unit,
+    onSeekToNext: () -> Unit,
+    onPause: () -> Unit,
+    onResume: () -> Unit,
 ) {
-
-  Row(
-    modifier = modifier,
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterHorizontally),
-  ) {
-    PlayerControllerButton(
-      icon = R.drawable.icon_previous,
-      modifier = Modifier
-        .size(25.dp),
-      onClick = {
-        onSeekToPrevious()
-      },
-    )
-    AnimatedContent(
-      targetState = if (currentState().isPlaying || currentState().isBuffering) R.drawable.icon_pause else R.drawable.icon_play,
-      label = "",
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterHorizontally),
     ) {
-      PlayerControllerButton(
-        icon = it,
-        modifier = Modifier.size(42.dp),
-        onClick = {
-          when (currentState().isPlaying) {
-            true -> onPause()
-            false -> onResume()
-          }
-        },
-      )
+        PlayerControllerButton(
+            icon = R.drawable.icon_previous,
+            modifier = Modifier
+                .size(25.dp),
+            onClick = {
+                onSeekToPrevious()
+            },
+        )
+        AnimatedContent(
+            targetState = if (currentState().isPlaying || currentState().isBuffering) R.drawable.icon_pause else R.drawable.icon_play,
+            label = "",
+        ) {
+            PlayerControllerButton(
+                icon = it,
+                modifier = Modifier.size(42.dp),
+                onClick = {
+                    when (currentState().isPlaying) {
+                        true -> onPause()
+                        false -> onResume()
+                    }
+                },
+            )
+        }
+        PlayerControllerButton(
+            icon = R.drawable.icon_next,
+            modifier = Modifier.size(25.dp),
+            onClick = {
+                onSeekToNext()
+            },
+        )
     }
-    PlayerControllerButton(
-      icon = R.drawable.icon_next,
-      modifier = Modifier.size(25.dp),
-      onClick = {
-        onSeekToNext()
-      },
-    )
-  }
-
 }
 
 @Preview
 @Composable
 private fun PreviewPlayerController() {
-  MediaPlayerJetpackComposeTheme {
-    PlayerController(
-      currentState = { VideoPlayerState.Empty },
-      onSeekToPrevious = {},
-      onSeekToNext = {},
-      onPause = {},
-      onResume = {}
-    )
-  }
+    MediaPlayerJetpackComposeTheme {
+        PlayerController(
+            currentState = { VideoPlayerState.Empty },
+            onSeekToPrevious = {},
+            onSeekToNext = {},
+            onPause = {},
+            onResume = {},
+        )
+    }
 }

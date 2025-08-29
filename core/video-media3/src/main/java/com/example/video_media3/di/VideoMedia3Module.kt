@@ -13,13 +13,19 @@ import org.koin.dsl.module
 
 var VideoMedia3Module = module {
 
-  single {
-    ExoPlayer.Builder(androidApplication().applicationContext).build()
-  }
+    single {
+        ExoPlayer.Builder(androidApplication().applicationContext).build()
+    }
 
-  single { VideoMediaMetaData(androidApplication().applicationContext, get(DispatcherType.IO.qualifier)) } bind VideoMediaMetaDataImpl::class
-  single { VideoThumbnailUtil(get(DispatcherType.DEFAULT.qualifier),androidApplication().applicationContext) } bind VideoThumbnailUtilImpl::class
+    single {
+        VideoMediaMetaData(
+            androidApplication().applicationContext,
+            get(DispatcherType.IO.qualifier),
+        )
+    } bind VideoMediaMetaDataImpl::class
+    single {
+        VideoThumbnailUtil(get(DispatcherType.DEFAULT.qualifier), androidApplication().applicationContext)
+    } bind VideoThumbnailUtilImpl::class
 
-  single { VideoMedia3Controller(get(), get()) }
-
+    single { VideoMedia3Controller(get(), get()) }
 }

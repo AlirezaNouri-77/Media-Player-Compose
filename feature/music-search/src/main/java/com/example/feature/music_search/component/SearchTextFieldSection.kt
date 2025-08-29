@@ -28,61 +28,58 @@ import kotlinx.coroutines.FlowPreview
 @OptIn(FlowPreview::class)
 @Composable
 fun SearchTextFieldSection(
-  textFieldValue: String,
-  onTextFieldChange: (String) -> Unit,
-  onClear: () -> Unit,
+    textFieldValue: String,
+    onTextFieldChange: (String) -> Unit,
+    onClear: () -> Unit,
 ) {
+    val focusRequester = remember { FocusRequester() }
 
-  val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
-  LaunchedEffect(Unit) { focusRequester.requestFocus() }
-
-  Box(
-    modifier = Modifier.fillMaxWidth()
-  ) {
-    OutlinedTextField(
-      value = textFieldValue,
-      onValueChange = { value ->
-        onTextFieldChange.invoke(value)
-      },
-      modifier = Modifier
-        .fillMaxWidth()
-        .height(50.dp)
-        .padding(horizontal = 15.dp)
-        .focusRequester(focusRequester),
-      singleLine = true,
-      maxLines = 1,
-      placeholder = {
-        Text(text = "Enter a music name")
-      },
-      trailingIcon = {
-        if (textFieldValue.isNotEmpty()) {
-          IconButton(
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        OutlinedTextField(
+            value = textFieldValue,
+            onValueChange = { value ->
+                onTextFieldChange.invoke(value)
+            },
             modifier = Modifier
-              .size(20.dp),
-            onClick = { onClear() },
-          ) {
-            Icon(
-              imageVector = Icons.Rounded.Clear,
-              contentDescription = "Clear Search Field",
-            )
-          }
-        }
-      },
-      leadingIcon = {
-        Icon(painter = painterResource(id = R.drawable.icon_search_24), contentDescription = "")
-      },
-      shape = RoundedCornerShape(15.dp),
-      colors = OutlinedTextFieldDefaults.colors(
-        focusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.45f),
-        unfocusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-        focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-        cursorColor = MaterialTheme.colorScheme.onPrimary,
-        focusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
-        unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
-      )
-    )
-  }
-
-
+                .fillMaxWidth()
+                .height(50.dp)
+                .padding(horizontal = 15.dp)
+                .focusRequester(focusRequester),
+            singleLine = true,
+            maxLines = 1,
+            placeholder = {
+                Text(text = "Enter a music name")
+            },
+            trailingIcon = {
+                if (textFieldValue.isNotEmpty()) {
+                    IconButton(
+                        modifier = Modifier
+                            .size(20.dp),
+                        onClick = { onClear() },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Clear,
+                            contentDescription = "Clear Search Field",
+                        )
+                    }
+                }
+            },
+            leadingIcon = {
+                Icon(painter = painterResource(id = R.drawable.icon_search_24), contentDescription = "")
+            },
+            shape = RoundedCornerShape(15.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.45f),
+                unfocusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                cursorColor = MaterialTheme.colorScheme.onPrimary,
+                focusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
+                unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
+            ),
+        )
+    }
 }

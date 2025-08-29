@@ -8,12 +8,12 @@ import com.example.core.model.datastore.SongsSortType
 import com.example.feature.music_home.model.TabBarModel
 
 data class HomeScreenUiState(
-  val isLoading: Boolean = false,
-  val isSortDropDownMenuShow: Boolean = false,
-  val currentTabBarPosition: TabBarModel = TabBarModel.All,
-  val songsList: List<MusicModel> = emptyList(),
-  val favoritesList: List<MusicModel> = emptyList(),
-  val folderSongsList: List<Pair<String, List<MusicModel>>> = emptyList(),
-  val songsSortState: SongSortModel = SongSortModel(SongsSortType.NAME, false),
-  val folderSortState: CategorizedSortModel = CategorizedSortModel(CategorizedSortType.NAME, false),
+    val isLoading: Boolean = false,
+    val isSortDropDownMenuShow: Boolean = false,
+    val currentTabBarPosition: TabBarModel = TabBarModel.All,
+    val songsList: List<MusicModel> = emptyList(),
+    val favoritesList: List<MusicModel> = emptyList(),
+    val folderSongsList: List<Pair<String, List<MusicModel>>> = emptyList(),
+    val songsSortState: SongSortModel = SongSortModel(SongsSortType.NAME, false),
+    val folderSortState: CategorizedSortModel = CategorizedSortModel(CategorizedSortType.NAME, false),
 )

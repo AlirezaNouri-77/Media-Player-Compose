@@ -21,54 +21,55 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.feature.video.R
-import com.example.feature.video.util.isPermissionGrant
 import com.example.feature.video.util.Constant
+import com.example.feature.video.util.isPermissionGrant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarVideo(
-  modifier: Modifier = Modifier,
-  onBackClick: () -> Unit,
-  onSelectVideo: () -> Unit,
-  context: Context,
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
+    onSelectVideo: () -> Unit,
+    context: Context,
 ) {
-
-  TopAppBar(
-    modifier = modifier,
-    title = {
-      Text(
-        text = "Video",
-        modifier = Modifier,
-        fontWeight = FontWeight.Bold,
-        fontSize = 36.sp,
-      )
-    },
-    navigationIcon = {
-      IconButton(
-        modifier = Modifier.size(35.dp),
-        onClick = onBackClick,
-      ) {
-        Icon(
-          painter = painterResource(id = R.drawable.icon_back_24),
-          contentDescription = "",
-        )
-      }
-    },
-    actions = {
-      if (Build.VERSION.SDK_INT >= Constant.API_34_UPSIDE_DOWN_CAKE_ANDROID_14 && !context.isPermissionGrant(Manifest.permission.READ_MEDIA_VIDEO)) {
-        TextButton(
-          modifier = Modifier.wrapContentWidth(),
-          onClick = onSelectVideo,
-        ) {
-          Text(text = "Select Videos", fontSize = 14.sp, color = MaterialTheme.colorScheme.onPrimary)
-        }
-      }
-    },
-    colors = TopAppBarDefaults.topAppBarColors(
-      containerColor = Color.Transparent,
-      titleContentColor = MaterialTheme.colorScheme.onPrimary,
-      navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+    TopAppBar(
+        modifier = modifier,
+        title = {
+            Text(
+                text = "Video",
+                modifier = Modifier,
+                fontWeight = FontWeight.Bold,
+                fontSize = 36.sp,
+            )
+        },
+        navigationIcon = {
+            IconButton(
+                modifier = Modifier.size(35.dp),
+                onClick = onBackClick,
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_back_24),
+                    contentDescription = "",
+                )
+            }
+        },
+        actions = {
+            if (Build.VERSION.SDK_INT >= Constant.API_34_UPSIDE_DOWN_CAKE_ANDROID_14 && !context.isPermissionGrant(
+                    Manifest.permission.READ_MEDIA_VIDEO,
+                )
+            ) {
+                TextButton(
+                    modifier = Modifier.wrapContentWidth(),
+                    onClick = onSelectVideo,
+                ) {
+                    Text(text = "Select Videos", fontSize = 14.sp, color = MaterialTheme.colorScheme.onPrimary)
+                }
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent,
+            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+        ),
     )
-  )
-
 }

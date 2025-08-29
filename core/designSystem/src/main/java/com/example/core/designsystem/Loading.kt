@@ -12,17 +12,17 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun Loading(
-  modifier: Modifier,
+    modifier: Modifier,
 ) {
-  Box(
-    modifier = modifier.fillMaxSize(),
-    contentAlignment = Alignment.Center
-  ) {
-    Text(
-      text = "Loading",
-      fontSize = 20.sp,
-      fontWeight = FontWeight.Bold,
-      color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
-    )
-  }
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = "Loading",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
+        )
+    }
 }

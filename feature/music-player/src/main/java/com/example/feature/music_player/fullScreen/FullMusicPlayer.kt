@@ -24,66 +24,66 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun FullMusicPlayer(
-  modifier: Modifier,
-  repeatMode: Int,
-  currentPagerPage: Int,
-  playerStateModel: () -> PlayerStateModel,
-  currentMusicPosition: () -> Long,
-  isFavorite: Boolean,
-  pagerMusicList: ImmutableList<MusicModel>,
-  onBack: () -> Unit,
-  onPlayerAction: (PlayerActions) -> Unit,
-  setCurrentPagerNumber: (Int) -> Unit,
-  maxDeviceVolume: Int,
-  currentVolume: Int,
-  onVolumeChange: (Float) -> Unit,
-  orientation: Int = LocalConfiguration.current.orientation,
+    modifier: Modifier,
+    repeatMode: Int,
+    currentPagerPage: Int,
+    playerStateModel: () -> PlayerStateModel,
+    currentMusicPosition: () -> Long,
+    isFavorite: Boolean,
+    pagerMusicList: ImmutableList<MusicModel>,
+    onBack: () -> Unit,
+    onPlayerAction: (PlayerActions) -> Unit,
+    setCurrentPagerNumber: (Int) -> Unit,
+    maxDeviceVolume: Int,
+    currentVolume: Int,
+    onVolumeChange: (Float) -> Unit,
+    orientation: Int = LocalConfiguration.current.orientation,
 ) {
-  ConstraintLayout(
-    modifier = modifier.fillMaxSize(),
-    constraintSet = decoupledConstraintLayout(orientation)
-  ) {
-    HeaderSection(
-      modifier = Modifier.layoutId("header"),
-      onBackClick = onBack,
-    )
-    FullscreenPlayerPager(
-      modifier = Modifier.layoutId("pagerArtwork"),
-      pagerItem = pagerMusicList,
-      playerStateModel = playerStateModel(),
-      onPlayerAction = { onPlayerAction(it) },
-      setCurrentPagerNumber = { setCurrentPagerNumber(it) },
-      currentPagerPage = currentPagerPage,
-    )
-    SongDetail(
-      modifier = Modifier.layoutId("songDetail"),
-      currentPlayerStateModel = playerStateModel,
-    )
-    SliderSection(
-      modifier = Modifier.layoutId("slider"),
-      currentMusicPosition = { currentMusicPosition() },
-      seekTo = { onPlayerAction(PlayerActions.SeekTo(it)) },
-      duration = playerStateModel().currentMediaInfo.duration.toFloat(),
-    )
-    SongController(
-      modifier = Modifier.layoutId("controllerRef"),
-      playerStateModel = { playerStateModel() },
-      isFavorite = isFavorite,
-      repeatMode = repeatMode,
-      onPauseMusic = { onPlayerAction(PlayerActions.PausePlayer) },
-      onResumeMusic = { onPlayerAction(PlayerActions.ResumePlayer) },
-      onMovePreviousMusic = { onPlayerAction(PlayerActions.MovePreviousPlayer(false)) },
-      onMoveNextMusic = { onPlayerAction(PlayerActions.MoveNextPlayer) },
-      onRepeatMode = { onPlayerAction(PlayerActions.OnRepeatMode(it)) },
-      onFavoriteToggle = { onPlayerAction(PlayerActions.OnFavoriteToggle(playerStateModel().currentMediaInfo.musicID)) }
-    )
-    VolumeController(
-      modifier = Modifier.layoutId("volumeSlider"),
-      maxDeviceVolume = maxDeviceVolume,
-      currentVolume = { currentVolume },
-      onVolumeChange = onVolumeChange,
-    )
-  }
+    ConstraintLayout(
+        modifier = modifier.fillMaxSize(),
+        constraintSet = decoupledConstraintLayout(orientation),
+    ) {
+        HeaderSection(
+            modifier = Modifier.layoutId("header"),
+            onBackClick = onBack,
+        )
+        FullscreenPlayerPager(
+            modifier = Modifier.layoutId("pagerArtwork"),
+            pagerItem = pagerMusicList,
+            playerStateModel = playerStateModel(),
+            onPlayerAction = { onPlayerAction(it) },
+            setCurrentPagerNumber = { setCurrentPagerNumber(it) },
+            currentPagerPage = currentPagerPage,
+        )
+        SongDetail(
+            modifier = Modifier.layoutId("songDetail"),
+            currentPlayerStateModel = playerStateModel,
+        )
+        SliderSection(
+            modifier = Modifier.layoutId("slider"),
+            currentMusicPosition = { currentMusicPosition() },
+            seekTo = { onPlayerAction(PlayerActions.SeekTo(it)) },
+            duration = playerStateModel().currentMediaInfo.duration.toFloat(),
+        )
+        SongController(
+            modifier = Modifier.layoutId("controllerRef"),
+            playerStateModel = { playerStateModel() },
+            isFavorite = isFavorite,
+            repeatMode = repeatMode,
+            onPauseMusic = { onPlayerAction(PlayerActions.PausePlayer) },
+            onResumeMusic = { onPlayerAction(PlayerActions.ResumePlayer) },
+            onMovePreviousMusic = { onPlayerAction(PlayerActions.MovePreviousPlayer(false)) },
+            onMoveNextMusic = { onPlayerAction(PlayerActions.MoveNextPlayer) },
+            onRepeatMode = { onPlayerAction(PlayerActions.OnRepeatMode(it)) },
+            onFavoriteToggle = { onPlayerAction(PlayerActions.OnFavoriteToggle(playerStateModel().currentMediaInfo.musicID)) },
+        )
+        VolumeController(
+            modifier = Modifier.layoutId("volumeSlider"),
+            maxDeviceVolume = maxDeviceVolume,
+            currentVolume = { currentVolume },
+            onVolumeChange = onVolumeChange,
+        )
+    }
 }
 
 @Preview(heightDp = 360, widthDp = 800)
@@ -92,36 +92,38 @@ fun FullMusicPlayer(
 @Preview()
 @Composable
 private fun FullScreenPreview() {
-  MediaPlayerJetpackComposeTheme {
-    FullMusicPlayer(
-      modifier = Modifier,
-      isFavorite = false,
-      playerStateModel = { PlayerStateModel(
-        currentMediaInfo = ActiveMusicInfo(
-          title = "Example Music name.mp3",
-          musicID = "0",
-          artworkUri = "",
-          musicUri = "",
-          artist = "Example Music artist",
-          duration = 240_000,
-          bitrate = 320_000,
-          size = 120_000,
-          isFavorite = false,
-        ),
-        isPlaying = false,
-        isBuffering = false,
-        repeatMode = 0,
-      ) },
-      repeatMode = 0,
-      currentMusicPosition = { 10000L },
-      currentPagerPage = 0,
-      pagerMusicList = persistentListOf(MusicModel.Dummy),
-      onBack = {},
-      setCurrentPagerNumber = {},
-      onPlayerAction = {},
-      maxDeviceVolume = 10,
-      currentVolume = 2,
-      onVolumeChange = {},
-    )
-  }
+    MediaPlayerJetpackComposeTheme {
+        FullMusicPlayer(
+            modifier = Modifier,
+            isFavorite = false,
+            playerStateModel = {
+                PlayerStateModel(
+                    currentMediaInfo = ActiveMusicInfo(
+                        title = "Example Music name.mp3",
+                        musicID = "0",
+                        artworkUri = "",
+                        musicUri = "",
+                        artist = "Example Music artist",
+                        duration = 240_000,
+                        bitrate = 320_000,
+                        size = 120_000,
+                        isFavorite = false,
+                    ),
+                    isPlaying = false,
+                    isBuffering = false,
+                    repeatMode = 0,
+                )
+            },
+            repeatMode = 0,
+            currentMusicPosition = { 10000L },
+            currentPagerPage = 0,
+            pagerMusicList = persistentListOf(MusicModel.Dummy),
+            onBack = {},
+            setCurrentPagerNumber = {},
+            onPlayerAction = {},
+            maxDeviceVolume = 10,
+            currentVolume = 2,
+            onVolumeChange = {},
+        )
+    }
 }

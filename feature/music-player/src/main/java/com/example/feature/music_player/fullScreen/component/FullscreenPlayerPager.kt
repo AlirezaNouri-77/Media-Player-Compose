@@ -30,57 +30,56 @@ import kotlinx.collections.immutable.ImmutableList
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun FullscreenPlayerPager(
-  modifier: Modifier = Modifier,
-  pagerItem: ImmutableList<MusicModel>,
-  playerStateModel: PlayerStateModel,
-  onPlayerAction: (action: PlayerActions) -> Unit,
-  setCurrentPagerNumber: (Int) -> Unit,
-  currentPagerPage: Int,
-  orientation: Int = LocalConfiguration.current.orientation,
+    modifier: Modifier = Modifier,
+    pagerItem: ImmutableList<MusicModel>,
+    playerStateModel: PlayerStateModel,
+    onPlayerAction: (action: PlayerActions) -> Unit,
+    setCurrentPagerNumber: (Int) -> Unit,
+    currentPagerPage: Int,
+    orientation: Int = LocalConfiguration.current.orientation,
 ) {
+    val pagerState = rememberPagerState(
+        initialPage = currentPagerPage,
+        pageCount = { pagerItem.size },
+    )
 
-  val pagerState = rememberPagerState(
-    initialPage = currentPagerPage,
-    pageCount = { pagerItem.size },
-  )
+    PagerHandler(
+        currentPlayerMediaId = playerStateModel.currentMediaInfo.musicID.toLong(),
+        pagerMusicList = pagerItem,
+        currentPagerPage = currentPagerPage,
+        pagerState = pagerState,
+        setCurrentPagerNumber = setCurrentPagerNumber,
+        onMoveToIndex = { onPlayerAction(PlayerActions.OnMoveToIndex(it)) },
+    )
 
-  PagerHandler(
-    currentPlayerMediaId = playerStateModel.currentMediaInfo.musicID.toLong(),
-    pagerMusicList = pagerItem,
-    currentPagerPage = currentPagerPage,
-    pagerState = pagerState,
-    setCurrentPagerNumber = setCurrentPagerNumber,
-    onMoveToIndex = { onPlayerAction(PlayerActions.OnMoveToIndex(it)) },
-  )
-
-  Box(
-    modifier = modifier,
-    contentAlignment = Alignment.Center,
-  ) {
-    HorizontalPager(
-      modifier = Modifier
-        .then(
-          if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            Modifier
-              .fillMaxWidth()
-              .height(360.dp)
-          } else {
-            Modifier.size(250.dp)
-          }
-        ),
-      beyondViewportPageCount = 1,
-      state = pagerState,
-      pageSpacing = 10.dp,
-      verticalAlignment = Alignment.CenterVertically,
-    ) { page ->
-      MusicThumbnail(
-        modifier = Modifier
-          .fillMaxSize()
-          .padding(horizontal = 12.dp, vertical = 10.dp)
-          .clip(RoundedCornerShape(8.dp))
-          .background(color = MaterialTheme.colorScheme.primary),
-        uri = pagerItem[page].artworkUri.toUri(),
-      )
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center,
+    ) {
+        HorizontalPager(
+            modifier = Modifier
+                .then(
+                    if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                        Modifier
+                            .fillMaxWidth()
+                            .height(360.dp)
+                    } else {
+                        Modifier.size(250.dp)
+                    },
+                ),
+            beyondViewportPageCount = 1,
+            state = pagerState,
+            pageSpacing = 10.dp,
+            verticalAlignment = Alignment.CenterVertically,
+        ) { page ->
+            MusicThumbnail(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 12.dp, vertical = 10.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(color = MaterialTheme.colorScheme.primary),
+                uri = pagerItem[page].artworkUri.toUri(),
+            )
+        }
     }
-  }
 }

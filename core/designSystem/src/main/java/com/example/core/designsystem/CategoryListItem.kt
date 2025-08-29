@@ -23,43 +23,43 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun CategoryListItem(
-  categoryName: String,
-  musicListSize: Int,
-  onClick: (String) -> Unit,
-  sharedTransitionScope: SharedTransitionScope,
-  animatedVisibilityScope: AnimatedVisibilityScope,
+    categoryName: String,
+    musicListSize: Int,
+    onClick: (String) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
-  with(sharedTransitionScope) {
-    Surface(
-      onClick = { onClick.invoke(categoryName) },
-      color = Color.Transparent
-    ) {
-      Row(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(vertical = 6.dp, horizontal = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start,
-      ) {
-        Spacer(modifier = Modifier.width(10.dp))
-        Column {
-          Text(
-            modifier = Modifier.sharedElement(
-              sharedContentState = rememberSharedContentState("categoryKey$categoryName"),
-              animatedVisibilityScope = animatedVisibilityScope,
-            ),
-            text = categoryName,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 2,
-          )
-          Text(
-            text = "$musicListSize Music",
-            fontSize = 15.sp,
-            fontWeight = FontWeight.Companion.Medium
-          )
+    with(sharedTransitionScope) {
+        Surface(
+            onClick = { onClick.invoke(categoryName) },
+            color = Color.Transparent,
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 6.dp, horizontal = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
+            ) {
+                Spacer(modifier = Modifier.width(10.dp))
+                Column {
+                    Text(
+                        modifier = Modifier.sharedElement(
+                            sharedContentState = rememberSharedContentState("categoryKey$categoryName"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        ),
+                        text = categoryName,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 2,
+                    )
+                    Text(
+                        text = "$musicListSize Music",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Companion.Medium,
+                    )
+                }
+            }
         }
-      }
     }
-  }
 }

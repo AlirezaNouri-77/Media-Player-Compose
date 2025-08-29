@@ -11,17 +11,17 @@ import com.example.core.designsystem.NoRippleEffect
 
 @Composable
 fun PlayerControllerButton(
-  icon: Int,
-  onClick: () -> Unit,
-  modifier: Modifier,
+    icon: Int,
+    onClick: () -> Unit,
+    modifier: Modifier,
 ) {
-  Image(
-    painter = painterResource(id = icon),
-    contentDescription = "",
-    modifier = modifier
-      .clickable(NoRippleEffect, null) {
-        onClick.invoke()
-      },
-    colorFilter = ColorFilter.tint(Color.White),
-  )
+    Image(
+        painter = painterResource(id = icon),
+        contentDescription = "",
+        modifier = modifier
+            .clickable(NoRippleEffect, null) {
+                onClick.invoke()
+            },
+        colorFilter = ColorFilter.tint(Color.White),
+    )
 }

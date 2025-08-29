@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.update
 class MusicServiceConnection(
     private var context: Context,
 ) {
-
     private var factory: ListenableFuture<MediaController>? = null
     private var mediaController: MediaController? = null
     private var _playerState = MutableStateFlow(PlayerStateModel.Empty)
@@ -41,9 +40,11 @@ class MusicServiceConnection(
     private fun initialExoPlayer() {
         if (factory == null) {
             factory = MediaController.Builder(
-                context, SessionToken(
-                    context, ComponentName(context, MusicPlayerService::class.java)
-                )
+                context,
+                SessionToken(
+                    context,
+                    ComponentName(context, MusicPlayerService::class.java),
+                ),
             ).buildAsync().also { mediaControllerFuture ->
                 mediaControllerFuture.addListener(
                     {
@@ -60,7 +61,8 @@ class MusicServiceConnection(
         val updatedFavoriteMusic = currentMediaItem?.toMusicModel()?.copy(isFavorite = isFavorite)
         updatedFavoriteMusic?.let {
             mediaController?.replaceMediaItem(
-                mediaController?.currentMediaItemIndex ?: 0, updatedFavoriteMusic.toMediaItem()
+                mediaController?.currentMediaItemIndex ?: 0,
+                updatedFavoriteMusic.toMediaItem(),
             )
         }
     }
@@ -117,15 +119,16 @@ class MusicServiceConnection(
                 play()
             }
             _currentArtworkPagerIndex.update { it - 1 }
-        } else mediaController?.apply {
-            seekToPrevious()
-            prepare()
-            play()
+        } else {
+            mediaController?.apply {
+                seekToPrevious()
+                prepare()
+                play()
+            }
         }
     }
 
     private val exoPlayerListener = object : Player.Listener {
-
         override fun onRepeatModeChanged(repeatMode: Int) {
             _playerState.update { it.copy(repeatMode = repeatMode) }
         }
@@ -137,7 +140,7 @@ class MusicServiceConnection(
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
             _playerState.update {
                 it.copy(
-                    currentMediaInfo = mediaItem?.toActiveMusicInfo() ?: ActiveMusicInfo.Empty
+                    currentMediaInfo = mediaItem?.toActiveMusicInfo() ?: ActiveMusicInfo.Empty,
                 )
             }
         }
@@ -150,5 +153,4 @@ class MusicServiceConnection(
             }
         }
     }
-
 }

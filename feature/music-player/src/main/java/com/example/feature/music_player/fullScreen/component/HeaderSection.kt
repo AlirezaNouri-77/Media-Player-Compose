@@ -17,38 +17,38 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun HeaderSection(
-  modifier: Modifier = Modifier,
-  onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
 ) {
-  Row(
-    modifier = modifier
-      .fillMaxWidth()
-      .wrapContentHeight(),
-    horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.Start),
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    androidx.compose.material3.IconButton(
-      modifier = Modifier
-        .size(28.dp),
-      onClick = { onBackClick.invoke() },
-      colors = androidx.compose.material3.IconButtonDefaults.iconButtonColors(
-        containerColor = Color.Transparent,
-        contentColor = Color.White,
-      ),
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.Start),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-      androidx.compose.material3.Icon(
-        modifier = Modifier
-          .fillMaxSize(),
-        imageVector = androidx.compose.material.icons.Icons.Default.KeyboardArrowDown,
-        contentDescription = "",
-      )
+        androidx.compose.material3.IconButton(
+            modifier = Modifier
+                .size(28.dp),
+            onClick = { onBackClick.invoke() },
+            colors = androidx.compose.material3.IconButtonDefaults.iconButtonColors(
+                containerColor = Color.Transparent,
+                contentColor = Color.White,
+            ),
+        ) {
+            androidx.compose.material3.Icon(
+                modifier = Modifier
+                    .fillMaxSize(),
+                imageVector = androidx.compose.material.icons.Icons.Default.KeyboardArrowDown,
+                contentDescription = "",
+            )
+        }
+        androidx.compose.material3.Text(
+            text = "Now Playing",
+            modifier = Modifier,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.White,
+        )
     }
-    androidx.compose.material3.Text(
-      text = "Now Playing",
-      modifier = Modifier,
-      fontSize = 16.sp,
-      fontWeight = FontWeight.Medium,
-      color = Color.White,
-    )
-  }
 }

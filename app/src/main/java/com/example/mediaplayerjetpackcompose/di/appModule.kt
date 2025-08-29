@@ -12,20 +12,19 @@ import org.koin.dsl.module
 
 var appModule = module {
 
-  viewModelOf(::PlayerViewModel)
-  viewModelOf(::CategoryViewModel)
-  viewModelOf(::SearchViewModel)
+    viewModelOf(::PlayerViewModel)
+    viewModelOf(::CategoryViewModel)
+    viewModelOf(::SearchViewModel)
 
-  single {
-    AlbumViewModel(get(),get(named("AlbumSortDataStore")))
-  }
+    single {
+        AlbumViewModel(get(), get(named("AlbumSortDataStore")))
+    }
 
-  single {
-    ArtistViewModel(get(),get(named("ArtistSortDataStore")))
-  }
+    single {
+        ArtistViewModel(get(), get(named("ArtistSortDataStore")))
+    }
 
-  single {
-    HomeViewModel(get(), get(named("SongsSortDataStore")), get(named("FolderSortDataStore")))
-  }
-
+    single {
+        HomeViewModel(get(), get(named("SongsSortDataStore")), get(named("FolderSortDataStore")))
+    }
 }

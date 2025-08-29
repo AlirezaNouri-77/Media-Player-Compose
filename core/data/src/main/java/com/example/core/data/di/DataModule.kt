@@ -17,24 +17,23 @@ import org.koin.dsl.module
 
 var DataModule = module {
 
-  single {
-    SearchMusicRepository(get(), get(DispatcherType.IO.qualifier))
-  } bind SearchMusicRepositoryImpl::class
+    single {
+        SearchMusicRepository(get(), get(DispatcherType.IO.qualifier))
+    } bind SearchMusicRepositoryImpl::class
 
-  single {
-    FavoriteRepository(get(), get(DispatcherType.IO.qualifier))
-  } bind FavoriteRepositoryImpl::class
+    single {
+        FavoriteRepository(get(), get(DispatcherType.IO.qualifier))
+    } bind FavoriteRepositoryImpl::class
 
-  single {
-    MusicRepository(androidApplication().applicationContext.contentResolver)
-  } bind MusicRepositoryImpl::class
+    single {
+        MusicRepository(androidApplication().applicationContext.contentResolver)
+    } bind MusicRepositoryImpl::class
 
-  single {
-    VideoRepository(androidApplication().applicationContext.contentResolver)
-  } bind VideoRepositoryImpl::class
+    single {
+        VideoRepository(androidApplication().applicationContext.contentResolver)
+    } bind VideoRepositoryImpl::class
 
-  single {
-    MusicSource(get(), get(DispatcherType.IO.qualifier),get())
-  } bind MusicSourceImpl::class
-
+    single {
+        MusicSource(get(), get(DispatcherType.IO.qualifier), get())
+    } bind MusicSourceImpl::class
 }

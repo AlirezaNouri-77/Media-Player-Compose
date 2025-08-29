@@ -27,5 +27,7 @@ sealed interface MusicNavigationRoute {
 
 @Keep
 enum class ParentCategoryRoute {
-    FOLDER, ARTIST, ALBUM
+    FOLDER,
+    ARTIST,
+    ALBUM,
 }

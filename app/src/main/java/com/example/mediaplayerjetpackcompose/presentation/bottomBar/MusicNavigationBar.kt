@@ -18,34 +18,36 @@ import com.example.core.model.navigation.MusicNavigationRoute
 
 @Composable
 fun MusicNavigationBar(
-  modifier: Modifier = Modifier,
-  navController: NavController,
-  navigateTo: (MusicNavigationRoute) -> Unit,
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    navigateTo: (MusicNavigationRoute) -> Unit,
 ) {
-  val backStackEntry by navController.currentBackStackEntryAsState()
+    val backStackEntry by navController.currentBackStackEntryAsState()
 
-  NavigationBar(
-    modifier = modifier,
-    containerColor = Color.Transparent,
-  ) {
-    NavigationBarModel.entries.forEachIndexed { index, item ->
-      val isSelected = NavigationBarModel.entries.any { backStackEntry?.destination?.hasRoute(item.route::class) == true }
-      NavigationBarItem(
-        selected = isSelected,
-        onClick = {
-          val isDuplicateDestination = backStackEntry?.destination?.hasRoute(item.route::class) == true
+    NavigationBar(
+        modifier = modifier,
+        containerColor = Color.Transparent,
+    ) {
+        NavigationBarModel.entries.forEachIndexed { index, item ->
+            val isSelected = NavigationBarModel.entries.any { backStackEntry?.destination?.hasRoute(item.route::class) == true }
+            NavigationBarItem(
+                selected = isSelected,
+                onClick = {
+                    val isDuplicateDestination = backStackEntry?.destination?.hasRoute(item.route::class) == true
 
-          if (!isDuplicateDestination) { navigateTo(item.route) }
-        },
-        icon = { Icon(painter = painterResource(item.icon), contentDescription = null) },
-        label = { Text(item.title) },
-        alwaysShowLabel = true,
-        colors = NavigationBarItemDefaults.colors(
-          indicatorColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
-          selectedIconColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
-          unselectedIconColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
-        )
-      )
+                    if (!isDuplicateDestination) {
+                        navigateTo(item.route)
+                    }
+                },
+                icon = { Icon(painter = painterResource(item.icon), contentDescription = null) },
+                label = { Text(item.title) },
+                alwaysShowLabel = true,
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                    selectedIconColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
+                    unselectedIconColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                ),
+            )
+        }
     }
-  }
 }

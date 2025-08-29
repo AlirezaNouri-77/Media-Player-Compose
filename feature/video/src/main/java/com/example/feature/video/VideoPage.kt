@@ -40,7 +40,6 @@ fun VideoPage(
     context: Context = LocalContext.current,
     activity: Activity? = LocalActivity.current,
 ) {
-
     val activityResultApi34 = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
         onRefreshVideoList()
     }
@@ -62,9 +61,10 @@ fun VideoPage(
                         if (Constant.videoPermission.all {
                                 context.shouldShowPermissionRationale(
                                     it,
-                                    activity
+                                    activity,
                                 )
-                            }) {
+                            }
+                        ) {
                             activityResultApi34.launch(Constant.videoPermission)
                         } else if (Constant.videoPermission.all { !context.shouldShowPermissionRationale(it, activity) }) {
                             context.openSetting(activityResult)
@@ -73,45 +73,44 @@ fun VideoPage(
                     }
 
                     activityResultApi34.launch(Constant.videoPermission)
-
-                }
+                },
             )
-        }
+        },
     ) { innerPadding ->
 
         AnimatedContent(
             targetState = videoUiState,
             modifier = Modifier
-              .fillMaxSize()
-              .padding(innerPadding)
-              .consumeWindowInsets(innerPadding),
+                .fillMaxSize()
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding),
             transitionSpec = { fadeIn().togetherWith(fadeOut()) },
-            label = ""
+            label = "",
         ) {
-          if (it.loading){
-            Loading(modifier = Modifier.fillMaxSize())
-          }
-
-          if (!it.loading && it.videoList.isEmpty()){
-            EmptyVideoResultHandler(context = context, onRefreshVideoList = { onRefreshVideoList() })
-          }
-
-          if (it.videoList.isNotEmpty()){
-            LazyColumn(
-              modifier = Modifier.fillMaxSize(),
-              contentPadding = PaddingValues(top = 4.dp)
-            ) {
-              itemsIndexed(
-                items = it.videoList,
-                key = { index, _ -> it.videoList[index].videoId },
-              ) { index, videoMediaModel ->
-                VideoMediaItem(
-                  item = videoMediaModel,
-                  onItemClick = { onPlay(index, it.videoList) },
-                )
-              }
+            if (it.loading) {
+                Loading(modifier = Modifier.fillMaxSize())
             }
-          }
+
+            if (!it.loading && it.videoList.isEmpty()) {
+                EmptyVideoResultHandler(context = context, onRefreshVideoList = { onRefreshVideoList() })
+            }
+
+            if (it.videoList.isNotEmpty()) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(top = 4.dp),
+                ) {
+                    itemsIndexed(
+                        items = it.videoList,
+                        key = { index, _ -> it.videoList[index].videoId },
+                    ) { index, videoMediaModel ->
+                        VideoMediaItem(
+                            item = videoMediaModel,
+                            onItemClick = { onPlay(index, it.videoList) },
+                        )
+                    }
+                }
+            }
         }
     }
 }

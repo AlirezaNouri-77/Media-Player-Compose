@@ -49,132 +49,129 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SharedTransitionScope.AlbumRoute(
-  modifier: Modifier = Modifier,
-  albumViewModel: AlbumViewModel = koinViewModel<AlbumViewModel>(),
-  navigateToCategory: (String) -> Unit,
-  animatedVisibilityScope: AnimatedVisibilityScope,
+    modifier: Modifier = Modifier,
+    albumViewModel: AlbumViewModel = koinViewModel<AlbumViewModel>(),
+    navigateToCategory: (String) -> Unit,
+    animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
+    val uiState by albumViewModel.albumScreenUiState.collectAsStateWithLifecycle()
 
-  val uiState by albumViewModel.albumScreenUiState.collectAsStateWithLifecycle()
-
-  AlbumScreen(
-    modifier.sharedBounds(
-      sharedContentState = rememberSharedContentState("bound"),
-      animatedVisibilityScope = animatedVisibilityScope,
-      renderInOverlayDuringTransition = false,
-      exit = fadeOut(tween(150, 20)),
-      enter = fadeIn(tween(150, 150, easing = LinearEasing)),
-    ),
-    sharedTransitionScope = this,
-    animatedVisibilityScope = animatedVisibilityScope,
-    albumListData = uiState.albumList.toImmutableList(),
-    navigateTo = navigateToCategory,
-    isLoading = uiState.isLoading,
-    isSortDescending = uiState.sortState.isDec,
-    currentSortType = uiState.sortState.sortType,
-    isSortDropDownMenuExpanded = uiState.isSortDropDownMenuShow,
-    onSortIconClick = { albumViewModel.onEvent(AlbumUiEvent.ShowSortDropDownMenu) },
-    onDismissDropDownMenu = { albumViewModel.onEvent(AlbumUiEvent.HideSortDropDownMenu) },
-    onOrderClick = { albumViewModel.onEvent(AlbumUiEvent.UpdateSortOrder(!uiState.sortState.isDec)) },
-    onSortClick = { albumViewModel.onEvent(AlbumUiEvent.UpdateSortType(it)) }
-  )
-
+    AlbumScreen(
+        modifier.sharedBounds(
+            sharedContentState = rememberSharedContentState("bound"),
+            animatedVisibilityScope = animatedVisibilityScope,
+            renderInOverlayDuringTransition = false,
+            exit = fadeOut(tween(150, 20)),
+            enter = fadeIn(tween(150, 150, easing = LinearEasing)),
+        ),
+        sharedTransitionScope = this,
+        animatedVisibilityScope = animatedVisibilityScope,
+        albumListData = uiState.albumList.toImmutableList(),
+        navigateTo = navigateToCategory,
+        isLoading = uiState.isLoading,
+        isSortDescending = uiState.sortState.isDec,
+        currentSortType = uiState.sortState.sortType,
+        isSortDropDownMenuExpanded = uiState.isSortDropDownMenuShow,
+        onSortIconClick = { albumViewModel.onEvent(AlbumUiEvent.ShowSortDropDownMenu) },
+        onDismissDropDownMenu = { albumViewModel.onEvent(AlbumUiEvent.HideSortDropDownMenu) },
+        onOrderClick = { albumViewModel.onEvent(AlbumUiEvent.UpdateSortOrder(!uiState.sortState.isDec)) },
+        onSortClick = { albumViewModel.onEvent(AlbumUiEvent.UpdateSortType(it)) },
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 private fun AlbumScreen(
-  modifier: Modifier = Modifier,
-  animatedVisibilityScope: AnimatedVisibilityScope,
-  sharedTransitionScope: SharedTransitionScope,
-  albumListData: ImmutableList<Pair<String, List<MusicModel>>>,
-  isLoading: Boolean,
-  isSortDescending: Boolean,
-  currentSortType: CategorizedSortType,
-  navigateTo: (String) -> Unit,
-  isSortDropDownMenuExpanded: Boolean,
-  onDismissDropDownMenu: () -> Unit,
-  onOrderClick: () -> Unit,
-  onSortIconClick: () -> Unit,
-  onSortClick: (CategorizedSortType) -> Unit,
+    modifier: Modifier = Modifier,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    sharedTransitionScope: SharedTransitionScope,
+    albumListData: ImmutableList<Pair<String, List<MusicModel>>>,
+    isLoading: Boolean,
+    isSortDescending: Boolean,
+    currentSortType: CategorizedSortType,
+    navigateTo: (String) -> Unit,
+    isSortDropDownMenuExpanded: Boolean,
+    onDismissDropDownMenu: () -> Unit,
+    onOrderClick: () -> Unit,
+    onSortIconClick: () -> Unit,
+    onSortClick: (CategorizedSortType) -> Unit,
 ) {
-  Scaffold(
-    modifier = modifier,
-    topBar = {
-      TopAppBar(
-        title = {
-          Text(
-            text = "Album",
-            modifier = Modifier,
-            fontWeight = FontWeight.Bold,
-            fontSize = 38.sp,
-          )
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-          containerColor = Color.Transparent,
-          titleContentColor = MaterialTheme.colorScheme.onPrimary,
-        ),
-        actions = {
-          Box(
-            modifier = Modifier
-              .wrapContentSize(Alignment.TopEnd)
-          ) {
-            IconButton(
-              onClick = { onSortIconClick.invoke() },
-            ) {
-              Icon(
-                modifier = Modifier.size(24.dp),
-                painter = painterResource(id = R.drawable.icon_sort),
-                contentDescription = "Sort Icon",
-                tint = MaterialTheme.colorScheme.onPrimary,
-              )
-            }
-            SortDropDownMenu(
-              isExpand = isSortDropDownMenuExpanded,
-              sortTypeList = CategorizedSortType.entries.toList(),
-              isSortDescending = isSortDescending,
-              currentSortType = currentSortType,
-              onSortClick = { onSortClick(it as CategorizedSortType) },
-              onOrderClick = { onOrderClick() },
-              onDismiss = { onDismissDropDownMenu() },
-            )
-          }
-        }
-      )
-    },
-  ) { innerPadding ->
-
-    Crossfade(isLoading) {
-      if (it) {
-        Loading(modifier = Modifier.fillMaxSize())
-      } else {
-        if (albumListData.isNotEmpty()) {
-          LazyColumn(
-            modifier = Modifier
-              .fillMaxSize()
-              .padding(innerPadding),
-            contentPadding = PaddingValues(bottom = LocalParentScaffoldPadding.current.calculateBottomPadding()),
-          ) {
-            items(
-              items = albumListData,
-              key = { it }
-            ) { item ->
-              CategoryListItem(
-                categoryName = item.first,
-                musicListSize = item.second.size,
-                onClick = { categoryName ->
-                  navigateTo(categoryName)
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Album",
+                        modifier = Modifier,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 38.sp,
+                    )
                 },
-                sharedTransitionScope = sharedTransitionScope,
-                animatedVisibilityScope = animatedVisibilityScope,
-              )
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                ),
+                actions = {
+                    Box(
+                        modifier = Modifier
+                            .wrapContentSize(Alignment.TopEnd),
+                    ) {
+                        IconButton(
+                            onClick = { onSortIconClick.invoke() },
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(24.dp),
+                                painter = painterResource(id = R.drawable.icon_sort),
+                                contentDescription = "Sort Icon",
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                            )
+                        }
+                        SortDropDownMenu(
+                            isExpand = isSortDropDownMenuExpanded,
+                            sortTypeList = CategorizedSortType.entries.toList(),
+                            isSortDescending = isSortDescending,
+                            currentSortType = currentSortType,
+                            onSortClick = { onSortClick(it as CategorizedSortType) },
+                            onOrderClick = { onOrderClick() },
+                            onDismiss = { onDismissDropDownMenu() },
+                        )
+                    }
+                },
+            )
+        },
+    ) { innerPadding ->
+
+        Crossfade(isLoading) {
+            if (it) {
+                Loading(modifier = Modifier.fillMaxSize())
+            } else {
+                if (albumListData.isNotEmpty()) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
+                        contentPadding = PaddingValues(bottom = LocalParentScaffoldPadding.current.calculateBottomPadding()),
+                    ) {
+                        items(
+                            items = albumListData,
+                            key = { it },
+                        ) { item ->
+                            CategoryListItem(
+                                categoryName = item.first,
+                                musicListSize = item.second.size,
+                                onClick = { categoryName ->
+                                    navigateTo(categoryName)
+                                },
+                                sharedTransitionScope = sharedTransitionScope,
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            )
+                        }
+                    }
+                } else {
+                    EmptyPage()
+                }
             }
-          }
-
-        } else EmptyPage()
-      }
+        }
     }
-
-
-  }
 }

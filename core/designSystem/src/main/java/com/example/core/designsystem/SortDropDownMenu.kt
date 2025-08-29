@@ -19,54 +19,54 @@ import com.example.core.model.datastore.SortType
 
 @Composable
 fun SortDropDownMenu(
-  modifier: Modifier = Modifier,
-  isExpand: Boolean,
-  sortTypeList: List<SortType>,
-  isSortDescending: Boolean,
-  currentSortType: SortType,
-  onSortClick: (SortType) -> Unit,
-  onOrderClick: () -> Unit,
-  onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+    isExpand: Boolean,
+    sortTypeList: List<SortType>,
+    isSortDescending: Boolean,
+    currentSortType: SortType,
+    onSortClick: (SortType) -> Unit,
+    onOrderClick: () -> Unit,
+    onDismiss: () -> Unit,
 ) {
-  DropdownMenu(
-    modifier = modifier,
-    expanded = isExpand,
-    shape = RoundedCornerShape(10.dp),
-    onDismissRequest = { onDismiss() },
-    containerColor = MaterialTheme.colorScheme.primaryContainer,
-  ) {
-    sortTypeList.forEachIndexed { _, sortType ->
-      DropdownMenuItem(
-        modifier = Modifier.background(
-          if (currentSortType == sortType) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f) else Color.Transparent,
-          shape = RoundedCornerShape(10.dp),
-        ),
-        text = {
-          Text(text = sortType.getString())
-        },
-        onClick = {
-          onSortClick(sortType)
-        },
-        colors = MenuDefaults.itemColors(
-          textColor = MaterialTheme.colorScheme.onPrimary,
-        ),
-      )
-    }
-    Spacer(Modifier.height(5.dp))
-    DropdownMenuItem(
-      text = {
-        Text(text = if (isSortDescending) "Dec" else "Acs")
-      },
-      trailingIcon = {
-        Icon(
-          painter = painterResource(id = if (isSortDescending) R.drawable.icon_sort_desc else R.drawable.icon_sort_asce),
-          contentDescription = ""
+    DropdownMenu(
+        modifier = modifier,
+        expanded = isExpand,
+        shape = RoundedCornerShape(10.dp),
+        onDismissRequest = { onDismiss() },
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+    ) {
+        sortTypeList.forEachIndexed { _, sortType ->
+            DropdownMenuItem(
+                modifier = Modifier.background(
+                    if (currentSortType == sortType) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f) else Color.Transparent,
+                    shape = RoundedCornerShape(10.dp),
+                ),
+                text = {
+                    Text(text = sortType.getString())
+                },
+                onClick = {
+                    onSortClick(sortType)
+                },
+                colors = MenuDefaults.itemColors(
+                    textColor = MaterialTheme.colorScheme.onPrimary,
+                ),
+            )
+        }
+        Spacer(Modifier.height(5.dp))
+        DropdownMenuItem(
+            text = {
+                Text(text = if (isSortDescending) "Dec" else "Acs")
+            },
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(id = if (isSortDescending) R.drawable.icon_sort_desc else R.drawable.icon_sort_asce),
+                    contentDescription = "",
+                )
+            },
+            colors = MenuDefaults.itemColors(
+                textColor = MaterialTheme.colorScheme.onPrimary,
+            ),
+            onClick = { onOrderClick() },
         )
-      },
-      colors = MenuDefaults.itemColors(
-        textColor = MaterialTheme.colorScheme.onPrimary,
-      ),
-      onClick = { onOrderClick() },
-    )
-  }
+    }
 }

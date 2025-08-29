@@ -31,57 +31,56 @@ import com.example.feature.video.model.VideoPlayerOverlayState
 
 @Composable
 fun MiddleInfoHandler(
-  modifier: Modifier,
-  showInfoMiddleScreen: Boolean,
-  videoPlayerOverlayState: VideoPlayerOverlayState,
+    modifier: Modifier,
+    showInfoMiddleScreen: Boolean,
+    videoPlayerOverlayState: VideoPlayerOverlayState,
 ) {
-  var icon by remember {
-    mutableIntStateOf(R.drawable.icon_fast_forward_24)
-  }
-
-  LaunchedEffect(videoPlayerOverlayState) {
-    when (videoPlayerOverlayState) {
-      is VideoPlayerOverlayState.FastForward -> icon = videoPlayerOverlayState.icon
-      is VideoPlayerOverlayState.FastRewind -> icon = videoPlayerOverlayState.icon
-      VideoPlayerOverlayState.Initial -> {}
+    var icon by remember {
+        mutableIntStateOf(R.drawable.icon_fast_forward_24)
     }
-  }
 
-  AnimatedVisibility(
-    visible = showInfoMiddleScreen,
-    enter = fadeIn(),
-    exit = fadeOut(),
-    modifier = modifier
-  ) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
-        modifier = Modifier
-          .drawBehind {
-            drawRoundRect(
-              Color.Black,
-              size = this.size,
-              alpha = 0.5f,
-              cornerRadius = CornerRadius(x = 25f, y = 25f)
-            )
-          }
-          .padding(5.dp)
-      ) {
-        Icon(
-          modifier = Modifier.size(25.dp),
-          painter = painterResource(id = icon),
-          contentDescription = "",
-          tint = Color.White
-        )
-        Text(
-          text = "15",
-          fontSize = 18.sp,
-          fontWeight = FontWeight.SemiBold,
-          color = Color.White,
-        )
-      }
+    LaunchedEffect(videoPlayerOverlayState) {
+        when (videoPlayerOverlayState) {
+            is VideoPlayerOverlayState.FastForward -> icon = videoPlayerOverlayState.icon
+            is VideoPlayerOverlayState.FastRewind -> icon = videoPlayerOverlayState.icon
+            VideoPlayerOverlayState.Initial -> {}
+        }
     }
-  }
 
+    AnimatedVisibility(
+        visible = showInfoMiddleScreen,
+        enter = fadeIn(),
+        exit = fadeOut(),
+        modifier = modifier,
+    ) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
+                modifier = Modifier
+                    .drawBehind {
+                        drawRoundRect(
+                            Color.Black,
+                            size = this.size,
+                            alpha = 0.5f,
+                            cornerRadius = CornerRadius(x = 25f, y = 25f),
+                        )
+                    }
+                    .padding(5.dp),
+            ) {
+                Icon(
+                    modifier = Modifier.size(25.dp),
+                    painter = painterResource(id = icon),
+                    contentDescription = "",
+                    tint = Color.White,
+                )
+                Text(
+                    text = "15",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White,
+                )
+            }
+        }
+    }
 }

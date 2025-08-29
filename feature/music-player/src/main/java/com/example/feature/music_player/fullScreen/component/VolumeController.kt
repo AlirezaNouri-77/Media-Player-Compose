@@ -32,96 +32,96 @@ import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VolumeController(
-  modifier: Modifier = Modifier,
-  maxDeviceVolume: Int,
-  currentVolume: () -> Int,
-  onVolumeChange: (Float) -> Unit,
+    modifier: Modifier = Modifier,
+    maxDeviceVolume: Int,
+    currentVolume: () -> Int,
+    onVolumeChange: (Float) -> Unit,
 ) {
-  val interactionSource = remember { MutableInteractionSource() }
-  val isDragged by interactionSource.collectIsDraggedAsState()
+    val interactionSource = remember { MutableInteractionSource() }
+    val isDragged by interactionSource.collectIsDraggedAsState()
 
-  val sliderThumbWidth = animateDpAsState(targetValue = if (isDragged) 8.dp else 4.dp, label = "").value
-  val sliderTrackHeight = animateDpAsState(targetValue = if (isDragged) 4.dp else 8.dp, label = "").value
+    val sliderThumbWidth = animateDpAsState(targetValue = if (isDragged) 8.dp else 4.dp, label = "").value
+    val sliderTrackHeight = animateDpAsState(targetValue = if (isDragged) 4.dp else 8.dp, label = "").value
 
-  val iconsScale = animateFloatAsState(if (isDragged) 1.4f else 1f)
+    val iconsScale = animateFloatAsState(if (isDragged) 1.4f else 1f)
 
-  Row(
-    modifier = modifier,
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
-  ) {
-    Icon(
-      modifier = Modifier
-        .size(19.dp)
-        .graphicsLayer {
-          if (currentVolume() == 0) {
-            this.scaleX *= iconsScale.value
-            this.scaleY *= iconsScale.value
-          }
-        },
-      painter = painterResource(R.drawable.icon_volume_min),
-      tint = Color.White.copy(alpha = 0.6f),
-      contentDescription = "",
-    )
-    Slider(
-      value = currentVolume().toFloat() / maxDeviceVolume,
-      modifier = Modifier
-        .fillMaxWidth(0.7f),
-      onValueChange = { value ->
-        onVolumeChange(value * maxDeviceVolume)
-      },
-      interactionSource = interactionSource,
-      thumb = {
-        SliderDefaults.Thumb(
-          interactionSource = interactionSource,
-          thumbSize = DpSize(width = sliderThumbWidth, height = 18.dp),
-          colors = SliderDefaults.colors(
-            thumbColor = Color.White.copy(alpha = 0.9f)
-          ),
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
+    ) {
+        Icon(
+            modifier = Modifier
+                .size(19.dp)
+                .graphicsLayer {
+                    if (currentVolume() == 0) {
+                        this.scaleX *= iconsScale.value
+                        this.scaleY *= iconsScale.value
+                    }
+                },
+            painter = painterResource(R.drawable.icon_volume_min),
+            tint = Color.White.copy(alpha = 0.6f),
+            contentDescription = "",
         )
-      },
-      track = { sliderState ->
-        SliderDefaults.Track(
-          modifier = Modifier
-            .height(sliderTrackHeight)
-            .clip(RoundedCornerShape(5.dp)),
-          sliderState = sliderState,
-          colors = SliderDefaults.colors(
-            activeTrackColor = Color.White.copy(alpha = 0.8f),
-            inactiveTrackColor = Color.White.copy(alpha = 0.2f),
-          ),
-          drawStopIndicator = null,
-          thumbTrackGapSize = 3.dp,
-          trackInsideCornerSize = 3.dp,
+        Slider(
+            value = currentVolume().toFloat() / maxDeviceVolume,
+            modifier = Modifier
+                .fillMaxWidth(0.7f),
+            onValueChange = { value ->
+                onVolumeChange(value * maxDeviceVolume)
+            },
+            interactionSource = interactionSource,
+            thumb = {
+                SliderDefaults.Thumb(
+                    interactionSource = interactionSource,
+                    thumbSize = DpSize(width = sliderThumbWidth, height = 18.dp),
+                    colors = SliderDefaults.colors(
+                        thumbColor = Color.White.copy(alpha = 0.9f),
+                    ),
+                )
+            },
+            track = { sliderState ->
+                SliderDefaults.Track(
+                    modifier = Modifier
+                        .height(sliderTrackHeight)
+                        .clip(RoundedCornerShape(5.dp)),
+                    sliderState = sliderState,
+                    colors = SliderDefaults.colors(
+                        activeTrackColor = Color.White.copy(alpha = 0.8f),
+                        inactiveTrackColor = Color.White.copy(alpha = 0.2f),
+                    ),
+                    drawStopIndicator = null,
+                    thumbTrackGapSize = 3.dp,
+                    trackInsideCornerSize = 3.dp,
+                )
+            },
+            valueRange = 0f..1f,
         )
-      },
-      valueRange = 0f..1f,
-    )
-    Icon(
-      modifier = Modifier
-        .size(19.dp)
-        .graphicsLayer {
-          if (currentVolume() == maxDeviceVolume) {
-            this.scaleX *= iconsScale.value
-            this.scaleY *= iconsScale.value
-          }
-        },
-      painter = painterResource(R.drawable.icon_volume_max),
-      tint = Color.White.copy(alpha = 0.6f),
-      contentDescription = "",
-    )
-  }
+        Icon(
+            modifier = Modifier
+                .size(19.dp)
+                .graphicsLayer {
+                    if (currentVolume() == maxDeviceVolume) {
+                        this.scaleX *= iconsScale.value
+                        this.scaleY *= iconsScale.value
+                    }
+                },
+            painter = painterResource(R.drawable.icon_volume_max),
+            tint = Color.White.copy(alpha = 0.6f),
+            contentDescription = "",
+        )
+    }
 }
 
 @Preview
 @Composable
 private fun Preview() {
-  MediaPlayerJetpackComposeTheme {
-    VolumeController(
-      modifier = Modifier,
-      maxDeviceVolume = 15,
-      currentVolume = { 4 },
-      onVolumeChange = {},
-    )
-  }
+    MediaPlayerJetpackComposeTheme {
+        VolumeController(
+            modifier = Modifier,
+            maxDeviceVolume = 15,
+            currentVolume = { 4 },
+            onVolumeChange = {},
+        )
+    }
 }

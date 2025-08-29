@@ -6,6 +6,6 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class FavoriteEntity(
-  @PrimaryKey(autoGenerate = true) var id: Int = 0,
-  @ColumnInfo(name = "media_Id") var mediaId: String,
+    @PrimaryKey(autoGenerate = true) var id: Int = 0,
+    @ColumnInfo(name = "media_Id") var mediaId: String,
 )

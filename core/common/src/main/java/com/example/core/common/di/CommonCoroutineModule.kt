@@ -14,30 +14,29 @@ import org.koin.dsl.module
 
 var CommonCoroutineModule = module {
 
-  factory(named("CoroutineMain")) {
-    CoroutineScope(SupervisorJob() + get<MainCoroutineDispatcher>(DispatcherType.MAIN.qualifier))
-  }
+    factory(named("CoroutineMain")) {
+        CoroutineScope(SupervisorJob() + get<MainCoroutineDispatcher>(DispatcherType.MAIN.qualifier))
+    }
 
-  factory(named("CoroutineIO")) {
-    CoroutineScope(SupervisorJob() + get<CoroutineDispatcher>(DispatcherType.IO.qualifier))
-  }
+    factory(named("CoroutineIO")) {
+        CoroutineScope(SupervisorJob() + get<CoroutineDispatcher>(DispatcherType.IO.qualifier))
+    }
 
-  factory(named("CoroutineDefault")) {
-    CoroutineScope(SupervisorJob() + get<CoroutineDispatcher>(DispatcherType.DEFAULT.qualifier))
-  }
+    factory(named("CoroutineDefault")) {
+        CoroutineScope(SupervisorJob() + get<CoroutineDispatcher>(DispatcherType.DEFAULT.qualifier))
+    }
 
-  single {
-    MusicThumbnailUtil(
-      androidApplication().applicationContext,
-      get(DispatcherType.DEFAULT.qualifier),
-      get(DispatcherType.IO.qualifier)
-    )
-  } bind MusicThumbnailUtilImpl::class
-
+    single {
+        MusicThumbnailUtil(
+            androidApplication().applicationContext,
+            get(DispatcherType.DEFAULT.qualifier),
+            get(DispatcherType.IO.qualifier),
+        )
+    } bind MusicThumbnailUtilImpl::class
 }
 
 enum class CoroutineType(val qualifier: StringQualifier) {
-  MAIN(StringQualifier("CoroutineMain")),
-  IO(StringQualifier("CoroutineIO")),
-  DEFAULT(StringQualifier("CoroutineDefault")),
+    MAIN(StringQualifier("CoroutineMain")),
+    IO(StringQualifier("CoroutineIO")),
+    DEFAULT(StringQualifier("CoroutineDefault")),
 }

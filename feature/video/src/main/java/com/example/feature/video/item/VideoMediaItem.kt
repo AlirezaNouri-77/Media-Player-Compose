@@ -68,9 +68,9 @@ fun VideoMediaItem(
                     contentDescription = "",
                     contentScale = ContentScale.FillBounds,
                     modifier = Modifier
-                      .align(Alignment.Center)
-                      .size(120.dp, 80.dp)
-                      .clip(RoundedCornerShape(8.dp)),
+                        .align(Alignment.Center)
+                        .size(120.dp, 80.dp)
+                        .clip(RoundedCornerShape(8.dp)),
                     loading = {
                         Box(
                             contentAlignment = Alignment.Center,
@@ -79,7 +79,7 @@ fun VideoMediaItem(
                             Image(
                                 painter = painterResource(R.drawable.icon_video),
                                 colorFilter = ColorFilter.tint(Color.White),
-                                contentDescription = ""
+                                contentDescription = "",
                             )
                         }
                     },
@@ -87,19 +87,19 @@ fun VideoMediaItem(
                 Text(
                     text = item.duration.convertMilliSecondToTime(),
                     modifier = Modifier
-                      .align(Alignment.BottomEnd)
-                      .padding(end = 4.dp, bottom = 4.dp)
-                      .drawWithCache {
-                        onDrawBehind {
-                          drawRoundRect(
-                            color = Color.Black,
-                            topLeft = Offset(x = -10f, y = 0f),
-                            size = Size(width = this.size.width + 10f, height = this.size.height),
-                            alpha = 0.4f,
-                            cornerRadius = CornerRadius(x = 12f, y = 12f),
-                          )
-                        }
-                      },
+                        .align(Alignment.BottomEnd)
+                        .padding(end = 4.dp, bottom = 4.dp)
+                        .drawWithCache {
+                            onDrawBehind {
+                                drawRoundRect(
+                                    color = Color.Black,
+                                    topLeft = Offset(x = -10f, y = 0f),
+                                    size = Size(width = this.size.width + 10f, height = this.size.height),
+                                    alpha = 0.4f,
+                                    cornerRadius = CornerRadius(x = 12f, y = 12f),
+                                )
+                            }
+                        },
                     textAlign = TextAlign.Start,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 12.sp,
@@ -127,7 +127,6 @@ fun VideoMediaItem(
             }
         }
     }
-
 }
 
 @Preview

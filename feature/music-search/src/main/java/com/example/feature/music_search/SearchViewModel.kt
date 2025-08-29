@@ -13,43 +13,41 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
-  private var searchMusicManager: SearchMusicRepositoryImpl,
+    private var searchMusicManager: SearchMusicRepositoryImpl,
 ) : ViewModel() {
-
-  private var mUiState = MutableStateFlow(SearchScreenUiState())
-  val searchScreenUiState = mUiState
-    .onStart {
-      loadSearchData()
-    }.stateIn(
-      viewModelScope,
-      SharingStarted.WhileSubscribed(5_000L),
-      SearchScreenUiState(),
-    )
-
-  fun loadSearchData() = viewModelScope.launch {
-    searchMusicManager.searchList.collectLatest { searchData ->
-      mUiState.update {
-        it.copy(
-          isLoading = false,
-          searchList = searchData,
+    private var mUiState = MutableStateFlow(SearchScreenUiState())
+    val searchScreenUiState = mUiState
+        .onStart {
+            loadSearchData()
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000L),
+            SearchScreenUiState(),
         )
-      }
+
+    fun loadSearchData() = viewModelScope.launch {
+        searchMusicManager.searchList.collectLatest { searchData ->
+            mUiState.update {
+                it.copy(
+                    isLoading = false,
+                    searchList = searchData,
+                )
+            }
+        }
     }
-  }
 
-  @OptIn(FlowPreview::class)
-  fun onEvent(event: SearchScreenUiEvent) {
-    when (event) {
-      is SearchScreenUiEvent.OnSearchTextField -> {
-        mUiState.update { it.copy(searchTextFieldValue = event.newValue) }
-        searchMusic(input = event.newValue)
-      }
-      SearchScreenUiEvent.OnClearSearchTextField -> mUiState.update { it.copy(searchTextFieldValue = "") }
+    @OptIn(FlowPreview::class)
+    fun onEvent(event: SearchScreenUiEvent) {
+        when (event) {
+            is SearchScreenUiEvent.OnSearchTextField -> {
+                mUiState.update { it.copy(searchTextFieldValue = event.newValue) }
+                searchMusic(input = event.newValue)
+            }
+            SearchScreenUiEvent.OnClearSearchTextField -> mUiState.update { it.copy(searchTextFieldValue = "") }
+        }
     }
-  }
 
-  private fun searchMusic(input: String) = viewModelScope.launch {
-    searchMusicManager.search(input)
-  }
-
+    private fun searchMusic(input: String) = viewModelScope.launch {
+        searchMusicManager.search(input)
+    }
 }

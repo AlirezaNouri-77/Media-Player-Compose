@@ -37,7 +37,7 @@ fun MiniPlayerPager(
             state = pagerState,
             pageSpacing = 20.dp,
             beyondViewportPageCount = 2,
-            contentPadding = PaddingValues(horizontal = 2.dp)
+            contentPadding = PaddingValues(horizontal = 2.dp),
         ) { page ->
             Column(
                 modifier = Modifier
@@ -48,7 +48,7 @@ fun MiniPlayerPager(
                         .fillMaxWidth()
                         .basicMarquee(
                             iterations = marqueeAnimate,
-                            initialDelayMillis = 500
+                            initialDelayMillis = 500,
                         ),
                     text = artworkList[page].name.removeFileExtension(),
                     fontSize = 13.sp,

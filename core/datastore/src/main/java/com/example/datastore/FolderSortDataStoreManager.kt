@@ -17,38 +17,36 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 class FolderSortDataStoreManager(
-  private val dataStore: DataStore<SortPreferences>,
-  private val ioDispatcher: CoroutineDispatcher,
+    private val dataStore: DataStore<SortPreferences>,
+    private val ioDispatcher: CoroutineDispatcher,
 ) : SortDataStoreManagerImpl<CategorizedSortModel> {
+    override val sortState: Flow<CategorizedSortModel> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(SortPreferences.newBuilder().setFolderSortType(Proto_DataStore_Folder.Name).setFolderIsDescending(true).build())
+            } else {
+                throw exception
+            }
+        }.map {
+            CategorizedSortModel(
+                sortType = it.folderSortType.toFolderSortType(),
+                isDec = it.folderIsDescending,
+            )
+        }.flowOn(ioDispatcher)
 
-  override val sortState: Flow<CategorizedSortModel> = dataStore.data
-    .catch { exception ->
-      if (exception is IOException) {
-        emit(SortPreferences.newBuilder().setFolderSortType(Proto_DataStore_Folder.Name).setFolderIsDescending(true).build())
-      } else {
-        throw exception
-      }
-    }.map {
-      CategorizedSortModel(
-        sortType = it.folderSortType.toFolderSortType(),
-        isDec = it.folderIsDescending,
-      )
-    }.flowOn(ioDispatcher)
-
-  override suspend fun updateSortType(sortType: SortType) {
-    withContext(ioDispatcher) {
-      dataStore.updateData {
-        it.toBuilder().setFolderSortType((sortType as CategorizedSortType).toProtoSortType()).build()
-      }
+    override suspend fun updateSortType(sortType: SortType) {
+        withContext(ioDispatcher) {
+            dataStore.updateData {
+                it.toBuilder().setFolderSortType((sortType as CategorizedSortType).toProtoSortType()).build()
+            }
+        }
     }
-  }
 
-  override suspend fun updateSortOrder(boolean: Boolean) {
-    withContext(ioDispatcher) {
-      dataStore.updateData {
-        it.toBuilder().setFolderIsDescending(boolean).build()
-      }
+    override suspend fun updateSortOrder(boolean: Boolean) {
+        withContext(ioDispatcher) {
+            dataStore.updateData {
+                it.toBuilder().setFolderIsDescending(boolean).build()
+            }
+        }
     }
-  }
-
 }

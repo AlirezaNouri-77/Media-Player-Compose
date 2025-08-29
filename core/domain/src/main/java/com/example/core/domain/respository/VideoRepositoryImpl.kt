@@ -5,5 +5,5 @@ import com.example.core.model.VideoModel
 import kotlinx.coroutines.flow.Flow
 
 interface VideoRepositoryImpl {
-  fun getVideos(): Flow<MediaStoreResult<VideoModel>>
+    fun getVideos(): Flow<MediaStoreResult<VideoModel>>
 }

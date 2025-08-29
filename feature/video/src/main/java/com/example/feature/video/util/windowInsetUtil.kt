@@ -5,7 +5,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 
-fun hideSystemBars(window: Window?){
+fun hideSystemBars(window: Window?) {
     window ?: return
     val insetsController = WindowCompat.getInsetsController(window, window.decorView)
 
@@ -15,7 +15,7 @@ fun hideSystemBars(window: Window?){
     }
 }
 
-fun showSystemBars(window: Window?){
+fun showSystemBars(window: Window?) {
     window ?: return
     val insetsController = WindowCompat.getInsetsController(window, window.decorView)
 

@@ -16,31 +16,29 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainTopAppBar(
-  modifier: Modifier = Modifier,
-  title: String?,
-  titleFontSize: TextUnit = 38.sp,
-  titleFontWeight: FontWeight = FontWeight.Bold,
-  topAppBarColors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
-    containerColor = Color.Transparent,
-  ),
-  actions: @Composable RowScope.() -> Unit = {},
+    modifier: Modifier = Modifier,
+    title: String?,
+    titleFontSize: TextUnit = 38.sp,
+    titleFontWeight: FontWeight = FontWeight.Bold,
+    topAppBarColors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
+        containerColor = Color.Transparent,
+    ),
+    actions: @Composable RowScope.() -> Unit = {},
 ) {
-
-  TopAppBar(
-    modifier = modifier,
-    title = {
-      title?.let {
-        Text(
-          text = it,
-          fontWeight = titleFontWeight,
-          fontSize = titleFontSize,
-        )
-      }
-    },
-    colors = topAppBarColors,
-    actions = {
-      actions()
-    },
-  )
-
+    TopAppBar(
+        modifier = modifier,
+        title = {
+            title?.let {
+                Text(
+                    text = it,
+                    fontWeight = titleFontWeight,
+                    fontSize = titleFontSize,
+                )
+            }
+        },
+        colors = topAppBarColors,
+        actions = {
+            actions()
+        },
+    )
 }

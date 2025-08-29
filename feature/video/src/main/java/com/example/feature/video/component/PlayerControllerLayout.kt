@@ -58,14 +58,13 @@ fun PlayerControllerLayout(
     getPreviewSlider: (position: Long) -> Unit,
     orientation: Int = LocalConfiguration.current.orientation,
 ) {
-
     val controllerPadding = remember(orientation) {
         mutableStateOf(
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 PaddingValues(horizontal = 20.dp)
             } else {
                 PaddingValues(horizontal = 15.dp)
-            }
+            },
         )
     }
 
@@ -96,7 +95,6 @@ fun PlayerControllerLayout(
             getPreviewSlider = getPreviewSlider,
         )
     }
-
 }
 
 @Composable
@@ -189,7 +187,8 @@ private fun PlayerTopSection(
         horizontalArrangement = Arrangement.spacedBy(15.dp),
     ) {
         Image(
-            painter = painterResource(id = R.drawable.icon_back_24), contentDescription = "",
+            painter = painterResource(id = R.drawable.icon_back_24),
+            contentDescription = "",
             modifier = Modifier
                 .weight(0.1f)
                 .clickable { onBack() },
@@ -216,16 +215,16 @@ private fun PreviewPlayerControllerLayout() {
     MediaPlayerJetpackComposeTheme {
         PlayerControllerLayout(
             currentPlayerState = VideoPlayerState(
-                    currentMediaInfo = ActiveVideoInfo(
-                        title = "Example Video",
-                        videoID = "",
-                        videoUri = "",
-                        duration = 240_000
-                    ),
-                    isPlaying = false,
-                    isBuffering = false,
-                    repeatMode = 0,
+                currentMediaInfo = ActiveVideoInfo(
+                    title = "Example Video",
+                    videoID = "",
+                    videoUri = "",
+                    duration = 240_000,
                 ),
+                isPlaying = false,
+                isBuffering = false,
+                repeatMode = 0,
+            ),
             onResumePlayer = {},
             onPausePlayer = {},
             onBackClick = {},
@@ -240,4 +239,3 @@ private fun PreviewPlayerControllerLayout() {
         )
     }
 }
-

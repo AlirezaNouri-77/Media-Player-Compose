@@ -24,77 +24,76 @@ import com.example.core.model.datastore.SortType
 
 @Composable
 fun Sort(
-  modifier: Modifier = Modifier,
-  onClick: () -> Unit,
-  onSortClick: (SortType) -> Unit,
-  onOrderClick: () -> Unit,
-  sortTypeList: List<SortType>,
-  isDropDownMenuSortExpand: Boolean,
-  isOrderDec: Boolean,
-  sortType: SortType,
-  onDismissDropDownMenu: () -> Unit,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    onSortClick: (SortType) -> Unit,
+    onOrderClick: () -> Unit,
+    sortTypeList: List<SortType>,
+    isDropDownMenuSortExpand: Boolean,
+    isOrderDec: Boolean,
+    sortType: SortType,
+    onDismissDropDownMenu: () -> Unit,
 ) {
-  Box(
-    modifier = modifier
-      .wrapContentSize(Alignment.TopEnd)
-  ) {
-    IconButton(
-      onClick = { onClick() },
+    Box(
+        modifier = modifier
+            .wrapContentSize(Alignment.TopEnd),
     ) {
-      Icon(
-        modifier = Modifier.size(24.dp),
-        painter = painterResource(id = R.drawable.icon_sort),
-        contentDescription = "Sort Icon",
-        tint = MaterialTheme.colorScheme.onPrimary,
-      )
+        IconButton(
+            onClick = { onClick() },
+        ) {
+            Icon(
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(id = R.drawable.icon_sort),
+                contentDescription = "Sort Icon",
+                tint = MaterialTheme.colorScheme.onPrimary,
+            )
+        }
+        SortDropDownMenu(
+            isExpand = isDropDownMenuSortExpand,
+            sortTypeList = sortTypeList,
+            isSortDescending = isOrderDec,
+            currentSortType = sortType,
+            onSortClick = { onSortClick(it) },
+            onOrderClick = { onOrderClick() },
+            onDismiss = { onDismissDropDownMenu() },
+        )
     }
-    SortDropDownMenu(
-      isExpand = isDropDownMenuSortExpand,
-      sortTypeList = sortTypeList,
-      isSortDescending = isOrderDec,
-      currentSortType = sortType,
-      onSortClick = { onSortClick(it) },
-      onOrderClick = { onOrderClick() },
-      onDismiss = { onDismissDropDownMenu() },
-    )
-  }
 }
-
 
 @Preview(showBackground = true)
 @Composable
 private fun Preview() {
-  MediaPlayerJetpackComposeTheme {
-    var isDropDownMenuShow by remember { mutableStateOf(false) }
-    Sort(
-      modifier = Modifier.fillMaxWidth(),
-      onClick = { isDropDownMenuShow = true },
-      onSortClick = {},
-      onOrderClick = {},
-      isDropDownMenuSortExpand = isDropDownMenuShow,
-      isOrderDec = false,
-      sortType = SongsSortType.DURATION,
-      onDismissDropDownMenu = { isDropDownMenuShow = false },
-      sortTypeList = SongsSortType.entries.toList(),
-    )
-  }
+    MediaPlayerJetpackComposeTheme {
+        var isDropDownMenuShow by remember { mutableStateOf(false) }
+        Sort(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { isDropDownMenuShow = true },
+            onSortClick = {},
+            onOrderClick = {},
+            isDropDownMenuSortExpand = isDropDownMenuShow,
+            isOrderDec = false,
+            sortType = SongsSortType.DURATION,
+            onDismissDropDownMenu = { isDropDownMenuShow = false },
+            sortTypeList = SongsSortType.entries.toList(),
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun Preview2() {
-  MediaPlayerJetpackComposeTheme {
-    var isDropDownMenuShow by remember { mutableStateOf(false) }
-    Sort(
-      modifier = Modifier.fillMaxWidth(),
-      onClick = { isDropDownMenuShow = true },
-      onSortClick = {},
-      onOrderClick = {},
-      isDropDownMenuSortExpand = isDropDownMenuShow,
-      isOrderDec = false,
-      sortType = CategorizedSortType.NAME,
-      onDismissDropDownMenu = { isDropDownMenuShow = false },
-      sortTypeList = CategorizedSortType.entries.toList(),
-    )
-  }
+    MediaPlayerJetpackComposeTheme {
+        var isDropDownMenuShow by remember { mutableStateOf(false) }
+        Sort(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { isDropDownMenuShow = true },
+            onSortClick = {},
+            onOrderClick = {},
+            isDropDownMenuSortExpand = isDropDownMenuShow,
+            isOrderDec = false,
+            sortType = CategorizedSortType.NAME,
+            onDismissDropDownMenu = { isDropDownMenuShow = false },
+            sortTypeList = CategorizedSortType.entries.toList(),
+        )
+    }
 }

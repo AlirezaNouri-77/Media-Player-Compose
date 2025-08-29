@@ -66,7 +66,6 @@ fun SharedTransitionScope.CategoryDetailRoute(
     animatedVisibilityScope: AnimatedVisibilityScope,
     displayWithVisuals: Boolean = true,
 ) {
-
     val uiState by categoryViewModel.uiState.collectAsStateWithLifecycle()
 
     CategoryDetailPage(
@@ -86,7 +85,6 @@ fun SharedTransitionScope.CategoryDetailRoute(
         animatedVisibilityScope = animatedVisibilityScope,
         displayWithVisuals = displayWithVisuals,
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
@@ -104,7 +102,7 @@ fun SharedTransitionScope.CategoryDetailPage(
 ) {
     val animatedColor by animateColorAsState(
         targetValue = Color(uiState.gradientColor),
-        animationSpec = tween(durationMillis = 200, easing = LinearEasing)
+        animationSpec = tween(durationMillis = 200, easing = LinearEasing),
     )
     var currentImageSize by remember {
         mutableStateOf(240.dp)
@@ -114,7 +112,7 @@ fun SharedTransitionScope.CategoryDetailPage(
         object : NestedScrollConnection {
             override fun onPreScroll(
                 available: Offset,
-                source: NestedScrollSource
+                source: NestedScrollSource,
             ): Offset {
                 val delta = available.y.toInt()
                 val newSize = currentImageSize.value + delta
@@ -127,26 +125,32 @@ fun SharedTransitionScope.CategoryDetailPage(
 
     Scaffold(
         modifier = modifier
-            .then(if (displayWithVisuals) Modifier.drawWithCache {
-                onDrawWithContent {
-                    drawRect(
-                        brush = Brush.verticalGradient(
-                            0.4f to animatedColor.copy(alpha = 0.5f),
-                            0.7f to animatedColor.copy(alpha = 0.3f),
-                            1f to Color.Transparent,
-                        ),
-                    )
-                    drawRect(
-                        Brush.verticalGradient(
-                            0.3f to Color.Black.copy(alpha = 0.5f),
-                            1f to Color.Transparent,
-                            startY = this.size.height,
-                            endY = 0f
-                        )
-                    )
-                    drawContent()
-                }
-            } else Modifier),
+            .then(
+                if (displayWithVisuals) {
+                    Modifier.drawWithCache {
+                        onDrawWithContent {
+                            drawRect(
+                                brush = Brush.verticalGradient(
+                                    0.4f to animatedColor.copy(alpha = 0.5f),
+                                    0.7f to animatedColor.copy(alpha = 0.3f),
+                                    1f to Color.Transparent,
+                                ),
+                            )
+                            drawRect(
+                                Brush.verticalGradient(
+                                    0.3f to Color.Black.copy(alpha = 0.5f),
+                                    1f to Color.Transparent,
+                                    startY = this.size.height,
+                                    endY = 0f,
+                                ),
+                            )
+                            drawContent()
+                        }
+                    }
+                } else {
+                    Modifier
+                },
+            ),
         topBar = {
             TopAppBar(
                 title = {},
@@ -162,14 +166,13 @@ fun SharedTransitionScope.CategoryDetailPage(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                )
+                ),
             )
         },
         containerColor = Color.Transparent,
     ) { innerPadding ->
 
         if (uiState.songList.isNotEmpty()) {
-
             Column(
                 Modifier
                     .fillMaxSize()
@@ -207,8 +210,8 @@ fun SharedTransitionScope.CategoryDetailPage(
                 LazyColumn(
                     contentPadding = PaddingValues(
                         top = 10.dp,
-                        bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + if (currentMusicId.isNotEmpty()) LocalMiniPlayerHeight.current else 0.dp
-                    )
+                        bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + if (currentMusicId.isNotEmpty()) LocalMiniPlayerHeight.current else 0.dp,
+                    ),
                 ) {
                     itemsIndexed(
                         items = uiState.songList,
@@ -226,6 +229,5 @@ fun SharedTransitionScope.CategoryDetailPage(
                 }
             }
         }
-
     }
 }

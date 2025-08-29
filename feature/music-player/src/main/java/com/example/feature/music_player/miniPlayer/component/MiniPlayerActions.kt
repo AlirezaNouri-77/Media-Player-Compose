@@ -18,7 +18,7 @@ import com.example.core.designsystem.bounceClickEffect
 fun MiniPlayerActions(
     modifier: Modifier = Modifier,
     isPlaying: Boolean,
-    onClickPlayAndPause:()->Unit,
+    onClickPlayAndPause: () -> Unit,
 ) {
     IconButton(
         modifier = modifier.bounceClickEffect()

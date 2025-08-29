@@ -22,44 +22,42 @@ import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 
 class ApplicationClass : Application(), ImageLoaderFactory {
-
-  override fun onCreate() {
-    super.onCreate()
-    startKoin {
-      allowOverride(true)
-      androidContext(this@ApplicationClass)
-      androidLogger(Level.ERROR)
-      modules(
-        appModule,
-        CommonCoroutineModule,
-        CommonDispatcherModule,
-        DataModule,
-        DataBaseModule,
-        VideoModule,
-        Media3Module,
-        VideoMedia3Module,
-        dataStoreModule,
-      )
+    override fun onCreate() {
+        super.onCreate()
+        startKoin {
+            allowOverride(true)
+            androidContext(this@ApplicationClass)
+            androidLogger(Level.ERROR)
+            modules(
+                appModule,
+                CommonCoroutineModule,
+                CommonDispatcherModule,
+                DataModule,
+                DataBaseModule,
+                VideoModule,
+                Media3Module,
+                VideoMedia3Module,
+                dataStoreModule,
+            )
+        }
     }
-  }
 
-  override fun newImageLoader(): ImageLoader {
-    return ImageLoader(this).newBuilder().apply {
-      components {
-        add(VideoFrameDecoder.Factory())
-      }
-      diskCache {
-        DiskCache
-          .Builder().run {
-            maxSizePercent(0.1)
-            directory(this@ApplicationClass.cacheDir.resolve("image_cache"))
-            cleanupDispatcher(Dispatchers.IO)
-            build()
-          }
-      }
-      crossfade(true)
-      logger(DebugLogger())
-    }.build()
-
-  }
+    override fun newImageLoader(): ImageLoader {
+        return ImageLoader(this).newBuilder().apply {
+            components {
+                add(VideoFrameDecoder.Factory())
+            }
+            diskCache {
+                DiskCache
+                    .Builder().run {
+                        maxSizePercent(0.1)
+                        directory(this@ApplicationClass.cacheDir.resolve("image_cache"))
+                        cleanupDispatcher(Dispatchers.IO)
+                        build()
+                    }
+            }
+            crossfade(true)
+            logger(DebugLogger())
+        }.build()
+    }
 }

@@ -7,9 +7,9 @@ import org.koin.dsl.module
 
 var Media3Module = module {
 
-  single {
-    MusicServiceConnection(androidApplication().applicationContext)
-  }
+    single {
+        MusicServiceConnection(androidApplication().applicationContext)
+    }
 
-  single { DeviceVolumeManager(androidApplication().applicationContext) }
+    single { DeviceVolumeManager(androidApplication().applicationContext) }
 }

@@ -7,7 +7,5 @@ import com.example.core.database.model.FavoriteEntity
 
 @Database(entities = [FavoriteEntity::class], version = 1)
 abstract class MediaPlayerDataBase : RoomDatabase() {
-
-  abstract fun dataBaseDao(): FavoriteDao
-
+    abstract fun dataBaseDao(): FavoriteDao
 }

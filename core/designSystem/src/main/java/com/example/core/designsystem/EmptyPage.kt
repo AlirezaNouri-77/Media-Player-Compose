@@ -14,21 +14,21 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun EmptyPage(
-  modifier: Modifier = Modifier,
-  message: String = "Empty",
-  textSize: TextUnit = 24.sp,
-  textAlpha: Float = 0.5f
+    modifier: Modifier = Modifier,
+    message: String = "Empty",
+    textSize: TextUnit = 24.sp,
+    textAlpha: Float = 0.5f,
 ) {
-  Box(
-    modifier = modifier.fillMaxSize(),
-    contentAlignment = Alignment.Companion.Center,
-  ) {
-    Text(
-      text = message,
-      fontSize = textSize,
-      fontWeight = FontWeight.Companion.Bold,
-      textAlign = TextAlign.Companion.Center,
-      color = MaterialTheme.colorScheme.onPrimary.copy(alpha = textAlpha),
-    )
-  }
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Companion.Center,
+    ) {
+        Text(
+            text = message,
+            fontSize = textSize,
+            fontWeight = FontWeight.Companion.Bold,
+            textAlign = TextAlign.Companion.Center,
+            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = textAlpha),
+        )
+    }
 }

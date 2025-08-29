@@ -91,7 +91,6 @@ fun MainMusicScreen(
     orientation: Int = LocalConfiguration.current.orientation,
     screenHeight: Dp = LocalConfiguration.current.screenHeightDp.dp,
 ) {
-
     val navController: NavHostController = rememberNavController()
 
     val bottomSheetState = rememberStandardBottomSheetState()
@@ -138,8 +137,10 @@ fun MainMusicScreen(
         derivedStateOf {
             with(density) {
                 val swapOffset =
-                    screenHeight.toPx() - MiniPlayerHeight.toPx() - bottomBarHeight - runCatching { bottomSheetScaffoldState.bottomSheetState.requireOffset() }.getOrDefault(
-                        0f
+                    screenHeight.toPx() - MiniPlayerHeight.toPx() - bottomBarHeight - runCatching {
+                        bottomSheetScaffoldState.bottomSheetState.requireOffset()
+                    }.getOrDefault(
+                        0f,
                     )
                 (swapOffset / 100).coerceIn(0f, 1f)
             }
@@ -166,8 +167,8 @@ fun MainMusicScreen(
                                 alpha = 1f - bottomSheetSwapFraction,
                                 topLeft = Offset(
                                     x = 0f,
-                                    y = this.size.height * bottomSheetSwapFraction
-                                )
+                                    y = this.size.height * bottomSheetSwapFraction,
+                                ),
                             )
                         }
                     }
@@ -189,14 +190,13 @@ fun MainMusicScreen(
                 },
             )
         },
-        contentWindowInsets = WindowInsets.navigationBars
+        contentWindowInsets = WindowInsets.navigationBars,
     ) { innerPadding ->
 
         CompositionLocalProvider(
             LocalParentScaffoldPadding provides innerPadding,
             LocalMiniPlayerHeight provides MiniPlayerHeight,
         ) {
-
             BottomSheetScaffold(
                 modifier = Modifier
                     .padding(top = innerPadding.calculateTopPadding())
@@ -209,12 +209,14 @@ fun MainMusicScreen(
                         visible = currentMusicState.currentMediaInfo.musicID.isNotEmpty(),
                         enter = fadeIn(tween(200, delayMillis = 90)) + slideInVertically(
                             animationSpec = tween(400, 250),
-                            initialOffsetY = { int -> int / 2 }),
+                            initialOffsetY = { int -> int / 2 },
+                        ),
                         exit = slideOutVertically(
                             animationSpec = tween(400, 100),
-                            targetOffsetY = { int -> int / 2 }) + fadeOut(
+                            targetOffsetY = { int -> int / 2 },
+                        ) + fadeOut(
                             tween(200, delayMillis = 90),
-                        )
+                        ),
                     ) {
                         Box {
                             FullMusicPlayer(
@@ -228,13 +230,13 @@ fun MainMusicScreen(
                                                 0.4f to musicArtWorkColorAnimation.copy(alpha = 0.8f),
                                                 0.85f to musicArtWorkColorAnimation.copy(alpha = 0.3f),
                                                 1f to Color.Transparent,
-                                            )
+                                            ),
                                         )
                                         drawRect(
                                             Brush.verticalGradient(
                                                 0.5f to Color.Black.copy(alpha = 0.5f),
                                                 1f to Color.Transparent,
-                                            )
+                                            ),
                                         )
                                     }
                                     .navigationBarsPadding()
@@ -249,8 +251,8 @@ fun MainMusicScreen(
                                 setCurrentPagerNumber = {
                                     playerViewModel.onPlayerAction(
                                         PlayerActions.UpdateArtworkPageIndex(
-                                            it
-                                        )
+                                            it,
+                                        ),
                                     )
                                 },
                                 onBack = {
@@ -281,8 +283,8 @@ fun MainMusicScreen(
                                 setCurrentPagerNumber = {
                                     playerViewModel.onPlayerAction(
                                         PlayerActions.UpdateArtworkPageIndex(
-                                            it
-                                        )
+                                            it,
+                                        ),
                                     )
                                 },
                                 onPlayerAction = playerViewModel::onPlayerAction,
@@ -310,13 +312,10 @@ fun MainMusicScreen(
                     onNavigateToVideoScreen = { onNavigateToVideoScreen() },
                     orientation = orientation,
                 )
-
             }
         }
-
     }
 }
-
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -328,19 +327,16 @@ private fun MusicNavGraph(
     onNavigateToVideoScreen: () -> Unit,
     orientation: Int = LocalConfiguration.current.orientation,
 ) {
-
     SharedTransitionLayout {
-
         NavHost(
             modifier = modifier
                 .fillMaxSize()
                 .then(
-                    if (orientation == Configuration.ORIENTATION_LANDSCAPE) Modifier.displayCutoutPadding() else Modifier
+                    if (orientation == Configuration.ORIENTATION_LANDSCAPE) Modifier.displayCutoutPadding() else Modifier,
                 ),
             navController = navController,
             startDestination = MusicNavigationRoute.Home,
         ) {
-
             composable<MusicNavigationRoute.Home> {
                 HomeMusic(
                     navigateToCategoryPage = {
@@ -348,8 +344,8 @@ private fun MusicNavGraph(
                             MusicNavigationRoute.Category(
                                 it,
                                 ParentCategoryRoute.FOLDER,
-                                false
-                            )
+                                false,
+                            ),
                         )
                     },
                     onNavigateToVideoScreen = { onNavigateToVideoScreen() },
@@ -370,10 +366,10 @@ private fun MusicNavGraph(
                         navController.navigate(
                             MusicNavigationRoute.Category(
                                 it,
-                                ParentCategoryRoute.ARTIST
-                            )
+                                ParentCategoryRoute.ARTIST,
+                            ),
                         )
-                    }
+                    },
                 )
             }
 
@@ -384,11 +380,11 @@ private fun MusicNavGraph(
                         navController.navigate(
                             MusicNavigationRoute.Category(
                                 it,
-                                ParentCategoryRoute.ALBUM
-                            )
+                                ParentCategoryRoute.ALBUM,
+                            ),
                         )
                     },
-                    animatedVisibilityScope = this@composable
+                    animatedVisibilityScope = this@composable,
                 )
             }
 
@@ -401,8 +397,8 @@ private fun MusicNavGraph(
                         onPlayMusic(
                             PlayerActions.PlaySongs(
                                 index,
-                                list
-                            )
+                                list,
+                            ),
                         )
                     },
                 )
@@ -419,7 +415,7 @@ private fun MusicNavGraph(
                     backStackEntry.toRoute<MusicNavigationRoute.Category>().displayWithVisuals
 
                 val categoryViewModel: CategoryViewModel = koinViewModel<CategoryViewModel>(
-                    parameters = { parametersOf(categoryName, parentRoute, displayWithVisuals) }
+                    parameters = { parametersOf(categoryName, parentRoute, displayWithVisuals) },
                 )
 
                 CategoryDetailRoute(
@@ -435,7 +431,6 @@ private fun MusicNavGraph(
                     displayWithVisuals = displayWithVisuals,
                 )
             }
-
         }
     }
 }

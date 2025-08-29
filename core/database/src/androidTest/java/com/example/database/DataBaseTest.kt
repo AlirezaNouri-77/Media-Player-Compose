@@ -8,26 +8,21 @@ import org.junit.After
 import org.junit.Before
 
 internal abstract class DataBaseTest {
+    private lateinit var database: MediaPlayerDataBase
+    lateinit var favoriteDao: FavoriteDao
 
-  private lateinit var database: MediaPlayerDataBase
-  lateinit var favoriteDao: FavoriteDao
+    @Before
+    fun setup() {
+        val context = ApplicationProvider.getApplicationContext<android.content.Context>()
 
+        database = Room.inMemoryDatabaseBuilder(
+            context = context,
+            klass = MediaPlayerDataBase::class.java,
+        ).build()
 
-  @Before
-  fun setup() {
-    val context = ApplicationProvider.getApplicationContext<android.content.Context>()
+        favoriteDao = database.dataBaseDao()
+    }
 
-    database = Room.inMemoryDatabaseBuilder(
-      context = context,
-      klass = MediaPlayerDataBase::class.java,
-    ).build()
-
-    favoriteDao = database.dataBaseDao()
-
-  }
-
-  @After
-  fun clean() = database.close()
-
-
+    @After
+    fun clean() = database.close()
 }

@@ -1,9 +1,9 @@
 plugins {
-  alias(libs.plugins.jetbrains.kotlin.jvm)
-  alias(libs.plugins.android.plugin.serialization)
+    alias(libs.plugins.jetbrains.kotlin.jvm)
+    alias(libs.plugins.android.plugin.serialization)
 }
 
-dependencies{
-  implementation(libs.jetbrains.kotlinx.serialization)
-  implementation(libs.androidx.annotation)
+dependencies {
+    implementation(libs.jetbrains.kotlinx.serialization)
+    implementation(libs.androidx.annotation)
 }

@@ -21,58 +21,56 @@ import com.example.core.music_media3.model.PlayerStateModel
 
 @Composable
 fun SongDetail(
-  modifier: Modifier = Modifier,
-  currentPlayerStateModel: () -> PlayerStateModel,
+    modifier: Modifier = Modifier,
+    currentPlayerStateModel: () -> PlayerStateModel,
 ) {
+    Column(
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier,
+    ) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .basicMarquee(),
+            text = currentPlayerStateModel().currentMediaInfo.title.removeFileExtension(),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.SemiBold,
+            overflow = TextOverflow.Visible,
+            color = Color.White,
+            maxLines = 1,
+        )
 
-  Column(
-    horizontalAlignment = Alignment.Start,
-    verticalArrangement = Arrangement.Center,
-    modifier = modifier
-  ) {
-    Text(
-      modifier = Modifier
-        .fillMaxWidth()
-        .basicMarquee(),
-      text = currentPlayerStateModel().currentMediaInfo.title.removeFileExtension(),
-      fontSize = 20.sp,
-      fontWeight = FontWeight.SemiBold,
-      overflow = TextOverflow.Visible,
-      color = Color.White,
-      maxLines = 1,
-    )
-
-    Text(
-      modifier = Modifier
-        .fillMaxWidth(),
-      text = currentPlayerStateModel().currentMediaInfo.artist,
-      fontSize = 14.sp,
-      fontWeight = FontWeight.Medium,
-      maxLines = 1,
-      color = Color.White.copy(alpha = 0.7f),
-    )
-    val songDetail = listOf(
-      currentPlayerStateModel().currentMediaInfo.title.extractFileExtension(),
-      currentPlayerStateModel().currentMediaInfo.bitrate.convertToReadableBitrate(),
-      currentPlayerStateModel().currentMediaInfo.size.convertByteToReadableSize(),
-    )
-    Text(
-      modifier = Modifier
-        .fillMaxWidth(),
-      text = songDetail.reduce { acc, string -> "$acc, $string" },
-      fontSize = 12.sp,
-      color = Color.White.copy(alpha = 0.7f),
-    )
-  }
-
+        Text(
+            modifier = Modifier
+                .fillMaxWidth(),
+            text = currentPlayerStateModel().currentMediaInfo.artist,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            maxLines = 1,
+            color = Color.White.copy(alpha = 0.7f),
+        )
+        val songDetail = listOf(
+            currentPlayerStateModel().currentMediaInfo.title.extractFileExtension(),
+            currentPlayerStateModel().currentMediaInfo.bitrate.convertToReadableBitrate(),
+            currentPlayerStateModel().currentMediaInfo.size.convertByteToReadableSize(),
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth(),
+            text = songDetail.reduce { acc, string -> "$acc, $string" },
+            fontSize = 12.sp,
+            color = Color.White.copy(alpha = 0.7f),
+        )
+    }
 }
 
 @androidx.compose.ui.tooling.preview.Preview()
 @Composable
 private fun FullScreenPreview() {
-  MediaPlayerJetpackComposeTheme {
-    SongDetail(
-      currentPlayerStateModel = { PlayerStateModel.Empty }
-    )
-  }
-  }
+    MediaPlayerJetpackComposeTheme {
+        SongDetail(
+            currentPlayerStateModel = { PlayerStateModel.Empty },
+        )
+    }
+}

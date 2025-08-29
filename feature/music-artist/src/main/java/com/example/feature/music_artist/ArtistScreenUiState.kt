@@ -5,8 +5,8 @@ import com.example.core.model.datastore.CategorizedSortModel
 import com.example.core.model.datastore.CategorizedSortType
 
 data class ArtistScreenUiState(
-  val isLoading: Boolean = false,
-  val isSortDropDownMenuShow: Boolean = false,
-  val sortState: CategorizedSortModel = CategorizedSortModel(sortType = CategorizedSortType.NAME,isDec = false),
-  val artistList:List<Pair<String, List<MusicModel>>> = emptyList(),
+    val isLoading: Boolean = false,
+    val isSortDropDownMenuShow: Boolean = false,
+    val sortState: CategorizedSortModel = CategorizedSortModel(sortType = CategorizedSortType.NAME, isDec = false),
+    val artistList: List<Pair<String, List<MusicModel>>> = emptyList(),
 )

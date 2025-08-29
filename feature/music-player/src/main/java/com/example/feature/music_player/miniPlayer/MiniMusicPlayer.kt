@@ -49,7 +49,6 @@ fun MiniMusicPlayer(
     currentMusicPosition: () -> Long,
     onPlayerAction: (action: PlayerActions) -> Unit,
 ) {
-
     val pagerState = rememberPagerState(
         initialPage = currentPagerPage,
         pageCount = { artworkPagerList.size },
@@ -66,20 +65,20 @@ fun MiniMusicPlayer(
 
     Card(
         modifier = modifier
-          .height(LocalMiniPlayerHeight.current)
-          .drawWithCache {
-            onDrawBehind {
-              drawRoundRect(
-                color = Color.Black,
-                cornerRadius = CornerRadius(x = 25f, y = 25f),
-              )
-              drawRoundRect(
-                color = musicArtWorkColorAnimation,
-                cornerRadius = CornerRadius(x = 25f, y = 25f),
-                alpha = 0.6f,
-              )
-            }
-          },
+            .height(LocalMiniPlayerHeight.current)
+            .drawWithCache {
+                onDrawBehind {
+                    drawRoundRect(
+                        color = Color.Black,
+                        cornerRadius = CornerRadius(x = 25f, y = 25f),
+                    )
+                    drawRoundRect(
+                        color = musicArtWorkColorAnimation,
+                        cornerRadius = CornerRadius(x = 25f, y = 25f),
+                        alpha = 0.6f,
+                    )
+                }
+            },
         shape = RoundedCornerShape(0.dp),
         onClick = onClick,
         colors = CardDefaults.cardColors(
@@ -124,7 +123,6 @@ fun MiniMusicPlayer(
     }
 }
 
-
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL)
 @Composable
@@ -138,8 +136,8 @@ private fun Preview() {
             currentMusicPosition = { 2000 },
             onPlayerAction = {},
             modifier = Modifier
-              .height(70.dp)
-              .padding(horizontal = 8.dp, vertical = 5.dp),
+                .height(70.dp)
+                .padding(horizontal = 8.dp, vertical = 5.dp),
             currentPlayerMediaId = 0L,
             currentPlayerDuration = 207726,
             currentPlayerArtworkUri = Uri.EMPTY,

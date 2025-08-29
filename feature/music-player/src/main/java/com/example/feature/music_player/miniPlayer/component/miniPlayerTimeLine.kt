@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.dp
 
 internal fun Modifier.miniPlayerTimeLine(
     currentMusicPosition: Long,
-    currentPlayerDuration: Int
+    currentPlayerDuration: Int,
 ): Modifier {
     return this.drawWithContent {
         drawContent()
@@ -25,15 +25,14 @@ internal fun Modifier.miniPlayerTimeLine(
             start = Offset(x = margin, y = this.size.height + 6.dp.toPx()),
             end = Offset(
                 x = this.size.width - margin,
-                y = this.size.height + 6.dp.toPx()
-            )
+                y = this.size.height + 6.dp.toPx(),
+            ),
         )
         drawLine(
             color = Color.White,
             strokeWidth = 2.dp.toPx(),
             start = Offset(x = 15.dp.toPx(), y = this.size.height + 6.dp.toPx()),
-            end = Offset(x = progress + margin, y = this.size.height + 6.dp.toPx())
+            end = Offset(x = progress + margin, y = this.size.height + 6.dp.toPx()),
         )
-
     }
 }

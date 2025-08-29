@@ -18,33 +18,32 @@ import org.koin.dsl.module
 
 var dataStoreModule = module {
 
-  single {
-    SortPreferencesSerializer()
-  }
-
-  single {
-    DataStoreFactory.create(
-      serializer = get<SortPreferencesSerializer>(),
-      scope = get<CoroutineScope>(named("CoroutineIO")),
-    ) {
-      androidApplication().applicationContext.dataStoreFile("SortDataStore.db")
+    single {
+        SortPreferencesSerializer()
     }
-  }
 
-  single<SortDataStoreManagerImpl<SongSortModel>>(named("SongsSortDataStore")) {
-    SongsSortDataStoreManager(get(), get(DispatcherType.DEFAULT.qualifier))
-  }
+    single {
+        DataStoreFactory.create(
+            serializer = get<SortPreferencesSerializer>(),
+            scope = get<CoroutineScope>(named("CoroutineIO")),
+        ) {
+            androidApplication().applicationContext.dataStoreFile("SortDataStore.db")
+        }
+    }
 
-  single<SortDataStoreManagerImpl<CategorizedSortModel>>(named("ArtistSortDataStore")) {
-    ArtistSortDataStoreManager(get(), get(DispatcherType.DEFAULT.qualifier))
-  }
+    single<SortDataStoreManagerImpl<SongSortModel>>(named("SongsSortDataStore")) {
+        SongsSortDataStoreManager(get(), get(DispatcherType.DEFAULT.qualifier))
+    }
 
-  single<SortDataStoreManagerImpl<CategorizedSortModel>>(named("AlbumSortDataStore")) {
-    AlbumSortDataStoreManager(get(), get(DispatcherType.DEFAULT.qualifier))
-  }
+    single<SortDataStoreManagerImpl<CategorizedSortModel>>(named("ArtistSortDataStore")) {
+        ArtistSortDataStoreManager(get(), get(DispatcherType.DEFAULT.qualifier))
+    }
 
-  single<SortDataStoreManagerImpl<CategorizedSortModel>>(named("FolderSortDataStore")) {
-    FolderSortDataStoreManager(get(), get(DispatcherType.DEFAULT.qualifier))
-  }
+    single<SortDataStoreManagerImpl<CategorizedSortModel>>(named("AlbumSortDataStore")) {
+        AlbumSortDataStoreManager(get(), get(DispatcherType.DEFAULT.qualifier))
+    }
 
+    single<SortDataStoreManagerImpl<CategorizedSortModel>>(named("FolderSortDataStore")) {
+        FolderSortDataStoreManager(get(), get(DispatcherType.DEFAULT.qualifier))
+    }
 }

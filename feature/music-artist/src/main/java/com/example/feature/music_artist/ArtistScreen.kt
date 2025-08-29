@@ -49,129 +49,127 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SharedTransitionScope.ArtistRoute(
-  modifier: Modifier = Modifier,
-  artistViewModel: ArtistViewModel = koinViewModel<ArtistViewModel>(),
-  animatedVisibilityScope: AnimatedVisibilityScope,
-  navigateToCategory: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    artistViewModel: ArtistViewModel = koinViewModel<ArtistViewModel>(),
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    navigateToCategory: (String) -> Unit,
 ) {
-  val uiState by artistViewModel.artistScreenUiState.collectAsStateWithLifecycle()
-  
-  ArtistScreen(
-    modifier = modifier.sharedBounds(
-      sharedContentState = rememberSharedContentState("bound"),
-      animatedVisibilityScope = animatedVisibilityScope,
-      renderInOverlayDuringTransition = false,
-      exit = fadeOut(tween(150, 20)),
-      enter = fadeIn(tween(150, 150, easing = LinearEasing)),
-    ),
-    listItems = uiState.artistList.toImmutableList(),
-    isLoading = uiState.isLoading,
-    animatedVisibilityScope = animatedVisibilityScope,
-    navigateToCategory = navigateToCategory,
-    isDropDownMenuSortExpand = { uiState.isSortDropDownMenuShow },
-    isSortDescending = uiState.sortState.isDec,
-    currentSortType = uiState.sortState.sortType,
-    onSortIconClick = { artistViewModel.onEvent(ArtistUiEvent.ShowSortDropDownMenu) },
-    onDismissDropDownMenu = { artistViewModel.onEvent(ArtistUiEvent.HideSortDropDownMenu) },
-    onOrderClick = { artistViewModel.onEvent(ArtistUiEvent.UpdateSortOrder(!uiState.sortState.isDec)) },
-    onSortClick = { artistViewModel.onEvent(ArtistUiEvent.UpdateSortType(it)) }
-  )
+    val uiState by artistViewModel.artistScreenUiState.collectAsStateWithLifecycle()
 
+    ArtistScreen(
+        modifier = modifier.sharedBounds(
+            sharedContentState = rememberSharedContentState("bound"),
+            animatedVisibilityScope = animatedVisibilityScope,
+            renderInOverlayDuringTransition = false,
+            exit = fadeOut(tween(150, 20)),
+            enter = fadeIn(tween(150, 150, easing = LinearEasing)),
+        ),
+        listItems = uiState.artistList.toImmutableList(),
+        isLoading = uiState.isLoading,
+        animatedVisibilityScope = animatedVisibilityScope,
+        navigateToCategory = navigateToCategory,
+        isDropDownMenuSortExpand = { uiState.isSortDropDownMenuShow },
+        isSortDescending = uiState.sortState.isDec,
+        currentSortType = uiState.sortState.sortType,
+        onSortIconClick = { artistViewModel.onEvent(ArtistUiEvent.ShowSortDropDownMenu) },
+        onDismissDropDownMenu = { artistViewModel.onEvent(ArtistUiEvent.HideSortDropDownMenu) },
+        onOrderClick = { artistViewModel.onEvent(ArtistUiEvent.UpdateSortOrder(!uiState.sortState.isDec)) },
+        onSortClick = { artistViewModel.onEvent(ArtistUiEvent.UpdateSortType(it)) },
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.ArtistScreen(
-  modifier: Modifier = Modifier,
-  listItems: ImmutableList<Pair<String, List<MusicModel>>>,
-  isLoading: Boolean,
-  isDropDownMenuSortExpand: () -> Boolean,
-  isSortDescending: Boolean,
-  currentSortType: CategorizedSortType,
-  animatedVisibilityScope: AnimatedVisibilityScope,
-  navigateToCategory: (String) -> Unit,
-  onSortIconClick: () -> Unit,
-  onDismissDropDownMenu: () -> Unit,
-  onOrderClick: () -> Unit,
-  onSortClick: (CategorizedSortType) -> Unit,
+    modifier: Modifier = Modifier,
+    listItems: ImmutableList<Pair<String, List<MusicModel>>>,
+    isLoading: Boolean,
+    isDropDownMenuSortExpand: () -> Boolean,
+    isSortDescending: Boolean,
+    currentSortType: CategorizedSortType,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    navigateToCategory: (String) -> Unit,
+    onSortIconClick: () -> Unit,
+    onDismissDropDownMenu: () -> Unit,
+    onOrderClick: () -> Unit,
+    onSortClick: (CategorizedSortType) -> Unit,
 ) {
-
-  Scaffold(
-    modifier = modifier,
-    topBar = {
-      TopAppBar(
-        title = {
-          Text(
-            text = "Artist",
-            modifier = Modifier,
-            fontWeight = FontWeight.Bold,
-            fontSize = 38.sp,
-          )
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-          containerColor = Color.Transparent,
-          titleContentColor = MaterialTheme.colorScheme.onPrimary,
-        ),
-        actions = {
-          Box(
-            modifier = Modifier
-              .wrapContentSize(Alignment.TopEnd)
-          ) {
-            IconButton(
-              onClick = { onSortIconClick.invoke() },
-            ) {
-              Icon(
-                modifier = Modifier.size(24.dp),
-                painter = painterResource(id = R.drawable.icon_sort),
-                contentDescription = "Sort Icon",
-                tint = MaterialTheme.colorScheme.onPrimary,
-              )
-            }
-            SortDropDownMenu(
-              isExpand = isDropDownMenuSortExpand(),
-              sortTypeList = CategorizedSortType.entries.toList(),
-              isSortDescending = isSortDescending,
-              currentSortType = currentSortType,
-              onSortClick = { onSortClick(it as CategorizedSortType) },
-              onOrderClick = { onOrderClick() },
-              onDismiss = { onDismissDropDownMenu() },
-            )
-          }
-        }
-      )
-    },
-  ) { innerPadding ->
-
-    Crossfade(isLoading) {
-      if (it) {
-        Loading(modifier = Modifier.fillMaxSize())
-      } else {
-        if (listItems.isNotEmpty()) {
-          LazyColumn(
-            modifier = Modifier
-              .fillMaxSize()
-              .padding(innerPadding),
-            contentPadding = PaddingValues(bottom = LocalParentScaffoldPadding.current.calculateBottomPadding()),
-          ) {
-            items(
-              items = listItems,
-              key = { key -> key.first }
-            ) { item ->
-              CategoryListItem(
-                categoryName = item.first,
-                musicListSize = item.second.size,
-                onClick = { categoryName ->
-                  navigateToCategory(categoryName)
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Artist",
+                        modifier = Modifier,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 38.sp,
+                    )
                 },
-                sharedTransitionScope = this@ArtistScreen,
-                animatedVisibilityScope = animatedVisibilityScope,
-              )
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                ),
+                actions = {
+                    Box(
+                        modifier = Modifier
+                            .wrapContentSize(Alignment.TopEnd),
+                    ) {
+                        IconButton(
+                            onClick = { onSortIconClick.invoke() },
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(24.dp),
+                                painter = painterResource(id = R.drawable.icon_sort),
+                                contentDescription = "Sort Icon",
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                            )
+                        }
+                        SortDropDownMenu(
+                            isExpand = isDropDownMenuSortExpand(),
+                            sortTypeList = CategorizedSortType.entries.toList(),
+                            isSortDescending = isSortDescending,
+                            currentSortType = currentSortType,
+                            onSortClick = { onSortClick(it as CategorizedSortType) },
+                            onOrderClick = { onOrderClick() },
+                            onDismiss = { onDismissDropDownMenu() },
+                        )
+                    }
+                },
+            )
+        },
+    ) { innerPadding ->
+
+        Crossfade(isLoading) {
+            if (it) {
+                Loading(modifier = Modifier.fillMaxSize())
+            } else {
+                if (listItems.isNotEmpty()) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
+                        contentPadding = PaddingValues(bottom = LocalParentScaffoldPadding.current.calculateBottomPadding()),
+                    ) {
+                        items(
+                            items = listItems,
+                            key = { key -> key.first },
+                        ) { item ->
+                            CategoryListItem(
+                                categoryName = item.first,
+                                musicListSize = item.second.size,
+                                onClick = { categoryName ->
+                                    navigateToCategory(categoryName)
+                                },
+                                sharedTransitionScope = this@ArtistScreen,
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            )
+                        }
+                    }
+                } else {
+                    EmptyPage()
+                }
             }
-          }
-
-        } else EmptyPage()
-      }
+        }
     }
-
-  }
 }

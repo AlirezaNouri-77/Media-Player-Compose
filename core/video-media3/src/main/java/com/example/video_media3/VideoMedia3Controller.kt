@@ -10,20 +10,15 @@ import com.example.video_media3.model.VideoPlayerState
 import com.example.video_media3.model.mapper.toActiveVideoInfo
 import com.example.video_media3.model.mapper.toMediaItem
 import com.example.video_media3.util.VideoMediaMetaData
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 
 class VideoMedia3Controller(
     private var videoMediaMetaData: VideoMediaMetaData,
     var exoPlayer: ExoPlayer,
 ) {
-
     private var _videoPlayerStateStateFlow = MutableStateFlow(VideoPlayerState.Empty)
     val videoPlayerStateStateFlow: StateFlow<VideoPlayerState> =
         _videoPlayerStateStateFlow.asStateFlow()
@@ -78,11 +73,8 @@ class VideoMedia3Controller(
         }
     }
 
-
     fun registerMedia3Listener() {
-
         exoPlayerEventListener = object : Player.Listener {
-
             override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
                 _videoPlayerStateStateFlow.update { it.copy(isPlaying = playWhenReady) }
             }
@@ -101,7 +93,6 @@ class VideoMedia3Controller(
                 if (mediaItem == null) return
                 _videoPlayerStateStateFlow.update { it.copy(currentMediaInfo = mediaItem.toActiveVideoInfo()) }
             }
-
         }
 
         exoPlayer.addListener(exoPlayerEventListener)
@@ -114,7 +105,5 @@ class VideoMedia3Controller(
                 repeatMode = exoPlayer.repeatMode,
             )
         }
-
     }
-
 }

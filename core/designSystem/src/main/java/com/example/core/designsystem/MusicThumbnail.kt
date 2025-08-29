@@ -17,38 +17,36 @@ import coil.compose.SubcomposeAsyncImage
 
 @Composable
 fun MusicThumbnail(
-  modifier: Modifier = Modifier,
-  uri: Uri?,
+    modifier: Modifier = Modifier,
+    uri: Uri?,
 ) {
-
-  val isDark = isSystemInDarkTheme()
-  val imageBackgroundAlpha = remember(isSystemInDarkTheme()) {
-    if (isDark) Color.DarkGray else Color.Black
-  }
-
-  SubcomposeAsyncImage(
-    model = uri,
-    contentDescription = "",
-    contentScale = ContentScale.FillBounds,
-    modifier = modifier
-      .background(color = imageBackgroundAlpha),
-    loading = {
-      PlaceHolder(modifier = Modifier.matchParentSize())
-    },
-    error = {
-      PlaceHolder(modifier = Modifier.matchParentSize())
+    val isDark = isSystemInDarkTheme()
+    val imageBackgroundAlpha = remember(isSystemInDarkTheme()) {
+        if (isDark) Color.DarkGray else Color.Black
     }
-  )
 
+    SubcomposeAsyncImage(
+        model = uri,
+        contentDescription = "",
+        contentScale = ContentScale.FillBounds,
+        modifier = modifier
+            .background(color = imageBackgroundAlpha),
+        loading = {
+            PlaceHolder(modifier = Modifier.matchParentSize())
+        },
+        error = {
+            PlaceHolder(modifier = Modifier.matchParentSize())
+        },
+    )
 }
 
 @Composable
 private fun PlaceHolder(modifier: Modifier = Modifier) {
-  Box(modifier = modifier, contentAlignment = Alignment.Center) {
-    Image(
-      painter = painterResource(R.drawable.icon_music_note),
-      colorFilter = ColorFilter.tint(Color.White),
-      contentDescription = ""
-    )
-  }
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        Image(
+            painter = painterResource(R.drawable.icon_music_note),
+            colorFilter = ColorFilter.tint(Color.White),
+            contentDescription = "",
+        )
+    }
 }

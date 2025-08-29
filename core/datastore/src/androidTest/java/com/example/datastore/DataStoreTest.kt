@@ -26,94 +26,84 @@ import org.junit.runner.RunWith
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
 class DataStoreTest {
+    @get:Rule
+    val tmpFolder: TemporaryFolder = TemporaryFolder.builder().assureDeletion().build()
 
-  @get:Rule
-  val tmpFolder: TemporaryFolder = TemporaryFolder.builder().assureDeletion().build()
+    private val testContext: Context = ApplicationProvider.getApplicationContext()
 
-  private val testContext: Context = ApplicationProvider.getApplicationContext()
+    var dispatcher = UnconfinedTestDispatcher()
+    var coroutine = CoroutineScope(dispatcher)
 
-  var dispatcher = UnconfinedTestDispatcher()
-  var coroutine = CoroutineScope(dispatcher)
+    var testDataStore: DataStore<SortPreferences> = DataStoreFactory.create(
+        serializer = SortPreferencesSerializer(),
+        produceFile = {
+            testContext.dataStoreFile(tmpFolder.newFolder().absolutePath)
+        },
+        scope = coroutine,
+    )
 
+    var songsSortDataStoreManager = SongsSortDataStoreManager(testDataStore, dispatcher)
 
-  var testDataStore: DataStore<SortPreferences> = DataStoreFactory.create(
-    serializer = SortPreferencesSerializer(),
-    produceFile = {
-      testContext.dataStoreFile(tmpFolder.newFolder().absolutePath)
-    },
-    scope = coroutine
-  )
+    // because artist, folder & album datastore structured on the same way so we tested one of them
+    var artistSortDataStoreManager = ArtistSortDataStoreManager(testDataStore, dispatcher)
 
-  var songsSortDataStoreManager = SongsSortDataStoreManager(testDataStore, dispatcher)
-  // because artist, folder & album datastore structured on the same way so we tested one of them
-  var artistSortDataStoreManager = ArtistSortDataStoreManager(testDataStore, dispatcher)
+    @Test
+    fun getSongsSortState() = runTest {
+        songsSortDataStoreManager.updateSortType(SongsSortType.DURATION)
+        songsSortDataStoreManager.updateSortOrder(true)
 
-  @Test
-  fun getSongsSortState() = runTest {
+        var data = songsSortDataStoreManager.sortState.first()
 
-    songsSortDataStoreManager.updateSortType(SongsSortType.DURATION)
-    songsSortDataStoreManager.updateSortOrder(true)
+        assertTrue(data.isDec)
+        assertEquals(SongsSortType.DURATION, data.sortType)
+    }
 
-    var data = songsSortDataStoreManager.sortState.first()
+    @Test
+    fun checkUpdateSongsDataStoreMethod() = runTest {
+        songsSortDataStoreManager.updateSortType(SongsSortType.DURATION)
+        songsSortDataStoreManager.updateSortOrder(true)
 
-    assertTrue(data.isDec)
-    assertEquals(SongsSortType.DURATION, data.sortType)
+        var beforeUpdate = songsSortDataStoreManager.sortState.first()
 
-  }
+        assertTrue(beforeUpdate.isDec)
+        assertEquals(SongsSortType.DURATION, beforeUpdate.sortType)
 
-  @Test
-  fun checkUpdateSongsDataStoreMethod() = runTest {
+        songsSortDataStoreManager.updateSortType(SongsSortType.SIZE)
+        songsSortDataStoreManager.updateSortOrder(false)
 
-    songsSortDataStoreManager.updateSortType(SongsSortType.DURATION)
-    songsSortDataStoreManager.updateSortOrder(true)
+        var afterUpdate = songsSortDataStoreManager.sortState.first()
 
-    var beforeUpdate = songsSortDataStoreManager.sortState.first()
+        assertFalse(afterUpdate.isDec)
+        assertEquals(SongsSortType.SIZE, afterUpdate.sortType)
+    }
 
-    assertTrue(beforeUpdate.isDec)
-    assertEquals(SongsSortType.DURATION, beforeUpdate.sortType)
+    @Test
+    fun getCategorizedSortState() = runTest {
+        artistSortDataStoreManager.updateSortType(CategorizedSortType.SongsCount)
+        artistSortDataStoreManager.updateSortOrder(true)
 
-    songsSortDataStoreManager.updateSortType(SongsSortType.SIZE)
-    songsSortDataStoreManager.updateSortOrder(false)
+        var data = artistSortDataStoreManager.sortState.first()
 
-    var afterUpdate = songsSortDataStoreManager.sortState.first()
+        assertTrue(data.isDec)
+        assertEquals(CategorizedSortType.SongsCount, data.sortType)
+    }
 
-    assertFalse(afterUpdate.isDec)
-    assertEquals(SongsSortType.SIZE, afterUpdate.sortType)
+    @Test
+    fun checkUpdateCategorizedDataStoreMethod() = runTest {
+        artistSortDataStoreManager.updateSortType(CategorizedSortType.SongsCount)
+        artistSortDataStoreManager.updateSortOrder(true)
 
-  }
+        var beforeUpdate = artistSortDataStoreManager.sortState.first()
 
-  @Test
-  fun getCategorizedSortState() = runTest {
+        assertTrue(beforeUpdate.isDec)
+        assertEquals(CategorizedSortType.SongsCount, beforeUpdate.sortType)
 
-    artistSortDataStoreManager.updateSortType(CategorizedSortType.SongsCount)
-    artistSortDataStoreManager.updateSortOrder(true)
+        artistSortDataStoreManager.updateSortType(CategorizedSortType.NAME)
+        artistSortDataStoreManager.updateSortOrder(false)
 
-    var data = artistSortDataStoreManager.sortState.first()
+        var afterUpdate = artistSortDataStoreManager.sortState.first()
 
-    assertTrue(data.isDec)
-    assertEquals(CategorizedSortType.SongsCount, data.sortType)
-
-  }
-
-  @Test
-  fun checkUpdateCategorizedDataStoreMethod() = runTest {
-
-    artistSortDataStoreManager.updateSortType(CategorizedSortType.SongsCount)
-    artistSortDataStoreManager.updateSortOrder(true)
-
-    var beforeUpdate = artistSortDataStoreManager.sortState.first()
-
-    assertTrue(beforeUpdate.isDec)
-    assertEquals(CategorizedSortType.SongsCount, beforeUpdate.sortType)
-
-    artistSortDataStoreManager.updateSortType(CategorizedSortType.NAME)
-    artistSortDataStoreManager.updateSortOrder(false)
-
-    var afterUpdate = artistSortDataStoreManager.sortState.first()
-
-    assertFalse(afterUpdate.isDec)
-    assertEquals(CategorizedSortType.NAME, afterUpdate.sortType)
-
-  }
-
+        assertFalse(afterUpdate.isDec)
+        assertEquals(CategorizedSortType.NAME, afterUpdate.sortType)
+    }
 }

@@ -32,9 +32,9 @@ import androidx.media3.ui.compose.PlayerSurface
 import androidx.media3.ui.compose.SURFACE_TYPE_SURFACE_VIEW
 import androidx.media3.ui.compose.modifiers.resizeWithContentScale
 import androidx.media3.ui.compose.state.rememberPresentationState
-import com.example.feature.video.model.VideoPlayerOverlayState
 import com.example.feature.video.component.MiddleInfoHandler
 import com.example.feature.video.component.PlayerControllerLayout
+import com.example.feature.video.model.VideoPlayerOverlayState
 import com.example.feature.video.util.hideSystemBars
 import com.example.feature.video.util.showSystemBars
 
@@ -111,8 +111,8 @@ fun VideoPlayer(
                 onLeftDoubleClick = {
                     videoViewModel.fastRewind(15_000, uiState.currentPlayerPosition)
                     videoViewModel.updateMiddleVideoPlayerInfo(VideoPlayerOverlayState.FastRewind())
-                }
-            )
+                },
+            ),
     ) {
         PlayerSurface(
             player = videoViewModel.getExoPlayer,
@@ -124,7 +124,7 @@ fun VideoPlayer(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black)
+                    .background(Color.Black),
             )
         }
     }
@@ -160,9 +160,7 @@ fun VideoPlayer(
         showInfoMiddleScreen = uiState.videoPlayerOverlayState != VideoPlayerOverlayState.Initial,
         videoPlayerOverlayState = uiState.videoPlayerOverlayState,
     )
-
 }
-
 
 private fun Modifier.playerViewTapHandler(
     onTapClick: () -> Unit,
@@ -177,7 +175,7 @@ private fun Modifier.playerViewTapHandler(
                     offset.x > this.size.width / 2 -> onRightDoubleClick()
                     offset.x < this.size.width / 2 -> onLeftDoubleClick()
                 }
-            }
+            },
         )
-    }
+    },
 )

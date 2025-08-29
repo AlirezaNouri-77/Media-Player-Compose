@@ -11,22 +11,20 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
 class SearchMusicRepository(
-  private var musicSource: MusicSourceImpl,
-  private var ioDispatcher: CoroutineDispatcher,
+    private var musicSource: MusicSourceImpl,
+    private var ioDispatcher: CoroutineDispatcher,
 ) : SearchMusicRepositoryImpl {
+    private var _searchList = MutableStateFlow(emptyList<MusicModel>())
+    override var searchList = _searchList.asStateFlow()
 
-  private var _searchList = MutableStateFlow(emptyList<MusicModel>())
-  override var searchList = _searchList.asStateFlow()
-
-  override suspend fun search(input: String) {
-    withContext(ioDispatcher) {
-      if (input.isNotEmpty() || input.isNotBlank()) {
-        val filteredList = musicSource.songs().first().filter { it.name.lowercase().contains(input.lowercase()) }
-        _searchList.update { filteredList }
-      } else {
-        _searchList.update { musicSource.songs().first() }
-      }
+    override suspend fun search(input: String) {
+        withContext(ioDispatcher) {
+            if (input.isNotEmpty() || input.isNotBlank()) {
+                val filteredList = musicSource.songs().first().filter { it.name.lowercase().contains(input.lowercase()) }
+                _searchList.update { filteredList }
+            } else {
+                _searchList.update { musicSource.songs().first() }
+            }
+        }
     }
-  }
-
 }

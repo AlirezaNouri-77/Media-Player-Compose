@@ -51,7 +51,7 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(
     ExperimentalFoundationApi::class,
     ExperimentalSharedTransitionApi::class,
-    ExperimentalMaterial3Api::class
+    ExperimentalMaterial3Api::class,
 )
 @Composable
 fun SharedTransitionScope.HomeMusic(
@@ -116,15 +116,15 @@ fun SharedTransitionScope.HomeMusic(
                                 homeViewModel.onEvent(
                                     HomeUiEvent.UpdateSortState(
                                         uiState.currentTabBarPosition,
-                                        it
-                                    )
+                                        it,
+                                    ),
                                 )
                             },
                             onOrderClick = {
                                 homeViewModel.onEvent(
                                     HomeUiEvent.UpdateSortOrder(
-                                        uiState.currentTabBarPosition
-                                    )
+                                        uiState.currentTabBarPosition,
+                                    ),
                                 )
                             },
                             isOrderDec = if (uiState.currentTabBarPosition == TabBarModel.All) uiState.songsSortState.isDec else uiState.folderSortState.isDec,
@@ -133,7 +133,7 @@ fun SharedTransitionScope.HomeMusic(
                             onDismissDropDownMenu = { homeViewModel.onEvent(HomeUiEvent.HideSortDropDownMenu) },
                         )
                     }
-                }
+                },
             )
         },
     ) { paddingValue ->
@@ -149,7 +149,7 @@ fun SharedTransitionScope.HomeMusic(
                 currentTabState = uiState.currentTabBarPosition,
                 onTabClick = { tabBar, _ ->
                     homeViewModel.onEvent(HomeUiEvent.UpdateTabBarPosition(tabBar))
-                }
+                },
             )
             Crossfade(
                 modifier = Modifier.fillMaxSize(),
@@ -176,7 +176,7 @@ fun SharedTransitionScope.HomeMusic(
                                     modifier = Modifier.fillMaxSize(),
                                     state = listStates[page],
                                     contentPadding = PaddingValues(
-                                        bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + if (currentPlayerMediaId.isNotEmpty()) LocalMiniPlayerHeight.current else 0.dp
+                                        bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + if (currentPlayerMediaId.isNotEmpty()) LocalMiniPlayerHeight.current else 0.dp,
                                     ),
                                 ) {
                                     itemsIndexed(
@@ -191,21 +191,21 @@ fun SharedTransitionScope.HomeMusic(
                                         )
                                     }
                                 }
-                            } else EmptyPage()
-
+                            } else {
+                                EmptyPage()
+                            }
                         } else {
-
                             if (uiState.folderSongsList.isNotEmpty()) {
                                 LazyColumn(
                                     state = listStates[page],
                                     modifier = Modifier.fillMaxSize(),
                                     contentPadding = PaddingValues(
-                                        bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + if (currentPlayerMediaId.isNotEmpty()) LocalMiniPlayerHeight.current else 0.dp
+                                        bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + if (currentPlayerMediaId.isNotEmpty()) LocalMiniPlayerHeight.current else 0.dp,
                                     ),
                                 ) {
                                     items(
                                         items = uiState.folderSongsList,
-                                        key = { it }
+                                        key = { it },
                                     ) { item ->
                                         CategoryListItem(
                                             categoryName = item.first,
@@ -218,17 +218,13 @@ fun SharedTransitionScope.HomeMusic(
                                         )
                                     }
                                 }
-
-                            } else EmptyPage()
-
+                            } else {
+                                EmptyPage()
+                            }
                         }
-
                     }
                 }
             }
-
         }
-
     }
-
 }

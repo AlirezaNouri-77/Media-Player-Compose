@@ -15,15 +15,15 @@ fun Context.isPermissionGrant(permission: String) = this.checkSelfPermission(per
 fun Context.isPermissionDenied(permission: String) = this.checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED
 
 fun Context.shouldShowPermissionRationale(permission: String, context: Activity?): Boolean =
-  context?.let { mContext -> ActivityCompat.shouldShowRequestPermissionRationale(mContext, permission) } == true
+    context?.let { mContext -> ActivityCompat.shouldShowRequestPermissionRationale(mContext, permission) } == true
 
 fun Context.openSetting(
-  launcher: ManagedActivityResultLauncher<Intent, ActivityResult>
+    launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
 ) {
-  Intent(
-    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-    Uri.fromParts("package", this.packageName, null)
-  ).also { intent ->
-    launcher.launch(intent)
-  }
+    Intent(
+        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        Uri.fromParts("package", this.packageName, null),
+    ).also { intent ->
+        launcher.launch(intent)
+    }
 }

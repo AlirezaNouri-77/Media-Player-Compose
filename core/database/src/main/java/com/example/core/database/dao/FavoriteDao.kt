@@ -8,17 +8,15 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FavoriteDao {
+    @Query("SELECT media_Id FROM FavoriteEntity")
+    fun getFavoriteSongsMediaId(): Flow<List<String>>
 
-  @Query("SELECT media_Id FROM FavoriteEntity")
-  fun getFavoriteSongsMediaId(): Flow<List<String>>
+    @Insert
+    fun insertFavoriteSong(favoriteMediaId: FavoriteEntity)
 
-  @Insert
-  fun insertFavoriteSong(favoriteMediaId: FavoriteEntity)
+    @Query("DELETE FROM FavoriteEntity WHERE media_Id = :mediaId")
+    fun deleteFavoriteSong(mediaId: String)
 
-  @Query("DELETE FROM FavoriteEntity WHERE media_Id = :mediaId")
-  fun deleteFavoriteSong(mediaId: String)
-
-  @Query("SELECT EXISTS(SELECT 1 FROM FavoriteEntity WHERE media_Id=:mediaId) ")
-  fun isFavorite(mediaId: String): Boolean
-
+    @Query("SELECT EXISTS(SELECT 1 FROM FavoriteEntity WHERE media_Id=:mediaId) ")
+    fun isFavorite(mediaId: String): Boolean
 }

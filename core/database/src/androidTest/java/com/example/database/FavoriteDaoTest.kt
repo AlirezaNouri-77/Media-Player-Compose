@@ -6,85 +6,77 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-
 internal class FavoriteDaoTest : DataBaseTest() {
+    private val testFavoriteMediaId = listOf(
+        FavoriteEntity(mediaId = "mediaId-1"),
+        FavoriteEntity(mediaId = "mediaId-2"),
+        FavoriteEntity(mediaId = "mediaId-3"),
+        FavoriteEntity(mediaId = "mediaId-4"),
+    )
 
-  private val testFavoriteMediaId = listOf(
-    FavoriteEntity(mediaId = "mediaId-1"),
-    FavoriteEntity(mediaId = "mediaId-2"),
-    FavoriteEntity(mediaId = "mediaId-3"),
-    FavoriteEntity(mediaId = "mediaId-4"),
-  )
+    @Test
+    fun getFavorites() = runTest {
+        testFavoriteMediaId.onEach {
+            favoriteDao.insertFavoriteSong(it)
+        }
 
+        val favoriteList = favoriteDao.getFavoriteSongsMediaId().first()
+        val expectedList = testFavoriteMediaId.map { it.mediaId }
 
-  @Test
-  fun getFavorites() = runTest {
-
-    testFavoriteMediaId.onEach {
-      favoriteDao.insertFavoriteSong(it)
+        assertEquals(expectedList, favoriteList)
     }
 
-    val favoriteList = favoriteDao.getFavoriteSongsMediaId().first()
-    val expectedList = testFavoriteMediaId.map { it.mediaId }
+    @Test
+    fun isMediaIdInFavoriteDatabase() = runTest {
+        val mediaId = "mediaId-1"
 
-    assertEquals(expectedList, favoriteList)
-  }
+        testFavoriteMediaId.onEach {
+            favoriteDao.insertFavoriteSong(it)
+        }
 
-  @Test
-  fun isMediaIdInFavoriteDatabase() = runTest {
-    val mediaId = "mediaId-1"
-
-    testFavoriteMediaId.onEach {
-      favoriteDao.insertFavoriteSong(it)
+        val isFavorite = favoriteDao.isFavorite(mediaId)
+        assertEquals(true, isFavorite)
     }
 
-    val isFavorite = favoriteDao.isFavorite(mediaId)
-    assertEquals(true, isFavorite)
-  }
+    @Test
+    fun isMediaIdNotInFavoriteDatabase() = runTest {
+        val mediaId = "mediaId-5"
 
-  @Test
-  fun isMediaIdNotInFavoriteDatabase() = runTest {
-    val mediaId = "mediaId-5"
+        testFavoriteMediaId.onEach {
+            favoriteDao.insertFavoriteSong(it)
+        }
 
-    testFavoriteMediaId.onEach {
-      favoriteDao.insertFavoriteSong(it)
+        val isFavorite = favoriteDao.isFavorite(mediaId)
+        assertEquals(false, isFavorite)
     }
 
-    val isFavorite = favoriteDao.isFavorite(mediaId)
-    assertEquals(false, isFavorite)
-  }
+    @Test
+    fun insertMediaIdSuccess() = runTest {
+        val mediaId = FavoriteEntity(mediaId = "mediaId-1")
 
-  @Test
-  fun insertMediaIdSuccess() = runTest {
-    val mediaId = FavoriteEntity(mediaId = "mediaId-1")
+        favoriteDao.insertFavoriteSong(mediaId)
 
-    favoriteDao.insertFavoriteSong(mediaId)
+        val favoriteList = favoriteDao.getFavoriteSongsMediaId().first()
 
-    val favoriteList = favoriteDao.getFavoriteSongsMediaId().first()
-
-    assertEquals(mediaId.mediaId, favoriteList.first())
-  }
-
-  @Test
-  fun deleteMediaId() = runTest {
-
-    val targetMediaId = "mediaId-1"
-
-    testFavoriteMediaId.onEach {
-      favoriteDao.insertFavoriteSong(it)
+        assertEquals(mediaId.mediaId, favoriteList.first())
     }
 
-    val firstQuery = favoriteDao.getFavoriteSongsMediaId().first()
+    @Test
+    fun deleteMediaId() = runTest {
+        val targetMediaId = "mediaId-1"
 
-    assertEquals(true, firstQuery.contains(targetMediaId))
+        testFavoriteMediaId.onEach {
+            favoriteDao.insertFavoriteSong(it)
+        }
 
-    favoriteDao.deleteFavoriteSong(targetMediaId)
+        val firstQuery = favoriteDao.getFavoriteSongsMediaId().first()
 
-    val secondQuery = favoriteDao.getFavoriteSongsMediaId().first()
+        assertEquals(true, firstQuery.contains(targetMediaId))
 
-    assertEquals(false, secondQuery.contains(targetMediaId))
-  }
+        favoriteDao.deleteFavoriteSong(targetMediaId)
 
+        val secondQuery = favoriteDao.getFavoriteSongsMediaId().first()
+
+        assertEquals(false, secondQuery.contains(targetMediaId))
+    }
 }
-
-

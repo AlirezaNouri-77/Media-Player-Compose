@@ -27,52 +27,51 @@ import com.example.feature.video.util.shouldShowPermissionRationale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PermissionApi33ToLowerHandler(
-  context: Context,
-  message: String,
-  permission: String,
-  onRefreshVideo: () -> Unit,
-  onGrant: () -> Unit,
-  activity: Activity? = LocalActivity.current,
+    context: Context,
+    message: String,
+    permission: String,
+    onRefreshVideo: () -> Unit,
+    onGrant: () -> Unit,
+    activity: Activity? = LocalActivity.current,
 ) {
-
-  var activityResultPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGrant ->
-    if (isGrant) onRefreshVideo()
-  }
-
-  var activityResult = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-    onGrant()
-  }
-
-  Box(
-    modifier = Modifier
-      .fillMaxSize(),
-    contentAlignment = Alignment.Center,
-  ) {
-    Column(
-      modifier = Modifier.fillMaxWidth(),
-      verticalArrangement = Arrangement.Center,
-      horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-      Text(
-        text = message,
-        fontSize = 16.sp,
-        fontWeight = FontWeight.SemiBold,
-      )
-      TextButton(
-        onClick = {
-          if (context.shouldShowPermissionRationale(permission, activity)) {
-            context.openSetting(activityResult)
-          } else if (context.shouldShowPermissionRationale(permission, activity) == false)
-            activityResultPermission.launch(permission)
-        },
-        border = BorderStroke(
-          width = 1.dp,
-          color = MaterialTheme.colorScheme.onPrimary,
-        ),
-      ) {
-        Text("Grant", color = MaterialTheme.colorScheme.onPrimary)
-      }
+    var activityResultPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGrant ->
+        if (isGrant) onRefreshVideo()
     }
-  }
 
+    var activityResult = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        onGrant()
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = message,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
+            TextButton(
+                onClick = {
+                    if (context.shouldShowPermissionRationale(permission, activity)) {
+                        context.openSetting(activityResult)
+                    } else if (context.shouldShowPermissionRationale(permission, activity) == false) {
+                        activityResultPermission.launch(permission)
+                    }
+                },
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                ),
+            ) {
+                Text("Grant", color = MaterialTheme.colorScheme.onPrimary)
+            }
+        }
+    }
 }

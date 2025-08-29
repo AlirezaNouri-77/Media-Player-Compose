@@ -12,45 +12,39 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchMusicRepositoryTest {
+    var dispatcher = UnconfinedTestDispatcher()
+    var musicRepositoryFake = MusicRepositoryFake()
+    var musicSource = MusicSource(musicRepositoryFake, dispatcher)
 
-  var dispatcher = UnconfinedTestDispatcher()
-  var musicRepositoryFake = MusicRepositoryFake()
-  var musicSource = MusicSource(musicRepositoryFake, dispatcher)
+    var searchMusicRepository = SearchMusicRepository(
+        musicSource = musicSource,
+        ioDispatcher = dispatcher,
+    )
 
-  var searchMusicRepository = SearchMusicRepository(
-    musicSource = musicSource,
-    ioDispatcher = dispatcher,
-  )
+    @Test
+    fun `search name should not empty`() = runTest(dispatcher) {
+        var searchString = "d"
 
-  @Test
-  fun `search name should not empty`() = runTest(dispatcher) {
+        searchMusicRepository.search(searchString)
 
-    var searchString = "d"
+        var resultList = searchMusicRepository.searchList.first()
 
-    searchMusicRepository.search(searchString)
+        // check result size
+        assertEquals(3, resultList.size)
 
-    var resultList = searchMusicRepository.searchList.first()
-
-    //check result size
-    assertEquals(3, resultList.size)
-
-    resultList.onEach {
-      assertEquals(true, it.name.contains(searchString, true))
+        resultList.onEach {
+            assertEquals(true, it.name.contains(searchString, true))
+        }
     }
 
-  }
+    @Test
+    fun `search name should return empty`() = runTest(dispatcher) {
+        var searchString = "good"
 
-  @Test
-  fun `search name should return empty`() = runTest(dispatcher) {
+        searchMusicRepository.search(searchString)
 
-    var searchString = "good"
+        var resultList = searchMusicRepository.searchList.first()
 
-    searchMusicRepository.search(searchString)
-
-    var resultList = searchMusicRepository.searchList.first()
-
-    assertEquals(0, resultList.size)
-  }
-
-
+        assertEquals(0, resultList.size)
+    }
 }
