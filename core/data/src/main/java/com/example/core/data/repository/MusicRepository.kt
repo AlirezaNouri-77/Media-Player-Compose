@@ -1,10 +1,12 @@
 package com.example.core.data.repository
 
-import android.content.ContentResolver
 import android.content.ContentUris
+import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
+import androidx.core.net.toUri
 import com.example.core.domain.respository.MusicRepositoryImpl
 import com.example.core.model.MusicModel
 import kotlinx.coroutines.flow.Flow
@@ -12,12 +14,16 @@ import kotlinx.coroutines.flow.channelFlow
 import java.util.concurrent.TimeUnit
 
 class MusicRepository(
-    private var contentResolver: ContentResolver,
+    private var context: Context,
 ) : MusicRepositoryImpl {
+    init {
+        Log.d("TAG4124", "version" + MediaStore.getVersion(context))
+    }
+
     override fun getSongs(): Flow<List<MusicModel>> {
         return channelFlow {
             val resultList = buildList {
-                contentResolver.query(
+                context.contentResolver.query(
                     uriMedia,
                     MediaInfoArray,
                     selection,
@@ -112,13 +118,13 @@ class MusicRepository(
             }
         }.toTypedArray()
 
-        val albumArtPath: Uri = Uri.parse("content://media/external/audio/albumart")
+        val albumArtPath: Uri = "content://media/external/audio/albumart".toUri()
         var uriMedia: Uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
         } else {
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         }
-        val sortOrder = "${MediaStore.Downloads.DISPLAY_NAME} ASC"
+        const val sortOrder = "${MediaStore.Downloads.DISPLAY_NAME} ASC"
         var selection = MediaStore.Audio.Media.IS_MUSIC + " !=0"
         val selectionArgs = arrayOf(
             TimeUnit.MILLISECONDS.convert(15, TimeUnit.SECONDS).toString(),

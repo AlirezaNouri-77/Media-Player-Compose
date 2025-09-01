@@ -25,20 +25,12 @@ class MusicThumbnailUtil(
         return withContext(defaultDispatcher) {
             runCatching {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    context.contentResolver.loadThumbnail(
-                        uri,
-                        Size(width, height),
-                        null,
-                    )
+                    context.contentResolver.loadThumbnail(uri, Size(width, height), null)
                 } else {
                     val mediaMetadataRetriever =
                         MediaMetadataRetriever().apply { setDataSource(context, uri) }
                     val byteArray = mediaMetadataRetriever.embeddedPicture
-                    val bitmap = BitmapFactory.decodeByteArray(
-                        byteArray,
-                        0,
-                        byteArray!!.size,
-                    )
+                    val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
                     mediaMetadataRetriever.close()
                     bitmap.scale(width, height)
                 }
@@ -55,10 +47,9 @@ class MusicThumbnailUtil(
             val vibrant = async { palette.getVibrantColor(DEFAULT_COLOR_PALETTE) }
             val lightVibrant = async { palette.getLightVibrantColor(DEFAULT_COLOR_PALETTE) }
             val lightMuted = async { palette.getLightMutedColor(DEFAULT_COLOR_PALETTE) }
-            val darkMuted = async { palette.getDarkMutedColor(DEFAULT_COLOR_PALETTE) }
-            val darkVibrant = async { palette.getDarkVibrantColor(DEFAULT_COLOR_PALETTE) }
+            val darkVibrant = async { palette.getDominantColor(DEFAULT_COLOR_PALETTE) }
 
-            return@withContext listOf(vibrant, lightVibrant, lightMuted, darkVibrant, darkMuted)
+            return@withContext listOf(vibrant, lightVibrant, lightMuted, darkVibrant)
                 .awaitAll()
                 .filterNot { it == DEFAULT_COLOR_PALETTE }
                 .firstOrNull { it != DEFAULT_COLOR_PALETTE } ?: DEFAULT_COLOR_PALETTE

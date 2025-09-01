@@ -10,7 +10,7 @@ import com.example.core.common.di.CommonCoroutineModule
 import com.example.core.common.di.CommonDispatcherModule
 import com.example.core.data.di.DataModule
 import com.example.core.database.di.DataBaseModule
-import com.example.core.music_media3.di.Media3Module
+import com.example.core.music_media3.di.MusicMedia3Module
 import com.example.datastore.di.dataStoreModule
 import com.example.feature.video.di.VideoModule
 import com.example.mediaplayerjetpackcompose.di.appModule
@@ -35,7 +35,7 @@ class ApplicationClass : Application(), ImageLoaderFactory {
                 DataModule,
                 DataBaseModule,
                 VideoModule,
-                Media3Module,
+                MusicMedia3Module,
                 VideoMedia3Module,
                 dataStoreModule,
             )

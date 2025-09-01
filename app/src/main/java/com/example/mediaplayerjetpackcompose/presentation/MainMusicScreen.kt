@@ -6,6 +6,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -88,11 +89,10 @@ fun MainMusicScreen(
     playerViewModel: PlayerViewModel = koinViewModel(),
     onNavigateToVideoScreen: () -> Unit,
     density: Density = LocalDensity.current,
-    orientation: Int = LocalConfiguration.current.orientation,
     screenHeight: Dp = LocalConfiguration.current.screenHeightDp.dp,
+    screenWidth: Dp = LocalConfiguration.current.screenWidthDp.dp,
 ) {
     val navController: NavHostController = rememberNavController()
-
     val bottomSheetState = rememberStandardBottomSheetState()
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState)
 
@@ -108,7 +108,7 @@ fun MainMusicScreen(
 
     val musicArtWorkColorAnimation by animateColorAsState(
         targetValue = Color(playerViewModel.musicArtworkColorPalette),
-        animationSpec = tween(durationMillis = 90, delayMillis = 40),
+        animationSpec = tween(durationMillis = 160, delayMillis = 80, easing = LinearEasing),
         label = "",
     )
 
@@ -133,7 +133,7 @@ fun MainMusicScreen(
     }
 
     // used for hide or show mini player and bottomNavBar on bottomSheet interaction start from 0 to 1
-    val bottomSheetSwapFraction by remember {
+    val bottomSheetSwapFraction by remember(screenHeight, screenWidth) {
         derivedStateOf {
             with(density) {
                 val swapOffset =
@@ -200,6 +200,7 @@ fun MainMusicScreen(
             BottomSheetScaffold(
                 modifier = Modifier
                     .padding(top = innerPadding.calculateTopPadding())
+                    .navigationBarsPadding()
                     .consumeWindowInsets(innerPadding),
                 scaffoldState = bottomSheetScaffoldState,
                 sheetDragHandle = {},
@@ -301,6 +302,7 @@ fun MainMusicScreen(
                 containerColor = Color.Transparent,
                 sheetTonalElevation = 0.dp,
                 sheetShadowElevation = 0.dp,
+                sheetMaxWidth = Int.MAX_VALUE.dp,
             ) { bottomSheetScaffoldPadding ->
 
                 MusicNavGraph(
@@ -310,7 +312,6 @@ fun MainMusicScreen(
                         playerViewModel.onPlayerAction(it)
                     },
                     onNavigateToVideoScreen = { onNavigateToVideoScreen() },
-                    orientation = orientation,
                 )
             }
         }

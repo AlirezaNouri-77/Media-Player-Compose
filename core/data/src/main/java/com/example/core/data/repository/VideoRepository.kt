@@ -90,8 +90,8 @@ class VideoRepository(
         } else {
             MediaStore.Video.Media.EXTERNAL_CONTENT_URI
         }
-        val sortOrder = "${MediaStore.Video.Media.DISPLAY_NAME} ASC"
-        val selection = "${MediaStore.Video.Media.DURATION} >= ?"
+        const val sortOrder = "${MediaStore.Video.Media.DISPLAY_NAME} ASC"
+        const val selection = "${MediaStore.Video.Media.DURATION} >= ?"
         val selectionArgs = arrayOf(
             TimeUnit.MILLISECONDS.convert(10, TimeUnit.SECONDS).toString(),
         )

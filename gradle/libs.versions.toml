@@ -35,6 +35,7 @@ dataStore = "1.1.7"
 googlePortobuf = "4.32.0"
 googlePortobutPlugin = "0.9.4"
 ktlint = "13.1.0"
+adaptive = "1.1.0"
 
 minSdk = "28"
 compileSdk = "36"
@@ -70,6 +71,8 @@ google-porotbuf-protoc = { group = "com.google.protobuf", name = "protoc", versi
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+androidx-material3-adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version.ref = "adaptive" }
+androidx-material3-adaptiveLayout = { module = "androidx.compose.material3.adaptive:adaptive-layout", version.ref = "adaptive" }
 androidx-palette-ktx = { module = "androidx.palette:palette-ktx", version.ref = "paletteKtx" }
 androidx-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 androidx-ui = { module = "androidx.compose.ui:ui" }

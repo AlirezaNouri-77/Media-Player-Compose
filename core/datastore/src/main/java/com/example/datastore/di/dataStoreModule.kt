@@ -2,7 +2,7 @@ package com.example.datastore.di
 
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
-import com.example.core.common.di.DispatcherType
+import com.example.core.common.DispatcherType
 import com.example.core.model.datastore.CategorizedSortModel
 import com.example.core.model.datastore.SongSortModel
 import com.example.datastore.AlbumSortDataStoreManager

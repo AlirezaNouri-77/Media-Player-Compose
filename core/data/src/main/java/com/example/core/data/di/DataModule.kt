@@ -1,6 +1,6 @@
 package com.example.core.data.di
 
-import com.example.core.common.di.DispatcherType
+import com.example.core.common.DispatcherType
 import com.example.core.data.repository.FavoriteRepository
 import com.example.core.data.repository.MusicRepository
 import com.example.core.data.repository.MusicSource
@@ -26,7 +26,7 @@ var DataModule = module {
     } bind FavoriteRepositoryImpl::class
 
     single {
-        MusicRepository(androidApplication().applicationContext.contentResolver)
+        MusicRepository(androidApplication().applicationContext)
     } bind MusicRepositoryImpl::class
 
     single {
