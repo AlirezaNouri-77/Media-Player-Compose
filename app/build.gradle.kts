@@ -28,6 +28,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.material3.adaptive)
     implementation(libs.androidx.material3.adaptiveLayout)
+    implementation(libs.androidx.material3.navigationSuite)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)

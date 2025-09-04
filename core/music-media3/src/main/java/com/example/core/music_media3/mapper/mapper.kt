@@ -15,6 +15,7 @@ fun MusicModel.toMediaItem() =
                 .setTitle(this.name)
                 .setArtworkUri(artworkUri.toUri())
                 .setArtist(this.artist)
+                .setAlbumTitle(this.album)
                 .setExtras(
                     bundleOf(
                         MEDIAMETADATA_BUNDLE_DURATION_KEY to this.duration,
@@ -48,6 +49,7 @@ fun MediaItem.toActiveMusicInfo() = ActiveMusicInfo(
     artworkUri = (this.mediaMetadata.artworkUri ?: Uri.EMPTY).toString(),
     musicUri = (this.localConfiguration?.uri ?: Uri.EMPTY).toString(),
     artist = this.mediaMetadata.artist.toString(),
+    album = this.mediaMetadata.albumTitle.toString(),
     duration = this.mediaMetadata.extras?.getLong(MEDIAMETADATA_BUNDLE_DURATION_KEY) ?: 0L,
     bitrate = this.mediaMetadata.extras?.getInt(MEDIAMETADATA_BUNDLE_BITRATE_KEY) ?: 0,
     size = this.mediaMetadata.extras?.getLong(MEDIAMETADATA_BUNDLE_DURATION_KEY) ?: 0L,

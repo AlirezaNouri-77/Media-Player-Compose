@@ -6,7 +6,6 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -24,24 +23,30 @@ fun MusicNavigationBar(
     navigateTo: (MusicNavigationRoute) -> Unit,
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val windowSize = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
 
     NavigationBar(
         modifier = modifier,
         containerColor = Color.Transparent,
     ) {
         NavigationBarModel.entries.forEachIndexed { index, item ->
-            val isSelected = NavigationBarModel.entries.any { backStackEntry?.destination?.hasRoute(item.route::class) == true }
+            val isSelected =
+                NavigationBarModel.entries.any { backStackEntry?.destination?.hasRoute(item.route::class) == true }
             NavigationBarItem(
                 selected = isSelected,
                 onClick = {
-                    val isDuplicateDestination = backStackEntry?.destination?.hasRoute(item.route::class) == true
+                    val isDuplicateDestination =
+                        backStackEntry?.destination?.hasRoute(item.route::class) == true
 
                     if (!isDuplicateDestination) {
                         navigateTo(item.route)
                     }
                 },
-                icon = { Icon(painter = painterResource(item.icon), contentDescription = null) },
+                icon = {
+                    Icon(
+                        painter = painterResource(item.icon),
+                        contentDescription = null,
+                    )
+                },
                 label = { Text(item.title) },
                 alwaysShowLabel = true,
                 colors = NavigationBarItemDefaults.colors(
@@ -52,30 +57,4 @@ fun MusicNavigationBar(
             )
         }
     }
-
-//    when (windowSize) {
-//        WindowWidthSizeClass.COMPACT -> {
-//
-//        }
-//        else -> {
-//            NavigationRail {
-//                NavigationBarModel.entries.forEachIndexed { index, item ->
-//                    val isSelected = NavigationBarModel.entries.any { backStackEntry?.destination?.hasRoute(item.route::class) == true }
-//                    NavigationRailItem(
-//                        selected = isSelected,
-//                        onClick = {
-//                            val isDuplicateDestination = backStackEntry?.destination?.hasRoute(item.route::class) == true
-//
-//                            if (!isDuplicateDestination) {
-//                                navigateTo(item.route)
-//                            }
-//                        },
-//                        icon = { Icon(painter = painterResource(item.icon), contentDescription = null) },
-//                        label = { Text(item.title) },
-//                        alwaysShowLabel = true,
-//                    )
-//                }
-//            }
-//        }
-//    }
 }

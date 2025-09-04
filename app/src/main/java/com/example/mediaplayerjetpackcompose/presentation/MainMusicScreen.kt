@@ -14,6 +14,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutoutPadding
@@ -26,7 +27,13 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
@@ -50,17 +57,20 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.example.core.designsystem.LocalMiniPlayerHeight
 import com.example.core.designsystem.LocalParentScaffoldPadding
 import com.example.core.designsystem.MiniPlayerHeight
@@ -78,6 +88,8 @@ import com.example.feature.music_player.fullScreen.FullMusicPlayer
 import com.example.feature.music_player.miniPlayer.MiniMusicPlayer
 import com.example.feature.music_search.SearchRoot
 import com.example.mediaplayerjetpackcompose.presentation.bottomBar.MusicNavigationBar
+import com.example.mediaplayerjetpackcompose.presentation.bottomBar.NavigationBarModel
+import com.example.mediaplayerjetpackcompose.presentation.navigation.navigationBarNavigate
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -89,22 +101,24 @@ fun MainMusicScreen(
     playerViewModel: PlayerViewModel = koinViewModel(),
     onNavigateToVideoScreen: () -> Unit,
     density: Density = LocalDensity.current,
-    screenHeight: Dp = LocalConfiguration.current.screenHeightDp.dp,
-    screenWidth: Dp = LocalConfiguration.current.screenWidthDp.dp,
+    screenHeight: Int = LocalWindowInfo.current.containerSize.height,
 ) {
     val navController: NavHostController = rememberNavController()
     val bottomSheetState = rememberStandardBottomSheetState()
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState)
-
+    val bottomSheetScaffoldState =
+        rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState)
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
     val coroutineScope = rememberCoroutineScope()
 
     val bottomBarGradientColor = if (isSystemInDarkTheme()) Color.Black else Color.White
+    val windowSize = currentWindowAdaptiveInfo()
 
     val currentMusicState by playerViewModel.currentMusicState.collectAsStateWithLifecycle()
     val currentMusicPosition by playerViewModel.currentMusicPosition.collectAsStateWithLifecycle()
     val currentDeviceVolume by playerViewModel.currentDeviceVolume.collectAsStateWithLifecycle()
     val currentArtworkPagerIndex by playerViewModel.currentArtworkPagerIndex.collectAsStateWithLifecycle()
     val artworkPagerList by playerViewModel.artworkPagerList.collectAsStateWithLifecycle()
+    val backStackEntry by navController.currentBackStackEntryAsState()
 
     val musicArtWorkColorAnimation by animateColorAsState(
         targetValue = Color(playerViewModel.musicArtworkColorPalette),
@@ -133,15 +147,13 @@ fun MainMusicScreen(
     }
 
     // used for hide or show mini player and bottomNavBar on bottomSheet interaction start from 0 to 1
-    val bottomSheetSwapFraction by remember(screenHeight, screenWidth) {
+    val bottomSheetSwapFraction by remember(screenHeight) {
         derivedStateOf {
             with(density) {
                 val swapOffset =
-                    screenHeight.toPx() - MiniPlayerHeight.toPx() - bottomBarHeight - runCatching {
+                    screenHeight - MiniPlayerHeight.toPx() - bottomBarHeight - runCatching {
                         bottomSheetScaffoldState.bottomSheetState.requireOffset()
-                    }.getOrDefault(
-                        0f,
-                    )
+                    }.getOrDefault(0f)
                 (swapOffset / 100).coerceIn(0f, 1f)
             }
         }
@@ -149,50 +161,46 @@ fun MainMusicScreen(
 
     Scaffold(
         bottomBar = {
-            MusicNavigationBar(
-                modifier = Modifier
-                    .onGloballyPositioned {
-                        bottomBarHeight = it.size.height
-                    }
-                    .drawWithCache {
-                        onDrawBehind {
-                            drawContext
-                            drawRect(
-                                brush = Brush.verticalGradient(
-                                    0.1f to Color.Transparent,
-                                    0.5f to bottomBarGradientColor.copy(alpha = 0.7f),
-                                    1f to bottomBarGradientColor.copy(alpha = 0.9f),
-                                    endY = this.size.height,
-                                ),
-                                alpha = 1f - bottomSheetSwapFraction,
-                                topLeft = Offset(
-                                    x = 0f,
-                                    y = this.size.height * bottomSheetSwapFraction,
-                                ),
-                            )
+            if (windowSize.windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+                MusicNavigationBar(
+                    modifier = Modifier
+                        .onGloballyPositioned {
+                            bottomBarHeight = it.size.height
                         }
-                    }
-                    .graphicsLayer {
-                        translationY = this@graphicsLayer.size.height * bottomSheetSwapFraction
+                        .drawWithCache {
+                            onDrawBehind {
+                                drawContext
+                                drawRect(
+                                    brush = Brush.verticalGradient(
+                                        0.1f to Color.Transparent,
+                                        0.5f to bottomBarGradientColor.copy(alpha = 0.7f),
+                                        1f to bottomBarGradientColor.copy(alpha = 0.9f),
+                                        endY = this.size.height,
+                                    ),
+                                    alpha = 1f - bottomSheetSwapFraction,
+                                    topLeft = Offset(
+                                        x = 0f,
+                                        y = this.size.height * bottomSheetSwapFraction,
+                                    ),
+                                )
+                            }
+                        }
+                        .graphicsLayer {
+                            translationY =
+                                this@graphicsLayer.size.height * bottomSheetSwapFraction
+                        },
+                    navController = navController,
+                    navigateTo = {
+                        navController.navigationBarNavigate(
+                            backStackEntry,
+                            it,
+                        )
                     },
-                navController = navController,
-                navigateTo = {
-                    val currentDestination = navController.currentDestination?.id
-                        ?: navController.graph.findStartDestination().id
-                    navController.navigate(it) {
-                        this.popUpTo(currentDestination) {
-                            inclusive = true
-                            saveState = true
-                        }
-                        restoreState = true
-                        this.launchSingleTop = true
-                    }
-                },
-            )
+                )
+            }
         },
         contentWindowInsets = WindowInsets.navigationBars,
     ) { innerPadding ->
-
         CompositionLocalProvider(
             LocalParentScaffoldPadding provides innerPadding,
             LocalMiniPlayerHeight provides MiniPlayerHeight,
@@ -200,7 +208,6 @@ fun MainMusicScreen(
             BottomSheetScaffold(
                 modifier = Modifier
                     .padding(top = innerPadding.calculateTopPadding())
-                    .navigationBarsPadding()
                     .consumeWindowInsets(innerPadding),
                 scaffoldState = bottomSheetScaffoldState,
                 sheetDragHandle = {},
@@ -264,6 +271,22 @@ fun MainMusicScreen(
                                 currentMusicPosition = { currentMusicPosition },
                                 onVolumeChange = { playerViewModel.setDeviceVolume(it) },
                                 maxDeviceVolume = playerViewModel.getMaxDeviceVolume(),
+                                clickOnArtist = { artistName ->
+                                    if (bottomSheetState.hasExpandedState) {
+                                        coroutineScope.launch {
+                                            bottomSheetScaffoldState.bottomSheetState.partialExpand()
+                                        }
+                                        val lastArtist = navController.currentBackStackEntry?.arguments?.get("name")
+                                        if (lastArtist == artistName) return@FullMusicPlayer
+
+                                        navController.navigate(
+                                            MusicNavigationRoute.Category(
+                                                name = artistName,
+                                                parentCategoryRoute = ParentCategoryRoute.ARTIST,
+                                            ),
+                                        )
+                                    }
+                                },
                             )
                             MiniMusicPlayer(
                                 modifier = Modifier
@@ -304,15 +327,53 @@ fun MainMusicScreen(
                 sheetShadowElevation = 0.dp,
                 sheetMaxWidth = Int.MAX_VALUE.dp,
             ) { bottomSheetScaffoldPadding ->
-
-                MusicNavGraph(
-                    navController = navController,
-                    currentMusicState = currentMusicState,
-                    onPlayMusic = {
-                        playerViewModel.onPlayerAction(it)
-                    },
-                    onNavigateToVideoScreen = { onNavigateToVideoScreen() },
-                )
+                Row {
+                    if (windowSize.windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.COMPACT) {
+                        NavigationRail(
+                            containerColor = Color.Transparent,
+                            modifier = Modifier.displayCutoutPadding(),
+                        ) {
+                            NavigationBarModel.entries.forEachIndexed { index, item ->
+                                val isSelected =
+                                    NavigationBarModel.entries.any {
+                                        backStackEntry?.destination?.hasRoute(
+                                            item.route::class,
+                                        ) == true
+                                    }
+                                NavigationRailItem(
+                                    selected = isSelected,
+                                    onClick = {
+                                        navController.navigationBarNavigate(
+                                            backStackEntry,
+                                            item.route,
+                                        )
+                                    },
+                                    icon = {
+                                        Icon(
+                                            painter = painterResource(item.icon),
+                                            contentDescription = null,
+                                        )
+                                    },
+                                    label = { Text(item.title) },
+                                    alwaysShowLabel = true,
+                                    colors = NavigationRailItemDefaults.colors(
+                                        indicatorColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                                        selectedIconColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
+                                        unselectedIconColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                                    ),
+                                )
+                            }
+                        }
+                    }
+                    MusicNavGraph(
+                        navController = navController,
+                        currentMusicState = currentMusicState,
+                        onPlayMusic = {
+                            playerViewModel.onPlayerAction(it)
+                        },
+                        onNavigateToVideoScreen = { onNavigateToVideoScreen() },
+                    )
+                }
             }
         }
     }

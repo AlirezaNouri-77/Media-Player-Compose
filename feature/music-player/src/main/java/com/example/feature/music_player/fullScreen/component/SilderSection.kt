@@ -48,13 +48,16 @@ fun SliderSection(
         mutableFloatStateOf(0f)
     }
 
-    val sliderInteractionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+    val sliderInteractionSource =
+        remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
     val isSliderDragging by sliderInteractionSource.collectIsDraggedAsState()
 
     var sliderWidth by remember { mutableFloatStateOf(0f) }
     var sliderOffsetX by remember { mutableIntStateOf(0) }
-    val sliderTrackHeight = animateDpAsState(targetValue = if (isSliderDragging) 38.dp else 10.dp, label = "").value
-    val seekTimeTextAlpha = animateFloatAsState(targetValue = if (isSliderDragging) 1f else 0f, label = "").value
+    val sliderTrackHeight =
+        animateDpAsState(targetValue = if (isSliderDragging) 38.dp else 10.dp, label = "").value
+    val seekTimeTextAlpha =
+        animateFloatAsState(targetValue = if (isSliderDragging) 1f else 0f, label = "").value
     var seekTimeTextWidth by remember { mutableIntStateOf(0) }
 
     val sliderValue by remember {
@@ -76,10 +79,16 @@ fun SliderSection(
             Text(
                 modifier = Modifier
                     .offset {
-                        IntOffset(x = sliderOffsetX - (seekTimeTextWidth / 2), y = (-10 - sliderTrackHeight.value.toInt()))
+                        IntOffset(
+                            x = sliderOffsetX - (seekTimeTextWidth / 2),
+                            y = (-10 - sliderTrackHeight.value.toInt()),
+                        )
                     }
                     .alpha(seekTimeTextAlpha)
-                    .background(Color.White.copy(alpha = 0.2f), androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
+                    .background(
+                        Color.White.copy(alpha = 0.2f),
+                        androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+                    )
                     .padding(horizontal = 4.dp)
                     .onGloballyPositioned {
                         seekTimeTextWidth = it.size.width
@@ -166,6 +175,12 @@ private fun Preview() {
             SliderSection(
                 modifier = Modifier,
                 currentMusicPosition = { 1000 },
+                seekTo = {},
+                duration = 100000f,
+            )
+            SliderSection(
+                modifier = Modifier,
+                currentMusicPosition = { 10000 },
                 seekTo = {},
                 duration = 100000f,
             )

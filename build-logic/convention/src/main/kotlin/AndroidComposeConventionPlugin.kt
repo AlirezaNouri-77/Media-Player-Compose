@@ -32,6 +32,7 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
         "implementation"(getLibs.findLibrary("androidx.material3").get())
         "implementation"(getLibs.findLibrary("androidx.material3.adaptive").get())
         "implementation"(getLibs.findLibrary("androidx.material3.adaptiveLayout").get())
+        "implementation"(getLibs.findLibrary("androidx.material3.navigationSuite").get())
         "implementation"(getLibs.findLibrary("androidx.ui.graphics").get())
         "debugImplementation"(getLibs.findLibrary("androidx.ui.tooling").get())
       }

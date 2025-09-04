@@ -3,7 +3,6 @@ package com.example.feature.music_player.fullScreen.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -21,9 +20,7 @@ fun HeaderSection(
     onBackClick: () -> Unit,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
+        modifier = modifier.wrapContentHeight(),
         horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.Start),
         verticalAlignment = Alignment.CenterVertically,
     ) {

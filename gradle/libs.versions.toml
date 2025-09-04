@@ -73,6 +73,7 @@ robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-material3-adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version.ref = "adaptive" }
 androidx-material3-adaptiveLayout = { module = "androidx.compose.material3.adaptive:adaptive-layout", version.ref = "adaptive" }
+androidx-material3-navigationSuite = { module = "androidx.compose.material3:material3-adaptive-navigation-suite", version.ref = "adaptive" }
 androidx-palette-ktx = { module = "androidx.palette:palette-ktx", version.ref = "paletteKtx" }
 androidx-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 androidx-ui = { module = "androidx.compose.ui:ui" }

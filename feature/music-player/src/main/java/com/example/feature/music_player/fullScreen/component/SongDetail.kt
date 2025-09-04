@@ -1,6 +1,7 @@
 package com.example.feature.music_player.fullScreen.component
 
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,7 @@ import com.example.core.music_media3.model.PlayerStateModel
 fun SongDetail(
     modifier: Modifier = Modifier,
     currentPlayerStateModel: () -> PlayerStateModel,
+    clickOnArtist: (String) -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.Start,
@@ -43,7 +45,8 @@ fun SongDetail(
 
         Text(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .clickable { clickOnArtist(currentPlayerStateModel().currentMediaInfo.artist) },
             text = currentPlayerStateModel().currentMediaInfo.artist,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
@@ -71,6 +74,7 @@ private fun FullScreenPreview() {
     MediaPlayerJetpackComposeTheme {
         SongDetail(
             currentPlayerStateModel = { PlayerStateModel.Empty },
+            clickOnArtist = {},
         )
     }
 }

@@ -24,7 +24,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.example.core.designsystem.R
-import com.example.core.designsystem.bounceClickEffect
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.music_media3.model.PlayerStateModel
 import com.example.core.music_media3.model.RepeatModes
@@ -113,7 +112,7 @@ private fun ButtonOfFullScreenPlayer(
     onClick: () -> Unit,
 ) {
     IconButton(
-        modifier = modifier.size(size).bounceClickEffect(),
+        modifier = modifier.size(size),
         onClick = { onClick.invoke() },
         colors = IconButtonDefaults.iconButtonColors(
             containerColor = Color.Transparent,
