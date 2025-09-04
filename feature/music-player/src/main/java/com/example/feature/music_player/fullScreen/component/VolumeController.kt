@@ -40,10 +40,9 @@ fun VolumeController(
     val interactionSource = remember { MutableInteractionSource() }
     val isDragged by interactionSource.collectIsDraggedAsState()
 
-    val sliderThumbWidth = animateDpAsState(targetValue = if (isDragged) 8.dp else 4.dp, label = "").value
-    val sliderTrackHeight = animateDpAsState(targetValue = if (isDragged) 4.dp else 8.dp, label = "").value
-
-    val iconsScale = animateFloatAsState(if (isDragged) 1.4f else 1f)
+    val sliderThumbWidth by animateDpAsState(targetValue = if (isDragged) 4.dp else 6.dp, label = "")
+    val sliderTrackHeight by animateDpAsState(targetValue = if (isDragged) 4.dp else 8.dp, label = "")
+    val iconsScale by animateFloatAsState(if (isDragged) 1.4f else 1f)
 
     Row(
         modifier = modifier,
@@ -55,8 +54,8 @@ fun VolumeController(
                 .size(19.dp)
                 .graphicsLayer {
                     if (currentVolume() == 0) {
-                        this.scaleX *= iconsScale.value
-                        this.scaleY *= iconsScale.value
+                        this.scaleX *= iconsScale
+                        this.scaleY *= iconsScale
                     }
                 },
             painter = painterResource(R.drawable.icon_volume_min),
@@ -65,15 +64,12 @@ fun VolumeController(
         )
         Slider(
             value = currentVolume().toFloat() / maxDeviceVolume,
-            modifier = Modifier
-                .fillMaxWidth(0.7f),
-            onValueChange = { value ->
-                onVolumeChange(value * maxDeviceVolume)
-            },
+            modifier = Modifier.fillMaxWidth(0.7f),
+            onValueChange = { value -> onVolumeChange(value * maxDeviceVolume) },
             interactionSource = interactionSource,
             thumb = {
                 SliderDefaults.Thumb(
-                    interactionSource = interactionSource,
+                    interactionSource = remember { MutableInteractionSource() },
                     thumbSize = DpSize(width = sliderThumbWidth, height = 18.dp),
                     colors = SliderDefaults.colors(
                         thumbColor = Color.White.copy(alpha = 0.9f),
@@ -102,8 +98,8 @@ fun VolumeController(
                 .size(19.dp)
                 .graphicsLayer {
                     if (currentVolume() == maxDeviceVolume) {
-                        this.scaleX *= iconsScale.value
-                        this.scaleY *= iconsScale.value
+                        this.scaleX *= iconsScale
+                        this.scaleY *= iconsScale
                     }
                 },
             painter = painterResource(R.drawable.icon_volume_max),

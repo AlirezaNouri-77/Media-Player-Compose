@@ -3,8 +3,9 @@ package com.example.feature.music_player.fullScreen.component
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -14,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.example.core.designsystem.MusicThumbnail
@@ -33,7 +33,6 @@ fun FullscreenPlayerPager(
     onPlayerAction: (action: PlayerActions) -> Unit,
     setCurrentPagerNumber: (Int) -> Unit,
     currentPagerPage: Int,
-    sizePager: Dp = 250.dp,
 ) {
     val pagerState = rememberPagerState(
         initialPage = currentPagerPage,
@@ -55,18 +54,17 @@ fun FullscreenPlayerPager(
     ) {
         HorizontalPager(
             modifier = Modifier
-                .fillMaxSize()
-                .size(sizePager),
+                .fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
             beyondViewportPageCount = 1,
             state = pagerState,
-            pageSpacing = 10.dp,
+            pageSpacing = 20.dp,
             verticalAlignment = Alignment.CenterVertically,
         ) { page ->
             MusicThumbnail(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 12.dp, vertical = 10.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(12.dp))
                     .background(color = MaterialTheme.colorScheme.primary),
                 uri = pagerItem[page].artworkUri.toUri(),
             )

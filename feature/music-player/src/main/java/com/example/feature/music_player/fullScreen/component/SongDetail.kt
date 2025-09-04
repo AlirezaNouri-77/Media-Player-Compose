@@ -45,7 +45,6 @@ fun SongDetail(
 
         Text(
             modifier = Modifier
-                .fillMaxWidth()
                 .clickable { clickOnArtist(currentPlayerStateModel().currentMediaInfo.artist) },
             text = currentPlayerStateModel().currentMediaInfo.artist,
             fontSize = 14.sp,
