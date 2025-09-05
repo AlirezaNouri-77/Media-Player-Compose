@@ -165,7 +165,7 @@ fun SharedTransitionScope.CategoryDetailPage(
     ) { innerPadding ->
 
         if (isCompactLayout) {
-            CategoryDetailCompact(
+            CategoryDetailPortrait(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
@@ -209,7 +209,7 @@ fun SharedTransitionScope.CategoryDetail(
     onBackClick: () -> Unit,
 ) {
     Row(
-        modifier = modifier.fillMaxSize().padding(4.dp),
+        modifier = modifier.fillMaxSize().padding(8.dp),
         verticalAlignment = Alignment.Top,
     ) {
         Column(
@@ -255,7 +255,7 @@ fun SharedTransitionScope.CategoryDetail(
         LazyColumn(
             contentPadding = PaddingValues(
                 top = 10.dp,
-                bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + if (currentMusicId.isNotEmpty()) LocalMiniPlayerHeight.current else 0.dp,
+                bottom = if (currentMusicId.isNotEmpty()) LocalMiniPlayerHeight.current else 0.dp,
             ),
         ) {
             itemsIndexed(
@@ -277,7 +277,7 @@ fun SharedTransitionScope.CategoryDetail(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.CategoryDetailCompact(
+fun SharedTransitionScope.CategoryDetailPortrait(
     modifier: Modifier = Modifier,
     uiState: CategoryUiState,
     categoryName: String,

@@ -113,20 +113,9 @@ fun SharedTransitionScope.HomeMusic(
                             isDropDownMenuSortExpand = uiState.isSortDropDownMenuShow,
                             sortTypeList = if (uiState.currentTabBarPosition == TabBarModel.All) SongsSortType.entries else CategorizedSortType.entries,
                             onSortClick = {
-                                homeViewModel.onEvent(
-                                    HomeUiEvent.UpdateSortState(
-                                        uiState.currentTabBarPosition,
-                                        it,
-                                    ),
-                                )
+                                homeViewModel.onEvent(HomeUiEvent.UpdateSortState(uiState.currentTabBarPosition, it))
                             },
-                            onOrderClick = {
-                                homeViewModel.onEvent(
-                                    HomeUiEvent.UpdateSortOrder(
-                                        uiState.currentTabBarPosition,
-                                    ),
-                                )
-                            },
+                            onOrderClick = { homeViewModel.onEvent(HomeUiEvent.UpdateSortOrder(uiState.currentTabBarPosition)) },
                             isOrderDec = if (uiState.currentTabBarPosition == TabBarModel.All) uiState.songsSortState.isDec else uiState.folderSortState.isDec,
                             sortType = if (uiState.currentTabBarPosition == TabBarModel.All) uiState.songsSortState.sortType else uiState.folderSortState.sortType,
                             onClick = { homeViewModel.onEvent(HomeUiEvent.ShowSortDropDownMenu) },
