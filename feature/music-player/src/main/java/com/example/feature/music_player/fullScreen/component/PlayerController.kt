@@ -1,5 +1,8 @@
 package com.example.feature.music_player.fullScreen.component
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,10 +17,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,13 +30,13 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.example.core.designsystem.R
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.example.core.music_media3.model.PlayerStateModel
+import com.example.core.model.PlayerStateModel
 import com.example.core.music_media3.model.RepeatModes
 
 @Composable
 fun SongController(
     modifier: Modifier = Modifier,
-    playerStateModel: () -> PlayerStateModel,
+    playerStateModel: PlayerStateModel,
     isFavorite: Boolean,
     repeatMode: Int,
     onMovePreviousMusic: () -> Unit,
@@ -41,7 +46,7 @@ fun SongController(
     onRepeatMode: (Int) -> Unit,
     onFavoriteToggle: () -> Unit,
 ) {
-    val favIcon = remember(playerStateModel().currentMediaInfo.musicID, isFavorite) {
+    val favIcon = remember(playerStateModel.currentMediaInfo.musicID, isFavorite) {
         when (isFavorite) {
             true -> Icons.Default.Favorite
             false -> Icons.Default.FavoriteBorder
@@ -49,7 +54,9 @@ fun SongController(
     }
 
     Row(
-        modifier = modifier.fillMaxWidth().heightIn(min = 60.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = 60.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
@@ -57,7 +64,7 @@ fun SongController(
             icon = favIcon,
             size = DpSize(24.dp, 24.dp),
             contentDescription = "Fav Music",
-            onClick = { onFavoriteToggle.invoke() },
+            onClick = onFavoriteToggle,
         )
         ButtonOfFullScreenPlayer(
             icon = R.drawable.icon_previous,
@@ -67,11 +74,11 @@ fun SongController(
         )
         ButtonOfFullScreenPlayer(
             modifier = Modifier.padding(horizontal = 5.dp),
-            icon = if (playerStateModel().isPlaying) R.drawable.icon_pause else R.drawable.icon_play,
+            icon = if (playerStateModel.isPlaying) R.drawable.icon_pause else R.drawable.icon_play,
             size = DpSize(48.dp, 48.dp),
             contentDescription = "Play and Pause",
             onClick = {
-                when (playerStateModel().isPlaying) {
+                when (playerStateModel.isPlaying) {
                     true -> onPauseMusic.invoke()
                     false -> onResumeMusic.invoke()
                 }
@@ -111,13 +118,10 @@ private fun ButtonOfFullScreenPlayer(
     contentDescription: String,
     onClick: () -> Unit,
 ) {
-    IconButton(
-        modifier = modifier.size(size),
+    ButtonWithEffect(
+        modifier = modifier,
         onClick = { onClick.invoke() },
-        colors = IconButtonDefaults.iconButtonColors(
-            containerColor = Color.Transparent,
-            contentColor = Color.White,
-        ),
+        size = size,
     ) {
         if (icon is Int) {
             Icon(
@@ -135,13 +139,43 @@ private fun ButtonOfFullScreenPlayer(
     }
 }
 
+@Composable
+private fun ButtonWithEffect(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    size: DpSize,
+    content: @Composable () -> Unit,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val scale by animateFloatAsState(if (isPressed) 0.85f else 1f)
+
+    IconButton(
+        modifier = modifier
+            .size(size)
+            .graphicsLayer {
+                this.scaleX = this.scaleX * scale
+                this.scaleY = this.scaleY * scale
+            },
+        onClick = onClick,
+        interactionSource = interactionSource,
+        colors = IconButtonDefaults.iconButtonColors(
+            containerColor = Color.Transparent,
+            contentColor = Color.White,
+        ),
+    ) {
+        content()
+    }
+}
+
 @Preview
 @Composable
 private fun Preview() {
     MediaPlayerJetpackComposeTheme {
         SongController(
             modifier = Modifier,
-            playerStateModel = { PlayerStateModel.Empty },
+            playerStateModel = PlayerStateModel.Initial,
             isFavorite = false,
             repeatMode = 0,
             onMovePreviousMusic = {},

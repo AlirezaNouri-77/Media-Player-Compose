@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.data.util.sortMusic
 import com.example.core.domain.respository.MusicSourceImpl
+import com.example.core.domain.useCase.GetMusicPlayerStateUseCase
 import com.example.core.model.datastore.CategorizedSortModel
 import com.example.core.model.datastore.SongSortModel
 import com.example.core.model.datastore.SortType
@@ -22,6 +23,7 @@ class HomeViewModel(
     private val musicSource: MusicSourceImpl,
     private val songsSortDataStoreManager: SortDataStoreManagerImpl<SongSortModel>,
     private val folderSortDataStoreManager: SortDataStoreManagerImpl<CategorizedSortModel>,
+    private val getMusicPlayerStateUseCase: GetMusicPlayerStateUseCase,
 ) : ViewModel() {
     private var mUiState = MutableStateFlow(HomeScreenUiState())
     val homeScreenUiState = mUiState
@@ -30,6 +32,7 @@ class HomeViewModel(
             getSongs()
             getFolderSongs()
             getSortStates()
+            observePlayerState()
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000L),
@@ -68,6 +71,12 @@ class HomeViewModel(
         }
     }
 
+    private fun observePlayerState() = viewModelScope.launch {
+        getMusicPlayerStateUseCase.invoke().collect { playerStateModel ->
+            mUiState.update { it.copy(playerStateModel = playerStateModel) }
+        }
+    }
+
     private fun getSortStates() {
         combine(
             songsSortDataStoreManager.sortState,
@@ -83,13 +92,14 @@ class HomeViewModel(
         }
     }
 
-    private fun updateSortType(tabBarPosition: TabBarModel, sortType: SortType) = viewModelScope.launch {
-        if (tabBarPosition == TabBarModel.All) {
-            songsSortDataStoreManager.updateSortType(sortType)
-        } else if (tabBarPosition == TabBarModel.Folder) {
-            folderSortDataStoreManager.updateSortType(sortType)
+    private fun updateSortType(tabBarPosition: TabBarModel, sortType: SortType) =
+        viewModelScope.launch {
+            if (tabBarPosition == TabBarModel.All) {
+                songsSortDataStoreManager.updateSortType(sortType)
+            } else if (tabBarPosition == TabBarModel.Folder) {
+                folderSortDataStoreManager.updateSortType(sortType)
+            }
         }
-    }
 
     private fun updateSortOrder(tabBarPosition: TabBarModel) = viewModelScope.launch {
         if (tabBarPosition == TabBarModel.All) {

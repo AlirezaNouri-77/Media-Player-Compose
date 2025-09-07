@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.core.model.MusicModel
-import com.example.core.music_media3.model.PlayerStateModel
+import com.example.core.model.PlayerStateModel
 import com.example.feature.music_player.PlayerActions
 import kotlinx.collections.immutable.ImmutableList
 
@@ -22,8 +22,8 @@ internal fun LandscapeLayout(
     modifier: Modifier = Modifier,
     repeatMode: Int,
     currentPagerPage: Int,
-    playerStateModel: () -> PlayerStateModel,
-    currentMusicPosition: () -> Long,
+    playerStateModel: PlayerStateModel,
+    currentMusicPosition: Long,
     isFavorite: Boolean,
     pagerMusicList: ImmutableList<MusicModel>,
     onBack: () -> Unit,
@@ -51,10 +51,10 @@ internal fun LandscapeLayout(
             )
             FullscreenPlayerPager(
                 modifier = Modifier
-                    .weight(1f)
-                    .aspectRatio(1f),
+                    .weight(1f, false)
+                    .aspectRatio(0.9f),
                 pagerItem = pagerMusicList,
-                playerStateModel = playerStateModel(),
+                playerStateModel = playerStateModel,
                 onPlayerAction = { onPlayerAction(it) },
                 setCurrentPagerNumber = { setCurrentPagerNumber(it) },
                 currentPagerPage = currentPagerPage,
@@ -77,12 +77,12 @@ internal fun LandscapeLayout(
             )
             SliderSection(
                 modifier = Modifier,
-                currentMusicPosition = { currentMusicPosition() },
+                currentMusicPosition = currentMusicPosition,
                 seekTo = { onPlayerAction(PlayerActions.SeekTo(it)) },
-                duration = playerStateModel().currentMediaInfo.duration.toFloat(),
+                duration = playerStateModel.currentMediaInfo.duration.toFloat(),
             )
             SongController(
-                playerStateModel = { playerStateModel() },
+                playerStateModel = playerStateModel,
                 isFavorite = isFavorite,
                 repeatMode = repeatMode,
                 onPauseMusic = { onPlayerAction(PlayerActions.PausePlayer) },
@@ -92,7 +92,7 @@ internal fun LandscapeLayout(
                 onRepeatMode = { onPlayerAction(PlayerActions.OnRepeatMode(it)) },
                 onFavoriteToggle = {
                     onPlayerAction(
-                        PlayerActions.OnFavoriteToggle(playerStateModel().currentMediaInfo.musicID),
+                        PlayerActions.OnFavoriteToggle(playerStateModel.currentMediaInfo.musicID),
                     )
                 },
             )

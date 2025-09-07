@@ -37,8 +37,6 @@ import org.koin.androidx.compose.koinViewModel
 fun SearchRoot(
     modifier: Modifier = Modifier,
     searchViewModel: SearchViewModel = koinViewModel<SearchViewModel>(),
-    currentPlayerMediaId: String,
-    currentPlayerPlayingState: Boolean,
     onMusicClick: (Int, List<MusicModel>) -> Unit,
 ) {
     val uiState by searchViewModel.searchScreenUiState.collectAsStateWithLifecycle()
@@ -46,18 +44,14 @@ fun SearchRoot(
     SearchScreen(
         modifier = modifier,
         listItem = uiState.searchList.toImmutableList(),
-        currentPlayerMediaId = currentPlayerMediaId,
-        currentPlayerPlayingState = currentPlayerPlayingState,
+        currentPlayerMediaId = uiState.playerStateModel.currentMediaInfo.musicID,
+        currentPlayerPlayingState = uiState.playerStateModel.isPlaying,
         onMusicClick = { index, list -> onMusicClick(index, list) },
         searchTextFieldValue = uiState.searchTextFieldValue,
-        onSearchTextFieldValueChange = {
-            searchViewModel.onEvent(
-                SearchScreenUiEvent.OnSearchTextField(
-                    it,
-                ),
-            )
-        },
         onClearSearchTextField = { searchViewModel.onEvent(SearchScreenUiEvent.OnClearSearchTextField) },
+        onSearchTextFieldValueChange = {
+            searchViewModel.onEvent(SearchScreenUiEvent.OnSearchTextField(it))
+        },
     )
 }
 

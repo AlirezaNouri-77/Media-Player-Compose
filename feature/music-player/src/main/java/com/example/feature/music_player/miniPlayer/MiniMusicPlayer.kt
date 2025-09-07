@@ -46,7 +46,7 @@ fun MiniMusicPlayer(
     currentPlayerArtworkUri: Uri?,
     isPlaying: Boolean,
     musicArtWorkColorAnimation: Color,
-    currentMusicPosition: () -> Long,
+    currentMusicPosition: Long,
     onPlayerAction: (action: PlayerActions) -> Unit,
 ) {
     val pagerState = rememberPagerState(
@@ -91,7 +91,7 @@ fun MiniMusicPlayer(
                 .fillMaxWidth()
                 .padding(vertical = 8.dp, horizontal = 4.dp)
                 .miniPlayerTimeLine(
-                    currentMusicPosition = currentMusicPosition(),
+                    currentMusicPosition = currentMusicPosition,
                     currentPlayerDuration = currentPlayerDuration,
                 ),
             verticalAlignment = Alignment.CenterVertically,
@@ -133,7 +133,7 @@ private fun Preview() {
             artworkPagerList = listOf(MusicModel.Dummy).toImmutableList(),
             setCurrentPagerNumber = {},
             currentPagerPage = 0,
-            currentMusicPosition = { 2000 },
+            currentMusicPosition = 2000,
             onPlayerAction = {},
             modifier = Modifier
                 .height(70.dp)

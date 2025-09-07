@@ -9,7 +9,8 @@ android {
 dependencies {
 
     implementation(project(":core:model"))
+    implementation(project(":core:music-media3"))
 
     implementation(libs.jetbrains.kotlinx.coroutine)
-    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.koin.core)
 }

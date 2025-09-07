@@ -1,26 +1,21 @@
 package com.example.feature.music_player
 
 import android.net.Uri
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.common.util.MusicThumbnailUtil
+import com.example.core.common.MusicThumbnailUtilImpl
 import com.example.core.domain.respository.FavoriteRepositoryImpl
-import com.example.core.domain.respository.MusicThumbnailUtilImpl
 import com.example.core.model.MusicModel
 import com.example.core.music_media3.MusicServiceConnection
-import com.example.core.music_media3.model.PlayerStateModel
 import com.example.core.music_media3.util.DeviceVolumeManager
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.delay
+import com.example.feature.music_player.model.PlayerUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.isActive
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
@@ -29,55 +24,32 @@ class PlayerViewModel(
     private var deviceVolumeManager: DeviceVolumeManager,
     private var favoriteMusicSource: FavoriteRepositoryImpl,
 ) : ViewModel() {
-    var musicArtworkColorPalette by mutableIntStateOf(MusicThumbnailUtil.DEFAULT_COLOR_PALETTE)
-
-    var currentMusicState = musicServiceConnection.playerState
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            PlayerStateModel.Empty,
-        )
-
-    var artworkPagerList = musicServiceConnection.artworkPagerList.stateIn(
+    private var _uiState = MutableStateFlow(PlayerUiState())
+    val playerUiState = _uiState.onStart {
+        observePlayerStates()
+    }.stateIn(
         viewModelScope,
-        SharingStarted.Eagerly,
-        emptyList(),
+        SharingStarted.WhileSubscribed(5_000),
+        PlayerUiState(),
     )
 
-    var currentArtworkPagerIndex = musicServiceConnection.currentArtworkPagerIndex.stateIn(
-        viewModelScope,
-        SharingStarted.Eagerly,
-        0,
-    )
-
-    private var _currentMusicPosition = MutableStateFlow(0L)
-    var currentMusicPosition = _currentMusicPosition.asStateFlow()
-        .onStart {
-            viewModelScope.launch {
-                while (currentCoroutineContext().isActive) {
-                    if (currentMusicState.value.isPlaying) {
-                        val position = musicServiceConnection.currentPlayerPosition()
-                        _currentMusicPosition.value = position
-                    }
-                    delay(80L)
-                }
-            }
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5_000L),
-            0L,
-        )
-
-    var currentDeviceVolume = deviceVolumeManager.currentMusicLevelVolume
-        .onStart {
-            deviceVolumeManager.registerContentObserver()
-            deviceVolumeManager.setInitialVolume()
-        }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            0,
-        )
+    private fun observePlayerStates() {
+        deviceVolumeManager.currentMusicLevelVolume.onEach {
+            _uiState.update { uiState -> uiState.copy(currentDeviceVolume = it) }
+        }.launchIn(viewModelScope)
+        musicServiceConnection.currentArtworkPagerIndex.onEach {
+            _uiState.update { uiState -> uiState.copy(currentThumbnailPagerIndex = it) }
+        }.launchIn(viewModelScope)
+        musicServiceConnection.artworkPagerList.onEach {
+            _uiState.update { uiState -> uiState.copy(thumbnailsList = it) }
+        }.launchIn(viewModelScope)
+        musicServiceConnection.playerState.onEach {
+            _uiState.update { uiState -> uiState.copy(currentPlayerState = it) }
+        }.launchIn(viewModelScope)
+        musicServiceConnection.currentPlayerPosition.onEach {
+            _uiState.update { uiState -> uiState.copy(currentPlayerPosition = it) }
+        }.launchIn(viewModelScope)
+    }
 
     fun onPlayerAction(action: PlayerActions) {
         when (action) {
@@ -87,13 +59,20 @@ class PlayerViewModel(
             is PlayerActions.OnFavoriteToggle -> handleFavoriteSongs(action.mediaId)
             is PlayerActions.PlaySongs -> playMusic(action.index, action.list)
             is PlayerActions.SeekTo -> {
-                _currentMusicPosition.value = action.value
+                _uiState.update { it.copy(currentPlayerPosition = action.value) }
                 musicServiceConnection.seekToPosition(action.value)
             }
+
             is PlayerActions.OnRepeatMode -> musicServiceConnection.setRepeatMode(action.value)
-            is PlayerActions.MovePreviousPlayer -> musicServiceConnection.moveToPrevious(action.seekToStart, currentMusicPosition.value)
+            is PlayerActions.MovePreviousPlayer -> musicServiceConnection.moveToPrevious(
+                action.seekToStart,
+                _uiState.value.currentPlayerPosition,
+            )
+
             is PlayerActions.OnMoveToIndex -> musicServiceConnection.moveToMediaIndex(index = action.value)
-            is PlayerActions.UpdateArtworkPageIndex -> musicServiceConnection.setCurrentArtworkPagerIndex(action.value)
+            is PlayerActions.UpdateArtworkPageIndex -> musicServiceConnection.setCurrentArtworkPagerIndex(
+                action.value,
+            )
         }
     }
 
@@ -104,7 +83,9 @@ class PlayerViewModel(
     fun getColorPaletteFromArtwork(uri: Uri) {
         viewModelScope.launch {
             val bitmap = mediaThumbnailUtil.getMusicThumbnail(uri)
-            musicArtworkColorPalette = mediaThumbnailUtil.getMainColorOfBitmap(bitmap)
+            _uiState.update {
+                it.copy(thumbnailDominantColor = mediaThumbnailUtil.getMainColorOfBitmap(bitmap))
+            }
         }
     }
 
@@ -115,7 +96,8 @@ class PlayerViewModel(
         }
     }
 
-    private fun playMusic(index: Int, musicList: List<MusicModel>) = musicServiceConnection.playSongs(index, musicList)
+    private fun playMusic(index: Int, musicList: List<MusicModel>) =
+        musicServiceConnection.playSongs(index, musicList)
 
     override fun onCleared() {
         super.onCleared()

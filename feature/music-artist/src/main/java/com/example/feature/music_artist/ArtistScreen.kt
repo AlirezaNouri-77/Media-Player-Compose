@@ -4,10 +4,6 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -57,13 +53,6 @@ fun SharedTransitionScope.ArtistRoute(
     val uiState by artistViewModel.artistScreenUiState.collectAsStateWithLifecycle()
 
     ArtistScreen(
-        modifier = modifier.sharedBounds(
-            sharedContentState = rememberSharedContentState("bound"),
-            animatedVisibilityScope = animatedVisibilityScope,
-            renderInOverlayDuringTransition = false,
-            exit = fadeOut(tween(150, 20)),
-            enter = fadeIn(tween(150, 150, easing = LinearEasing)),
-        ),
         listItems = uiState.artistList.toImmutableList(),
         isLoading = uiState.isLoading,
         animatedVisibilityScope = animatedVisibilityScope,

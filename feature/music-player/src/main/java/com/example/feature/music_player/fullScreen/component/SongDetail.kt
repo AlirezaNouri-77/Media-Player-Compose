@@ -18,12 +18,12 @@ import com.example.core.common.util.convertToReadableBitrate
 import com.example.core.common.util.extractFileExtension
 import com.example.core.common.util.removeFileExtension
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.example.core.music_media3.model.PlayerStateModel
+import com.example.core.model.PlayerStateModel
 
 @Composable
 fun SongDetail(
     modifier: Modifier = Modifier,
-    currentPlayerStateModel: () -> PlayerStateModel,
+    currentPlayerStateModel: PlayerStateModel,
     clickOnArtist: (String) -> Unit,
 ) {
     Column(
@@ -35,7 +35,7 @@ fun SongDetail(
             modifier = Modifier
                 .fillMaxWidth()
                 .basicMarquee(),
-            text = currentPlayerStateModel().currentMediaInfo.title.removeFileExtension(),
+            text = currentPlayerStateModel.currentMediaInfo.title.removeFileExtension(),
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             overflow = TextOverflow.Visible,
@@ -45,22 +45,18 @@ fun SongDetail(
 
         Text(
             modifier = Modifier
-                .clickable { clickOnArtist(currentPlayerStateModel().currentMediaInfo.artist) },
-            text = currentPlayerStateModel().currentMediaInfo.artist,
+                .clickable { clickOnArtist(currentPlayerStateModel.currentMediaInfo.artist) },
+            text = currentPlayerStateModel.currentMediaInfo.artist,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
             maxLines = 1,
             color = Color.White.copy(alpha = 0.7f),
         )
-        val songDetail = listOf(
-            currentPlayerStateModel().currentMediaInfo.title.extractFileExtension(),
-            currentPlayerStateModel().currentMediaInfo.bitrate.convertToReadableBitrate(),
-            currentPlayerStateModel().currentMediaInfo.size.convertByteToReadableSize(),
-        )
         Text(
-            modifier = Modifier
-                .fillMaxWidth(),
-            text = songDetail.reduce { acc, string -> "$acc, $string" },
+            modifier = Modifier.fillMaxWidth(),
+            text = "${currentPlayerStateModel.currentMediaInfo.title.extractFileExtension()}, " +
+                "${currentPlayerStateModel.currentMediaInfo.bitrate.convertToReadableBitrate()}, " +
+                "${currentPlayerStateModel.currentMediaInfo.size.convertByteToReadableSize()} ",
             fontSize = 12.sp,
             color = Color.White.copy(alpha = 0.7f),
         )
@@ -72,7 +68,7 @@ fun SongDetail(
 private fun FullScreenPreview() {
     MediaPlayerJetpackComposeTheme {
         SongDetail(
-            currentPlayerStateModel = { PlayerStateModel.Empty },
+            currentPlayerStateModel = PlayerStateModel.Initial,
             clickOnArtist = {},
         )
     }

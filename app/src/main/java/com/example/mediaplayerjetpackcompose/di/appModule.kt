@@ -25,6 +25,6 @@ var appModule = module {
     }
 
     single {
-        HomeViewModel(get(), get(named("SongsSortDataStore")), get(named("FolderSortDataStore")))
+        HomeViewModel(get(), get(named("SongsSortDataStore")), get(named("FolderSortDataStore")), get())
     }
 }

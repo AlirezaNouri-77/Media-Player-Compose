@@ -4,11 +4,10 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.example.core.model.navigation.MusicNavigationRoute
 
 fun NavHostController.navigationBarNavigate(
     backStackEntry: NavBackStackEntry?,
-    route: MusicNavigationRoute,
+    route: MusicTopLevelDestination,
 ) {
     val isDuplicateDestination =
         backStackEntry?.destination?.hasRoute(route::class) == true

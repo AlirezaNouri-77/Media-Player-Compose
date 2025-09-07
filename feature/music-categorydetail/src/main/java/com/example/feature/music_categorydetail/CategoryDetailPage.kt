@@ -7,8 +7,6 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -63,8 +61,6 @@ import com.example.core.model.MusicModel
 fun SharedTransitionScope.CategoryDetailRoute(
     categoryViewModel: CategoryViewModel,
     categoryName: String,
-    currentMusicId: String,
-    isPlayerPlaying: Boolean,
     onMusicClick: (index: Int, list: List<MusicModel>) -> Unit,
     onBackClick: () -> Unit,
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -73,17 +69,8 @@ fun SharedTransitionScope.CategoryDetailRoute(
     val uiState by categoryViewModel.uiState.collectAsStateWithLifecycle()
 
     CategoryDetailPage(
-        modifier = Modifier.sharedBounds(
-            sharedContentState = rememberSharedContentState("bound"),
-            animatedVisibilityScope = animatedVisibilityScope,
-            renderInOverlayDuringTransition = false,
-            exit = fadeOut(tween(150, 20)),
-            enter = fadeIn(tween(150, 150, easing = LinearEasing)),
-        ),
         uiState = uiState,
         categoryName = categoryName,
-        currentMusicId = currentMusicId,
-        isPlayerPlaying = isPlayerPlaying,
         onMusicClick = { onMusicClick(it, uiState.songList) },
         onBackClick = onBackClick,
         animatedVisibilityScope = animatedVisibilityScope,
@@ -97,15 +84,13 @@ fun SharedTransitionScope.CategoryDetailPage(
     modifier: Modifier = Modifier,
     uiState: CategoryUiState,
     categoryName: String,
-    currentMusicId: String,
-    isPlayerPlaying: Boolean,
     onMusicClick: (index: Int) -> Unit,
     onBackClick: () -> Unit,
     animatedVisibilityScope: AnimatedVisibilityScope,
     displayWithVisuals: Boolean = true,
 ) {
     val animatedColor by animateColorAsState(
-        targetValue = Color(uiState.gradientColor),
+        targetValue = Color(uiState.thumbnailDominateColor),
         animationSpec = tween(durationMillis = 200, easing = LinearEasing),
     )
     val windowSize = currentWindowAdaptiveInfo().windowSizeClass
@@ -171,8 +156,8 @@ fun SharedTransitionScope.CategoryDetailPage(
                     .padding(innerPadding),
                 uiState = uiState,
                 categoryName = categoryName,
-                currentMusicId = currentMusicId,
-                isPlayerPlaying = isPlayerPlaying,
+                currentMusicId = uiState.musicPlayerState.currentMediaInfo.musicID,
+                isPlayerPlaying = uiState.musicPlayerState.isPlaying,
                 onMusicClick = onMusicClick,
                 animatedVisibilityScope = animatedVisibilityScope,
                 displayWithVisuals = displayWithVisuals,
@@ -184,8 +169,8 @@ fun SharedTransitionScope.CategoryDetailPage(
                     .padding(innerPadding),
                 uiState = uiState,
                 categoryName = categoryName,
-                currentMusicId = currentMusicId,
-                isPlayerPlaying = isPlayerPlaying,
+                currentMusicId = uiState.musicPlayerState.currentMediaInfo.musicID,
+                isPlayerPlaying = uiState.musicPlayerState.isPlaying,
                 onMusicClick = onMusicClick,
                 animatedVisibilityScope = animatedVisibilityScope,
                 displayWithVisuals = displayWithVisuals,

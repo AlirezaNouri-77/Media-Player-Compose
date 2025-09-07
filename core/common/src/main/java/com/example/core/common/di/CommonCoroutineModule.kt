@@ -1,8 +1,8 @@
 package com.example.core.common.di
 
 import com.example.core.common.DispatcherType
+import com.example.core.common.MusicThumbnailUtilImpl
 import com.example.core.common.util.MusicThumbnailUtil
-import com.example.core.domain.respository.MusicThumbnailUtilImpl
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainCoroutineDispatcher

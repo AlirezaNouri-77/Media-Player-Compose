@@ -8,8 +8,6 @@ android {
 
 dependencies {
 
-    implementation(project(":core:domain"))
-
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.jetbrains.kotlinx.coroutine)

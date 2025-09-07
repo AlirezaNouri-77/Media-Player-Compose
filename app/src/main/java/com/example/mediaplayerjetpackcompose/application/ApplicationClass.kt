@@ -10,6 +10,7 @@ import com.example.core.common.di.CommonCoroutineModule
 import com.example.core.common.di.CommonDispatcherModule
 import com.example.core.data.di.DataModule
 import com.example.core.database.di.DataBaseModule
+import com.example.core.domain.di.useCaseModule
 import com.example.core.music_media3.di.MusicMedia3Module
 import com.example.datastore.di.dataStoreModule
 import com.example.feature.video.di.VideoModule
@@ -38,6 +39,7 @@ class ApplicationClass : Application(), ImageLoaderFactory {
                 MusicMedia3Module,
                 VideoMedia3Module,
                 dataStoreModule,
+                useCaseModule,
             )
         }
     }

@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat.enableEdgeToEdge
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.feature.video.VideoPlayer
 import com.example.feature.video.VideoViewModel
@@ -148,8 +147,7 @@ private fun ShowMessage(
     onAction: () -> Unit,
 ) {
     Box(
-        modifier = modifier
-            .fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
         Column(
@@ -163,9 +161,7 @@ private fun ShowMessage(
                 fontWeight = FontWeight.SemiBold,
             )
             TextButton(
-                onClick = {
-                    onAction()
-                },
+                onClick = onAction,
                 border = BorderStroke(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.onPrimary,

@@ -36,7 +36,7 @@ import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 @Composable
 fun SliderSection(
     modifier: Modifier = Modifier,
-    currentMusicPosition: () -> Long,
+    currentMusicPosition: Long,
     seekTo: (Long) -> Unit,
     duration: Float,
 ) {
@@ -48,13 +48,13 @@ fun SliderSection(
     val isSliderDragging by sliderInteractionSource.collectIsDraggedAsState()
 
     val trackHeight by animateDpAsState(targetValue = if (isSliderDragging) 16.dp else 20.dp, label = "")
-    val thumbWidth by animateDpAsState(targetValue = if (isSliderDragging) 4.dp else 6.dp, label = "")
+    val thumbWidth by animateDpAsState(targetValue = if (isSliderDragging) 3.dp else 5.dp, label = "")
 
-    val sliderValue by remember {
+    val sliderValue by remember(currentMusicPosition) {
         derivedStateOf {
             when (isSliderDragging) {
                 true -> seekPosition
-                false -> currentMusicPosition().toFloat()
+                false -> currentMusicPosition.toFloat()
             }
         }
     }
@@ -73,7 +73,7 @@ fun SliderSection(
                     colors = SliderDefaults.colors(
                         thumbColor = Color.White,
                     ),
-                    thumbSize = DpSize(width = thumbWidth, height = 26.dp),
+                    thumbSize = DpSize(width = thumbWidth, height = 24.dp),
                     interactionSource = remember { MutableInteractionSource() },
                 )
             },
@@ -82,8 +82,8 @@ fun SliderSection(
                     modifier = Modifier.height(trackHeight),
                     sliderState = sliderState,
                     colors = SliderDefaults.colors(
-                        activeTrackColor = Color.White,
-                        inactiveTrackColor = Color.White.copy(alpha = 0.5f),
+                        activeTrackColor = Color.White.copy(alpha = 0.8f),
+                        inactiveTrackColor = Color.White.copy(alpha = 0.4f),
                     ),
                     drawStopIndicator = null,
                     trackInsideCornerSize = 4.dp,
@@ -122,19 +122,19 @@ private fun Preview() {
         Column {
             SliderSection(
                 modifier = Modifier,
-                currentMusicPosition = { 100000 },
+                currentMusicPosition = 100000,
                 seekTo = {},
                 duration = 100000f,
             )
             SliderSection(
                 modifier = Modifier,
-                currentMusicPosition = { 1000 },
+                currentMusicPosition = 1000,
                 seekTo = {},
                 duration = 100000f,
             )
             SliderSection(
                 modifier = Modifier,
-                currentMusicPosition = { 10000 },
+                currentMusicPosition = 10000,
                 seekTo = {},
                 duration = 100000f,
             )

@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.example.core.designsystem.MusicThumbnail
 import com.example.core.model.MusicModel
-import com.example.core.music_media3.model.PlayerStateModel
+import com.example.core.model.PlayerStateModel
 import com.example.feature.music_player.PagerHandler
 import com.example.feature.music_player.PlayerActions
 import kotlinx.collections.immutable.ImmutableList
@@ -58,13 +58,13 @@ fun FullscreenPlayerPager(
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
             beyondViewportPageCount = 1,
             state = pagerState,
-            pageSpacing = 20.dp,
+            pageSpacing = 24.dp,
             verticalAlignment = Alignment.CenterVertically,
         ) { page ->
             MusicThumbnail(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(14.dp))
                     .background(color = MaterialTheme.colorScheme.primary),
                 uri = pagerItem[page].artworkUri.toUri(),
             )

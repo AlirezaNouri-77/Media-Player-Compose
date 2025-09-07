@@ -4,7 +4,11 @@ import androidx.annotation.Keep
 import kotlinx.serialization.Serializable
 
 @Keep
+@Serializable
 sealed interface MusicNavigationRoute {
+    @Serializable
+    data object ParentMusic
+
     @Serializable
     data object Home : MusicNavigationRoute
 

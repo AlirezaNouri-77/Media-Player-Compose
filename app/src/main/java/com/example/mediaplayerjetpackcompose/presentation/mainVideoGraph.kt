@@ -1,49 +1,45 @@
 package com.example.mediaplayerjetpackcompose.presentation
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navigation
 import com.example.feature.video.VideoPage
 import com.example.feature.video.VideoPlayer
 import com.example.feature.video.VideoViewModel
-import kotlinx.serialization.Serializable
+import com.example.mediaplayerjetpackcompose.presentation.navigation.VideoTopLevelDestination
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MainVideoScreen(
+fun NavGraphBuilder.mainVideoGraph(
     modifier: Modifier = Modifier,
-    videoViewModel: VideoViewModel = koinViewModel(),
     onBack: () -> Unit,
     navController: NavHostController,
 ) {
-    NavHost(
-        modifier = Modifier.fillMaxSize(),
-        navController = navController,
-        startDestination = VideoScreenRoutes.VideoPage,
+    navigation<VideoTopLevelDestination.Parent>(
+        startDestination = VideoTopLevelDestination.VideoPage,
     ) {
-        composable<VideoScreenRoutes.VideoPage> {
+        composable<VideoTopLevelDestination.VideoPage> {
+            val videoViewModel: VideoViewModel = koinViewModel()
             val uiState by videoViewModel.uiState.collectAsStateWithLifecycle()
             VideoPage(
                 modifier = modifier,
                 videoUiState = uiState,
                 onRefreshVideoList = videoViewModel::getVideo,
                 onPlay = { index, list ->
-                    navController.navigate(VideoScreenRoutes.VideoPlayer)
+                    navController.navigate(VideoTopLevelDestination.VideoPlayer)
                     videoViewModel.startPlay(index, list)
                 },
                 onBack = onBack,
             )
         }
 
-        composable<VideoScreenRoutes.VideoPlayer> {
+        composable<VideoTopLevelDestination.VideoPlayer> {
+            val videoViewModel: VideoViewModel = koinViewModel()
             VideoPlayer(
                 videoUri = "",
                 videoViewModel = videoViewModel,
@@ -51,12 +47,4 @@ fun MainVideoScreen(
             )
         }
     }
-}
-
-sealed interface VideoScreenRoutes {
-    @Serializable
-    data object VideoPage : VideoScreenRoutes
-
-    @Serializable
-    data object VideoPlayer : VideoScreenRoutes
 }

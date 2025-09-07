@@ -55,10 +55,7 @@ import org.koin.androidx.compose.koinViewModel
 )
 @Composable
 fun SharedTransitionScope.HomeMusic(
-    modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = koinViewModel<HomeViewModel>(),
-    currentPlayerMediaId: String,
-    isPlaying: Boolean,
     navigateToCategoryPage: (String) -> Unit,
     onNavigateToVideoScreen: () -> Unit,
     onMusicClick: (Int, List<MusicModel>) -> Unit,
@@ -68,9 +65,7 @@ fun SharedTransitionScope.HomeMusic(
 
     val uiState by homeViewModel.homeScreenUiState.collectAsStateWithLifecycle()
 
-    val listStates = TabBarModel.entries.map {
-        rememberLazyListState()
-    }
+    val listStates = TabBarModel.entries.map { rememberLazyListState() }
 
     LaunchedEffect(pagerState.settledPage) {
         val currentTab = when (pagerState.currentPage) {
@@ -87,11 +82,6 @@ fun SharedTransitionScope.HomeMusic(
     }
 
     Scaffold(
-        modifier = modifier.sharedBounds(
-            sharedContentState = rememberSharedContentState("bound"),
-            animatedVisibilityScope = animatedVisibilityScope,
-            resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
-        ),
         topBar = {
             MainTopAppBar(
                 modifier = Modifier,
@@ -101,7 +91,7 @@ fun SharedTransitionScope.HomeMusic(
                         onClick = onNavigateToVideoScreen,
                     ) {
                         Icon(
-                            modifier = modifier.size(24.dp),
+                            modifier = Modifier.size(24.dp),
                             painter = painterResource(id = R.drawable.icon_video),
                             contentDescription = "video Icon",
                             tint = MaterialTheme.colorScheme.onPrimary,
@@ -112,14 +102,16 @@ fun SharedTransitionScope.HomeMusic(
                             modifier = Modifier,
                             isDropDownMenuSortExpand = uiState.isSortDropDownMenuShow,
                             sortTypeList = if (uiState.currentTabBarPosition == TabBarModel.All) SongsSortType.entries else CategorizedSortType.entries,
+                            isOrderDec = if (uiState.currentTabBarPosition == TabBarModel.All) uiState.songsSortState.isDec else uiState.folderSortState.isDec,
+                            sortType = if (uiState.currentTabBarPosition == TabBarModel.All) uiState.songsSortState.sortType else uiState.folderSortState.sortType,
                             onSortClick = {
                                 homeViewModel.onEvent(HomeUiEvent.UpdateSortState(uiState.currentTabBarPosition, it))
                             },
-                            onOrderClick = { homeViewModel.onEvent(HomeUiEvent.UpdateSortOrder(uiState.currentTabBarPosition)) },
-                            isOrderDec = if (uiState.currentTabBarPosition == TabBarModel.All) uiState.songsSortState.isDec else uiState.folderSortState.isDec,
-                            sortType = if (uiState.currentTabBarPosition == TabBarModel.All) uiState.songsSortState.sortType else uiState.folderSortState.sortType,
-                            onClick = { homeViewModel.onEvent(HomeUiEvent.ShowSortDropDownMenu) },
+                            onOrderClick = {
+                                homeViewModel.onEvent(HomeUiEvent.UpdateSortOrder(uiState.currentTabBarPosition))
+                            },
                             onDismissDropDownMenu = { homeViewModel.onEvent(HomeUiEvent.HideSortDropDownMenu) },
+                            onClick = { homeViewModel.onEvent(HomeUiEvent.ShowSortDropDownMenu) },
                         )
                     }
                 },
@@ -134,7 +126,7 @@ fun SharedTransitionScope.HomeMusic(
                 .consumeWindowInsets(paddingValue),
         ) {
             CategorySection(
-                modifier = modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 currentTabState = uiState.currentTabBarPosition,
                 onTabClick = { tabBar, _ ->
                     homeViewModel.onEvent(HomeUiEvent.UpdateTabBarPosition(tabBar))
@@ -165,7 +157,7 @@ fun SharedTransitionScope.HomeMusic(
                                     modifier = Modifier.fillMaxSize(),
                                     state = listStates[page],
                                     contentPadding = PaddingValues(
-                                        bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + if (currentPlayerMediaId.isNotEmpty()) LocalMiniPlayerHeight.current else 0.dp,
+                                        bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + if (uiState.playerStateModel.currentMediaInfo.musicID.isNotEmpty()) LocalMiniPlayerHeight.current else 0.dp,
                                     ),
                                 ) {
                                     itemsIndexed(
@@ -174,9 +166,9 @@ fun SharedTransitionScope.HomeMusic(
                                     ) { index, item ->
                                         MusicMediaItem(
                                             item = item,
-                                            currentMediaId = currentPlayerMediaId,
+                                            currentMediaId = uiState.playerStateModel.currentMediaInfo.musicID,
                                             onItemClick = { onMusicClick(index, list) },
-                                            isPlaying = isPlaying,
+                                            isPlaying = uiState.playerStateModel.isPlaying,
                                         )
                                     }
                                 }
@@ -189,7 +181,7 @@ fun SharedTransitionScope.HomeMusic(
                                     state = listStates[page],
                                     modifier = Modifier.fillMaxSize(),
                                     contentPadding = PaddingValues(
-                                        bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + if (currentPlayerMediaId.isNotEmpty()) LocalMiniPlayerHeight.current else 0.dp,
+                                        bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + if (uiState.playerStateModel.currentMediaInfo.musicID.isNotEmpty()) LocalMiniPlayerHeight.current else 0.dp,
                                     ),
                                 ) {
                                     items(

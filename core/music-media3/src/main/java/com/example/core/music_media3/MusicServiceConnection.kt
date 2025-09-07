@@ -9,22 +9,26 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.example.core.model.ActiveMusicInfo
 import com.example.core.model.MusicModel
+import com.example.core.model.PlayerStateModel
 import com.example.core.music_media3.mapper.toActiveMusicInfo
 import com.example.core.music_media3.mapper.toMediaItem
 import com.example.core.music_media3.mapper.toMusicModel
-import com.example.core.music_media3.model.PlayerStateModel
 import com.google.common.util.concurrent.ListenableFuture
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 
 class MusicServiceConnection(
     private var context: Context,
 ) {
     private var factory: ListenableFuture<MediaController>? = null
     private var mediaController: MediaController? = null
-    private var _playerState = MutableStateFlow(PlayerStateModel.Empty)
+    private var _playerState = MutableStateFlow(PlayerStateModel.Initial)
     var playerState: StateFlow<PlayerStateModel> = _playerState.asStateFlow()
 
     private var _currentArtworkPagerIndex = MutableStateFlow(0)
@@ -67,7 +71,15 @@ class MusicServiceConnection(
         }
     }
 
-    fun currentPlayerPosition() = mediaController?.currentPosition ?: 0L
+    val currentPlayerPosition = flow {
+        while (currentCoroutineContext().isActive) {
+            if (mediaController?.isPlaying ?: false) {
+                val position = mediaController?.currentPosition ?: 0L
+                emit(position)
+            }
+            delay(80L)
+        }
+    }
 
     fun pauseMusic() = mediaController?.pause()
 

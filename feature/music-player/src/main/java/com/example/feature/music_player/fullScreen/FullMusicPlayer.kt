@@ -9,7 +9,7 @@ import androidx.window.core.layout.WindowHeightSizeClass
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.model.ActiveMusicInfo
 import com.example.core.model.MusicModel
-import com.example.core.music_media3.model.PlayerStateModel
+import com.example.core.model.PlayerStateModel
 import com.example.feature.music_player.PlayerActions
 import com.example.feature.music_player.fullScreen.component.LandscapeLayout
 import com.example.feature.music_player.fullScreen.component.PortraitLayout
@@ -21,8 +21,8 @@ fun FullMusicPlayer(
     modifier: Modifier,
     repeatMode: Int,
     currentPagerPage: Int,
-    playerStateModel: () -> PlayerStateModel,
-    currentMusicPosition: () -> Long,
+    currentPlayerState: PlayerStateModel,
+    currentMusicPosition: Long,
     isFavorite: Boolean,
     pagerMusicList: ImmutableList<MusicModel>,
     onBack: () -> Unit,
@@ -37,7 +37,7 @@ fun FullMusicPlayer(
         modifier = modifier,
         repeatMode = repeatMode,
         currentPagerPage = currentPagerPage,
-        playerStateModel = playerStateModel,
+        playerStateModel = currentPlayerState,
         currentMusicPosition = currentMusicPosition,
         isFavorite = isFavorite,
         pagerMusicList = pagerMusicList,
@@ -56,8 +56,8 @@ private fun ExpandedMusicPlayer(
     modifier: Modifier = Modifier,
     repeatMode: Int,
     currentPagerPage: Int,
-    playerStateModel: () -> PlayerStateModel,
-    currentMusicPosition: () -> Long,
+    playerStateModel: PlayerStateModel,
+    currentMusicPosition: Long,
     isFavorite: Boolean,
     pagerMusicList: ImmutableList<MusicModel>,
     onBack: () -> Unit,
@@ -118,7 +118,7 @@ private fun FullScreenPreview() {
         FullMusicPlayer(
             modifier = Modifier,
             isFavorite = false,
-            playerStateModel = {
+            currentPlayerState =
                 PlayerStateModel(
                     currentMediaInfo = ActiveMusicInfo(
                         title = "Example Music name.mp3",
@@ -135,10 +135,9 @@ private fun FullScreenPreview() {
                     isPlaying = false,
                     isBuffering = false,
                     repeatMode = 0,
-                )
-            },
+                ),
             repeatMode = 0,
-            currentMusicPosition = { 10000L },
+            currentMusicPosition = 10000L,
             currentPagerPage = 0,
             pagerMusicList = persistentListOf(MusicModel.Dummy),
             onBack = {},

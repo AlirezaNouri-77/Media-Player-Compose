@@ -10,7 +10,7 @@ import android.os.Build
 import android.util.Size
 import androidx.core.graphics.scale
 import androidx.palette.graphics.Palette
-import com.example.core.domain.respository.MusicThumbnailUtilImpl
+import com.example.core.common.MusicThumbnailUtilImpl
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll

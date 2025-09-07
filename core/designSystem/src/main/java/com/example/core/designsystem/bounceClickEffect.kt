@@ -1,7 +1,8 @@
 package com.example.core.designsystem
 
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,7 +10,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 
 @Composable
@@ -19,14 +19,14 @@ fun Modifier.bounceClickEffect(): Modifier {
 
     return this
         .pointerInput(Unit) { // The 'key1 = Unit' means this doesn't restart often
-            awaitEachGesture {
-                while (true) {
-                    val event = awaitPointerEvent()
-                    // consume all changes
-                    isPressed = event.type == PointerEventType.Press
-                    event.changes.forEach { it.consume() }
-                }
-            }
+            detectTapGestures(
+                onLongPress = {
+                    Log.d("TAG12", "onPress")
+                },
+                onPress = {
+                    Log.d("TAG12", "onPress")
+                },
+            )
         }
         .graphicsLayer {
             this.scaleX = this.scaleX * scale
