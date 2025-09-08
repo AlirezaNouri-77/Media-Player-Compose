@@ -26,7 +26,6 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.navigation.NavHostController
@@ -49,6 +48,7 @@ fun BottomSheetContent(
     isVisible: Boolean,
     currentMusicState: PlayerStateModel,
     playerViewModel: PlayerViewModel,
+    artworkDominateColor: Int,
     currentMusicPlayerPosition: Long,
     currentArtworkPagerIndex: Int,
     currentDeviceVolume: Int,
@@ -57,9 +57,8 @@ fun BottomSheetContent(
     bottomSheetSwapFraction: () -> Float,
 ) {
     val musicArtWorkColorAnimation by animateColorAsState(
-        // targetValue = Color(playerViewModel.musicArtworkColorPalette),
-        targetValue = Color(Color.Red.toArgb()),
-        animationSpec = tween(durationMillis = 160, delayMillis = 80, easing = LinearEasing),
+        targetValue = Color(artworkDominateColor),
+        animationSpec = tween(durationMillis = 150, delayMillis = 90, easing = LinearEasing),
         label = "",
     )
     val coroutineScope = rememberCoroutineScope()

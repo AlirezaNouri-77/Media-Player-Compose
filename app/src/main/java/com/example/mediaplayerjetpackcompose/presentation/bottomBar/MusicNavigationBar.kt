@@ -39,7 +39,7 @@ fun MusicNavigationBar(
     AnimatedVisibility(
         visible = isVisible,
         enter = fadeIn(tween(200, delayMillis = 90)) + slideInVertically(
-            animationSpec = tween(200, 250),
+            animationSpec = tween(200, 90),
             initialOffsetY = { int -> int / 2 },
         ),
         exit = slideOutVertically(

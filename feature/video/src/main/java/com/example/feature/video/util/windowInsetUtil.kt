@@ -11,7 +11,8 @@ fun hideSystemBars(window: Window?) {
 
     insetsController.apply {
         systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        hide(WindowInsetsCompat.Type.systemBars())
+        hide(WindowInsetsCompat.Type.navigationBars())
+        hide(WindowInsetsCompat.Type.statusBars())
     }
 }
 
@@ -21,6 +22,7 @@ fun showSystemBars(window: Window?) {
 
     insetsController.apply {
         systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
-        show(WindowInsetsCompat.Type.systemBars())
+        show(WindowInsetsCompat.Type.navigationBars())
+        show(WindowInsetsCompat.Type.statusBars())
     }
 }

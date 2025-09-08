@@ -34,7 +34,7 @@ class PlayerViewModel(
     )
 
     private fun observePlayerStates() {
-        deviceVolumeManager.currentMusicLevelVolume.onEach {
+        deviceVolumeManager.volumeChangeListener().onEach {
             _uiState.update { uiState -> uiState.copy(currentDeviceVolume = it) }
         }.launchIn(viewModelScope)
         musicServiceConnection.currentArtworkPagerIndex.onEach {
@@ -76,7 +76,10 @@ class PlayerViewModel(
         }
     }
 
-    fun setDeviceVolume(volume: Float) = deviceVolumeManager.setVolume(volume)
+    fun setDeviceVolume(volume: Float) {
+        deviceVolumeManager.setVolume(volume)
+        _uiState.update { it.copy(currentDeviceVolume = volume.toInt()) }
+    }
 
     fun getMaxDeviceVolume(): Int = deviceVolumeManager.getMaxVolume()
 
@@ -101,6 +104,6 @@ class PlayerViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        deviceVolumeManager.unRegisterContentObserver()
+        // deviceVolumeManager.unRegisterContentObserver()
     }
 }

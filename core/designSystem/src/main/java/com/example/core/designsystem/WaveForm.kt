@@ -74,7 +74,7 @@ fun WaveForm(
                     animatable[index].stop()
                     animatable[index].animateTo(
                         targetValue = 0f,
-                        animationSpec = tween(150, 80),
+                        animationSpec = tween(350, 80, LinearEasing),
                     )
                 }
             }
@@ -91,8 +91,14 @@ fun WaveForm(
                 if (index == lineCount || index == 1) continue
                 drawLine(
                     color = waveColor.copy(alpha = 0.7f),
-                    start = Offset(x = index * (lineWidth + lineSpace), y = halfHeight + animatable[index].value),
-                    end = Offset(x = index * (lineWidth + lineSpace), y = halfHeight - animatable[index].value),
+                    start = Offset(
+                        x = index * (lineWidth + lineSpace),
+                        y = halfHeight + animatable[index].value,
+                    ),
+                    end = Offset(
+                        x = index * (lineWidth + lineSpace),
+                        y = halfHeight - animatable[index].value,
+                    ),
                     strokeWidth = lineWidth,
                     cap = StrokeCap.Round,
                 )

@@ -154,6 +154,7 @@ fun MainNavGraph() {
                         bottomSheetScaffoldState = bottomSheetScaffoldState,
                         pagerThumbnailList = uiState.thumbnailsList,
                         bottomSheetSwapFraction = { bottomSheetSwapFraction },
+                        artworkDominateColor = uiState.thumbnailDominantColor,
                     )
                 },
                 sheetContainerColor = Color.Transparent,
