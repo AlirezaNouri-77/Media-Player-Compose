@@ -30,4 +30,4 @@
 ### Demo
 video size ~9MB
 
-https://github.com/user-attachments/assets/0c0ea8dd-b467-4ef7-9b4c-40647ece9445
+https://github.com/user-attachments/assets/abbde5f5-78aa-4ac9-be22-d3223e37ecfc
