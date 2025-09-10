@@ -42,7 +42,6 @@ fun SongDetail(
             color = Color.White,
             maxLines = 1,
         )
-
         Text(
             modifier = Modifier
                 .clickable { clickOnArtist(currentPlayerStateModel.currentMediaInfo.artist) },

@@ -5,7 +5,6 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
 import androidx.core.net.toUri
 import com.example.core.domain.respository.MusicRepositoryImpl
 import com.example.core.model.MusicModel
@@ -16,10 +15,6 @@ import java.util.concurrent.TimeUnit
 class MusicRepository(
     private var context: Context,
 ) : MusicRepositoryImpl {
-    init {
-        Log.d("TAG4124", "version" + MediaStore.getVersion(context))
-    }
-
     override fun getSongs(): Flow<List<MusicModel>> {
         return channelFlow {
             val resultList = buildList {
@@ -64,7 +59,7 @@ class MusicRepository(
                             } else {
                                 0
                             }
-                        val size = sizeColumn.let { cursor.getLong(it) }
+                        val size = sizeColumn.let { cursor.getString(it) }
                         val artist = artistColumn.let { cursor.getString(it) }
                         val album = albumColumn.let { cursor.getString(it) }
                         val folderName = folderNameColumn.let { cursor.getString(it) }
@@ -81,7 +76,7 @@ class MusicRepository(
                                 mimeTypes = mimeType,
                                 name = name,
                                 duration = duration,
-                                size = size,
+                                size = size.toLong(),
                                 artworkUri = albumArtUri.toString(),
                                 bitrate = bitrate,
                                 artist = artist,

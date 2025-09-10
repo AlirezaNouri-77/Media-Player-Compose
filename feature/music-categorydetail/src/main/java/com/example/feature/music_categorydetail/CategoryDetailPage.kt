@@ -113,8 +113,8 @@ fun SharedTransitionScope.CategoryDetailPage(
                             )
                             drawRect(
                                 Brush.verticalGradient(
-                                    0.3f to Color.Black.copy(alpha = 0.5f),
-                                    1f to Color.Transparent,
+                                    0.3f to Color.Transparent,
+                                    1f to Color.Black.copy(0.6f),
                                     startY = this.size.height,
                                     endY = 0f,
                                 ),
@@ -136,6 +136,7 @@ fun SharedTransitionScope.CategoryDetailPage(
                                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                                 contentDescription = "",
                                 modifier = Modifier.size(35.dp),
+                                tint = Color.White,
                             )
                         }
                     },

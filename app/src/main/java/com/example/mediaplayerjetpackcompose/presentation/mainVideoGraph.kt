@@ -41,7 +41,6 @@ fun NavGraphBuilder.mainVideoGraph(
         composable<VideoTopLevelDestination.VideoPlayer> {
             val videoViewModel: VideoViewModel = koinViewModel()
             VideoPlayer(
-                videoUri = "",
                 videoViewModel = videoViewModel,
                 onBack = navController::popBackStack,
             )

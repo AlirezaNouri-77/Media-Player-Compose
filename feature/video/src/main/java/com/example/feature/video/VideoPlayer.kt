@@ -40,7 +40,7 @@ import com.example.feature.video.util.showSystemBars
 @OptIn(UnstableApi::class)
 @Composable
 fun VideoPlayer(
-    videoUri: String,
+    videoUri: String = "",
     videoViewModel: VideoViewModel,
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     onBack: () -> Unit = {},
@@ -127,6 +127,7 @@ fun VideoPlayer(
     AnimatedVisibility(
         visible = uiState.isVideoPlayerOverlayControllerVisible,
         modifier = Modifier
+            .fillMaxSize()
             .statusBarsPadding()
             .navigationBarsPadding(),
     ) {

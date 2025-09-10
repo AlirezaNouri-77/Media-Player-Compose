@@ -6,12 +6,9 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -120,9 +117,7 @@ fun MainNavGraph() {
         bottomBar = {
             MusicNavigationBar(
                 isVisible = isInMusicScreen && windowSize.windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT,
-                modifier = Modifier.onGloballyPositioned {
-                    bottomBarHeight = it.size.height
-                },
+                modifier = Modifier.onGloballyPositioned { bottomBarHeight = it.size.height },
                 navController = navController,
                 navigateTo = { navController.navigationBarNavigate(backStackEntry, it) },
                 bottomBarGradientColor = bottomBarGradientColor,
@@ -136,12 +131,15 @@ fun MainNavGraph() {
             LocalMiniPlayerHeight provides MiniPlayerHeight,
         ) {
             BottomSheetScaffold(
-                modifier = Modifier
-                    .padding(top = innerPadding.calculateTopPadding())
-                    .consumeWindowInsets(innerPadding),
+                modifier = Modifier,
                 scaffoldState = bottomSheetScaffoldState,
                 sheetDragHandle = {},
                 sheetPeekHeight = innerPadding.calculateBottomPadding() + if (uiState.currentPlayerState.currentMediaInfo.musicID.isNotEmpty()) LocalMiniPlayerHeight.current else 0.dp,
+                sheetContainerColor = Color.Transparent,
+                containerColor = Color.Transparent,
+                sheetTonalElevation = 0.dp,
+                sheetShadowElevation = 0.dp,
+                sheetMaxWidth = Int.MAX_VALUE.dp,
                 sheetContent = {
                     BottomSheetContent(
                         navController = navController,
@@ -157,15 +155,10 @@ fun MainNavGraph() {
                         artworkDominateColor = uiState.thumbnailDominantColor,
                     )
                 },
-                sheetContainerColor = Color.Transparent,
-                containerColor = Color.Transparent,
-                sheetTonalElevation = 0.dp,
-                sheetShadowElevation = 0.dp,
-                sheetMaxWidth = Int.MAX_VALUE.dp,
-            ) { bottomSheetScaffoldPadding ->
-                Row(Modifier.navigationBarsPadding()) {
+            ) {
+                Row {
                     NavigationRailComponent(
-                        isVisible = windowSize.windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.COMPACT,
+                        isVisible = windowSize.windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.COMPACT && isInMusicScreen,
                         navController = navController,
                         onClick = { navController.navigationBarNavigate(backStackEntry, it) },
                     )

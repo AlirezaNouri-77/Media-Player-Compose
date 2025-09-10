@@ -37,9 +37,10 @@ fun VideoPage(
     onRefreshVideoList: () -> Unit,
     onPlay: (Int, List<VideoModel>) -> Unit,
     onBack: () -> Unit,
-    context: Context = LocalContext.current,
-    activity: Activity? = LocalActivity.current,
 ) {
+    val context: Context = LocalContext.current
+    val activity: Activity? = LocalActivity.current
+
     val activityResultApi34 = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
         onRefreshVideoList()
     }
@@ -59,10 +60,7 @@ fun VideoPage(
 
                     if (isPermissionsGrant) {
                         if (Constant.videoPermission.all {
-                                context.shouldShowPermissionRationale(
-                                    it,
-                                    activity,
-                                )
+                                context.shouldShowPermissionRationale(it, activity)
                             }
                         ) {
                             activityResultApi34.launch(Constant.videoPermission)

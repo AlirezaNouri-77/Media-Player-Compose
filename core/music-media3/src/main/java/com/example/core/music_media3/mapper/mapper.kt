@@ -9,7 +9,9 @@ import com.example.core.model.ActiveMusicInfo
 import com.example.core.model.MusicModel
 
 fun MusicModel.toMediaItem() =
-    MediaItem.Builder().setMediaId(this.musicId.toString()).setUri(this.uri)
+    MediaItem.Builder()
+        .setMediaId(this.musicId.toString())
+        .setUri(this.uri)
         .setMediaMetadata(
             MediaMetadata.Builder()
                 .setTitle(this.name)
@@ -33,7 +35,7 @@ fun MediaItem.toMusicModel() = MusicModel(
     mimeTypes = (this.localConfiguration?.mimeType ?: Uri.EMPTY).toString(),
     name = (this.mediaMetadata.title ?: "None").toString(),
     duration = this.mediaMetadata.extras?.getLong(MEDIAMETADATA_BUNDLE_DURATION_KEY) ?: 0L,
-    size = this.mediaMetadata.extras?.getLong(MEDIAMETADATA_BUNDLE_DURATION_KEY) ?: 0L,
+    size = this.mediaMetadata.extras?.getLong(MEDIAMETADATA_BUNDLE_SIZE_KEY) ?: 0L,
     artworkUri = (this.mediaMetadata.artworkUri ?: Uri.EMPTY).toString(),
     bitrate = this.mediaMetadata.extras?.getInt(MEDIAMETADATA_BUNDLE_BITRATE_KEY) ?: 0,
     artist = (this.mediaMetadata.artist ?: "None").toString(),
@@ -52,12 +54,12 @@ fun MediaItem.toActiveMusicInfo() = ActiveMusicInfo(
     album = this.mediaMetadata.albumTitle.toString(),
     duration = this.mediaMetadata.extras?.getLong(MEDIAMETADATA_BUNDLE_DURATION_KEY) ?: 0L,
     bitrate = this.mediaMetadata.extras?.getInt(MEDIAMETADATA_BUNDLE_BITRATE_KEY) ?: 0,
-    size = this.mediaMetadata.extras?.getLong(MEDIAMETADATA_BUNDLE_DURATION_KEY) ?: 0L,
+    size = this.mediaMetadata.extras?.getLong(MEDIAMETADATA_BUNDLE_SIZE_KEY) ?: 0L,
     isFavorite = this.mediaMetadata.extras?.getBoolean(MEDIAMETADATA_BUNDLE_ISFAVORITE_KEY) ?: false,
 )
 
 const val MEDIAMETADATA_BUNDLE_DURATION_KEY = "Duration"
 const val MEDIAMETADATA_BUNDLE_BITRATE_KEY = "Bitrate"
 const val MEDIAMETADATA_BUNDLE_SIZE_KEY = "Size"
-const val MEDIAMETADATA_BUNDLE_ISFAVORITE_KEY = "Size"
+const val MEDIAMETADATA_BUNDLE_ISFAVORITE_KEY = "Favorite"
 const val MEDIAMETADATA_BUNDLE_FOLDER_KEY = "Folder"

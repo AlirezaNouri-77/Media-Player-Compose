@@ -61,7 +61,7 @@ fun PlayerControllerLayout(
             modifier = Modifier
                 .fillMaxWidth(0.9f)
                 .align(Alignment.TopCenter),
-            onBack = { onBackClick() },
+            onBack = onBackClick,
             title = currentPlayerState.currentMediaInfo.title,
         )
         BottomSection(
@@ -69,15 +69,15 @@ fun PlayerControllerLayout(
                 .fillMaxWidth(0.9f)
                 .align(Alignment.BottomCenter),
             previewSlider = previewSlider(),
-            onSeekToPrevious = { onSeekToPrevious() },
-            onSeekToNext = { onSeekToNext() },
-            onPausePlayer = { onPausePlayer() },
-            onResumePlayer = { onResumePlayer() },
-            onSeekToPosition = { onSeekToPosition(it) },
-            playerResizeModeChange = { playerResizeModeChange() },
+            onSeekToPrevious = onSeekToPrevious,
+            onSeekToNext = onSeekToNext,
+            onPausePlayer = onPausePlayer,
+            onResumePlayer = onResumePlayer,
+            onSeekToPosition = onSeekToPosition,
+            playerResizeModeChange = playerResizeModeChange,
             currentPlayerState = { currentPlayerState },
             currentPlayerPosition = { currentPlayerPosition },
-            playerResizeMode = { playerResizeMode() },
+            playerResizeMode = playerResizeMode,
             getPreviewSlider = getPreviewSlider,
         )
     }
@@ -101,7 +101,7 @@ private fun BottomSection(
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(15.dp),
+        shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.Black.copy(alpha = 0.5f),
             contentColor = Color.White,
