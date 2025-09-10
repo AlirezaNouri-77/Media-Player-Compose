@@ -17,10 +17,15 @@
 - **ViewModel:** Intermediary between Model and View, handling user interactions and updating the Model.
 
 ### Screenshot
-<img src="https://github.com/user-attachments/assets/7a43a174-6878-4f32-8044-a00d5c10b65c" width="200" height="400">
-<img src="https://github.com/user-attachments/assets/a7301888-7343-4dd5-86ba-9b76f18f6e48" width="200" height="400">
-<img src="https://github.com/user-attachments/assets/8a8e75c6-3dd5-439c-994f-1efde0429997" width="200" height="400">
-<img src="https://github.com/user-attachments/assets/a2ab8e95-c690-41fe-ae64-0d6b1d0d17c2" width="200" height="400">
+<img src="https://github.com/user-attachments/assets/e0a2c242-deaa-43cb-8194-da6a3196aaad" width="200" height="400">
+<img src="https://github.com/user-attachments/assets/c0a59e31-d1b9-4b5e-98bd-a6d8f4c9080c" width="200" height="400">
+<img src="https://github.com/user-attachments/assets/cab40948-bdfc-4933-87f2-d77ab2ddd401" width="200" height="400">
+<img src="https://github.com/user-attachments/assets/7e587b92-22b9-461a-b5e3-e2168c4af367" width="200" height="400">
+<img src="https://github.com/user-attachments/assets/7c4d5f91-0cf7-49ca-95ef-4069ce08aa52" width="200" height="400">
+<img src="https://github.com/user-attachments/assets/acace736-3775-4aff-95d1-78b78614f4f8" width="200" height="400">
+<img src="https://github.com/user-attachments/assets/f238e37e-d93e-41d1-8953-7db03d71ee34" width="400" height="400">
+<img src="https://github.com/user-attachments/assets/ae7a29b4-45df-43a9-8494-b8855580d3b9" width="400" height="400">
+<img src="https://github.com/user-attachments/assets/0b5a77c0-d518-4b8b-bdab-9b863a6409c2" width="400" height="400">
 
 ### Demo
 video size ~9MB
