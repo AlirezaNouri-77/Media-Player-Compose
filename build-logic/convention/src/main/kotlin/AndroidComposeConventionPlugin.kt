@@ -1,6 +1,7 @@
 import com.android.build.gradle.LibraryExtension
 import configuration.configComposeMetric
 import configuration.getLibs
+import configuration.setupAndroidSdkConfig
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply

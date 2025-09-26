@@ -1,3 +1,5 @@
+@file:kotlin.OptIn(ExperimentalLayoutApi::class)
+
 package com.example.feature.video
 
 import androidx.activity.compose.BackHandler
@@ -7,9 +9,12 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.navigationBarsIgnoringVisibility
+import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -21,9 +26,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.core.net.toUri
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
@@ -37,7 +41,7 @@ import com.example.feature.video.model.VideoPlayerOverlayState
 import com.example.feature.video.util.hideSystemBars
 import com.example.feature.video.util.showSystemBars
 
-@OptIn(UnstableApi::class)
+@OptIn(UnstableApi::class, ExperimentalLayoutApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun VideoPlayer(
     videoUri: String = "",
@@ -56,23 +60,19 @@ fun VideoPlayer(
         onBack()
     }
 
-    LaunchedEffect(uiState.isVideoPlayerOverlayControllerVisible) {
-        if (uiState.isVideoPlayerOverlayControllerVisible) showSystemBars(window) else hideSystemBars(window)
+    DisposableEffect(Unit) {
+        hideSystemBars(window)
+        onDispose {
+            showSystemBars(window)
+        }
     }
 
-    DisposableEffect(key1 = lifecycleOwner, effect = {
-        val observe = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_START -> videoViewModel.resumePlayer()
-                Lifecycle.Event.ON_STOP -> videoViewModel.pausePlayer()
-                else -> {}
-            }
+    LifecycleStartEffect(Unit) {
+        videoViewModel.resumePlayer()
+        onStopOrDispose {
+            videoViewModel.pausePlayer()
         }
-        lifecycleOwner.lifecycle.addObserver(observe)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observe)
-        }
-    })
+    }
 
     BackHandler {
         onBack()
@@ -128,8 +128,8 @@ fun VideoPlayer(
         visible = uiState.isVideoPlayerOverlayControllerVisible,
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding()
-            .navigationBarsPadding(),
+            .windowInsetsPadding(WindowInsets.statusBarsIgnoringVisibility)
+            .windowInsetsPadding(WindowInsets.navigationBarsIgnoringVisibility),
     ) {
         PlayerControllerLayout(
             playerResizeMode = { playerContentScale.value },

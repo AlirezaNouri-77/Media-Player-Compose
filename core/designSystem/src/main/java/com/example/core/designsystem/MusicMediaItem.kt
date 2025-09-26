@@ -33,14 +33,17 @@ import androidx.core.net.toUri
 import com.example.core.common.util.convertMilliSecondToTime
 import com.example.core.common.util.removeFileExtension
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.example.core.model.MusicModel
 
 @Composable
 fun MusicMediaItem(
-    item: MusicModel,
+    musicId: Long,
+    artworkUri: String,
+    name: String,
+    artist: String,
+    duration: Long,
+    isFavorite: Boolean,
     currentMediaId: String,
-    isPlaying: Boolean,
-    contentColor: Color = MaterialTheme.colorScheme.onPrimary,
+    isPlaying: () -> Boolean,
     onItemClick: () -> Unit,
 ) {
     Box(
@@ -49,7 +52,7 @@ fun MusicMediaItem(
             .clickable { onItemClick.invoke() }
             .padding(horizontal = 4.dp)
             .background(
-                color = if (currentMediaId == item.musicId.toString()) {
+                color = if (currentMediaId == musicId.toString()) {
                     MaterialTheme.colorScheme.onPrimary.copy(
                         alpha = 0.2f,
                     )
@@ -66,20 +69,20 @@ fun MusicMediaItem(
         ) {
             Box(contentAlignment = Alignment.Companion.Center) {
                 MusicThumbnail(
-                    uri = item.artworkUri.toUri(),
+                    uri = artworkUri.toUri(),
                     modifier = Modifier.Companion
                         .size(size = 55.dp)
                         .clip(androidx.compose.foundation.shape.RoundedCornerShape(5.dp))
-                        .then(if (currentMediaId == item.musicId.toString()) Modifier.Companion.blur(5.dp) else Modifier.Companion)
+                        .then(if (currentMediaId == musicId.toString()) Modifier.Companion.blur(5.dp) else Modifier.Companion)
                         .background(color = MaterialTheme.colorScheme.primary),
                 )
-                if (currentMediaId == item.musicId.toString()) {
+                if (currentMediaId == musicId.toString()) {
                     WaveForm(
                         modifier = Modifier.Companion
                             .clip(androidx.compose.foundation.shape.RoundedCornerShape(5.dp))
                             .background(color = Color.Companion.Black.copy(alpha = 0.4f)),
                         size = 55.dp,
-                        enable = isPlaying,
+                        enable = isPlaying(),
                     )
                 }
             }
@@ -94,19 +97,19 @@ fun MusicMediaItem(
             ) {
                 Text(
                     modifier = Modifier.Companion.fillMaxWidth(),
-                    text = item.name.removeFileExtension(),
+                    text = name.removeFileExtension(),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Companion.Medium,
                     maxLines = 1,
-                    color = contentColor,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     overflow = TextOverflow.Companion.Ellipsis,
                     softWrap = true,
                 )
                 Text(
                     modifier = Modifier.Companion.fillMaxWidth(),
-                    text = item.artist,
+                    text = artist,
                     fontSize = 16.sp,
-                    color = contentColor,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Companion.Normal,
                     maxLines = 1,
                 )
@@ -118,16 +121,16 @@ fun MusicMediaItem(
             ) {
                 Text(
                     modifier = Modifier.Companion.fillMaxWidth(),
-                    text = item.duration.convertMilliSecondToTime(),
-                    color = contentColor,
+                    text = duration.convertMilliSecondToTime(),
+                    color = MaterialTheme.colorScheme.onPrimary,
                     textAlign = TextAlign.Companion.End,
                 )
-                if (item.isFavorite) {
+                if (isFavorite) {
                     Icon(
                         imageVector = Icons.Default.Favorite,
                         contentDescription = "",
                         modifier = Modifier.Companion.size(15.dp),
-                        tint = contentColor,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 }
             }
@@ -140,23 +143,15 @@ fun MusicMediaItem(
 private fun PreviewMusicMediaItem() {
     MediaPlayerJetpackComposeTheme {
         MusicMediaItem(
-            item = MusicModel(
-                musicId = 9586,
-                uri = "",
-                path = "",
-                mimeTypes = "",
-                name = "Example Music",
-                duration = 1000000,
-                size = 1233300,
-                artworkUri = "",
-                bitrate = 1280000,
-                artist = "Example Artist",
-                album = "Example",
-                folderName = "",
-            ),
-            isPlaying = false,
+            musicId = 9586,
+            name = "Example Music",
+            duration = 1000000,
+            artworkUri = "",
+            artist = "Example Artist",
+            isPlaying = { false },
             currentMediaId = "",
             onItemClick = {},
+            isFavorite = true,
         )
     }
 }

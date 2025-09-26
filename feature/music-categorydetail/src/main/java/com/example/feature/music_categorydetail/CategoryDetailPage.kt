@@ -195,7 +195,9 @@ fun SharedTransitionScope.CategoryDetail(
     onBackClick: () -> Unit,
 ) {
     Row(
-        modifier = modifier.fillMaxSize().padding(8.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(8.dp),
         verticalAlignment = Alignment.Top,
     ) {
         Column(
@@ -249,12 +251,17 @@ fun SharedTransitionScope.CategoryDetail(
                 key = { _, item -> item.musicId },
             ) { index, item ->
                 MusicMediaItem(
-                    item = item,
                     currentMediaId = currentMusicId,
                     onItemClick = {
                         onMusicClick.invoke(index)
                     },
-                    isPlaying = isPlayerPlaying,
+                    isPlaying = { isPlayerPlaying },
+                    musicId = item.musicId,
+                    artworkUri = item.artworkUri,
+                    name = item.name,
+                    artist = item.artist,
+                    duration = item.duration,
+                    isFavorite = item.isFavorite,
                 )
             }
         }
@@ -342,12 +349,17 @@ fun SharedTransitionScope.CategoryDetailPortrait(
                     key = { _, item -> item.musicId },
                 ) { index, item ->
                     MusicMediaItem(
-                        item = item,
+                        musicId = item.musicId,
+                        artworkUri = item.artworkUri,
+                        name = item.name,
+                        artist = item.artist,
+                        duration = item.duration,
+                        isFavorite = item.isFavorite,
                         currentMediaId = currentMusicId,
                         onItemClick = {
-                            onMusicClick.invoke(index)
+                            onMusicClick
                         },
-                        isPlaying = isPlayerPlaying,
+                        isPlaying = { isPlayerPlaying },
                     )
                 }
             }

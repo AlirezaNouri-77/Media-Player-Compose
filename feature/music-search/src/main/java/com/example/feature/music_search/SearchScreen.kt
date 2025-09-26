@@ -111,10 +111,15 @@ fun SearchScreen(
                         key = { _, item -> item.musicId },
                     ) { index, item ->
                         MusicMediaItem(
-                            item = item,
+                            musicId = item.musicId,
+                            artworkUri = item.artworkUri,
+                            name = item.name,
+                            artist = item.artist,
+                            duration = item.duration,
+                            isFavorite = item.isFavorite,
                             currentMediaId = currentPlayerMediaId,
                             onItemClick = { onMusicClick(index, listItem) },
-                            isPlaying = currentPlayerPlayingState,
+                            isPlaying = { currentPlayerPlayingState },
                         )
                     }
                 }

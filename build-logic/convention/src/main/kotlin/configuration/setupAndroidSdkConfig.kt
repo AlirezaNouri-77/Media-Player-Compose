@@ -1,6 +1,6 @@
+package configuration
+
 import com.android.build.api.dsl.CommonExtension
-import configuration.configFlavor
-import configuration.getLibs
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
@@ -24,9 +24,9 @@ fun Project.setupAndroidSdkConfig(
         tasks.withType<KotlinJvmCompile>().all {
             compilerOptions {
                 jvmTarget.set(JvmTarget.JVM_11)
-                freeCompilerArgs.add(
-                    // Enable experimental coroutines APIs, including Flow
+                compilerOptions.freeCompilerArgs.addAll(
                     "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                    "-Xcontext-sensitive-resolution",
                 )
             }
         }

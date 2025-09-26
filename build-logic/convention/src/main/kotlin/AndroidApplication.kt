@@ -1,9 +1,9 @@
 import com.android.build.api.dsl.ApplicationExtension
 import configuration.MediaPlayerBuildType
 import configuration.configComposeMetric
+import configuration.setupAndroidSdkConfig
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 
 class AndroidApplication: Plugin<Project> {

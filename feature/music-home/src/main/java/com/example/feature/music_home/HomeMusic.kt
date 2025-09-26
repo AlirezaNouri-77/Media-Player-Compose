@@ -165,10 +165,15 @@ fun SharedTransitionScope.HomeMusic(
                                         key = { _, item -> item.musicId },
                                     ) { index, item ->
                                         MusicMediaItem(
-                                            item = item,
+                                            musicId = item.musicId,
+                                            artworkUri = item.artworkUri,
+                                            name = item.name,
+                                            artist = item.artist,
+                                            duration = item.duration,
+                                            isFavorite = item.isFavorite,
                                             currentMediaId = uiState.playerStateModel.currentMediaInfo.musicID,
                                             onItemClick = { onMusicClick(index, list) },
-                                            isPlaying = uiState.playerStateModel.isPlaying,
+                                            isPlaying = { uiState.playerStateModel.isPlaying },
                                         )
                                     }
                                 }
