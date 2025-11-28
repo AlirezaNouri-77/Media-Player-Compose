@@ -1,10 +1,8 @@
 package com.example.feature.music_home
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -35,10 +33,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.designsystem.CategoryListItem
 import com.example.core.designsystem.EmptyPage
 import com.example.core.designsystem.Loading
-import com.example.core.designsystem.LocalMiniPlayerHeight
 import com.example.core.designsystem.LocalParentScaffoldPadding
 import com.example.core.designsystem.MainTopAppBar
+import com.example.core.designsystem.MiniPlayerHeight
 import com.example.core.designsystem.MusicMediaItem
+import com.example.core.designsystem.NavigationBottomBarHeight
 import com.example.core.designsystem.R
 import com.example.core.designsystem.Sort
 import com.example.core.model.MusicModel
@@ -54,13 +53,12 @@ import org.koin.androidx.compose.koinViewModel
     ExperimentalMaterial3Api::class,
 )
 @Composable
-fun SharedTransitionScope.HomeMusic(
-    homeViewModel: HomeViewModel = koinViewModel<HomeViewModel>(),
+fun HomeMusic(
     navigateToCategoryPage: (String) -> Unit,
     onNavigateToVideoScreen: () -> Unit,
     onMusicClick: (Int, List<MusicModel>) -> Unit,
-    animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
+    val homeViewModel: HomeViewModel = koinViewModel<HomeViewModel>()
     val pagerState = rememberPagerState(pageCount = { TabBarModel.entries.size })
 
     val uiState by homeViewModel.homeScreenUiState.collectAsStateWithLifecycle()
@@ -157,7 +155,7 @@ fun SharedTransitionScope.HomeMusic(
                                     modifier = Modifier.fillMaxSize(),
                                     state = listStates[page],
                                     contentPadding = PaddingValues(
-                                        bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + if (uiState.playerStateModel.currentMediaInfo.musicID.isNotEmpty()) LocalMiniPlayerHeight.current else 0.dp,
+                                        bottom = NavigationBottomBarHeight + if (uiState.playerStateModel.currentMediaInfo.musicID.isNotEmpty()) MiniPlayerHeight else 0.dp,
                                     ),
                                 ) {
                                     itemsIndexed(
@@ -186,7 +184,7 @@ fun SharedTransitionScope.HomeMusic(
                                     state = listStates[page],
                                     modifier = Modifier.fillMaxSize(),
                                     contentPadding = PaddingValues(
-                                        bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + if (uiState.playerStateModel.currentMediaInfo.musicID.isNotEmpty()) LocalMiniPlayerHeight.current else 0.dp,
+                                        bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + if (uiState.playerStateModel.currentMediaInfo.musicID.isNotEmpty()) MiniPlayerHeight else 0.dp,
                                     ),
                                 ) {
                                     items(
@@ -199,8 +197,8 @@ fun SharedTransitionScope.HomeMusic(
                                             onClick = { categoryName ->
                                                 navigateToCategoryPage(categoryName)
                                             },
-                                            sharedTransitionScope = this@HomeMusic,
-                                            animatedVisibilityScope = animatedVisibilityScope,
+                                            // sharedTransitionScope = this@HomeMusic,
+                                            //     animatedVisibilityScope = LocalAnimates,
                                         )
                                     }
                                 }

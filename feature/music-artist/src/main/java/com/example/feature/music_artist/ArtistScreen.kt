@@ -33,7 +33,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.designsystem.CategoryListItem
 import com.example.core.designsystem.EmptyPage
 import com.example.core.designsystem.Loading
-import com.example.core.designsystem.LocalParentScaffoldPadding
+import com.example.core.designsystem.MiniPlayerHeight
+import com.example.core.designsystem.NavigationBottomBarHeight
 import com.example.core.designsystem.R
 import com.example.core.designsystem.SortDropDownMenu
 import com.example.core.model.MusicModel
@@ -45,7 +46,6 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SharedTransitionScope.ArtistRoute(
-    modifier: Modifier = Modifier,
     artistViewModel: ArtistViewModel = koinViewModel<ArtistViewModel>(),
     animatedVisibilityScope: AnimatedVisibilityScope,
     navigateToCategory: (String) -> Unit,
@@ -138,7 +138,7 @@ fun SharedTransitionScope.ArtistScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding),
-                        contentPadding = PaddingValues(bottom = LocalParentScaffoldPadding.current.calculateBottomPadding()),
+                        contentPadding = PaddingValues(bottom = NavigationBottomBarHeight + MiniPlayerHeight),
                     ) {
                         items(
                             items = listItems,
@@ -150,8 +150,8 @@ fun SharedTransitionScope.ArtistScreen(
                                 onClick = { categoryName ->
                                     navigateToCategory(categoryName)
                                 },
-                                sharedTransitionScope = this@ArtistScreen,
-                                animatedVisibilityScope = animatedVisibilityScope,
+                                // sharedTransitionScope = this@ArtistScreen,
+                                //  animatedVisibilityScope = animatedVisibilityScope,
                             )
                         }
                     }

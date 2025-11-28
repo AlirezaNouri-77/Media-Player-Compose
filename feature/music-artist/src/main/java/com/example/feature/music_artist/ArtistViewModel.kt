@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.data.util.sortMusic
 import com.example.core.domain.respository.MusicSourceImpl
+import com.example.core.domain.useCase.GetMusicPlayerStateUseCase
 import com.example.core.model.datastore.CategorizedSortModel
 import com.example.core.model.datastore.CategorizedSortType
 import com.example.datastore.SortDataStoreManagerImpl
@@ -19,6 +20,7 @@ import kotlinx.coroutines.launch
 class ArtistViewModel(
     private var musicSource: MusicSourceImpl,
     private var artistSortDataStoreManager: SortDataStoreManagerImpl<CategorizedSortModel>,
+    private val getMusicPlayerStateUseCase: GetMusicPlayerStateUseCase,
 ) : ViewModel() {
     private var mUiState = MutableStateFlow(ArtistScreenUiState())
     val artistScreenUiState = mUiState
@@ -43,6 +45,12 @@ class ArtistViewModel(
     private fun getSortState() = viewModelScope.launch {
         artistSortDataStoreManager.sortState.collectLatest { sort ->
             mUiState.update { it.copy(sortState = sort) }
+        }
+    }
+
+    private fun observePlayerState() = viewModelScope.launch {
+        getMusicPlayerStateUseCase.invoke().collect { playerStateModel ->
+            mUiState.update { it.copy(isPlayerHasMediaItem = playerStateModel.currentMediaInfo.musicID.isNotEmpty()) }
         }
     }
 

@@ -53,6 +53,10 @@ dependencies {
 
     implementation(libs.androidx.navigation.compose)
 
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.viewmodel.navigation3)
+
     implementation(libs.jetbrains.kotlinx.immutableCollections)
     implementation(libs.jetbrains.kotlinx.serialization)
 

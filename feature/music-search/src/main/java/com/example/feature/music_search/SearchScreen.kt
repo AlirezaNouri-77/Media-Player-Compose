@@ -22,9 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.designsystem.EmptyPage
-import com.example.core.designsystem.LocalMiniPlayerHeight
-import com.example.core.designsystem.LocalParentScaffoldPadding
 import com.example.core.designsystem.MusicMediaItem
+import com.example.core.designsystem.getLazyColumnPadding
 import com.example.core.model.MusicModel
 import com.example.feature.music_search.component.SearchTextFieldSection
 import kotlinx.collections.immutable.ImmutableList
@@ -103,7 +102,7 @@ fun SearchScreen(
                     modifier = modifier
                         .fillMaxSize(),
                     contentPadding = PaddingValues(
-                        bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + LocalMiniPlayerHeight.current,
+                        bottom = getLazyColumnPadding(currentPlayerMediaId.isNotEmpty()),
                     ),
                 ) {
                     itemsIndexed(

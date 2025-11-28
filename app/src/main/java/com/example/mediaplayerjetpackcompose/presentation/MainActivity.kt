@@ -27,7 +27,8 @@ import com.example.feature.video.util.isPermissionGrant
 import com.example.feature.video.util.openSetting
 import com.example.mediaplayerjetpackcompose.presentation.component.CheckPermission
 import com.example.mediaplayerjetpackcompose.presentation.component.ShowMessage
-import com.example.mediaplayerjetpackcompose.presentation.navigation.MainNavGraph
+import com.example.mediaplayerjetpackcompose.presentation.navigation.NavMainGraph
+import com.example.mediaplayerjetpackcompose.presentation.navigation.VideoPlayer
 import com.example.mediaplayerjetpackcompose.presentation.util.Constant.musicPermission
 import org.koin.androidx.compose.koinViewModel
 
@@ -81,7 +82,7 @@ class MainActivity : ComponentActivity() {
                             when (permissionState) {
                                 PermissionState.Initial -> {}
 
-                                PermissionState.Grant -> MainNavGraph()
+                                PermissionState.Grant -> NavMainGraph()
 
                                 PermissionState.NotGrant -> {
                                     val activityResult =

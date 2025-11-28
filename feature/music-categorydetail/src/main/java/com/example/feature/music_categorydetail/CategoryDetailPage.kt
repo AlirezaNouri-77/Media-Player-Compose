@@ -50,10 +50,10 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.example.core.designsystem.LocalMiniPlayerHeight
-import com.example.core.designsystem.LocalParentScaffoldPadding
+import com.example.core.designsystem.MiniPlayerHeight
 import com.example.core.designsystem.MusicMediaItem
 import com.example.core.designsystem.MusicThumbnail
+import com.example.core.designsystem.NavigationBottomBarHeight
 import com.example.core.model.MusicModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
@@ -243,7 +243,7 @@ fun SharedTransitionScope.CategoryDetail(
         LazyColumn(
             contentPadding = PaddingValues(
                 top = 10.dp,
-                bottom = if (currentMusicId.isNotEmpty()) LocalMiniPlayerHeight.current else 0.dp,
+                bottom = NavigationBottomBarHeight + MiniPlayerHeight,
             ),
         ) {
             itemsIndexed(
@@ -341,7 +341,7 @@ fun SharedTransitionScope.CategoryDetailPortrait(
             LazyColumn(
                 contentPadding = PaddingValues(
                     top = 10.dp,
-                    bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + if (currentMusicId.isNotEmpty()) LocalMiniPlayerHeight.current else 0.dp,
+                    bottom = NavigationBottomBarHeight + MiniPlayerHeight,
                 ),
             ) {
                 itemsIndexed(

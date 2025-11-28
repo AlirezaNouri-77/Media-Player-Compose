@@ -28,6 +28,7 @@ class MusicServiceConnection(
 ) {
     private var factory: ListenableFuture<MediaController>? = null
     private var mediaController: MediaController? = null
+
     private var _playerState = MutableStateFlow(PlayerStateModel.Initial)
     var playerState: StateFlow<PlayerStateModel> = _playerState.asStateFlow()
 

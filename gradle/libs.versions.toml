@@ -36,13 +36,15 @@ googlePortobuf = "4.32.0"
 googlePortobutPlugin = "0.9.4"
 ktlint = "13.1.0"
 adaptive = "1.1.0"
-
+nav3Core = "1.0.0"
+lifecycleViewmodelNav3 = "2.10.0"
 minSdk = "28"
 compileSdk = "36"
 targetSdk = "36"
 material = "1.12.0"
 documentfile = "1.1.0"
 materialVersion = "1.12.0"
+
 
 [libraries]
 
@@ -69,6 +71,10 @@ google-porotbuf-kotlinLite = { group = "com.google.protobuf", name = "protobuf-k
 google-porotbuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "googlePortobuf" }
 
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3Core" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3Core" }
+androidx-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
 
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-material3-adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version.ref = "adaptive" }

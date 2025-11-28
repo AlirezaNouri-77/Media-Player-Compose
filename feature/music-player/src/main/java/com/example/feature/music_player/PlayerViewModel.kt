@@ -1,6 +1,7 @@
 package com.example.feature.music_player
 
 import android.net.Uri
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.common.MusicThumbnailUtilImpl
@@ -19,10 +20,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
-    private var musicServiceConnection: MusicServiceConnection,
-    private var mediaThumbnailUtil: MusicThumbnailUtilImpl,
-    private var deviceVolumeManager: DeviceVolumeManager,
-    private var favoriteMusicSource: FavoriteRepositoryImpl,
+    private val musicServiceConnection: MusicServiceConnection,
+    private val mediaThumbnailUtil: MusicThumbnailUtilImpl,
+    private val deviceVolumeManager: DeviceVolumeManager,
+    private val favoriteMusicSource: FavoriteRepositoryImpl,
 ) : ViewModel() {
     private var _uiState = MutableStateFlow(PlayerUiState())
     val playerUiState = _uiState.onStart {
@@ -37,15 +38,22 @@ class PlayerViewModel(
         deviceVolumeManager.volumeChangeListener().onEach {
             _uiState.update { uiState -> uiState.copy(currentDeviceVolume = it) }
         }.launchIn(viewModelScope)
+
         musicServiceConnection.currentArtworkPagerIndex.onEach {
             _uiState.update { uiState -> uiState.copy(currentThumbnailPagerIndex = it) }
         }.launchIn(viewModelScope)
+
         musicServiceConnection.artworkPagerList.onEach {
             _uiState.update { uiState -> uiState.copy(thumbnailsList = it) }
         }.launchIn(viewModelScope)
+
         musicServiceConnection.playerState.onEach {
+            if (it.currentMediaInfo != _uiState.value.currentPlayerState.currentMediaInfo) {
+                getColorPaletteFromArtwork(it.currentMediaInfo.musicUri.toUri())
+            }
             _uiState.update { uiState -> uiState.copy(currentPlayerState = it) }
         }.launchIn(viewModelScope)
+
         musicServiceConnection.currentPlayerPosition.onEach {
             _uiState.update { uiState -> uiState.copy(currentPlayerPosition = it) }
         }.launchIn(viewModelScope)

@@ -29,7 +29,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.navigation.NavHostController
-import com.example.core.designsystem.LocalMiniPlayerHeight
+import androidx.navigation.compose.rememberNavController
+import com.example.core.designsystem.MiniPlayerHeight
 import com.example.core.model.MediaCategory
 import com.example.core.model.MusicModel
 import com.example.core.model.PlayerStateModel
@@ -44,7 +45,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheetContent(
-    navController: NavHostController,
+    navController: NavHostController = rememberNavController(),
     isVisible: Boolean,
     currentMusicState: PlayerStateModel,
     playerViewModel: PlayerViewModel,
@@ -96,7 +97,7 @@ fun BottomSheetContent(
                         )
                     }
                     .navigationBarsPadding()
-                    .padding(top = LocalMiniPlayerHeight.current),
+                    .padding(top = MiniPlayerHeight),
                 isFavorite = currentMusicState.currentMediaInfo.isFavorite,
                 pagerMusicList = pagerThumbnailList.toImmutableList(),
                 repeatMode = currentMusicState.repeatMode,
@@ -127,7 +128,7 @@ fun BottomSheetContent(
             MiniMusicPlayer(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(LocalMiniPlayerHeight.current)
+                    .height(MiniPlayerHeight)
                     .align(Alignment.TopCenter)
                     .padding(horizontal = 8.dp)
                     .padding(top = 4.dp, bottom = 4.dp)

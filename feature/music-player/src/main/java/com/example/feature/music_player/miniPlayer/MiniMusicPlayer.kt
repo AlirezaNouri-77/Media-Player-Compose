@@ -21,7 +21,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.core.designsystem.LocalMiniPlayerHeight
+import com.example.core.designsystem.MiniPlayerHeight
 import com.example.core.designsystem.MusicThumbnail
 import com.example.core.designsystem.NoRippleEffect
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
@@ -65,7 +65,7 @@ fun MiniMusicPlayer(
 
     Card(
         modifier = modifier
-            .height(LocalMiniPlayerHeight.current)
+            .height(MiniPlayerHeight)
             .drawWithCache {
                 onDrawBehind {
                     drawRoundRect(

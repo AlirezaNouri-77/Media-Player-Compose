@@ -1,5 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation.bottomBar
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -7,6 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -20,22 +22,22 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.mediaplayerjetpackcompose.presentation.navigation.MusicTopLevelDestination
+import androidx.navigation3.runtime.NavKey
+import com.example.mediaplayerjetpackcompose.presentation.navigation.MusicTopLevel
 
 @Composable
 fun MusicNavigationBar(
     modifier: Modifier = Modifier,
     isVisible: Boolean,
-    navController: NavController,
-    navigateTo: (MusicTopLevelDestination) -> Unit,
+    topLevel: NavKey,
+    navigateTo: (NavKey) -> Unit,
     bottomBarGradientColor: Color,
-    bottomSheetSwapFraction: Float,
+    bottomSheetSwapFraction: () -> Float,
 ) {
-    val backStackEntry by navController.currentBackStackEntryAsState()
+    val density = LocalDensity.current
     AnimatedVisibility(
         visible = isVisible,
         enter = fadeIn(tween(200, delayMillis = 90)) + slideInVertically(
@@ -59,33 +61,26 @@ fun MusicNavigationBar(
                                 0.3f to bottomBarGradientColor.copy(alpha = 0.8f),
                                 1f to bottomBarGradientColor.copy(alpha = 1f),
                             ),
-                            alpha = 1f - bottomSheetSwapFraction,
+                            alpha = 1f - bottomSheetSwapFraction(),
                             topLeft = Offset(
                                 x = 0f,
-                                y = this.size.height * bottomSheetSwapFraction,
+                                y = this.size.height * bottomSheetSwapFraction(),
                             ),
                         )
                     }
                 }
                 .graphicsLayer {
                     translationY =
-                        this@graphicsLayer.size.height * bottomSheetSwapFraction
-                },
+                        this@graphicsLayer.size.height * bottomSheetSwapFraction()
+                }
+                .onGloballyPositioned { Log.d("TAG3123", "MusicNavigationBar: " + density.run { it.size.height.toDp() }) },
             containerColor = Color.Transparent,
         ) {
-            NavigationBarModel.entries.forEachIndexed { index, item ->
-                val isSelected =
-                    NavigationBarModel.entries.any { backStackEntry?.destination?.hasRoute(item.route::class) == true }
+            MusicTopLevel.entries.forEachIndexed { _, item ->
+                val isSelected = item.route == topLevel
                 NavigationBarItem(
                     selected = isSelected,
-                    onClick = {
-                        val isDuplicateDestination =
-                            backStackEntry?.destination?.hasRoute(item.route::class) == true
-
-                        if (!isDuplicateDestination) {
-                            navigateTo(item.route)
-                        }
-                    },
+                    onClick = { navigateTo(item.route) },
                     icon = {
                         Icon(
                             painter = painterResource(item.icon),

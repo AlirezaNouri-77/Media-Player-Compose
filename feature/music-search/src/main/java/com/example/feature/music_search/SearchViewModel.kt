@@ -34,7 +34,7 @@ class SearchViewModel(
         }
     }
 
-    fun loadSearchData() = viewModelScope.launch {
+    private fun loadSearchData() = viewModelScope.launch {
         searchMusicManager.searchList.collectLatest { searchData ->
             mUiState.update {
                 it.copy(
