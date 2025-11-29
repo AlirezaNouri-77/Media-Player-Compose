@@ -77,9 +77,6 @@ fun MusicMain(
 
     val windowSize = currentWindowAdaptiveInfo()
 
-    Log.d("TAG34122", "windowWidthSizeClass: " + windowSize.windowSizeClass.windowWidthSizeClass)
-    Log.d("TAG34122", "windowPosture: " + windowSize.windowPosture)
-
     val uiState by playerViewModel.playerUiState.collectAsStateWithLifecycle()
     val windowInset = WindowInsets.systemBars.asPaddingValues()
 
