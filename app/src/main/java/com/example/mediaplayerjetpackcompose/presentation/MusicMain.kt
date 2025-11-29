@@ -1,5 +1,6 @@
 package com.example.mediaplayerjetpackcompose.presentation
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -76,6 +76,9 @@ fun MusicMain(
     val coroutineScope = rememberCoroutineScope()
 
     val windowSize = currentWindowAdaptiveInfo()
+
+    Log.d("TAG34122", "windowWidthSizeClass: " + windowSize.windowSizeClass.windowWidthSizeClass)
+    Log.d("TAG34122", "windowPosture: " + windowSize.windowPosture)
 
     val uiState by playerViewModel.playerUiState.collectAsStateWithLifecycle()
     val windowInset = WindowInsets.systemBars.asPaddingValues()
@@ -149,19 +152,19 @@ fun MusicMain(
                         )
                     },
                 ) {
-                    NavDisplay(
-                        backStack = backStack.backStack,
-                        entryDecorators = listOf(
-                            rememberSaveableStateHolderNavEntryDecorator(),
-                            rememberViewModelStoreNavEntryDecorator(),
-                        ),
-                        entryProvider = entryProvider {
-                            Row(Modifier.padding(it)) {
-                                NavigationRailComponent(
-                                    isVisible = windowSize.windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.COMPACT,
-                                    topLevel = backStack.topLevelKey,
-                                    onClick = { },
-                                )
+                    Row {
+                        NavigationRailComponent(
+                            isVisible = windowSize.windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.COMPACT,
+                            topLevel = backStack.topLevelKey,
+                            onClick = { },
+                        )
+                        NavDisplay(
+                            backStack = backStack.backStack,
+                            entryDecorators = listOf(
+                                rememberSaveableStateHolderNavEntryDecorator(),
+                                rememberViewModelStoreNavEntryDecorator(),
+                            ),
+                            entryProvider = entryProvider {
                                 CompositionLocalProvider(
                                     LocalParentScaffoldPadding provides innerPadding,
                                 ) {
@@ -217,9 +220,9 @@ fun MusicMain(
                                         )
                                     }
                                 }
-                            }
-                        },
-                    )
+                            },
+                        )
+                    }
                 }
             },
         )
