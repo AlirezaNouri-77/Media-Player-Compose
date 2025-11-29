@@ -28,24 +28,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.core.designsystem.MiniPlayerHeight
-import com.example.core.model.MediaCategory
 import com.example.core.model.MusicModel
 import com.example.core.model.PlayerStateModel
 import com.example.feature.music_player.PlayerActions
 import com.example.feature.music_player.PlayerViewModel
 import com.example.feature.music_player.fullScreen.FullMusicPlayer
 import com.example.feature.music_player.miniPlayer.MiniMusicPlayer
-import com.example.mediaplayerjetpackcompose.presentation.navigation.MusicTopLevelDestination
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheetContent(
-    navController: NavHostController = rememberNavController(),
     isVisible: Boolean,
     currentMusicState: PlayerStateModel,
     playerViewModel: PlayerViewModel,
@@ -56,6 +51,7 @@ fun BottomSheetContent(
     bottomSheetScaffoldState: BottomSheetScaffoldState,
     pagerThumbnailList: List<MusicModel>,
     bottomSheetSwapFraction: () -> Float,
+    navigateToArtist: (String) -> Unit,
 ) {
     val musicArtWorkColorAnimation by animateColorAsState(
         targetValue = Color(artworkDominateColor),
@@ -116,13 +112,7 @@ fun BottomSheetContent(
                 },
                 clickOnArtist = { artistName ->
                     coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.partialExpand() }
-                    val lastArtist =
-                        navController.currentBackStackEntry?.arguments?.getString("name")
-                    if (lastArtist == artistName) return@FullMusicPlayer
-
-                    navController.navigate(
-                        MusicTopLevelDestination.Category(artistName, MediaCategory.ARTIST),
-                    )
+                    navigateToArtist(artistName)
                 },
             )
             MiniMusicPlayer(

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -140,8 +141,11 @@ fun MusicMain(
                             currentDeviceVolume = uiState.currentDeviceVolume,
                             bottomSheetScaffoldState = bottomSheetScaffoldState,
                             pagerThumbnailList = uiState.thumbnailsList,
-                            bottomSheetSwapFraction = { bottomSheetSwapFraction },
                             artworkDominateColor = uiState.thumbnailDominantColor,
+                            bottomSheetSwapFraction = { bottomSheetSwapFraction },
+                            navigateToArtist = {
+                                backStack.add(DetailMusic(it, MediaCategory.ARTIST))
+                            },
                         )
                     },
                 ) {
@@ -152,7 +156,7 @@ fun MusicMain(
                             rememberViewModelStoreNavEntryDecorator(),
                         ),
                         entryProvider = entryProvider {
-                            Row {
+                            Row(Modifier.padding(it)) {
                                 NavigationRailComponent(
                                     isVisible = windowSize.windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.COMPACT,
                                     topLevel = backStack.topLevelKey,
