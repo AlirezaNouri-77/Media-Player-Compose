@@ -3,6 +3,7 @@ package com.example.feature.music_search
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -87,7 +88,8 @@ fun SearchScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding),
             verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {

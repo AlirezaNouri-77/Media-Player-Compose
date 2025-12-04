@@ -1,6 +1,7 @@
 package com.example.feature.music_categorydetail
 
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -67,6 +68,10 @@ fun SharedTransitionScope.CategoryDetailRoute(
     displayWithVisuals: Boolean = true,
 ) {
     val uiState by categoryViewModel.uiState.collectAsStateWithLifecycle()
+
+    BackHandler {
+        onBackClick()
+    }
 
     CategoryDetailPage(
         uiState = uiState,

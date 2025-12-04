@@ -1,6 +1,5 @@
 package com.example.mediaplayerjetpackcompose.presentation
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -143,8 +142,8 @@ fun MusicMain(
                             pagerThumbnailList = uiState.thumbnailsList,
                             artworkDominateColor = uiState.thumbnailDominantColor,
                             bottomSheetSwapFraction = { bottomSheetSwapFraction },
-                            navigateToArtist = {
-                                backStack.add(DetailMusic(it, MediaCategory.ARTIST))
+                            navigateToArtist = { artist ->
+                                backStack.add(DetailMusic(artist, MediaCategory.ARTIST))
                             },
                         )
                     },
