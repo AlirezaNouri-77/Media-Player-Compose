@@ -2,7 +2,8 @@ package com.example.mediaplayerjetpackcompose.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.retain
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -15,7 +16,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun NavMainGraph() {
-    val backStack = remember { BackStackHandler<NavKey>(Music) }
+    val backStack = retain { BackStackHandler<NavKey>(Music) }
 
     NavDisplay(
         backStack = backStack.backStack,

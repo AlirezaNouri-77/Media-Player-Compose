@@ -39,6 +39,8 @@ fun NavigationRailComponent(
                     label = { Text(item.title) },
                     alwaysShowLabel = true,
                     colors = NavigationRailItemDefaults.colors(
+                        unselectedTextColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                        selectedTextColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
                         indicatorColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
                         selectedIconColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
                         unselectedIconColor = if (isSystemInDarkTheme()) Color.White else Color.Black,

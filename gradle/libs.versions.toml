@@ -2,7 +2,7 @@
 androidGradlePlugin = "8.12.1"
 activityCompose = "1.10.1"
 coilCompose = "2.7.0"
-composeBom = "2025.08.00"
+composeBom = "2025.12.00"
 constraintLayout = "1.1.1"
 coreKtx = "1.17.0"
 espressoCore = "3.6.1"
@@ -36,6 +36,7 @@ googlePortobuf = "4.32.0"
 googlePortobutPlugin = "0.9.4"
 ktlint = "13.1.0"
 adaptive = "1.1.0"
+iconCore = "1.7.8"
 nav3Core = "1.0.0"
 lifecycleViewmodelNav3 = "2.10.0"
 minSdk = "28"
@@ -50,6 +51,7 @@ materialVersion = "1.12.0"
 
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 androidx-compose-foundation = { group = "androidx.compose.foundation" , name="foundation", version.ref = "composeFoundation" }
+androidx-material-icons = { module = "androidx.compose.material:material-icons-core", version.ref = "iconCore" }
 
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintLayout" }

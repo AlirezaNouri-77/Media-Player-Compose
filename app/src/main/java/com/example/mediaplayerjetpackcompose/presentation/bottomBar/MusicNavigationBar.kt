@@ -1,6 +1,5 @@
 package com.example.mediaplayerjetpackcompose.presentation.bottomBar
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -22,7 +21,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.navigation3.runtime.NavKey
@@ -72,8 +70,7 @@ fun MusicNavigationBar(
                 .graphicsLayer {
                     translationY =
                         this@graphicsLayer.size.height * bottomSheetSwapFraction()
-                }
-                .onGloballyPositioned { Log.d("TAG3123", "MusicNavigationBar: " + density.run { it.size.height.toDp() }) },
+                },
             containerColor = Color.Transparent,
         ) {
             MusicTopLevel.entries.forEachIndexed { _, item ->
@@ -90,6 +87,8 @@ fun MusicNavigationBar(
                     label = { Text(item.title) },
                     alwaysShowLabel = true,
                     colors = NavigationBarItemDefaults.colors(
+                        unselectedTextColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                        selectedTextColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
                         indicatorColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
                         selectedIconColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
                         unselectedIconColor = if (isSystemInDarkTheme()) Color.White else Color.Black,

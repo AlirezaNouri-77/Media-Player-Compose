@@ -21,6 +21,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.retain.retain
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
@@ -65,7 +66,7 @@ import org.koin.core.parameter.parametersOf
 fun MusicMain(
     navigateToVideo: () -> Unit,
 ) {
-    val backStack = remember { BackStackHandler<NavKey>(HomeMusic) }
+    val navBackStack = retain { BackStackHandler<NavKey>(HomeMusic) }
     val playerViewModel: PlayerViewModel = koinViewModel()
 
     val density: Density = LocalDensity.current
@@ -112,10 +113,10 @@ fun MusicMain(
             bottomBar = {
                 MusicNavigationBar(
                     isVisible = windowSize.windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT,
-                    navigateTo = { route -> backStack.addTopLevel(route, true) },
+                    navigateTo = { route -> navBackStack.addTopLevel(route, true) },
                     bottomBarGradientColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
                     bottomSheetSwapFraction = { bottomSheetSwapFraction },
-                    topLevel = backStack.topLevelKey,
+                    topLevel = navBackStack.topLevelKey,
                 )
             },
             contentWindowInsets = WindowInsets.navigationBars,
@@ -143,7 +144,7 @@ fun MusicMain(
                             artworkDominateColor = uiState.thumbnailDominantColor,
                             bottomSheetSwapFraction = { bottomSheetSwapFraction },
                             navigateToArtist = { artist ->
-                                backStack.add(DetailMusic(artist, MediaCategory.ARTIST))
+                                navBackStack.add(DetailMusic(artist, MediaCategory.ARTIST))
                             },
                         )
                     },
@@ -151,11 +152,11 @@ fun MusicMain(
                     Row {
                         NavigationRailComponent(
                             isVisible = windowSize.windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.COMPACT,
-                            topLevel = backStack.topLevelKey,
-                            onClick = { },
+                            topLevel = navBackStack.topLevelKey,
+                            onClick = { route -> navBackStack.addTopLevel(route, true) },
                         )
                         NavDisplay(
-                            backStack = backStack.backStack,
+                            backStack = navBackStack.backStack,
                             entryDecorators = listOf(
                                 rememberSaveableStateHolderNavEntryDecorator(),
                                 rememberViewModelStoreNavEntryDecorator(),
@@ -177,7 +178,7 @@ fun MusicMain(
                                         ArtistRoute(
                                             animatedVisibilityScope = LocalNavAnimatedContentScope.current,
                                             navigateToCategory = { name ->
-                                                backStack.add(DetailMusic(name, MediaCategory.ARTIST))
+                                                navBackStack.add(DetailMusic(name, MediaCategory.ARTIST))
                                             },
                                         )
                                     }
@@ -193,7 +194,7 @@ fun MusicMain(
                                         AlbumRoute(
                                             animatedVisibilityScope = LocalNavAnimatedContentScope.current,
                                             navigateToCategory = { name ->
-                                                backStack.add(DetailMusic(name, MediaCategory.ALBUM))
+                                                navBackStack.add(DetailMusic(name, MediaCategory.ALBUM))
                                             },
                                         )
                                     }
@@ -209,7 +210,7 @@ fun MusicMain(
                                             categoryName = param.name,
                                             displayWithVisuals = param.displayWithVisuals,
                                             animatedVisibilityScope = LocalNavAnimatedContentScope.current,
-                                            onBackClick = { backStack.removeLast() },
+                                            onBackClick = { navBackStack.removeLast() },
                                             onMusicClick = { index, list ->
                                                 playerViewModel.onPlayerAction(PlayerActions.PlaySongs(index, list))
                                             },
