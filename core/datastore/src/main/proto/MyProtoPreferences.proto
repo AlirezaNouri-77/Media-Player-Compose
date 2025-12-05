@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+
+option java_package = "com.example.core.datastore";
+option java_multiple_files = true;
+
+message MyProtoPreferences {
+    bool songs_is_descending = 1;
+    Proto_SortType song_sort_type = 2;
+
+    bool artist_is_descending = 3;
+    Proto_DataStore_Folder artist_sort_type = 4;
+
+    bool album_is_descending = 5;
+    Proto_DataStore_Folder album_sort_type = 6;
+
+    bool folder_is_descending = 7;
+    Proto_DataStore_Folder folder_sort_type = 8;
+
+    int32 index_scroll_home = 9;
+    int32 index_scroll_album = 10;
+    int32 index_scroll_artist = 11;
+    int32 index_scroll_favorite = 12;
+    int32 index_scroll_folder = 13;
+}
+
+enum Proto_SortType {
+    PROTO_SORT_TYPE_NAME = 0;
+    PROTO_SORT_TYPE_ARTIST = 1;
+    PROTO_SORT_TYPE_DURATION = 2;
+    PROTO_SORT_TYPE_SIZE = 3;
+}
+
+enum Proto_DataStore_Folder {
+    NAME = 0;
+    SONGS_COUNT = 1;
+}

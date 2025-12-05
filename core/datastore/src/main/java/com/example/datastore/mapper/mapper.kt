@@ -1,9 +1,9 @@
 package com.example.datastore.mapper
 
+import com.example.core.datastore.Proto_DataStore_Folder
+import com.example.core.datastore.Proto_SortType
 import com.example.core.model.datastore.CategorizedSortType
 import com.example.core.model.datastore.SongsSortType
-import com.example.core.proto_datastore.Proto_DataStore_Folder
-import com.example.core.proto_datastore.Proto_SortType
 
 fun SongsSortType.toProtoSortType(): Proto_SortType {
     return when (this) {
@@ -26,15 +26,15 @@ fun Proto_SortType.toSortType(): SongsSortType {
 
 fun CategorizedSortType.toProtoSortType(): Proto_DataStore_Folder {
     return when (this) {
-        CategorizedSortType.NAME -> Proto_DataStore_Folder.Name
-        CategorizedSortType.SongsCount -> Proto_DataStore_Folder.Songs_Count
+        CategorizedSortType.NAME -> Proto_DataStore_Folder.NAME
+        CategorizedSortType.SongsCount -> Proto_DataStore_Folder.SONGS_COUNT
     }
 }
 
 fun Proto_DataStore_Folder.toFolderSortType(): CategorizedSortType {
     return when (this) {
-        Proto_DataStore_Folder.Name -> CategorizedSortType.NAME
-        Proto_DataStore_Folder.Songs_Count -> CategorizedSortType.SongsCount
+        Proto_DataStore_Folder.NAME -> CategorizedSortType.NAME
+        Proto_DataStore_Folder.SONGS_COUNT -> CategorizedSortType.SongsCount
         Proto_DataStore_Folder.UNRECOGNIZED -> CategorizedSortType.NAME
     }
 }

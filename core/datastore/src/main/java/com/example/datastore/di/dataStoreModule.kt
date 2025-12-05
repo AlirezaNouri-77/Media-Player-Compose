@@ -8,9 +8,10 @@ import com.example.core.model.datastore.SongSortModel
 import com.example.datastore.AlbumSortDataStoreManager
 import com.example.datastore.ArtistSortDataStoreManager
 import com.example.datastore.FolderSortDataStoreManager
+import com.example.datastore.ScrollListDataStoreManager
 import com.example.datastore.SongsSortDataStoreManager
 import com.example.datastore.SortDataStoreManagerImpl
-import com.example.datastore.serializer.SortPreferencesSerializer
+import com.example.datastore.serializer.MyProtoPreferencesSerializer
 import kotlinx.coroutines.CoroutineScope
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.qualifier.named
@@ -19,18 +20,21 @@ import org.koin.dsl.module
 var dataStoreModule = module {
 
     single {
-        SortPreferencesSerializer()
+        MyProtoPreferencesSerializer()
     }
 
     single {
         DataStoreFactory.create(
-            serializer = get<SortPreferencesSerializer>(),
+            serializer = get<MyProtoPreferencesSerializer>(),
             scope = get<CoroutineScope>(named("CoroutineIO")),
         ) {
-            androidApplication().applicationContext.dataStoreFile("SortDataStore.db")
+            androidApplication().applicationContext.dataStoreFile("DataStore.db")
         }
     }
 
+    single {
+        ScrollListDataStoreManager(get(), get(DispatcherType.DEFAULT.qualifier))
+    }
     single<SortDataStoreManagerImpl<SongSortModel>>(named("SongsSortDataStore")) {
         SongsSortDataStoreManager(get(), get(DispatcherType.DEFAULT.qualifier))
     }

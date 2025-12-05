@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-option java_package = "com.example.core.proto_datastore";
-option java_multiple_files = true;
-
-enum Proto_DataStore_Folder {
-    Name = 0;
-    Songs_Count = 1;
-}

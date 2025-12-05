@@ -7,21 +7,18 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.navigation3.runtime.NavKey
 import com.example.mediaplayerjetpackcompose.presentation.navigation.MusicTopLevel
@@ -35,7 +32,6 @@ fun MusicNavigationBar(
     bottomBarGradientColor: Color,
     bottomSheetSwapFraction: () -> Float,
 ) {
-    val density = LocalDensity.current
     AnimatedVisibility(
         visible = isVisible,
         enter = fadeIn(tween(200, delayMillis = 90)) + slideInVertically(

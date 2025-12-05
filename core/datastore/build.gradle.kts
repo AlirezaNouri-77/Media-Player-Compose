@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.mediaplayer.androidConventionPlugin)
+    alias(libs.plugins.google.protobuf)
 }
 
 android {
@@ -9,15 +10,32 @@ android {
     namespace = "com.example.core.datastore"
 }
 
-dependencies {
+protobuf {
+    protoc {
+        artifact = libs.google.porotbuf.protoc.get().toString()
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                register("java") {
+                    option("lite")
+                }
+                register("kotlin") {
+                    option("lite")
+                }
+            }
+        }
+    }
+}
 
-    api(project(":core:proto-datastore"))
+dependencies {
     api(project(":core:model"))
     api(project(":core:common"))
 
-    api(libs.androidx.dataStore)
+    api(libs.google.porotbuf.kotlinLite)
 
     implementation(libs.koin.android)
+    implementation(libs.androidx.dataStore)
 
     androidTestImplementation(libs.jetbrains.kotlinx.coroutine.test)
 

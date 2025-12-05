@@ -6,10 +6,10 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.core.datastore.MyProtoPreferences
 import com.example.core.model.datastore.CategorizedSortType
 import com.example.core.model.datastore.SongsSortType
-import com.example.core.proto_datastore.SortPreferences
-import com.example.datastore.serializer.SortPreferencesSerializer
+import com.example.datastore.serializer.MyProtoPreferencesSerializer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -25,7 +25,7 @@ import org.junit.runner.RunWith
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
-class DataStoreTest {
+class SortDataStoreTest {
     @get:Rule
     val tmpFolder: TemporaryFolder = TemporaryFolder.builder().assureDeletion().build()
 
@@ -34,8 +34,8 @@ class DataStoreTest {
     var dispatcher = UnconfinedTestDispatcher()
     var coroutine = CoroutineScope(dispatcher)
 
-    var testDataStore: DataStore<SortPreferences> = DataStoreFactory.create(
-        serializer = SortPreferencesSerializer(),
+    var testDataStore: DataStore<MyProtoPreferences> = DataStoreFactory.create(
+        serializer = MyProtoPreferencesSerializer(),
         produceFile = {
             testContext.dataStoreFile(tmpFolder.newFolder().absolutePath)
         },
