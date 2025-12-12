@@ -10,4 +10,6 @@ sealed interface ArtistUiEvent {
     data class UpdateSortOrder(val isDec: Boolean) : ArtistUiEvent
 
     data class UpdateSortType(val sortType: CategorizedSortType) : ArtistUiEvent
+
+    data class UpdateScrollIndex(val index: Int) : ArtistUiEvent
 }

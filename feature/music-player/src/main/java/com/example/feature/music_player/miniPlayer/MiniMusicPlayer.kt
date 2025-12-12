@@ -21,10 +21,10 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.core.designsystem.MiniPlayerHeight
 import com.example.core.designsystem.MusicThumbnail
 import com.example.core.designsystem.NoRippleEffect
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
+import com.example.core.designsystem.util.MiniPlayerHeight
 import com.example.core.model.MusicModel
 import com.example.feature.music_player.PagerHandler
 import com.example.feature.music_player.PlayerActions

@@ -1,6 +1,5 @@
 package com.example.feature.music_album
 
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -33,10 +32,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.designsystem.CategoryListItem
 import com.example.core.designsystem.EmptyPage
 import com.example.core.designsystem.Loading
-import com.example.core.designsystem.MiniPlayerHeight
-import com.example.core.designsystem.NavigationBottomBarHeight
 import com.example.core.designsystem.R
 import com.example.core.designsystem.SortDropDownMenu
+import com.example.core.designsystem.util.MiniPlayerHeight
+import com.example.core.designsystem.util.NavigationBottomBarHeight
 import com.example.core.model.MusicModel
 import com.example.core.model.datastore.CategorizedSortType
 import kotlinx.collections.immutable.ImmutableList
@@ -48,13 +47,11 @@ import org.koin.androidx.compose.koinViewModel
 fun SharedTransitionScope.AlbumRoute(
     albumViewModel: AlbumViewModel = koinViewModel<AlbumViewModel>(),
     navigateToCategory: (String) -> Unit,
-    animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
     val uiState by albumViewModel.albumScreenUiState.collectAsStateWithLifecycle()
 
     AlbumScreen(
         sharedTransitionScope = this,
-        animatedVisibilityScope = animatedVisibilityScope,
         albumListData = uiState.albumList.toImmutableList(),
         navigateTo = navigateToCategory,
         isLoading = uiState.isLoading,
@@ -72,7 +69,6 @@ fun SharedTransitionScope.AlbumRoute(
 @Composable
 private fun AlbumScreen(
     modifier: Modifier = Modifier,
-    animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope,
     albumListData: ImmutableList<Pair<String, List<MusicModel>>>,
     isLoading: Boolean,
@@ -149,11 +145,11 @@ private fun AlbumScreen(
                             CategoryListItem(
                                 categoryName = item.first,
                                 musicListSize = item.second.size,
+                                thumbnailUri = item.second.first { it.artworkUri.isNotEmpty() }.artworkUri,
                                 onClick = { categoryName ->
                                     navigateTo(categoryName)
                                 },
-                                // sharedTransitionScope = sharedTransitionScope,
-                                // animatedVisibilityScope = animatedVisibilityScope,
+                                sharedTransitionScope = sharedTransitionScope,
                             )
                         }
                     }

@@ -19,7 +19,7 @@ var appModule = module {
     viewModelOf(::SearchViewModel)
 
     viewModel {
-        AlbumViewModel(get(), get(named("AlbumSortDataStore")))
+        AlbumViewModel(get(), get(named("AlbumSortDataStore")), get())
     }
 
     viewModel {
@@ -31,6 +31,7 @@ var appModule = module {
             get(),
             get(named("SongsSortDataStore")),
             get(named("FolderSortDataStore")),
+            get(),
             get(),
         )
     }

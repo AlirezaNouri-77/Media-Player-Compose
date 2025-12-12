@@ -1,6 +1,5 @@
 package com.example.feature.music_artist
 
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -33,10 +32,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.designsystem.CategoryListItem
 import com.example.core.designsystem.EmptyPage
 import com.example.core.designsystem.Loading
-import com.example.core.designsystem.MiniPlayerHeight
-import com.example.core.designsystem.NavigationBottomBarHeight
 import com.example.core.designsystem.R
 import com.example.core.designsystem.SortDropDownMenu
+import com.example.core.designsystem.util.MiniPlayerHeight
+import com.example.core.designsystem.util.NavigationBottomBarHeight
 import com.example.core.model.MusicModel
 import com.example.core.model.datastore.CategorizedSortType
 import kotlinx.collections.immutable.ImmutableList
@@ -46,16 +45,14 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SharedTransitionScope.ArtistRoute(
-    artistViewModel: ArtistViewModel = koinViewModel<ArtistViewModel>(),
-    animatedVisibilityScope: AnimatedVisibilityScope,
     navigateToCategory: (String) -> Unit,
 ) {
+    val artistViewModel: ArtistViewModel = koinViewModel<ArtistViewModel>()
     val uiState by artistViewModel.artistScreenUiState.collectAsStateWithLifecycle()
 
     ArtistScreen(
         listItems = uiState.artistList.toImmutableList(),
         isLoading = uiState.isLoading,
-        animatedVisibilityScope = animatedVisibilityScope,
         navigateToCategory = navigateToCategory,
         isDropDownMenuSortExpand = { uiState.isSortDropDownMenuShow },
         isSortDescending = uiState.sortState.isDec,
@@ -76,7 +73,6 @@ fun SharedTransitionScope.ArtistScreen(
     isDropDownMenuSortExpand: () -> Boolean,
     isSortDescending: Boolean,
     currentSortType: CategorizedSortType,
-    animatedVisibilityScope: AnimatedVisibilityScope,
     navigateToCategory: (String) -> Unit,
     onSortIconClick: () -> Unit,
     onDismissDropDownMenu: () -> Unit,
@@ -147,11 +143,11 @@ fun SharedTransitionScope.ArtistScreen(
                             CategoryListItem(
                                 categoryName = item.first,
                                 musicListSize = item.second.size,
+                                thumbnailUri = item.second.first { it.artworkUri.isNotEmpty() }.artworkUri,
                                 onClick = { categoryName ->
                                     navigateToCategory(categoryName)
                                 },
-                                // sharedTransitionScope = this@ArtistScreen,
-                                //  animatedVisibilityScope = animatedVisibilityScope,
+                                sharedTransitionScope = this@ArtistScreen,
                             )
                         }
                     }

@@ -11,6 +11,9 @@ import com.example.feature.music_home.model.TabBarModel
 data class HomeScreenUiState(
     val isLoading: Boolean = false,
     val isSortDropDownMenuShow: Boolean = false,
+    val lastHomeScrollState: Int = 0,
+    val lastFavoriteScrollState: Int = 0,
+    val lastFolderScrollState: Int = 0,
     val playerStateModel: PlayerStateModel = PlayerStateModel.Initial,
     val currentTabBarPosition: TabBarModel = TabBarModel.All,
     val songsList: List<MusicModel> = emptyList(),

@@ -8,11 +8,13 @@ import com.example.core.domain.useCase.GetMusicPlayerStateUseCase
 import com.example.core.model.datastore.CategorizedSortModel
 import com.example.core.model.datastore.SongSortModel
 import com.example.core.model.datastore.SortType
+import com.example.datastore.ScrollListDataStoreManager
 import com.example.datastore.SortDataStoreManagerImpl
 import com.example.feature.music_home.model.TabBarModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -23,11 +25,13 @@ class HomeViewModel(
     private val musicSource: MusicSourceImpl,
     private val songsSortDataStoreManager: SortDataStoreManagerImpl<SongSortModel>,
     private val folderSortDataStoreManager: SortDataStoreManagerImpl<CategorizedSortModel>,
+    private val scrollListDataStoreManager: ScrollListDataStoreManager,
     private val getMusicPlayerStateUseCase: GetMusicPlayerStateUseCase,
 ) : ViewModel() {
     private var mUiState = MutableStateFlow(HomeScreenUiState())
     val homeScreenUiState = mUiState
         .onStart {
+            getScrollState()
             getFavoriteSongs()
             getSongs()
             getFolderSongs()
@@ -37,6 +41,7 @@ class HomeViewModel(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000L),
             HomeScreenUiState(isLoading = true),
+
         )
 
     fun onEvent(event: HomeUiEvent) {
@@ -44,8 +49,40 @@ class HomeViewModel(
             is HomeUiEvent.UpdateSortOrder -> updateSortOrder(event.tabBarPosition)
             is HomeUiEvent.UpdateSortState -> updateSortType(event.tabBarPosition, event.sortType)
             is HomeUiEvent.UpdateTabBarPosition -> mUiState.update { it.copy(currentTabBarPosition = event.tabBarPosition) }
+            is HomeUiEvent.UpdateHomeScrollIndex -> updateHomeScrollIndex(event.index)
+            is HomeUiEvent.UpdateFavoriteScrollIndex -> updateFavoriteScrollIndex(event.index)
+            is HomeUiEvent.UpdateFolderScrollIndex -> updateFolderScrollIndex(event.index)
             HomeUiEvent.HideSortDropDownMenu -> mUiState.update { it.copy(isSortDropDownMenuShow = false) }
             HomeUiEvent.ShowSortDropDownMenu -> mUiState.update { it.copy(isSortDropDownMenuShow = true) }
+        }
+    }
+
+    private fun updateHomeScrollIndex(int: Int) {
+        viewModelScope.launch {
+            scrollListDataStoreManager.updateHomeScroll(int)
+        }
+    }
+
+    private fun updateFavoriteScrollIndex(int: Int) {
+        viewModelScope.launch {
+            scrollListDataStoreManager.updateFavoriteScroll(int)
+        }
+    }
+
+    private fun updateFolderScrollIndex(int: Int) {
+        viewModelScope.launch {
+            scrollListDataStoreManager.updateFavoriteScroll(int)
+        }
+    }
+
+    private fun getScrollState() = viewModelScope.launch {
+        val scroll = scrollListDataStoreManager.scrollDataStoreState.first()
+        mUiState.update {
+            it.copy(
+                lastHomeScrollState = scroll.homeMusic,
+                lastFavoriteScrollState = scroll.favorite,
+                lastFolderScrollState = scroll.folderMusic,
+            )
         }
     }
 

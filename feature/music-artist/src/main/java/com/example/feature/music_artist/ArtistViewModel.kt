@@ -4,28 +4,30 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.data.util.sortMusic
 import com.example.core.domain.respository.MusicSourceImpl
-import com.example.core.domain.useCase.GetMusicPlayerStateUseCase
 import com.example.core.model.datastore.CategorizedSortModel
 import com.example.core.model.datastore.CategorizedSortType
+import com.example.datastore.ScrollListDataStoreManager
 import com.example.datastore.SortDataStoreManagerImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ArtistViewModel(
-    private var musicSource: MusicSourceImpl,
-    private var artistSortDataStoreManager: SortDataStoreManagerImpl<CategorizedSortModel>,
-    private val getMusicPlayerStateUseCase: GetMusicPlayerStateUseCase,
+    private val musicSource: MusicSourceImpl,
+    private val artistSortDataStoreManager: SortDataStoreManagerImpl<CategorizedSortModel>,
+    private val scrollListDataStoreManager: ScrollListDataStoreManager,
 ) : ViewModel() {
     private var mUiState = MutableStateFlow(ArtistScreenUiState())
     val artistScreenUiState = mUiState
         .onStart {
             loadArtistDate()
+            getScrollState()
             getSortState()
         }.stateIn(
             viewModelScope,
@@ -39,18 +41,26 @@ class ArtistViewModel(
             ArtistUiEvent.ShowSortDropDownMenu -> mUiState.update { it.copy(isSortDropDownMenuShow = true) }
             is ArtistUiEvent.UpdateSortOrder -> updateSortOrder(event.isDec)
             is ArtistUiEvent.UpdateSortType -> updateSortType(event.sortType)
+            is ArtistUiEvent.UpdateScrollIndex -> updateArtistScrollIndex(event.index)
+        }
+    }
+
+    private fun getScrollState() = viewModelScope.launch {
+        val scroll = scrollListDataStoreManager.scrollDataStoreState.first()
+        mUiState.update {
+            it.copy(lastScrollIndex = scroll.artistMusic)
+        }
+    }
+
+    private fun updateArtistScrollIndex(int: Int) {
+        viewModelScope.launch {
+            scrollListDataStoreManager.updateArtistScroll(int)
         }
     }
 
     private fun getSortState() = viewModelScope.launch {
         artistSortDataStoreManager.sortState.collectLatest { sort ->
             mUiState.update { it.copy(sortState = sort) }
-        }
-    }
-
-    private fun observePlayerState() = viewModelScope.launch {
-        getMusicPlayerStateUseCase.invoke().collect { playerStateModel ->
-            mUiState.update { it.copy(isPlayerHasMediaItem = playerStateModel.currentMediaInfo.musicID.isNotEmpty()) }
         }
     }
 

@@ -1,15 +1,15 @@
 package com.example.feature.music_player.fullScreen
 
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
-import androidx.window.core.layout.WindowHeightSizeClass
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
+import com.example.core.designsystem.util.CurrentWindowSizeState
 import com.example.core.model.ActiveMusicInfo
 import com.example.core.model.MusicModel
 import com.example.core.model.PlayerStateModel
+import com.example.core.model.WindowSize
 import com.example.feature.music_player.PlayerActions
 import com.example.feature.music_player.fullScreen.component.LandscapeLayout
 import com.example.feature.music_player.fullScreen.component.PortraitLayout
@@ -68,9 +68,9 @@ private fun ExpandedMusicPlayer(
     onVolumeChange: (Float) -> Unit,
     clickOnArtist: (String) -> Unit,
 ) {
-    val windowSize = currentWindowAdaptiveInfo().windowSizeClass
+    val windowSize = CurrentWindowSizeState()
 
-    if (windowSize.windowHeightSizeClass != WindowHeightSizeClass.COMPACT) {
+    if (windowSize == WindowSize.COMPACT) {
         PortraitLayout(
             modifier = modifier,
             repeatMode = repeatMode,

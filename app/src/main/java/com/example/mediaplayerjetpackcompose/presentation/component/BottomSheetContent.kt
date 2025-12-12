@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import com.example.core.designsystem.MiniPlayerHeight
+import com.example.core.designsystem.util.MiniPlayerHeight
 import com.example.core.model.MusicModel
 import com.example.core.model.PlayerStateModel
 import com.example.feature.music_player.PlayerActions

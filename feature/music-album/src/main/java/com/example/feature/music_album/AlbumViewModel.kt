@@ -6,24 +6,28 @@ import com.example.core.data.util.sortMusic
 import com.example.core.domain.respository.MusicSourceImpl
 import com.example.core.model.datastore.CategorizedSortModel
 import com.example.core.model.datastore.CategorizedSortType
+import com.example.datastore.ScrollListDataStoreManager
 import com.example.datastore.SortDataStoreManagerImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AlbumViewModel(
-    private var musicSource: MusicSourceImpl,
-    private var albumSortDataStoreManager: SortDataStoreManagerImpl<CategorizedSortModel>,
+    private val musicSource: MusicSourceImpl,
+    private val albumSortDataStoreManager: SortDataStoreManagerImpl<CategorizedSortModel>,
+    private val scrollListDataStoreManager: ScrollListDataStoreManager,
 ) : ViewModel() {
     private var mUiState = MutableStateFlow(AlbumScreenUiState())
     val albumScreenUiState = mUiState
         .onStart {
             getAlbumData()
+            getScrollState()
             getSortState()
         }.stateIn(
             viewModelScope,
@@ -37,6 +41,20 @@ class AlbumViewModel(
             AlbumUiEvent.ShowSortDropDownMenu -> mUiState.update { it.copy(isSortDropDownMenuShow = true) }
             is AlbumUiEvent.UpdateSortOrder -> updateSortOrder(event.isDec)
             is AlbumUiEvent.UpdateSortType -> updateSortType(event.sortType)
+            is AlbumUiEvent.UpdateScrollIndex -> updateAlbumScrollIndex(event.index)
+        }
+    }
+
+    private fun getScrollState() = viewModelScope.launch {
+        val scroll = scrollListDataStoreManager.scrollDataStoreState.first()
+        mUiState.update {
+            it.copy(lastScrollState = scroll.albumMusic)
+        }
+    }
+
+    private fun updateAlbumScrollIndex(int: Int) {
+        viewModelScope.launch {
+            scrollListDataStoreManager.updateAlbumScroll(int)
         }
     }
 

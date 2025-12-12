@@ -1,4 +1,4 @@
-package com.example.core.designsystem
+package com.example.core.designsystem.util
 
 import androidx.compose.ui.unit.dp
 

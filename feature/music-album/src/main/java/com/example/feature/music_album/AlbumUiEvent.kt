@@ -10,4 +10,6 @@ sealed interface AlbumUiEvent {
     data class UpdateSortOrder(val isDec: Boolean) : AlbumUiEvent
 
     data class UpdateSortType(val sortType: CategorizedSortType) : AlbumUiEvent
+
+    data class UpdateScrollIndex(val index: Int) : AlbumUiEvent
 }

@@ -4,8 +4,8 @@ import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.common.MusicThumbnailUtilImpl
 import com.example.core.common.util.convertMilliSecondToTime
+import com.example.core.domain.MusicThumbnailUtilImpl
 import com.example.core.domain.respository.MusicSourceImpl
 import com.example.core.domain.useCase.GetMusicPlayerStateUseCase
 import com.example.core.model.MediaCategory

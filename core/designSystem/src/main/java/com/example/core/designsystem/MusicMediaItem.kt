@@ -57,79 +57,79 @@ fun MusicMediaItem(
                         alpha = 0.2f,
                     )
                 } else {
-                    Color.Companion.Transparent
+                    Color.Transparent
                 },
                 shape = RoundedCornerShape(20.dp),
             ),
     ) {
         Row(
-            verticalAlignment = Alignment.Companion.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.Companion.padding(vertical = 6.dp, horizontal = 10.dp),
+            modifier = Modifier.padding(vertical = 6.dp, horizontal = 10.dp),
         ) {
-            Box(contentAlignment = Alignment.Companion.Center) {
+            Box(contentAlignment = Alignment.Center) {
                 MusicThumbnail(
                     uri = artworkUri.toUri(),
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .size(size = 55.dp)
                         .clip(androidx.compose.foundation.shape.RoundedCornerShape(5.dp))
-                        .then(if (currentMediaId == musicId.toString()) Modifier.Companion.blur(5.dp) else Modifier.Companion)
+                        .then(if (currentMediaId == musicId.toString()) Modifier.blur(5.dp) else Modifier)
                         .background(color = MaterialTheme.colorScheme.primary),
                 )
                 if (currentMediaId == musicId.toString()) {
                     WaveForm(
-                        modifier = Modifier.Companion
+                        modifier = Modifier
                             .clip(androidx.compose.foundation.shape.RoundedCornerShape(5.dp))
-                            .background(color = Color.Companion.Black.copy(alpha = 0.4f)),
+                            .background(color = Color.Black.copy(alpha = 0.4f)),
                         size = 55.dp,
                         enable = isPlaying(),
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.Companion.width(10.dp))
+            Spacer(modifier = Modifier.width(10.dp))
             Column(
-                modifier = Modifier.Companion
+                modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.8f),
                 verticalArrangement = Arrangement.SpaceAround,
-                horizontalAlignment = Alignment.Companion.CenterHorizontally,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    modifier = Modifier.Companion.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     text = name.removeFileExtension(),
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Companion.Medium,
+                    fontWeight = FontWeight.Medium,
                     maxLines = 1,
                     color = MaterialTheme.colorScheme.onPrimary,
-                    overflow = TextOverflow.Companion.Ellipsis,
+                    overflow = TextOverflow.Ellipsis,
                     softWrap = true,
                 )
                 Text(
-                    modifier = Modifier.Companion.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     text = artist,
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontWeight = FontWeight.Companion.Normal,
+                    fontWeight = FontWeight.Normal,
                     maxLines = 1,
                 )
             }
             Column(
-                Modifier.Companion.weight(0.2f),
+                Modifier.weight(0.2f),
                 verticalArrangement = Arrangement.spacedBy(5.dp),
-                horizontalAlignment = Alignment.Companion.End,
+                horizontalAlignment = Alignment.End,
             ) {
                 Text(
-                    modifier = Modifier.Companion.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     text = duration.convertMilliSecondToTime(),
                     color = MaterialTheme.colorScheme.onPrimary,
-                    textAlign = TextAlign.Companion.End,
+                    textAlign = TextAlign.End,
                 )
                 if (isFavorite) {
                     Icon(
                         imageVector = Icons.Default.Favorite,
                         contentDescription = "",
-                        modifier = Modifier.Companion.size(15.dp),
+                        modifier = Modifier.size(15.dp),
                         tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 }

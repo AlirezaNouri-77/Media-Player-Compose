@@ -62,7 +62,7 @@ internal fun PortraitLayout(
             duration = playerStateModel.currentMediaInfo.duration.toFloat(),
         )
         SongController(
-            playerStateModel = playerStateModel,
+            isPlaying = playerStateModel.isPlaying,
             isFavorite = isFavorite,
             repeatMode = repeatMode,
             onPauseMusic = { onPlayerAction(PlayerActions.PausePlayer) },

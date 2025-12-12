@@ -7,6 +7,7 @@ import com.example.core.model.datastore.CategorizedSortType
 data class AlbumScreenUiState(
     val isLoading: Boolean = false,
     val isSortDropDownMenuShow: Boolean = false,
+    val lastScrollState: Int = 0,
     val sortState: CategorizedSortModel = CategorizedSortModel(sortType = CategorizedSortType.NAME, isDec = false),
     val albumList: List<Pair<String, List<MusicModel>>> = emptyList(),
 )

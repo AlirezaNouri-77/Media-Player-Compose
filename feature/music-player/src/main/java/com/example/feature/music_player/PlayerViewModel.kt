@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.common.MusicThumbnailUtilImpl
+import com.example.core.domain.MusicThumbnailUtilImpl
 import com.example.core.domain.respository.FavoriteRepositoryImpl
 import com.example.core.model.MusicModel
 import com.example.core.music_media3.MusicServiceConnection

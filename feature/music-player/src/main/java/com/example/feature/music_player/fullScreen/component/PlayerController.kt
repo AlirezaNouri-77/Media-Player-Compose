@@ -30,13 +30,12 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.example.core.designsystem.R
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.example.core.model.PlayerStateModel
 import com.example.core.music_media3.model.RepeatModes
 
 @Composable
 fun SongController(
     modifier: Modifier = Modifier,
-    playerStateModel: PlayerStateModel,
+    isPlaying: Boolean,
     isFavorite: Boolean,
     repeatMode: Int,
     onMovePreviousMusic: () -> Unit,
@@ -46,13 +45,6 @@ fun SongController(
     onRepeatMode: (Int) -> Unit,
     onFavoriteToggle: () -> Unit,
 ) {
-    val favIcon = remember(playerStateModel.currentMediaInfo.musicID, isFavorite) {
-        when (isFavorite) {
-            true -> Icons.Default.Favorite
-            false -> Icons.Default.FavoriteBorder
-        }
-    }
-
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -61,7 +53,7 @@ fun SongController(
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
         ButtonOfFullScreenPlayer(
-            icon = favIcon,
+            icon = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
             size = DpSize(24.dp, 24.dp),
             contentDescription = "Fav Music",
             onClick = onFavoriteToggle,
@@ -74,11 +66,11 @@ fun SongController(
         )
         ButtonOfFullScreenPlayer(
             modifier = Modifier.padding(horizontal = 5.dp),
-            icon = if (playerStateModel.isPlaying) R.drawable.icon_pause else R.drawable.icon_play,
+            icon = if (isPlaying) R.drawable.icon_pause else R.drawable.icon_play,
             size = DpSize(48.dp, 48.dp),
             contentDescription = "Play and Pause",
             onClick = {
-                when (playerStateModel.isPlaying) {
+                when (isPlaying) {
                     true -> onPauseMusic.invoke()
                     false -> onResumeMusic.invoke()
                 }
@@ -118,7 +110,7 @@ private fun ButtonOfFullScreenPlayer(
     contentDescription: String,
     onClick: () -> Unit,
 ) {
-    ButtonWithEffect(
+    ButtonWithBounceEffect(
         modifier = modifier,
         onClick = { onClick.invoke() },
         size = size,
@@ -140,7 +132,7 @@ private fun ButtonOfFullScreenPlayer(
 }
 
 @Composable
-private fun ButtonWithEffect(
+private fun ButtonWithBounceEffect(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     size: DpSize,
@@ -155,8 +147,8 @@ private fun ButtonWithEffect(
         modifier = modifier
             .size(size)
             .graphicsLayer {
-                this.scaleX = this.scaleX * scale
-                this.scaleY = this.scaleY * scale
+                this.scaleX *= scale
+                this.scaleY *= scale
             },
         onClick = onClick,
         interactionSource = interactionSource,
@@ -175,7 +167,7 @@ private fun Preview() {
     MediaPlayerJetpackComposeTheme {
         SongController(
             modifier = Modifier,
-            playerStateModel = PlayerStateModel.Initial,
+            isPlaying = true,
             isFavorite = false,
             repeatMode = 0,
             onMovePreviousMusic = {},

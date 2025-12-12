@@ -1,4 +1,4 @@
-package com.example.core.common.util
+package com.example.core.data.util
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -10,7 +10,7 @@ import android.os.Build
 import android.util.Size
 import androidx.core.graphics.scale
 import androidx.palette.graphics.Palette
-import com.example.core.common.MusicThumbnailUtilImpl
+import com.example.core.domain.MusicThumbnailUtilImpl
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll

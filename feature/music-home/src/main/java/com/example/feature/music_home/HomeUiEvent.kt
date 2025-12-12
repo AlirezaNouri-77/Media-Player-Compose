@@ -13,4 +13,10 @@ sealed interface HomeUiEvent {
     data class UpdateSortOrder(val tabBarPosition: TabBarModel) : HomeUiEvent
 
     data class UpdateTabBarPosition(val tabBarPosition: TabBarModel) : HomeUiEvent
+
+    data class UpdateHomeScrollIndex(val index: Int) : HomeUiEvent
+
+    data class UpdateFolderScrollIndex(val index: Int) : HomeUiEvent
+
+    data class UpdateFavoriteScrollIndex(val index: Int) : HomeUiEvent
 }

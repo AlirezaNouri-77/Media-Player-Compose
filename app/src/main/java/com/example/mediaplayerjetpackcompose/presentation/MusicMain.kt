@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -35,16 +34,17 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
-import androidx.window.core.layout.WindowWidthSizeClass
-import com.example.core.designsystem.LocalParentScaffoldPadding
-import com.example.core.designsystem.MiniPlayerHeight
-import com.example.core.designsystem.NavigationBottomBarHeight
+import com.example.core.designsystem.util.CurrentWindowSizeState
+import com.example.core.designsystem.util.LocalParentScaffoldPadding
+import com.example.core.designsystem.util.MiniPlayerHeight
+import com.example.core.designsystem.util.NavigationBottomBarHeight
 import com.example.core.model.MediaCategory
+import com.example.core.model.WindowSize
 import com.example.feature.music_album.AlbumRoute
 import com.example.feature.music_artist.ArtistRoute
 import com.example.feature.music_categorydetail.CategoryDetailRoute
 import com.example.feature.music_categorydetail.CategoryViewModel
-import com.example.feature.music_home.HomeMusic
+import com.example.feature.music_home.HomeScreen
 import com.example.feature.music_player.PlayerActions
 import com.example.feature.music_player.PlayerViewModel
 import com.example.feature.music_search.SearchRoot
@@ -75,13 +75,13 @@ fun MusicMain(
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
-    val windowSize = currentWindowAdaptiveInfo()
+    val windowSize = CurrentWindowSizeState()
 
     val uiState by playerViewModel.playerUiState.collectAsStateWithLifecycle()
     val windowInset = WindowInsets.systemBars.asPaddingValues()
 
     val bottomPadding = remember(windowInset.calculateBottomPadding(), windowSize) {
-        if (windowSize.windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+        if (windowSize == WindowSize.COMPACT) {
             windowInset.calculateBottomPadding() + NavigationBottomBarHeight
         } else {
             10.dp
@@ -112,8 +112,8 @@ fun MusicMain(
             modifier = it,
             bottomBar = {
                 MusicNavigationBar(
-                    isVisible = windowSize.windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT,
-                    navigateTo = { route -> navBackStack.addTopLevel(route, true) },
+                    isVisible = (windowSize == WindowSize.COMPACT),
+                    navigateTo = { route -> navBackStack.addTopLevel(route, false) },
                     bottomBarGradientColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
                     bottomSheetSwapFraction = { bottomSheetSwapFraction },
                     topLevel = navBackStack.topLevelKey,
@@ -151,12 +151,13 @@ fun MusicMain(
                 ) {
                     Row {
                         NavigationRailComponent(
-                            isVisible = windowSize.windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.COMPACT,
+                            isVisible = windowSize != WindowSize.COMPACT,
                             topLevel = navBackStack.topLevelKey,
-                            onClick = { route -> navBackStack.addTopLevel(route, true) },
+                            onClick = { route -> navBackStack.addTopLevel(route, false) },
                         )
                         NavDisplay(
                             backStack = navBackStack.backStack,
+                            onBack = { navBackStack.removeLast() },
                             entryDecorators = listOf(
                                 rememberSaveableStateHolderNavEntryDecorator(),
                                 rememberViewModelStoreNavEntryDecorator(),
@@ -166,7 +167,7 @@ fun MusicMain(
                                     LocalParentScaffoldPadding provides innerPadding,
                                 ) {
                                     entry<HomeMusic> {
-                                        HomeMusic(
+                                        HomeScreen(
                                             navigateToCategoryPage = {},
                                             onNavigateToVideoScreen = navigateToVideo,
                                             onMusicClick = { index, list ->
@@ -176,7 +177,6 @@ fun MusicMain(
                                     }
                                     entry<ArtistMusic> {
                                         ArtistRoute(
-                                            animatedVisibilityScope = LocalNavAnimatedContentScope.current,
                                             navigateToCategory = { name ->
                                                 navBackStack.add(DetailMusic(name, MediaCategory.ARTIST))
                                             },
@@ -192,7 +192,6 @@ fun MusicMain(
                                     }
                                     entry<AlbumMusic> {
                                         AlbumRoute(
-                                            animatedVisibilityScope = LocalNavAnimatedContentScope.current,
                                             navigateToCategory = { name ->
                                                 navBackStack.add(DetailMusic(name, MediaCategory.ALBUM))
                                             },

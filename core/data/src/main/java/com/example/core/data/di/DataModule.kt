@@ -6,6 +6,8 @@ import com.example.core.data.repository.MusicRepository
 import com.example.core.data.repository.MusicSource
 import com.example.core.data.repository.SearchMusicRepository
 import com.example.core.data.repository.VideoRepository
+import com.example.core.data.util.MusicThumbnailUtil
+import com.example.core.domain.MusicThumbnailUtilImpl
 import com.example.core.domain.respository.FavoriteRepositoryImpl
 import com.example.core.domain.respository.MusicRepositoryImpl
 import com.example.core.domain.respository.MusicSourceImpl
@@ -36,4 +38,12 @@ var DataModule = module {
     single {
         MusicSource(get(), get(), get(DispatcherType.IO.qualifier))
     } bind MusicSourceImpl::class
+
+    single {
+        MusicThumbnailUtil(
+            androidApplication().applicationContext,
+            get(DispatcherType.DEFAULT.qualifier),
+            get(DispatcherType.IO.qualifier),
+        )
+    } bind MusicThumbnailUtilImpl::class
 }

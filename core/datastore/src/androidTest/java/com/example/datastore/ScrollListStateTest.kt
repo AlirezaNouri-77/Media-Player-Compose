@@ -47,7 +47,7 @@ class ScrollListStateTest {
         scrollListDataStoreManager.updateAlbumScroll(10)
         scrollListDataStoreManager.updateFolderScroll(10)
 
-        val result = scrollListDataStoreManager.sortState.first()
+        val result = scrollListDataStoreManager.scrollDataStoreState.first()
 
         assertEquals(1, result.homeMusic)
         assertEquals(10, result.albumMusic)

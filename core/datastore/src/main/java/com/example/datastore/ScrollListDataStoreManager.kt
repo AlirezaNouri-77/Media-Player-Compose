@@ -15,7 +15,7 @@ class ScrollListDataStoreManager(
     private val dataStore: DataStore<MyProtoPreferences>,
     private val ioDispatcher: CoroutineDispatcher,
 ) {
-    val sortState: Flow<ScrollListState> = dataStore.data
+    val scrollDataStoreState: Flow<ScrollListState> = dataStore.data
         .catch { exception ->
             if (exception is IOException) {
                 emit(MyProtoPreferences.getDefaultInstance())
