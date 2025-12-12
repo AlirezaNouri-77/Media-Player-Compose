@@ -36,6 +36,7 @@ import com.example.core.designsystem.R
 import com.example.core.designsystem.SortDropDownMenu
 import com.example.core.designsystem.util.MiniPlayerHeight
 import com.example.core.designsystem.util.NavigationBottomBarHeight
+import com.example.core.designsystem.util.rememberLazyListState
 import com.example.core.model.MusicModel
 import com.example.core.model.datastore.CategorizedSortType
 import kotlinx.collections.immutable.ImmutableList
@@ -51,16 +52,13 @@ fun SharedTransitionScope.ArtistRoute(
     val uiState by artistViewModel.artistScreenUiState.collectAsStateWithLifecycle()
 
     ArtistScreen(
-        listItems = uiState.artistList.toImmutableList(),
+        artistsList = uiState.artistList.toImmutableList(),
+        onEvent = artistViewModel::onEvent,
         isLoading = uiState.isLoading,
         navigateToCategory = navigateToCategory,
         isDropDownMenuSortExpand = { uiState.isSortDropDownMenuShow },
         isSortDescending = uiState.sortState.isDec,
         currentSortType = uiState.sortState.sortType,
-        onSortIconClick = { artistViewModel.onEvent(ArtistUiEvent.ShowSortDropDownMenu) },
-        onDismissDropDownMenu = { artistViewModel.onEvent(ArtistUiEvent.HideSortDropDownMenu) },
-        onOrderClick = { artistViewModel.onEvent(ArtistUiEvent.UpdateSortOrder(!uiState.sortState.isDec)) },
-        onSortClick = { artistViewModel.onEvent(ArtistUiEvent.UpdateSortType(it)) },
     )
 }
 
@@ -68,17 +66,17 @@ fun SharedTransitionScope.ArtistRoute(
 @Composable
 fun SharedTransitionScope.ArtistScreen(
     modifier: Modifier = Modifier,
-    listItems: ImmutableList<Pair<String, List<MusicModel>>>,
+    onEvent: (ArtistUiEvent) -> Unit,
+    artistsList: ImmutableList<Pair<String, List<MusicModel>>>,
     isLoading: Boolean,
     isDropDownMenuSortExpand: () -> Boolean,
     isSortDescending: Boolean,
     currentSortType: CategorizedSortType,
     navigateToCategory: (String) -> Unit,
-    onSortIconClick: () -> Unit,
-    onDismissDropDownMenu: () -> Unit,
-    onOrderClick: () -> Unit,
-    onSortClick: (CategorizedSortType) -> Unit,
 ) {
+    val listState = rememberLazyListState {
+        onEvent(ArtistUiEvent.UpdateScrollIndex(it))
+    }
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -101,7 +99,7 @@ fun SharedTransitionScope.ArtistScreen(
                             .wrapContentSize(Alignment.TopEnd),
                     ) {
                         IconButton(
-                            onClick = { onSortIconClick.invoke() },
+                            onClick = { onEvent(ArtistUiEvent.ShowSortDropDownMenu) },
                         ) {
                             Icon(
                                 modifier = Modifier.size(24.dp),
@@ -115,9 +113,9 @@ fun SharedTransitionScope.ArtistScreen(
                             sortTypeList = CategorizedSortType.entries.toList(),
                             isSortDescending = isSortDescending,
                             currentSortType = currentSortType,
-                            onSortClick = { onSortClick(it as CategorizedSortType) },
-                            onOrderClick = { onOrderClick() },
-                            onDismiss = { onDismissDropDownMenu() },
+                            onSortClick = { onEvent(ArtistUiEvent.UpdateSortType(it as CategorizedSortType)) },
+                            onOrderClick = { onEvent(ArtistUiEvent.UpdateSortOrder(!isSortDescending)) },
+                            onDismiss = { onEvent(ArtistUiEvent.HideSortDropDownMenu) },
                         )
                     }
                 },
@@ -129,15 +127,16 @@ fun SharedTransitionScope.ArtistScreen(
             if (it) {
                 Loading(modifier = Modifier.fillMaxSize())
             } else {
-                if (listItems.isNotEmpty()) {
+                if (artistsList.isNotEmpty()) {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding),
+                        state = listState,
                         contentPadding = PaddingValues(bottom = NavigationBottomBarHeight + MiniPlayerHeight),
                     ) {
                         items(
-                            items = listItems,
+                            items = artistsList,
                             key = { key -> key.first },
                         ) { item ->
                             CategoryListItem(

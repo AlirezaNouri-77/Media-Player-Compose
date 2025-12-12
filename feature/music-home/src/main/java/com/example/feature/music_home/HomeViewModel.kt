@@ -41,7 +41,6 @@ class HomeViewModel(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000L),
             HomeScreenUiState(isLoading = true),
-
         )
 
     fun onEvent(event: HomeUiEvent) {

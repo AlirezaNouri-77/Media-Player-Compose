@@ -45,23 +45,20 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SharedTransitionScope.AlbumRoute(
-    albumViewModel: AlbumViewModel = koinViewModel<AlbumViewModel>(),
     navigateToCategory: (String) -> Unit,
 ) {
-    val uiState by albumViewModel.albumScreenUiState.collectAsStateWithLifecycle()
+    val albumArtistViewModel = koinViewModel<AlbumViewModel>()
+    val uiState by albumArtistViewModel.albumScreenUiState.collectAsStateWithLifecycle()
 
     AlbumScreen(
         sharedTransitionScope = this,
-        albumListData = uiState.albumList.toImmutableList(),
+        onEvent = albumArtistViewModel::onEvent,
+        albumsList = uiState.albumList.toImmutableList(),
         navigateTo = navigateToCategory,
         isLoading = uiState.isLoading,
         isSortDescending = uiState.sortState.isDec,
         currentSortType = uiState.sortState.sortType,
         isSortDropDownMenuExpanded = uiState.isSortDropDownMenuShow,
-        onSortIconClick = { albumViewModel.onEvent(AlbumUiEvent.ShowSortDropDownMenu) },
-        onDismissDropDownMenu = { albumViewModel.onEvent(AlbumUiEvent.HideSortDropDownMenu) },
-        onOrderClick = { albumViewModel.onEvent(AlbumUiEvent.UpdateSortOrder(!uiState.sortState.isDec)) },
-        onSortClick = { albumViewModel.onEvent(AlbumUiEvent.UpdateSortType(it)) },
     )
 }
 
@@ -69,17 +66,14 @@ fun SharedTransitionScope.AlbumRoute(
 @Composable
 private fun AlbumScreen(
     modifier: Modifier = Modifier,
+    onEvent: (AlbumUiEvent)->Unit,
     sharedTransitionScope: SharedTransitionScope,
-    albumListData: ImmutableList<Pair<String, List<MusicModel>>>,
+    albumsList: ImmutableList<Pair<String, List<MusicModel>>>,
     isLoading: Boolean,
     isSortDescending: Boolean,
     currentSortType: CategorizedSortType,
     navigateTo: (String) -> Unit,
     isSortDropDownMenuExpanded: Boolean,
-    onDismissDropDownMenu: () -> Unit,
-    onOrderClick: () -> Unit,
-    onSortIconClick: () -> Unit,
-    onSortClick: (CategorizedSortType) -> Unit,
 ) {
     Scaffold(
         modifier = modifier,
@@ -103,7 +97,7 @@ private fun AlbumScreen(
                             .wrapContentSize(Alignment.TopEnd),
                     ) {
                         IconButton(
-                            onClick = { onSortIconClick.invoke() },
+                            onClick = { onEvent(AlbumUiEvent.ShowSortDropDownMenu) },
                         ) {
                             Icon(
                                 modifier = Modifier.size(24.dp),
@@ -117,9 +111,9 @@ private fun AlbumScreen(
                             sortTypeList = CategorizedSortType.entries.toList(),
                             isSortDescending = isSortDescending,
                             currentSortType = currentSortType,
-                            onSortClick = { onSortClick(it as CategorizedSortType) },
-                            onOrderClick = { onOrderClick() },
-                            onDismiss = { onDismissDropDownMenu() },
+                            onSortClick = { onEvent(AlbumUiEvent.UpdateSortType(it as CategorizedSortType)) },
+                            onOrderClick = { onEvent(AlbumUiEvent.UpdateSortOrder(!isSortDescending)) },
+                            onDismiss = { onEvent(AlbumUiEvent.HideSortDropDownMenu) },
                         )
                     }
                 },
@@ -131,7 +125,7 @@ private fun AlbumScreen(
             if (it) {
                 Loading(modifier = Modifier.fillMaxSize())
             } else {
-                if (albumListData.isNotEmpty()) {
+                if (albumsList.isNotEmpty()) {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
@@ -139,7 +133,7 @@ private fun AlbumScreen(
                         contentPadding = PaddingValues(bottom = NavigationBottomBarHeight + MiniPlayerHeight),
                     ) {
                         items(
-                            items = albumListData,
+                            items = albumsList,
                             key = { it },
                         ) { item ->
                             CategoryListItem(
