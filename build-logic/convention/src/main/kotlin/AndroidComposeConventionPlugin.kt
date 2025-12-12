@@ -9,37 +9,38 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 
 class AndroidComposeConventionPlugin : Plugin<Project> {
-  override fun apply(target: Project) {
-    with(target) {
-      apply(plugin = "com.android.library")
-      apply(plugin = "org.jetbrains.kotlin.android")
-      apply(plugin = "org.jetbrains.kotlin.plugin.compose")
+    override fun apply(target: Project) {
+        with(target) {
+            apply(plugin = "com.android.library")
+            apply(plugin = "org.jetbrains.kotlin.android")
+            apply(plugin = "org.jetbrains.kotlin.plugin.compose")
 
-      extensions.configure<LibraryExtension> {
-        setupAndroidSdkConfig(this)
-        configComposeMetric(this)
-        buildFeatures {
-          compose = true
+            extensions.configure<LibraryExtension> {
+                setupAndroidSdkConfig(this)
+                configComposeMetric(this)
+                buildFeatures {
+                    compose = true
+                }
+            }
+
+            this.dependencies {
+                val bom = getLibs.findLibrary("androidx.compose.bom").get()
+                "implementation"(getLibs.findLibrary("androidx.activity.compose").get())
+                "implementation"(getLibs.findLibrary("androidx.compose.foundation").get())
+                "implementation"(getLibs.findLibrary("androidx.material.icons").get())
+                "implementation"(platform(bom))
+                "implementation"(getLibs.findLibrary("androidx.ui.tooling.preview").get())
+                "implementation"(getLibs.findLibrary("androidx.material3").get())
+                "implementation"(getLibs.findLibrary("androidx.material3.adaptive").get())
+                "implementation"(getLibs.findLibrary("androidx.material3.adaptiveLayout").get())
+                "implementation"(getLibs.findLibrary("androidx.material3.navigationSuite").get())
+                "implementation"(getLibs.findLibrary("androidx.ui.graphics").get())
+                "implementation"(getLibs.findLibrary("androidx.navigation3.ui").get())
+                "androidTestImplementation"(platform(bom))
+                "debugImplementation"(getLibs.findLibrary("androidx.ui.tooling").get())
+            }
+
         }
-      }
-
-      this.dependencies {
-        val bom = getLibs.findLibrary("androidx.compose.bom").get()
-        "implementation"(getLibs.findLibrary("androidx.activity.compose").get())
-        "implementation"(getLibs.findLibrary("androidx.compose.foundation").get())
-        "implementation"(getLibs.findLibrary("androidx.material.icons").get())
-        "implementation"(platform(bom))
-        "androidTestImplementation"(platform(bom))
-        "implementation"(getLibs.findLibrary("androidx.ui.tooling.preview").get())
-        "implementation"(getLibs.findLibrary("androidx.material3").get())
-        "implementation"(getLibs.findLibrary("androidx.material3.adaptive").get())
-        "implementation"(getLibs.findLibrary("androidx.material3.adaptiveLayout").get())
-        "implementation"(getLibs.findLibrary("androidx.material3.navigationSuite").get())
-        "implementation"(getLibs.findLibrary("androidx.ui.graphics").get())
-        "debugImplementation"(getLibs.findLibrary("androidx.ui.tooling").get())
-      }
-
     }
-  }
 }
 

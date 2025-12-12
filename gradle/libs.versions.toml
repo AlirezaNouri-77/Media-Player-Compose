@@ -68,7 +68,6 @@ jetbrains-kotlinx-coroutine = { group = "org.jetbrains.kotlinx", name = "kotlinx
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidAnnotation" }
 
 androidx-dataStore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "dataStore" }
-google-porotbuf-javalite = { group = "com.google.protobuf", name = "protobuf-javalite", version.ref = "googlePortobuf" }
 google-porotbuf-kotlinLite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "googlePortobuf" }
 google-porotbuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "googlePortobuf" }
 

@@ -204,8 +204,10 @@ fun MusicMain(
                                             },
                                         )
 
+                                        val categoryUiState by categoryViewModel.uiState.collectAsStateWithLifecycle()
+
                                         CategoryDetailRoute(
-                                            categoryViewModel = categoryViewModel,
+                                            categoryUiState = categoryUiState,
                                             categoryName = param.name,
                                             displayWithVisuals = param.displayWithVisuals,
                                             animatedVisibilityScope = LocalNavAnimatedContentScope.current,

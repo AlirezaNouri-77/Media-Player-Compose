@@ -26,7 +26,6 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.designsystem.util.CurrentWindowSizeState
 import com.example.core.model.MusicModel
 import com.example.core.model.WindowSize
@@ -36,19 +35,17 @@ import com.example.feature.music_categorydetail.component.CategoryDetailPortrait
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.CategoryDetailRoute(
-    categoryViewModel: CategoryViewModel,
+    categoryUiState: CategoryUiState,
     categoryName: String,
     onMusicClick: (index: Int, list: List<MusicModel>) -> Unit,
     onBackClick: () -> Unit,
     animatedVisibilityScope: AnimatedVisibilityScope,
     displayWithVisuals: Boolean = true,
 ) {
-    val uiState by categoryViewModel.uiState.collectAsStateWithLifecycle()
-
     CategoryDetailPage(
-        uiState = uiState,
+        uiState = categoryUiState,
         categoryName = categoryName,
-        onMusicClick = { onMusicClick(it, uiState.songList) },
+        onMusicClick = { onMusicClick(it, categoryUiState.songList) },
         onBackClick = onBackClick,
         animatedVisibilityScope = animatedVisibilityScope,
         displayWithVisuals = displayWithVisuals,

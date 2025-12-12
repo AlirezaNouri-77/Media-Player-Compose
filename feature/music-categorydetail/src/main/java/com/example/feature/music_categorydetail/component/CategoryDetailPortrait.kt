@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +48,7 @@ internal fun SharedTransitionScope.CategoryDetailPortrait(
     animatedVisibilityScope: AnimatedVisibilityScope,
     displayWithVisuals: Boolean = true,
 ) {
-    var currentImageSize by remember {
+    var currentImageSize by rememberSaveable {
         mutableStateOf(240.dp)
     }
 

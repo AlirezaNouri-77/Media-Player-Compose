@@ -66,7 +66,7 @@ fun SharedTransitionScope.AlbumRoute(
 @Composable
 private fun AlbumScreen(
     modifier: Modifier = Modifier,
-    onEvent: (AlbumUiEvent)->Unit,
+    onEvent: (AlbumUiEvent) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     albumsList: ImmutableList<Pair<String, List<MusicModel>>>,
     isLoading: Boolean,
