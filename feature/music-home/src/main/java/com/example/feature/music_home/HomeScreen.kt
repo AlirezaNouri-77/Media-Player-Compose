@@ -273,7 +273,7 @@ fun SharedTransitionScope.HomeMusicPager(
                     onEvent(HomeUiEvent.UpdateFolderScrollIndex(it))
                 }
 
-                if (favoritesList.isNotEmpty()) {
+                if (folderSongsList.isNotEmpty()) {
                     LazyColumn(
                         state = listState,
                         modifier = Modifier.fillMaxSize(),

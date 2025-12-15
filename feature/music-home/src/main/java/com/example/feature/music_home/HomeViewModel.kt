@@ -102,8 +102,8 @@ class HomeViewModel(
             folderSortDataStoreManager.sortState,
         ) { songs, sortState ->
             sortMusic(list = songs, isDescending = sortState.isDec, sortType = sortState.sortType)
-        }.collect { favorite ->
-            mUiState.update { it.copy(folderSongsList = favorite) }
+        }.collect { folder ->
+            mUiState.update { it.copy(folderSongsList = folder) }
         }
     }
 
