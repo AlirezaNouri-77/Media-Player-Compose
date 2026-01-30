@@ -5,10 +5,11 @@
 - Media3 Session Service
 - Kotlin
 - Jetpack Compose
-- Navigation
+- Navigation 3
 - Flow
 - Room db
 - Coil
+- Koin
 - Coroutine
 
 ### Architecture - MVVM Pattern:
