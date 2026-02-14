@@ -1,8 +1,10 @@
+import com.android.build.api.dsl.LibraryExtension
+
 plugins {
     alias(libs.plugins.mediaplayer.androidConventionPlugin)
 }
 
-android {
+configure<LibraryExtension> {
     namespace = "com.example.core.domain"
 }
 

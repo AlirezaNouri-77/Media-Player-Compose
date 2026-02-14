@@ -1,10 +1,12 @@
 import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.CommonExtension
 import configuration.MediaPlayerBuildType
 import configuration.configComposeMetric
 import configuration.setupAndroidSdkConfig
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.getByType
 
 class AndroidApplication: Plugin<Project> {
     override fun apply(target: Project) {

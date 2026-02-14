@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.mediaplayer.androidApplicationPlugin)
-    alias(libs.plugins.android.kotlin)
     alias(libs.plugins.android.ksp)
     alias(libs.plugins.android.plugin.serialization)
     alias(libs.plugins.android.compose.plugin)
