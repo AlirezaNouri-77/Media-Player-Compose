@@ -168,7 +168,9 @@ fun MusicMain(
                                 ) {
                                     entry<HomeMusic> {
                                         HomeScreen(
-                                            navigateToCategoryPage = {},
+                                            navigateToCategoryPage = { name ->
+                                                navBackStack.add(DetailMusic(name, MediaCategory.FOLDER))
+                                            },
                                             onNavigateToVideoScreen = navigateToVideo,
                                             onMusicClick = { index, list ->
                                                 playerViewModel.onPlayerAction(PlayerActions.PlaySongs(index, list))
@@ -184,7 +186,6 @@ fun MusicMain(
                                     }
                                     entry<SearchMusic> {
                                         SearchRoot(
-                                            modifier = Modifier.imePadding(),
                                             onMusicClick = { index, list ->
                                                 playerViewModel.onPlayerAction(PlayerActions.PlaySongs(index, list))
                                             },

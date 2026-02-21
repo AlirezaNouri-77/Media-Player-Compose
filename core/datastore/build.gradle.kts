@@ -1,9 +1,12 @@
+import com.android.build.api.dsl.LibraryExtension
+import org.gradle.kotlin.dsl.configure
+
 plugins {
     alias(libs.plugins.mediaplayer.androidConventionPlugin)
     alias(libs.plugins.google.protobuf)
 }
 
-android {
+extensions.configure<LibraryExtension> {
     defaultConfig {
         consumerProguardFiles("consumer-proguard-rules.pro")
     }

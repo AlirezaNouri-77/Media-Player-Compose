@@ -21,13 +21,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.feature.music_search.R
 import kotlinx.coroutines.FlowPreview
 
 @OptIn(FlowPreview::class)
 @Composable
-fun SearchTextFieldSection(
+fun SearchTextFieldComponent(
     textFieldValue: String,
     onTextFieldChange: (String) -> Unit,
     onClear: () -> Unit,
@@ -46,8 +48,8 @@ fun SearchTextFieldSection(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
                 .padding(horizontal = 15.dp)
+                .padding(top = 8.dp)
                 .focusRequester(focusRequester),
             singleLine = true,
             maxLines = 1,
@@ -80,6 +82,18 @@ fun SearchTextFieldSection(
                 focusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
                 unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
             ),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SearchTextFieldComponentPreview() {
+    MediaPlayerJetpackComposeTheme {
+        SearchTextFieldComponent(
+            textFieldValue = "",
+            onTextFieldChange = {},
+            onClear = {}
         )
     }
 }

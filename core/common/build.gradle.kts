@@ -1,8 +1,10 @@
+import com.android.build.api.dsl.LibraryExtension
+
 plugins {
     alias(libs.plugins.mediaplayer.androidComposeConventionPlugin)
 }
 
-android {
+extensions.configure<LibraryExtension> {
     namespace = "com.example.core.common"
 }
 

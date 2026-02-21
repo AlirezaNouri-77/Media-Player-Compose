@@ -45,12 +45,12 @@ fun configFlavor(
     flavorConfigurationBlock: ProductFlavor.(flavor: MediaPlayerFlavor) -> Unit = {},
 ) {
     with(applicationExtension){
-        FlavorDimension.values().forEach {
+        FlavorDimension.entries.forEach {
             flavorDimensions += it.name
         }
 
         productFlavors {
-            MediaPlayerFlavor.values().forEach {
+            MediaPlayerFlavor.entries.forEach {
                 create(it.name){
                     dimension = it.dimension.name
                     flavorConfigurationBlock(this, it)

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -26,7 +27,7 @@ import com.example.core.designsystem.EmptyPage
 import com.example.core.designsystem.MusicMediaItem
 import com.example.core.designsystem.util.getLazyColumnPadding
 import com.example.core.model.MusicModel
-import com.example.feature.music_search.component.SearchTextFieldSection
+import com.example.feature.music_search.component.SearchTextFieldComponent
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.FlowPreview
@@ -35,14 +36,13 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(FlowPreview::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SearchRoot(
-    modifier: Modifier = Modifier,
     searchViewModel: SearchViewModel = koinViewModel<SearchViewModel>(),
     onMusicClick: (Int, List<MusicModel>) -> Unit,
 ) {
     val uiState by searchViewModel.searchScreenUiState.collectAsStateWithLifecycle()
 
     SearchScreen(
-        modifier = modifier,
+        modifier = Modifier.imePadding(),
         listItem = uiState.searchList.toImmutableList(),
         currentPlayerMediaId = uiState.playerStateModel.currentMediaInfo.musicID,
         currentPlayerPlayingState = uiState.playerStateModel.isPlaying,
@@ -93,7 +93,7 @@ fun SearchScreen(
             verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            SearchTextFieldSection(
+            SearchTextFieldComponent(
                 textFieldValue = searchTextFieldValue,
                 onTextFieldChange = onSearchTextFieldValueChange,
                 onClear = onClearSearchTextField,

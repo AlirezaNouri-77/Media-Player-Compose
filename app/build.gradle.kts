@@ -1,3 +1,6 @@
+import com.android.build.api.dsl.ApplicationExtension
+import org.gradle.kotlin.dsl.configure
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.mediaplayer.androidApplicationPlugin)
@@ -6,7 +9,7 @@ plugins {
     alias(libs.plugins.android.compose.plugin)
 }
 
-android {
+extensions.configure<ApplicationExtension> {
     namespace = "com.example.mediaplayerjetpackcompose"
 
     defaultConfig {
