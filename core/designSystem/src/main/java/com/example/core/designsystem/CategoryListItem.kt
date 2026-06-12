@@ -24,7 +24,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 
@@ -50,7 +49,7 @@ fun CategoryListItem(
                 horizontalArrangement = Arrangement.Start,
             ) {
                 MusicThumbnail(
-                    uri = thumbnailUri?.toUri(),
+                    uri = thumbnailUri,
                     modifier = Modifier
                         .size(size = 60.dp)
                         .clip(RoundedCornerShape(5.dp))

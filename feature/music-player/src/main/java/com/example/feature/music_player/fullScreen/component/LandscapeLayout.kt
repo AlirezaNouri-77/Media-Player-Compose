@@ -32,7 +32,7 @@ internal fun LandscapeLayout(
     maxDeviceVolume: Int,
     currentVolume: Int,
     onVolumeChange: (Float) -> Unit,
-    clickOnArtist: (String) -> Unit,
+    onArtistClick: (String) -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -54,10 +54,10 @@ internal fun LandscapeLayout(
                     .weight(1f, false)
                     .aspectRatio(0.9f),
                 pagerItem = pagerMusicList,
-                playerStateModel = playerStateModel,
+                currentPagerPage = currentPagerPage,
+                currentMusicID = playerStateModel.currentMediaInfo.musicID.toLong(),
                 onPlayerAction = { onPlayerAction(it) },
                 setCurrentPagerNumber = { setCurrentPagerNumber(it) },
-                currentPagerPage = currentPagerPage,
             )
         }
         Column(
@@ -73,7 +73,11 @@ internal fun LandscapeLayout(
             SongDetail(
                 modifier = Modifier,
                 currentPlayerStateModel = playerStateModel,
-                clickOnArtist = clickOnArtist,
+                isFavorite = isFavorite,
+                onArtistClick = onArtistClick,
+                onFavoriteClick = {
+                    onPlayerAction(PlayerActions.OnFavoriteToggle(playerStateModel.currentMediaInfo.musicID))
+                },
             )
             SliderSection(
                 modifier = Modifier,

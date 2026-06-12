@@ -1,6 +1,5 @@
 package com.example.core.designsystem
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -18,7 +17,7 @@ import coil.compose.SubcomposeAsyncImage
 @Composable
 fun MusicThumbnail(
     modifier: Modifier = Modifier,
-    uri: Uri?,
+    uri: String?,
 ) {
     val isDark = isSystemInDarkTheme()
     val imageBackgroundAlpha = remember(isSystemInDarkTheme()) {
@@ -29,14 +28,9 @@ fun MusicThumbnail(
         model = uri,
         contentDescription = "",
         contentScale = ContentScale.FillBounds,
-        modifier = modifier
-            .background(color = imageBackgroundAlpha),
-        loading = {
-            PlaceHolder(modifier = Modifier.matchParentSize())
-        },
-        error = {
-            PlaceHolder(modifier = Modifier.matchParentSize())
-        },
+        modifier = modifier.background(color = imageBackgroundAlpha),
+        loading = { PlaceHolder(modifier = Modifier.matchParentSize()) },
+        error = { PlaceHolder(modifier = Modifier.matchParentSize()) },
     )
 }
 

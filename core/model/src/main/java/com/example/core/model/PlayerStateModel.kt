@@ -8,7 +8,7 @@ data class PlayerStateModel(
     val isShuffleMode: Boolean = false,
 ) {
     companion object {
-        var Initial = PlayerStateModel(
+        val Initial = PlayerStateModel(
             isPlaying = false,
             currentMediaInfo = ActiveMusicInfo.Initial,
             isBuffering = false,

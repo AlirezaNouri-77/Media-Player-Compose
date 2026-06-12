@@ -4,15 +4,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 
 @Composable
 fun HeaderSection(
@@ -20,32 +26,38 @@ fun HeaderSection(
     onBackClick: () -> Unit,
 ) {
     Row(
-        modifier = modifier.wrapContentHeight(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.Start),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        androidx.compose.material3.IconButton(
-            modifier = Modifier
-                .size(28.dp),
-            onClick = { onBackClick.invoke() },
-            colors = androidx.compose.material3.IconButtonDefaults.iconButtonColors(
+        IconButton(
+            modifier = Modifier.size(32.dp),
+            onClick = onBackClick,
+            colors = IconButtonDefaults.iconButtonColors(
                 containerColor = Color.Transparent,
                 contentColor = Color.White,
             ),
         ) {
-            androidx.compose.material3.Icon(
-                modifier = Modifier
-                    .fillMaxSize(),
-                imageVector = androidx.compose.material.icons.Icons.Default.KeyboardArrowDown,
+            Icon(
+                modifier = Modifier.fillMaxSize(),
+                imageVector = Icons.Default.KeyboardArrowDown,
                 contentDescription = "",
             )
         }
-        androidx.compose.material3.Text(
+        Text(
             text = "Now Playing",
             modifier = Modifier,
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
             color = Color.White,
         )
+    }
+}
+
+@Preview()
+@Composable
+private fun HeaderSectionPreview() {
+    MediaPlayerJetpackComposeTheme {
+        HeaderSection(onBackClick = {})
     }
 }

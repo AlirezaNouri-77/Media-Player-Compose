@@ -102,7 +102,7 @@ private fun ExpandedMusicPlayer(
             maxDeviceVolume = maxDeviceVolume,
             currentVolume = currentVolume,
             onVolumeChange = onVolumeChange,
-            clickOnArtist = clickOnArtist,
+            onArtistClick = clickOnArtist,
         )
     }
 }

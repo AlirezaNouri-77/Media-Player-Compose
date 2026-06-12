@@ -45,15 +45,19 @@ internal fun PortraitLayout(
                 .weight(1f)
                 .aspectRatio(1f),
             pagerItem = pagerMusicList,
-            playerStateModel = playerStateModel,
+            currentPagerPage = currentPagerPage,
+            currentMusicID = playerStateModel.currentMediaInfo.musicID.toLong(),
             onPlayerAction = { onPlayerAction(it) },
             setCurrentPagerNumber = { setCurrentPagerNumber(it) },
-            currentPagerPage = currentPagerPage,
         )
         SongDetail(
             modifier = Modifier.padding(horizontal = 12.dp),
+            onArtistClick = clickOnArtist,
+            isFavorite = isFavorite,
             currentPlayerStateModel = playerStateModel,
-            clickOnArtist = clickOnArtist,
+            onFavoriteClick = {
+                onPlayerAction(PlayerActions.OnFavoriteToggle(playerStateModel.currentMediaInfo.musicID))
+            },
         )
         SliderSection(
             modifier = Modifier.padding(horizontal = 12.dp),

@@ -30,7 +30,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import com.example.core.common.util.convertMilliSecondToTime
 import com.example.core.common.util.removeFileExtension
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
@@ -68,7 +67,7 @@ fun MusicMediaItem(
         ) {
             Box(contentAlignment = Alignment.Center) {
                 MusicThumbnail(
-                    uri = artworkUri.toUri(),
+                    uri = artworkUri,
                     modifier = Modifier
                         .size(size = 55.dp)
                         .clip(androidx.compose.foundation.shape.RoundedCornerShape(5.dp))

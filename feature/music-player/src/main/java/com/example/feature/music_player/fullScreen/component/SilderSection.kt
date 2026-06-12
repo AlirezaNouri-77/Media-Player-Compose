@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -24,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -63,11 +61,10 @@ fun SliderSection(
         modifier = modifier,
     ) {
         Slider(
-            modifier = Modifier.wrapContentHeight(),
             value = sliderValue,
             interactionSource = sliderInteractionSource,
             onValueChange = { value -> seekPosition = value },
-            onValueChangeFinished = { seekTo.invoke(seekPosition.toLong()) },
+            onValueChangeFinished = { seekTo(seekPosition.toLong()) },
             thumb = {
                 SliderDefaults.Thumb(
                     colors = SliderDefaults.colors(
@@ -86,8 +83,8 @@ fun SliderSection(
                         inactiveTrackColor = Color.White.copy(alpha = 0.4f),
                     ),
                     drawStopIndicator = null,
-                    trackInsideCornerSize = 4.dp,
-                    thumbTrackGapSize = 3.dp,
+                    trackInsideCornerSize = 3.dp,
+                    thumbTrackGapSize = 2.dp,
                 )
             },
             valueRange = 0f..duration,
@@ -101,14 +98,12 @@ fun SliderSection(
         ) {
             Text(
                 text = sliderValue.convertMilliSecondToTime(),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
+                fontSize = 13.sp,
                 color = Color.White,
             )
             Text(
                 text = duration.convertMilliSecondToTime(),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
+                fontSize = 13.sp,
                 color = Color.White,
             )
         }

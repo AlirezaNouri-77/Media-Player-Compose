@@ -27,7 +27,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import com.example.core.designsystem.util.MiniPlayerHeight
 import com.example.core.model.PlayerStateModel
 import com.example.core.music_media3.model.ArtworkModel
@@ -130,7 +129,7 @@ fun BottomSheetContent(
                 onPlayerAction = playerViewModel::onPlayerAction,
                 currentPlayerMediaId = currentMusicState.currentMediaInfo.musicID.toLong(),
                 currentPlayerDuration = currentMusicState.currentMediaInfo.duration.toInt(),
-                currentPlayerArtworkUri = currentMusicState.currentMediaInfo.artworkUri.toUri(),
+                currentPlayerArtworkUri = currentMusicState.currentMediaInfo.artworkUri,
                 isPlaying = currentMusicState.isPlaying,
                 musicArtWorkColorAnimation = musicArtWorkColorAnimation,
                 onClick = { coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.expand() } },

@@ -1,6 +1,5 @@
 package com.example.feature.music_categorydetail.component
 
-import android.net.Uri
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -28,7 +27,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import com.example.core.designsystem.MusicMediaItem
 import com.example.core.designsystem.MusicThumbnail
 import com.example.core.designsystem.util.MiniPlayerHeight
@@ -79,8 +77,7 @@ internal fun SharedTransitionScope.CategoryDetailPortrait(
         ) {
             if (displayWithVisuals) {
                 MusicThumbnail(
-                    uri = uiState.songList.firstOrNull { it.artworkUri.isNotEmpty() }?.artworkUri?.toUri()
-                        ?: Uri.EMPTY,
+                    uri = uiState.songList.firstOrNull { it.artworkUri.isNotEmpty() }?.artworkUri,
                     modifier = Modifier
                         .size(currentImageSize)
                         .clip(RoundedCornerShape(15.dp)),

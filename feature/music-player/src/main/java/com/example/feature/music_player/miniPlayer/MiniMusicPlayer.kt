@@ -1,7 +1,6 @@
 package com.example.feature.music_player.miniPlayer
 
 import android.content.res.Configuration
-import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,7 +42,7 @@ fun MiniMusicPlayer(
     currentPagerPage: Int,
     currentPlayerMediaId: Long,
     currentPlayerDuration: Int,
-    currentPlayerArtworkUri: Uri?,
+    currentPlayerArtworkUri: String?,
     isPlaying: Boolean,
     musicArtWorkColorAnimation: Color,
     currentMusicPosition: Long,
@@ -139,7 +138,7 @@ private fun Preview() {
                 .padding(horizontal = 8.dp, vertical = 5.dp),
             currentPlayerMediaId = 0L,
             currentPlayerDuration = 207726,
-            currentPlayerArtworkUri = Uri.EMPTY,
+            currentPlayerArtworkUri = "",
             isPlaying = true,
             musicArtWorkColorAnimation = Color.Red,
         )

@@ -5,10 +5,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -55,14 +54,13 @@ fun SongController(
         )
         ButtonOfFullScreenPlayer(
             icon = R.drawable.icon_previous,
-            size = DpSize(42.dp, 42.dp),
+            size = DpSize(32.dp, 32.dp),
             contentDescription = "Next",
             onClick = onMovePreviousMusic,
         )
         ButtonOfFullScreenPlayer(
-            modifier = Modifier.padding(horizontal = 5.dp),
             icon = if (isPlaying) R.drawable.icon_pause else R.drawable.icon_play,
-            size = DpSize(52.dp, 52.dp),
+            size = DpSize(42.dp, 42.dp),
             contentDescription = "Play and Pause",
             onClick = {
                 when (isPlaying) {
@@ -73,7 +71,7 @@ fun SongController(
         )
         ButtonOfFullScreenPlayer(
             icon = R.drawable.icon_next,
-            size = DpSize(42.dp, 42.dp),
+            size = DpSize(32.dp, 32.dp),
             contentDescription = "Next",
             onClick = onMoveNextMusic,
         )
@@ -101,32 +99,24 @@ fun SongController(
 @Composable
 private fun ButtonOfFullScreenPlayer(
     modifier: Modifier = Modifier,
-    icon: Any,
+    icon: Int,
     size: DpSize,
     color: Color = Color.Unspecified,
     contentDescription: String,
     onClick: () -> Unit,
 ) {
-    ButtonWithBounceEffect(
-        modifier = modifier,
-        onClick = { onClick.invoke() },
-        size = size,
+    IconButton(
+        modifier = modifier
+            .size(size.copy(size.width + 8.dp, height = size.height + 8.dp)),
+        onClick = onClick,
+        shape = RoundedCornerShape(16.dp),
     ) {
-        if (icon is Int) {
-            Icon(
-                modifier = Modifier.fillMaxSize(0.9f),
-                imageVector = ImageVector.vectorResource(icon),
-                tint = color,
-                contentDescription = contentDescription,
-            )
-        } else if (icon is ImageVector) {
-            Icon(
-                modifier = Modifier.fillMaxSize(0.9f),
-                imageVector = icon,
-                tint = color,
-                contentDescription = contentDescription,
-            )
-        }
+        Icon(
+            modifier = Modifier.size(size),
+            imageVector = ImageVector.vectorResource(icon),
+            tint = color,
+            contentDescription = contentDescription,
+        )
     }
 }
 
@@ -166,7 +156,7 @@ private fun Preview() {
     MediaPlayerJetpackComposeTheme {
         SongController(
             modifier = Modifier,
-            isPlaying = true,
+            isPlaying = false,
             isShuffleMode = true,
             repeatMode = 0,
             onMovePreviousMusic = {},
