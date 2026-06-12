@@ -11,7 +11,7 @@ data class PlayerStateModel(
     companion object {
         var Empty = PlayerStateModel(
             isPlaying = false,
-            currentMediaInfo = ActiveMusicInfo.Empty,
+            currentMediaInfo = ActiveMusicInfo.Initial,
             isBuffering = false,
             repeatMode = 0,
         )

@@ -7,12 +7,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -36,38 +32,37 @@ import com.example.core.music_media3.model.RepeatModes
 fun SongController(
     modifier: Modifier = Modifier,
     isPlaying: Boolean,
-    isFavorite: Boolean,
+    isShuffleMode: Boolean,
     repeatMode: Int,
     onMovePreviousMusic: () -> Unit,
     onPauseMusic: () -> Unit,
     onResumeMusic: () -> Unit,
     onMoveNextMusic: () -> Unit,
     onRepeatMode: (Int) -> Unit,
-    onFavoriteToggle: () -> Unit,
+    onShuffleModeClick: () -> Unit,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = 60.dp),
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
         ButtonOfFullScreenPlayer(
-            icon = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+            icon = R.drawable.icon_shuffle,
             size = DpSize(24.dp, 24.dp),
-            contentDescription = "Fav Music",
-            onClick = onFavoriteToggle,
+            color = if (isShuffleMode) Color.White else Color.White.copy(alpha = 0.5f),
+            contentDescription = "shuffle Music",
+            onClick = onShuffleModeClick,
         )
         ButtonOfFullScreenPlayer(
             icon = R.drawable.icon_previous,
-            size = DpSize(26.dp, 26.dp),
+            size = DpSize(42.dp, 42.dp),
             contentDescription = "Next",
             onClick = onMovePreviousMusic,
         )
         ButtonOfFullScreenPlayer(
             modifier = Modifier.padding(horizontal = 5.dp),
             icon = if (isPlaying) R.drawable.icon_pause else R.drawable.icon_play,
-            size = DpSize(48.dp, 48.dp),
+            size = DpSize(52.dp, 52.dp),
             contentDescription = "Play and Pause",
             onClick = {
                 when (isPlaying) {
@@ -78,7 +73,7 @@ fun SongController(
         )
         ButtonOfFullScreenPlayer(
             icon = R.drawable.icon_next,
-            size = DpSize(26.dp, 26.dp),
+            size = DpSize(42.dp, 42.dp),
             contentDescription = "Next",
             onClick = onMoveNextMusic,
         )
@@ -91,6 +86,7 @@ fun SongController(
             },
             size = DpSize(24.dp, 24.dp),
             contentDescription = "RepeatMode",
+            color = if (repeatMode != 0) Color.White else Color.White.copy(alpha = 0.5f),
             onClick = {
                 if (repeatMode == RepeatModes.entries.toMutableList().lastIndex) {
                     onRepeatMode.invoke(0)
@@ -107,6 +103,7 @@ private fun ButtonOfFullScreenPlayer(
     modifier: Modifier = Modifier,
     icon: Any,
     size: DpSize,
+    color: Color = Color.Unspecified,
     contentDescription: String,
     onClick: () -> Unit,
 ) {
@@ -119,12 +116,14 @@ private fun ButtonOfFullScreenPlayer(
             Icon(
                 modifier = Modifier.fillMaxSize(0.9f),
                 imageVector = ImageVector.vectorResource(icon),
+                tint = color,
                 contentDescription = contentDescription,
             )
         } else if (icon is ImageVector) {
             Icon(
                 modifier = Modifier.fillMaxSize(0.9f),
                 imageVector = icon,
+                tint = color,
                 contentDescription = contentDescription,
             )
         }
@@ -168,14 +167,14 @@ private fun Preview() {
         SongController(
             modifier = Modifier,
             isPlaying = true,
-            isFavorite = false,
+            isShuffleMode = true,
             repeatMode = 0,
             onMovePreviousMusic = {},
             onPauseMusic = {},
             onResumeMusic = {},
             onMoveNextMusic = {},
             onRepeatMode = {},
-            onFavoriteToggle = {},
+            onShuffleModeClick = {},
         )
     }
 }

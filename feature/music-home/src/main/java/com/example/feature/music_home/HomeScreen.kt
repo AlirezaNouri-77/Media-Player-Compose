@@ -135,7 +135,6 @@ fun SharedTransitionScope.HomeScreen(
                 targetState = uiState.isLoading,
                 label = "",
             ) { isLoading ->
-
                 if (isLoading) {
                     Loading(modifier = Modifier)
                 } else {

@@ -7,6 +7,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import com.example.core.model.ActiveMusicInfo
 import com.example.core.model.MusicModel
+import com.example.core.music_media3.model.ArtworkModel
 
 fun MusicModel.toMediaItem() =
     MediaItem.Builder()
@@ -57,6 +58,15 @@ fun MediaItem.toActiveMusicInfo() = ActiveMusicInfo(
     size = this.mediaMetadata.extras?.getLong(MEDIAMETADATA_BUNDLE_SIZE_KEY) ?: 0L,
     isFavorite = this.mediaMetadata.extras?.getBoolean(MEDIAMETADATA_BUNDLE_ISFAVORITE_KEY) ?: false,
 )
+
+fun MediaItem.toArtworkModel(): ArtworkModel {
+    return ArtworkModel(
+        musicId = this.mediaId,
+        uri = this.mediaMetadata.artworkUri ?: Uri.EMPTY,
+        name = this.mediaMetadata.title.toString(),
+        artist = this.mediaMetadata.artist.toString(),
+    )
+}
 
 const val MEDIAMETADATA_BUNDLE_DURATION_KEY = "Duration"
 const val MEDIAMETADATA_BUNDLE_BITRATE_KEY = "Bitrate"

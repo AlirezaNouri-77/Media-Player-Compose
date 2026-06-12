@@ -12,8 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.core.model.MusicModel
 import com.example.core.model.PlayerStateModel
+import com.example.core.music_media3.model.ArtworkModel
 import com.example.feature.music_player.PlayerActions
 import kotlinx.collections.immutable.ImmutableList
 
@@ -25,7 +25,7 @@ internal fun LandscapeLayout(
     playerStateModel: PlayerStateModel,
     currentMusicPosition: Long,
     isFavorite: Boolean,
-    pagerMusicList: ImmutableList<MusicModel>,
+    pagerMusicList: ImmutableList<ArtworkModel>,
     onBack: () -> Unit,
     onPlayerAction: (PlayerActions) -> Unit,
     setCurrentPagerNumber: (Int) -> Unit,
@@ -83,18 +83,14 @@ internal fun LandscapeLayout(
             )
             SongController(
                 isPlaying = playerStateModel.isPlaying,
-                isFavorite = isFavorite,
                 repeatMode = repeatMode,
                 onPauseMusic = { onPlayerAction(PlayerActions.PausePlayer) },
                 onResumeMusic = { onPlayerAction(PlayerActions.ResumePlayer) },
                 onMovePreviousMusic = { onPlayerAction(PlayerActions.MovePreviousPlayer(false)) },
                 onMoveNextMusic = { onPlayerAction(PlayerActions.MoveNextPlayer) },
                 onRepeatMode = { onPlayerAction(PlayerActions.OnRepeatMode(it)) },
-                onFavoriteToggle = {
-                    onPlayerAction(
-                        PlayerActions.OnFavoriteToggle(playerStateModel.currentMediaInfo.musicID),
-                    )
-                },
+                isShuffleMode = playerStateModel.isShuffleMode,
+                onShuffleModeClick = { onPlayerAction(PlayerActions.onShuffleMode) },
             )
             VolumeController(
                 maxDeviceVolume = maxDeviceVolume,

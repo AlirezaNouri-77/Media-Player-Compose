@@ -3,11 +3,13 @@ package com.example.mediaplayerjetpackcompose.presentation
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.BottomSheetScaffold
@@ -57,6 +59,7 @@ import com.example.mediaplayerjetpackcompose.presentation.navigation.DetailMusic
 import com.example.mediaplayerjetpackcompose.presentation.navigation.HomeMusic
 import com.example.mediaplayerjetpackcompose.presentation.navigation.NavigationRailComponent
 import com.example.mediaplayerjetpackcompose.presentation.navigation.SearchMusic
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -124,13 +127,11 @@ fun MusicMain(
                 BottomSheetScaffold(
                     modifier = Modifier,
                     scaffoldState = bottomSheetScaffoldState,
-                    sheetDragHandle = {},
+                    sheetDragHandle = null,
                     sheetPeekHeight = bottomPadding + if (uiState.currentPlayerState.currentMediaInfo.musicID.isNotEmpty()) MiniPlayerHeight else 0.dp,
                     sheetContainerColor = Color.Transparent,
                     containerColor = Color.Transparent,
-                    sheetTonalElevation = 0.dp,
                     sheetShadowElevation = 0.dp,
-                    sheetMaxWidth = Int.MAX_VALUE.dp,
                     sheetContent = {
                         BottomSheetContent(
                             isVisible = uiState.currentPlayerState.currentMediaInfo.musicID.isNotEmpty(),
@@ -140,7 +141,7 @@ fun MusicMain(
                             currentArtworkPagerIndex = uiState.currentThumbnailPagerIndex,
                             currentDeviceVolume = uiState.currentDeviceVolume,
                             bottomSheetScaffoldState = bottomSheetScaffoldState,
-                            pagerThumbnailList = uiState.thumbnailsList,
+                            pagerThumbnailList = uiState.thumbnailsList.toImmutableList(),
                             artworkDominateColor = uiState.thumbnailDominantColor,
                             bottomSheetSwapFraction = { bottomSheetSwapFraction },
                             navigateToArtist = { artist ->
@@ -158,6 +159,7 @@ fun MusicMain(
                         NavDisplay(
                             backStack = navBackStack.backStack,
                             onBack = { navBackStack.removeLast() },
+                            predictivePopTransitionSpec = { fadeIn() togetherWith fadeOut() },
                             entryDecorators = listOf(
                                 rememberSaveableStateHolderNavEntryDecorator(),
                                 rememberViewModelStoreNavEntryDecorator(),

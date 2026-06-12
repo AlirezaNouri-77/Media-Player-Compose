@@ -46,7 +46,7 @@ class CategoryViewModel(
     }
 
     private fun observePlayerState() = viewModelScope.launch {
-        getMusicPlayerStateUseCase.invoke().collect { playerStateModel ->
+        getMusicPlayerStateUseCase().collect { playerStateModel ->
             mCategoryUiState.update { it.copy(musicPlayerState = playerStateModel) }
         }
     }

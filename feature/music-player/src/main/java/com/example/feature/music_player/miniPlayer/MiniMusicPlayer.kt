@@ -25,7 +25,7 @@ import com.example.core.designsystem.MusicThumbnail
 import com.example.core.designsystem.NoRippleEffect
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.designsystem.util.MiniPlayerHeight
-import com.example.core.model.MusicModel
+import com.example.core.music_media3.model.ArtworkModel
 import com.example.feature.music_player.PagerHandler
 import com.example.feature.music_player.PlayerActions
 import com.example.feature.music_player.miniPlayer.component.MiniPlayerActions
@@ -38,7 +38,7 @@ import kotlinx.collections.immutable.toImmutableList
 fun MiniMusicPlayer(
     modifier: Modifier,
     onClick: () -> Unit,
-    artworkPagerList: ImmutableList<MusicModel>,
+    artworkPagerList: ImmutableList<ArtworkModel>,
     setCurrentPagerNumber: (Int) -> Unit,
     currentPagerPage: Int,
     currentPlayerMediaId: Long,
@@ -60,7 +60,7 @@ fun MiniMusicPlayer(
         currentPagerPage = currentPagerPage,
         pagerState = pagerState,
         setCurrentPagerNumber = setCurrentPagerNumber,
-        onMoveToIndex = { onPlayerAction(PlayerActions.OnMoveToIndex(it)) },
+        onMoveToIndex = { index, musicId -> onPlayerAction(PlayerActions.OnMoveToIndex(index, musicId)) },
     )
 
     Card(
@@ -79,7 +79,6 @@ fun MiniMusicPlayer(
                     )
                 }
             },
-        shape = RoundedCornerShape(0.dp),
         onClick = onClick,
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent,
@@ -130,7 +129,7 @@ private fun Preview() {
     MediaPlayerJetpackComposeTheme {
         MiniMusicPlayer(
             onClick = {},
-            artworkPagerList = listOf(MusicModel.Dummy).toImmutableList(),
+            artworkPagerList = emptyList<ArtworkModel>().toImmutableList(),
             setCurrentPagerNumber = {},
             currentPagerPage = 0,
             currentMusicPosition = 2000,

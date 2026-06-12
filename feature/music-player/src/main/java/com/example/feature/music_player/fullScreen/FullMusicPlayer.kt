@@ -7,14 +7,14 @@ import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.designsystem.util.CurrentWindowSizeState
 import com.example.core.model.ActiveMusicInfo
-import com.example.core.model.MusicModel
 import com.example.core.model.PlayerStateModel
 import com.example.core.model.WindowSize
+import com.example.core.music_media3.model.ArtworkModel
 import com.example.feature.music_player.PlayerActions
 import com.example.feature.music_player.fullScreen.component.LandscapeLayout
 import com.example.feature.music_player.fullScreen.component.PortraitLayout
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun FullMusicPlayer(
@@ -24,7 +24,7 @@ fun FullMusicPlayer(
     currentPlayerState: PlayerStateModel,
     currentMusicPosition: Long,
     isFavorite: Boolean,
-    pagerMusicList: ImmutableList<MusicModel>,
+    pagerMusicList: ImmutableList<ArtworkModel>,
     onBack: () -> Unit,
     onPlayerAction: (PlayerActions) -> Unit,
     setCurrentPagerNumber: (Int) -> Unit,
@@ -59,7 +59,7 @@ private fun ExpandedMusicPlayer(
     playerStateModel: PlayerStateModel,
     currentMusicPosition: Long,
     isFavorite: Boolean,
-    pagerMusicList: ImmutableList<MusicModel>,
+    pagerMusicList: ImmutableList<ArtworkModel>,
     onBack: () -> Unit,
     onPlayerAction: (PlayerActions) -> Unit,
     setCurrentPagerNumber: (Int) -> Unit,
@@ -139,7 +139,7 @@ private fun FullScreenPreview() {
             repeatMode = 0,
             currentMusicPosition = 10000L,
             currentPagerPage = 0,
-            pagerMusicList = persistentListOf(MusicModel.Dummy),
+            pagerMusicList = emptyList<ArtworkModel>().toImmutableList(),
             onBack = {},
             setCurrentPagerNumber = {},
             onPlayerAction = {},

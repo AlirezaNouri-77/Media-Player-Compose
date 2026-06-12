@@ -1,6 +1,5 @@
 package com.example.core.music_media3
 
-import android.content.Intent
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -22,11 +21,6 @@ class MusicPlayerService : MediaLibraryService(), KoinComponent {
         mediaLibraryCallBack()
 
         mediaSession = MediaLibrarySession.Builder(this, musicPlayer, mediaLibrarySessionCallback).build()
-    }
-
-    @OptIn(UnstableApi::class)
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        super.onTaskRemoved(rootIntent)
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession? {

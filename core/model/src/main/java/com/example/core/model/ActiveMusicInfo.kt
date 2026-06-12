@@ -13,7 +13,7 @@ data class ActiveMusicInfo(
     val isFavorite: Boolean,
 ) {
     companion object {
-        var Empty = ActiveMusicInfo(
+        var Initial = ActiveMusicInfo(
             title = "",
             musicID = "",
             artworkUri = "",

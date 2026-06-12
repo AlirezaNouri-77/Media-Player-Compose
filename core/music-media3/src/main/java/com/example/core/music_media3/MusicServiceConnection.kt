@@ -3,6 +3,7 @@ package com.example.core.music_media3
 import android.content.ComponentName
 import android.content.Context
 import androidx.core.content.ContextCompat
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
@@ -11,32 +12,33 @@ import com.example.core.model.ActiveMusicInfo
 import com.example.core.model.MusicModel
 import com.example.core.model.PlayerStateModel
 import com.example.core.music_media3.mapper.toActiveMusicInfo
+import com.example.core.music_media3.mapper.toArtworkModel
 import com.example.core.music_media3.mapper.toMediaItem
 import com.example.core.music_media3.mapper.toMusicModel
+import com.example.core.music_media3.model.ArtworkModel
 import com.google.common.util.concurrent.ListenableFuture
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
+import kotlin.time.Duration.Companion.milliseconds
 
 class MusicServiceConnection(
     private var context: Context,
+    private val ioDispatcher: CoroutineDispatcher,
 ) {
     private var factory: ListenableFuture<MediaController>? = null
     private var mediaController: MediaController? = null
 
     private var _playerState = MutableStateFlow(PlayerStateModel.Initial)
-    var playerState: StateFlow<PlayerStateModel> = _playerState.asStateFlow()
+    var playerState = _playerState.asStateFlow()
 
-    private var _currentArtworkPagerIndex = MutableStateFlow(0)
-    var currentArtworkPagerIndex: StateFlow<Int> = _currentArtworkPagerIndex.asStateFlow()
-
-    private var _artworkPagerList = MutableStateFlow(listOf<MusicModel>())
-    var artworkPagerList = _artworkPagerList.asStateFlow()
+    private var _currentPlayedMusicList = MutableStateFlow(emptyList<MusicModel>())
+    var currentPlayedMusicList = _currentPlayedMusicList.asStateFlow()
 
     init {
         initialExoPlayer()
@@ -54,6 +56,9 @@ class MusicServiceConnection(
                 mediaControllerFuture.addListener(
                     {
                         mediaController = factory?.get().also { it?.addListener(exoPlayerListener) }
+                        _playerState.update {
+                            it.copy(currentMediaInfo = mediaController?.currentMediaItem?.toActiveMusicInfo() ?: ActiveMusicInfo.Initial)
+                        }
                     },
                     ContextCompat.getMainExecutor(context),
                 )
@@ -78,7 +83,7 @@ class MusicServiceConnection(
                 val position = mediaController?.currentPosition ?: 0L
                 emit(position)
             }
-            delay(80L)
+            delay(80L.milliseconds)
         }
     }
 
@@ -97,8 +102,7 @@ class MusicServiceConnection(
     }
 
     fun playSongs(index: Int, musicList: List<MusicModel>) {
-        _currentArtworkPagerIndex.update { index }
-        _artworkPagerList.update { musicList.toList() }
+        _currentPlayedMusicList.update { musicList }
         mediaController?.run {
             setMediaItems(musicList.map(MusicModel::toMediaItem), index, 0L)
             prepare()
@@ -108,7 +112,7 @@ class MusicServiceConnection(
 
     fun setRepeatMode(repeatMode: Int) = mediaController?.repeatMode = repeatMode
 
-    fun setCurrentArtworkPagerIndex(index: Int) = _currentArtworkPagerIndex.update { index }
+    fun setShuffleMode(boolean: Boolean) = mediaController?.shuffleModeEnabled = boolean
 
     fun moveToNext() {
         val hasNextItem = mediaController?.hasNextMediaItem() == true
@@ -118,26 +122,16 @@ class MusicServiceConnection(
             prepare()
             play()
         }
-        _currentArtworkPagerIndex.update { it + 1 }
     }
 
     fun moveToPrevious(seekToStart: Boolean = false, currentMusicPosition: Long) {
         val hasPreviewItem = mediaController?.hasNextMediaItem() == true
         if (!hasPreviewItem) return
 
-        if (currentMusicPosition <= 15_000 || seekToStart) {
-            mediaController?.apply {
-                seekToPreviousMediaItem()
-                prepare()
-                play()
-            }
-            _currentArtworkPagerIndex.update { it - 1 }
-        } else {
-            mediaController?.apply {
-                seekToPrevious()
-                prepare()
-                play()
-            }
+        mediaController?.apply {
+            if (currentMusicPosition <= 15_000 || seekToStart) seekToPreviousMediaItem() else seekToPrevious()
+            prepare()
+            play()
         }
     }
 
@@ -152,9 +146,15 @@ class MusicServiceConnection(
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
             _playerState.update {
-                it.copy(
-                    currentMediaInfo = mediaItem?.toActiveMusicInfo() ?: ActiveMusicInfo.Empty,
+                _playerState.value.copy(
+                    currentMediaInfo = mediaItem?.toActiveMusicInfo() ?: ActiveMusicInfo.Initial,
                 )
+            }
+        }
+
+        override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+            _playerState.update {
+                it.copy(isShuffleMode = mediaController?.shuffleModeEnabled ?: false)
             }
         }
 
@@ -163,6 +163,24 @@ class MusicServiceConnection(
                 Player.STATE_BUFFERING -> _playerState.update { it.copy(isBuffering = true) }
                 Player.STATE_READY -> _playerState.update { it.copy(isBuffering = false) }
                 else -> {}
+            }
+        }
+    }
+
+    fun getMediaItemsList(): List<ArtworkModel> {
+        val timeLine = mediaController?.currentTimeline
+        var nextIndex =
+            timeLine?.getFirstWindowIndex(mediaController?.shuffleModeEnabled ?: false) ?: -1
+
+        return buildList {
+            while (nextIndex != C.INDEX_UNSET) {
+                mediaController?.getMediaItemAt(nextIndex)
+                    ?.let { this.add(it.toArtworkModel()) }
+                nextIndex = timeLine?.getNextWindowIndex(
+                    nextIndex,
+                    Player.REPEAT_MODE_OFF,
+                    mediaController?.shuffleModeEnabled ?: false,
+                ) ?: 0
             }
         }
     }

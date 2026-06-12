@@ -29,12 +29,13 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.example.core.designsystem.util.MiniPlayerHeight
-import com.example.core.model.MusicModel
 import com.example.core.model.PlayerStateModel
+import com.example.core.music_media3.model.ArtworkModel
 import com.example.feature.music_player.PlayerActions
 import com.example.feature.music_player.PlayerViewModel
 import com.example.feature.music_player.fullScreen.FullMusicPlayer
 import com.example.feature.music_player.miniPlayer.MiniMusicPlayer
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 
@@ -49,7 +50,7 @@ fun BottomSheetContent(
     currentArtworkPagerIndex: Int,
     currentDeviceVolume: Int,
     bottomSheetScaffoldState: BottomSheetScaffoldState,
-    pagerThumbnailList: List<MusicModel>,
+    pagerThumbnailList: ImmutableList<ArtworkModel>,
     bottomSheetSwapFraction: () -> Float,
     navigateToArtist: (String) -> Unit,
 ) {

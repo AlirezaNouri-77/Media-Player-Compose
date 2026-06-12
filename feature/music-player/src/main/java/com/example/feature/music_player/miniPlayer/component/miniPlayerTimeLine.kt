@@ -4,6 +4,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 
 internal fun Modifier.miniPlayerTimeLine(
@@ -22,6 +23,7 @@ internal fun Modifier.miniPlayerTimeLine(
             color = Color.White,
             alpha = 0.4f,
             strokeWidth = 2.dp.toPx(),
+            cap = StrokeCap.Round,
             start = Offset(x = margin, y = this.size.height + 6.dp.toPx()),
             end = Offset(
                 x = this.size.width - margin,
@@ -31,6 +33,7 @@ internal fun Modifier.miniPlayerTimeLine(
         drawLine(
             color = Color.White,
             strokeWidth = 2.dp.toPx(),
+            cap = StrokeCap.Round,
             start = Offset(x = 15.dp.toPx(), y = this.size.height + 6.dp.toPx()),
             end = Offset(x = progress + margin, y = this.size.height + 6.dp.toPx()),
         )

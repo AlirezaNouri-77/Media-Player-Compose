@@ -11,7 +11,7 @@ configure<LibraryExtension> {
 dependencies {
 
     implementation(project(":core:model"))
-    implementation(project(":core:music-media3"))
+    api(project(":core:music-media3"))
 
     implementation(libs.jetbrains.kotlinx.coroutine)
     implementation(libs.koin.core)

@@ -16,14 +16,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.core.common.util.removeFileExtension
-import com.example.core.model.MusicModel
+import com.example.core.music_media3.model.ArtworkModel
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun MiniPlayerPager(
     modifier: Modifier = Modifier,
     pagerState: PagerState,
-    artworkList: ImmutableList<MusicModel>,
+    artworkList: ImmutableList<ArtworkModel>,
 ) {
     val marqueeAnimate = remember(pagerState.isScrollInProgress) {
         if (pagerState.isScrollInProgress) 0 else Int.MAX_VALUE
@@ -38,6 +38,7 @@ fun MiniPlayerPager(
             pageSpacing = 20.dp,
             beyondViewportPageCount = 2,
             contentPadding = PaddingValues(horizontal = 2.dp),
+            key = { index -> if (index in artworkList.indices) artworkList[index].musicId else index },
         ) { page ->
             Column(
                 modifier = Modifier

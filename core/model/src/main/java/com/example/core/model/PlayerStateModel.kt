@@ -5,11 +5,12 @@ data class PlayerStateModel(
     val isPlaying: Boolean = false,
     val isBuffering: Boolean = false,
     val repeatMode: Int = 0,
+    val isShuffleMode: Boolean = false,
 ) {
     companion object {
         var Initial = PlayerStateModel(
             isPlaying = false,
-            currentMediaInfo = ActiveMusicInfo.Empty,
+            currentMediaInfo = ActiveMusicInfo.Initial,
             isBuffering = false,
             repeatMode = 0,
         )
