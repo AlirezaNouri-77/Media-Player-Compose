@@ -8,9 +8,9 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
-import com.example.core.model.ActiveMusicInfo
+import com.example.core.model.CurrentMusicInfo
 import com.example.core.model.MusicModel
-import com.example.core.model.PlayerStateModel
+import com.example.core.model.MusicPlayerState
 import com.example.core.music_media3.mapper.toActiveMusicInfo
 import com.example.core.music_media3.mapper.toArtworkModel
 import com.example.core.music_media3.mapper.toMediaItem
@@ -29,12 +29,11 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class MusicServiceConnection(
     private var context: Context,
-    private val ioDispatcher: CoroutineDispatcher,
 ) {
     private var factory: ListenableFuture<MediaController>? = null
     private var mediaController: MediaController? = null
 
-    private var _playerState = MutableStateFlow(PlayerStateModel.Initial)
+    private var _playerState = MutableStateFlow(MusicPlayerState.Initial)
     var playerState = _playerState.asStateFlow()
 
     private var _currentPlayedMusicList = MutableStateFlow(emptyList<MusicModel>())
@@ -57,7 +56,7 @@ class MusicServiceConnection(
                     {
                         mediaController = factory?.get().also { it?.addListener(exoPlayerListener) }
                         _playerState.update {
-                            it.copy(currentMediaInfo = mediaController?.currentMediaItem?.toActiveMusicInfo() ?: ActiveMusicInfo.Initial)
+                            it.copy(currentMusicInfo = mediaController?.currentMediaItem?.toActiveMusicInfo() ?: CurrentMusicInfo.Initial)
                         }
                     },
                     ContextCompat.getMainExecutor(context),
@@ -147,7 +146,7 @@ class MusicServiceConnection(
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
             _playerState.update {
                 _playerState.value.copy(
-                    currentMediaInfo = mediaItem?.toActiveMusicInfo() ?: ActiveMusicInfo.Initial,
+                    currentMusicInfo = mediaItem?.toActiveMusicInfo() ?: CurrentMusicInfo.Initial,
                 )
             }
         }

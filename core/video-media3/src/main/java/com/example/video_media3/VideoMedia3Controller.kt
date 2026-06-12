@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
-import com.example.core.model.ActiveVideoInfo
+import com.example.core.model.CurrentVideoInfo
 import com.example.core.model.VideoModel
 import com.example.video_media3.model.VideoPlayerState
 import com.example.video_media3.model.mapper.toActiveVideoInfo
@@ -91,15 +91,15 @@ class VideoMedia3Controller(
 
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 if (mediaItem == null) return
-                _videoPlayerStateStateFlow.update { it.copy(currentMediaInfo = mediaItem.toActiveVideoInfo()) }
+                _videoPlayerStateStateFlow.update { it.copy(currentVideoInfo = mediaItem.toActiveVideoInfo()) }
             }
         }
 
         exoPlayer.addListener(exoPlayerEventListener)
         _videoPlayerStateStateFlow.update {
             VideoPlayerState(
-                currentMediaInfo = exoPlayer.currentMediaItem?.toActiveVideoInfo()
-                    ?: ActiveVideoInfo.Empty,
+                currentVideoInfo = exoPlayer.currentMediaItem?.toActiveVideoInfo()
+                    ?: CurrentVideoInfo.Empty,
                 isPlaying = true,
                 isBuffering = true,
                 repeatMode = exoPlayer.repeatMode,

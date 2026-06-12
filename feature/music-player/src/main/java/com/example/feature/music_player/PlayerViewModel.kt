@@ -49,8 +49,8 @@ class PlayerViewModel(
 
         viewModelScope.launch {
             musicServiceConnection.playerState.collectLatest {
-                if (it.currentMediaInfo.musicID != _uiState.value.currentPlayerState.currentMediaInfo.musicID) {
-                    getColorPaletteFromArtwork(it.currentMediaInfo.musicUri.toUri())
+                if (it.currentMusicInfo.musicID != _uiState.value.currentPlayerState.currentMusicInfo.musicID) {
+                    getColorPaletteFromArtwork(it.currentMusicInfo.musicUri.toUri())
                 }
                 _uiState.update { uiState -> uiState.copy(currentPlayerState = it) }
             }
@@ -96,7 +96,7 @@ class PlayerViewModel(
 
             is PlayerActions.UpdateArtworkPageIndex -> {
                 val targetIndex = playerUiState.value.thumbnailsList.indexOfFirst {
-                    it.musicId == playerUiState.value.currentPlayerState.currentMediaInfo.musicID
+                    it.musicId == playerUiState.value.currentPlayerState.currentMusicInfo.musicID
                 }
                 if (targetIndex > -1) {
                     _uiState.update { uiState -> uiState.copy(currentThumbnailPagerIndex = targetIndex) }
@@ -124,7 +124,7 @@ class PlayerViewModel(
     private fun updatePagerItem() {
         val list = musicServiceConnection.getMediaItemsList()
         if (list.isEmpty()) return
-        val index = list.indexOfFirst { it.musicId == _uiState.value.currentPlayerState.currentMediaInfo.musicID }
+        val index = list.indexOfFirst { it.musicId == _uiState.value.currentPlayerState.currentMusicInfo.musicID }
         _uiState.update { uiState ->
             uiState.copy(
                 thumbnailsList = list,

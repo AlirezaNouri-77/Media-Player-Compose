@@ -32,7 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.example.core.model.ActiveVideoInfo
+import com.example.core.model.CurrentVideoInfo
 import com.example.feature.video.R
 import com.example.video_media3.model.VideoPlayerState
 import kotlinx.coroutines.FlowPreview
@@ -62,7 +62,7 @@ fun PlayerControllerLayout(
                 .fillMaxWidth(0.9f)
                 .align(Alignment.TopCenter),
             onBack = onBackClick,
-            title = currentPlayerState.currentMediaInfo.title,
+            title = currentPlayerState.currentVideoInfo.title,
         )
         BottomSection(
             modifier = Modifier
@@ -116,7 +116,7 @@ private fun BottomSection(
         ) {
             PlayerTimeLine(
                 modifier = Modifier.fillMaxWidth(),
-                currentMediaDuration = currentPlayerState().currentMediaInfo.duration,
+                currentMediaDuration = currentPlayerState().currentVideoInfo.duration,
                 currentPlayerPosition = currentPlayerPosition(),
                 previewSlider = previewSlider,
                 onSeekTo = onSeekToPosition,
@@ -201,7 +201,7 @@ private fun PreviewPlayerControllerLayout() {
     MediaPlayerJetpackComposeTheme {
         PlayerControllerLayout(
             currentPlayerState = VideoPlayerState(
-                currentMediaInfo = ActiveVideoInfo(
+                currentVideoInfo = CurrentVideoInfo(
                     title = "Example Video",
                     videoID = "",
                     videoUri = "",

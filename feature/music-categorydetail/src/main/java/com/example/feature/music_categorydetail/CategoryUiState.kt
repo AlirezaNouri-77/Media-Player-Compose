@@ -2,7 +2,7 @@ package com.example.feature.music_categorydetail
 
 import androidx.compose.runtime.Stable
 import com.example.core.model.MusicModel
-import com.example.core.model.PlayerStateModel
+import com.example.core.model.MusicPlayerState
 
 @Stable
 data class CategoryUiState(
@@ -10,5 +10,5 @@ data class CategoryUiState(
     val songList: List<MusicModel> = emptyList(),
     val detail: String = "",
     val thumbnailDominateColor: Int = 0,
-    val musicPlayerState: PlayerStateModel = PlayerStateModel.Initial,
+    val musicPlayerState: MusicPlayerState = MusicPlayerState.Initial,
 )

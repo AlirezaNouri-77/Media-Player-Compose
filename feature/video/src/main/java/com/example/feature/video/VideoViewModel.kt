@@ -50,7 +50,7 @@ class VideoViewModel(
         if (getThumbnailJob?.isActive == true) getThumbnailJob?.cancel()
 
         getThumbnailJob = viewModelScope.launch {
-            val videoUri = _uiState.value.videoPlayerState.currentMediaInfo.videoUri.toUri()
+            val videoUri = _uiState.value.videoPlayerState.currentVideoInfo.videoUri.toUri()
             val thumbnailBitmap = videoThumbnailUtil.getVideoThumbNail(videoUri, position)
             _previewSliderBitmap.send(thumbnailBitmap?.asImageBitmap())
         }

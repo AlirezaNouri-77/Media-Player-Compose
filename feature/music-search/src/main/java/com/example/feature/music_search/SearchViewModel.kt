@@ -30,7 +30,7 @@ class SearchViewModel(
 
     private fun observePlayerState() = viewModelScope.launch {
         getMusicPlayerStateUseCase.invoke().collect { playerStateModel ->
-            mUiState.update { it.copy(playerStateModel = playerStateModel) }
+            mUiState.update { it.copy(musicPlayerState = playerStateModel) }
         }
     }
 

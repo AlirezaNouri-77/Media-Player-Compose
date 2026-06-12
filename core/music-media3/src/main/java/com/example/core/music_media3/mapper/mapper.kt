@@ -5,7 +5,7 @@ import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import com.example.core.model.ActiveMusicInfo
+import com.example.core.model.CurrentMusicInfo
 import com.example.core.model.MusicModel
 import com.example.core.music_media3.model.ArtworkModel
 
@@ -46,7 +46,7 @@ fun MediaItem.toMusicModel() = MusicModel(
     folderName = this.mediaMetadata.extras?.getString(MEDIAMETADATA_BUNDLE_FOLDER_KEY) ?: "None",
 )
 
-fun MediaItem.toActiveMusicInfo() = ActiveMusicInfo(
+fun MediaItem.toActiveMusicInfo() = CurrentMusicInfo(
     title = (this.mediaMetadata.title ?: "None").toString(),
     musicID = this.mediaId,
     artworkUri = (this.mediaMetadata.artworkUri ?: Uri.EMPTY).toString(),

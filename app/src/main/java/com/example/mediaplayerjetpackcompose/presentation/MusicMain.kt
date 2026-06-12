@@ -128,13 +128,13 @@ fun MusicMain(
                     modifier = Modifier,
                     scaffoldState = bottomSheetScaffoldState,
                     sheetDragHandle = null,
-                    sheetPeekHeight = bottomPadding + if (uiState.currentPlayerState.currentMediaInfo.musicID.isNotEmpty()) MiniPlayerHeight else 0.dp,
+                    sheetPeekHeight = bottomPadding + if (uiState.currentPlayerState.currentMusicInfo.musicID.isNotEmpty()) MiniPlayerHeight else 0.dp,
                     sheetContainerColor = Color.Transparent,
                     containerColor = Color.Transparent,
                     sheetShadowElevation = 0.dp,
                     sheetContent = {
                         BottomSheetContent(
-                            isVisible = uiState.currentPlayerState.currentMediaInfo.musicID.isNotEmpty(),
+                            isVisible = uiState.currentPlayerState.currentMusicInfo.musicID.isNotEmpty(),
                             currentMusicState = uiState.currentPlayerState,
                             playerViewModel = playerViewModel,
                             currentMusicPlayerPosition = uiState.currentPlayerPosition,

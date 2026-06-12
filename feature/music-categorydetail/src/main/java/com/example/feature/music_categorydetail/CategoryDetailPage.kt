@@ -20,7 +20,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
@@ -128,7 +127,7 @@ fun SharedTransitionScope.CategoryDetailPage(
                     .padding(innerPadding),
                 uiState = uiState,
                 categoryName = categoryName,
-                currentMusicId = uiState.musicPlayerState.currentMediaInfo.musicID,
+                currentMusicId = uiState.musicPlayerState.currentMusicInfo.musicID,
                 isPlayerPlaying = uiState.musicPlayerState.isPlaying,
                 onMusicClick = onMusicClick,
                 animatedVisibilityScope = animatedVisibilityScope,
@@ -141,7 +140,7 @@ fun SharedTransitionScope.CategoryDetailPage(
                     .padding(innerPadding),
                 uiState = uiState,
                 categoryName = categoryName,
-                currentMusicId = uiState.musicPlayerState.currentMediaInfo.musicID,
+                currentMusicId = uiState.musicPlayerState.currentMusicInfo.musicID,
                 isPlayerPlaying = uiState.musicPlayerState.isPlaying,
                 onMusicClick = onMusicClick,
                 animatedVisibilityScope = animatedVisibilityScope,

@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.example.core.designsystem.util.MiniPlayerHeight
-import com.example.core.model.PlayerStateModel
+import com.example.core.model.MusicPlayerState
 import com.example.core.music_media3.model.ArtworkModel
 import com.example.feature.music_player.PlayerActions
 import com.example.feature.music_player.PlayerViewModel
@@ -42,7 +42,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun BottomSheetContent(
     isVisible: Boolean,
-    currentMusicState: PlayerStateModel,
+    currentMusicState: MusicPlayerState,
     playerViewModel: PlayerViewModel,
     artworkDominateColor: Int,
     currentMusicPlayerPosition: Long,
@@ -94,7 +94,7 @@ fun BottomSheetContent(
                     }
                     .navigationBarsPadding()
                     .padding(top = MiniPlayerHeight),
-                isFavorite = currentMusicState.currentMediaInfo.isFavorite,
+                isFavorite = currentMusicState.currentMusicInfo.isFavorite,
                 pagerMusicList = pagerThumbnailList.toImmutableList(),
                 repeatMode = currentMusicState.repeatMode,
                 currentPagerPage = currentArtworkPagerIndex,
@@ -127,9 +127,9 @@ fun BottomSheetContent(
                 currentMusicPosition = currentMusicPlayerPosition,
                 currentPagerPage = currentArtworkPagerIndex,
                 onPlayerAction = playerViewModel::onPlayerAction,
-                currentPlayerMediaId = currentMusicState.currentMediaInfo.musicID.toLong(),
-                currentPlayerDuration = currentMusicState.currentMediaInfo.duration.toInt(),
-                currentPlayerArtworkUri = currentMusicState.currentMediaInfo.artworkUri,
+                currentPlayerMediaId = currentMusicState.currentMusicInfo.musicID.toLong(),
+                currentPlayerDuration = currentMusicState.currentMusicInfo.duration.toInt(),
+                currentPlayerArtworkUri = currentMusicState.currentMusicInfo.artworkUri,
                 isPlaying = currentMusicState.isPlaying,
                 musicArtWorkColorAnimation = musicArtWorkColorAnimation,
                 onClick = { coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.expand() } },

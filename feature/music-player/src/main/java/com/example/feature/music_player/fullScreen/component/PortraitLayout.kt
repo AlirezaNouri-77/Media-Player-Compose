@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.core.model.PlayerStateModel
+import com.example.core.model.MusicPlayerState
 import com.example.core.music_media3.model.ArtworkModel
 import com.example.feature.music_player.PlayerActions
 import kotlinx.collections.immutable.ImmutableList
@@ -19,7 +19,7 @@ internal fun PortraitLayout(
     modifier: Modifier = Modifier,
     repeatMode: Int,
     currentPagerPage: Int,
-    playerStateModel: PlayerStateModel,
+    musicPlayerState: MusicPlayerState,
     currentMusicPosition: Long,
     isFavorite: Boolean,
     pagerMusicList: ImmutableList<ArtworkModel>,
@@ -46,7 +46,7 @@ internal fun PortraitLayout(
                 .aspectRatio(1f),
             pagerItem = pagerMusicList,
             currentPagerPage = currentPagerPage,
-            currentMusicID = playerStateModel.currentMediaInfo.musicID.toLong(),
+            currentMusicID = musicPlayerState.currentMusicInfo.musicID.toLong(),
             onPlayerAction = { onPlayerAction(it) },
             setCurrentPagerNumber = { setCurrentPagerNumber(it) },
         )
@@ -54,26 +54,26 @@ internal fun PortraitLayout(
             modifier = Modifier.padding(horizontal = 12.dp),
             onArtistClick = clickOnArtist,
             isFavorite = isFavorite,
-            currentPlayerStateModel = playerStateModel,
+            currentMusicPlayerState = musicPlayerState,
             onFavoriteClick = {
-                onPlayerAction(PlayerActions.OnFavoriteToggle(playerStateModel.currentMediaInfo.musicID))
+                onPlayerAction(PlayerActions.OnFavoriteToggle(musicPlayerState.currentMusicInfo.musicID))
             },
         )
         SliderSection(
             modifier = Modifier.padding(horizontal = 12.dp),
             currentMusicPosition = currentMusicPosition,
             seekTo = { onPlayerAction(PlayerActions.SeekTo(it)) },
-            duration = playerStateModel.currentMediaInfo.duration.toFloat(),
+            duration = musicPlayerState.currentMusicInfo.duration.toFloat(),
         )
         SongController(
-            isPlaying = playerStateModel.isPlaying,
+            isPlaying = musicPlayerState.isPlaying,
             repeatMode = repeatMode,
             onPauseMusic = { onPlayerAction(PlayerActions.PausePlayer) },
             onResumeMusic = { onPlayerAction(PlayerActions.ResumePlayer) },
             onMovePreviousMusic = { onPlayerAction(PlayerActions.MovePreviousPlayer(false)) },
             onMoveNextMusic = { onPlayerAction(PlayerActions.MoveNextPlayer) },
             onRepeatMode = { onPlayerAction(PlayerActions.OnRepeatMode(it)) },
-            isShuffleMode = playerStateModel.isShuffleMode,
+            isShuffleMode = musicPlayerState.isShuffleMode,
             onShuffleModeClick = { onPlayerAction(PlayerActions.onShuffleMode) },
         )
         VolumeController(

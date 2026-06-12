@@ -44,8 +44,8 @@ fun SearchRoot(
     SearchScreen(
         modifier = Modifier.imePadding(),
         listItem = uiState.searchList.toImmutableList(),
-        currentPlayerMediaId = uiState.playerStateModel.currentMediaInfo.musicID,
-        currentPlayerPlayingState = uiState.playerStateModel.isPlaying,
+        currentPlayerMediaId = uiState.musicPlayerState.currentMusicInfo.musicID,
+        currentPlayerPlayingState = uiState.musicPlayerState.isPlaying,
         onMusicClick = { index, list -> onMusicClick(index, list) },
         searchTextFieldValue = uiState.searchTextFieldValue,
         onClearSearchTextField = { searchViewModel.onEvent(SearchScreenUiEvent.OnClearSearchTextField) },

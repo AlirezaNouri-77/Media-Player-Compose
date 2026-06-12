@@ -1,7 +1,7 @@
 package com.example.feature.music_home
 
 import com.example.core.model.MusicModel
-import com.example.core.model.PlayerStateModel
+import com.example.core.model.MusicPlayerState
 import com.example.core.model.datastore.CategorizedSortModel
 import com.example.core.model.datastore.CategorizedSortType
 import com.example.core.model.datastore.SongSortModel
@@ -14,7 +14,7 @@ data class HomeScreenUiState(
     val lastHomeScrollState: Int = 0,
     val lastFavoriteScrollState: Int = 0,
     val lastFolderScrollState: Int = 0,
-    val playerStateModel: PlayerStateModel = PlayerStateModel.Initial,
+    val musicPlayerState: MusicPlayerState = MusicPlayerState.Initial,
     val currentTabBarPosition: TabBarModel = TabBarModel.All,
     val songsList: List<MusicModel> = emptyList(),
     val favoritesList: List<MusicModel> = emptyList(),

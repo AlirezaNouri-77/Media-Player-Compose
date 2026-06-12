@@ -1,19 +1,19 @@
 package com.example.core.model
 
-data class ActiveMusicInfo(
-    var title: String,
-    var musicID: String,
-    var artworkUri: String,
-    var musicUri: String,
-    var artist: String,
-    var album: String,
-    var duration: Long,
-    var bitrate: Int,
-    var size: Long,
+data class CurrentMusicInfo(
+    val title: String,
+    val musicID: String,
+    val artworkUri: String,
+    val musicUri: String,
+    val artist: String,
+    val album: String,
+    val duration: Long,
+    val bitrate: Int,
+    val size: Long,
     val isFavorite: Boolean,
 ) {
     companion object {
-        var Initial = ActiveMusicInfo(
+        val Initial = CurrentMusicInfo(
             title = "",
             musicID = "",
             artworkUri = "",

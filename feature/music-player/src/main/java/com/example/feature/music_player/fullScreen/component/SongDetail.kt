@@ -28,14 +28,14 @@ import com.example.core.common.util.convertToReadableBitrate
 import com.example.core.common.util.extractFileExtension
 import com.example.core.common.util.removeFileExtension
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.example.core.model.ActiveMusicInfo
-import com.example.core.model.PlayerStateModel
+import com.example.core.model.CurrentMusicInfo
+import com.example.core.model.MusicPlayerState
 
 @Composable
 fun SongDetail(
     modifier: Modifier = Modifier,
     isFavorite: Boolean,
-    currentPlayerStateModel: PlayerStateModel,
+    currentMusicPlayerState: MusicPlayerState,
     onArtistClick: (String) -> Unit,
     onFavoriteClick: () -> Unit,
 ) {
@@ -53,7 +53,7 @@ fun SongDetail(
                     .fillMaxWidth()
                     .basicMarquee()
                     .weight(1f),
-                text = currentPlayerStateModel.currentMediaInfo.title.removeFileExtension(),
+                text = currentMusicPlayerState.currentMusicInfo.title.removeFileExtension(),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
                 overflow = TextOverflow.Visible,
@@ -74,8 +74,8 @@ fun SongDetail(
             }
         }
         Text(
-            modifier = Modifier.clickable { onArtistClick(currentPlayerStateModel.currentMediaInfo.artist) },
-            text = currentPlayerStateModel.currentMediaInfo.artist,
+            modifier = Modifier.clickable { onArtistClick(currentMusicPlayerState.currentMusicInfo.artist) },
+            text = currentMusicPlayerState.currentMusicInfo.artist,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
             maxLines = 1,
@@ -83,9 +83,9 @@ fun SongDetail(
         )
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = "${currentPlayerStateModel.currentMediaInfo.title.extractFileExtension()}, " +
-                "${currentPlayerStateModel.currentMediaInfo.bitrate.convertToReadableBitrate()}, " +
-                "${currentPlayerStateModel.currentMediaInfo.size.convertByteToReadableSize()} ",
+            text = "${currentMusicPlayerState.currentMusicInfo.title.extractFileExtension()}, " +
+                "${currentMusicPlayerState.currentMusicInfo.bitrate.convertToReadableBitrate()}, " +
+                "${currentMusicPlayerState.currentMusicInfo.size.convertByteToReadableSize()} ",
             fontSize = 12.sp,
             color = Color.White.copy(alpha = 0.7f),
         )
@@ -100,8 +100,8 @@ private fun FullScreenPreview() {
             onArtistClick = {},
             isFavorite = true,
             onFavoriteClick = {},
-            currentPlayerStateModel = PlayerStateModel(
-                currentMediaInfo = ActiveMusicInfo(
+            currentMusicPlayerState = MusicPlayerState(
+                currentMusicInfo = CurrentMusicInfo(
                     title = "Blinding Lights.mp3",
                     musicID = "1",
                     artworkUri = "",
@@ -113,6 +113,10 @@ private fun FullScreenPreview() {
                     size = 8388608,
                     isFavorite = true,
                 ),
+                isPlaying = false,
+                isBuffering = false,
+                repeatMode = 1,
+                isShuffleMode = false,
             ),
         )
     }

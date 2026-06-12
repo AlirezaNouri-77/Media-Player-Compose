@@ -4,10 +4,10 @@ import android.net.Uri
 import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import com.example.core.model.ActiveVideoInfo
+import com.example.core.model.CurrentVideoInfo
 import com.example.core.model.VideoModel
 
-fun MediaItem.toActiveVideoInfo() = ActiveVideoInfo(
+fun MediaItem.toActiveVideoInfo() = CurrentVideoInfo(
     title = this.mediaMetadata.title.toString(),
     videoID = this.mediaId,
     videoUri = (this.localConfiguration?.uri ?: Uri.EMPTY).toString(),
