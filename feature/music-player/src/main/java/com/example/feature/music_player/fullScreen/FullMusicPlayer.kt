@@ -8,6 +8,7 @@ import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.designsystem.util.CurrentWindowSizeState
 import com.example.core.model.CurrentMusicInfo
 import com.example.core.model.MusicPlayerState
+import com.example.core.model.PlayerRepeatMode
 import com.example.core.model.WindowSize
 import com.example.core.music_media3.model.ArtworkModel
 import com.example.feature.music_player.PlayerActions
@@ -19,7 +20,7 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 fun FullMusicPlayer(
     modifier: Modifier,
-    repeatMode: Int,
+    playerRepeatMode: PlayerRepeatMode,
     currentPagerPage: Int,
     currentPlayerState: MusicPlayerState,
     currentMusicPosition: Long,
@@ -35,7 +36,7 @@ fun FullMusicPlayer(
 ) {
     ExpandedMusicPlayer(
         modifier = modifier,
-        repeatMode = repeatMode,
+        playerRepeatMode = playerRepeatMode,
         currentPagerPage = currentPagerPage,
         musicPlayerState = currentPlayerState,
         currentMusicPosition = currentMusicPosition,
@@ -54,7 +55,7 @@ fun FullMusicPlayer(
 @Composable
 private fun ExpandedMusicPlayer(
     modifier: Modifier = Modifier,
-    repeatMode: Int,
+    playerRepeatMode: PlayerRepeatMode,
     currentPagerPage: Int,
     musicPlayerState: MusicPlayerState,
     currentMusicPosition: Long,
@@ -73,7 +74,7 @@ private fun ExpandedMusicPlayer(
     if (windowSize == WindowSize.COMPACT) {
         PortraitLayout(
             modifier = modifier,
-            repeatMode = repeatMode,
+            playerRepeatMode = playerRepeatMode,
             currentPagerPage = currentPagerPage,
             musicPlayerState = musicPlayerState,
             currentMusicPosition = currentMusicPosition,
@@ -90,7 +91,7 @@ private fun ExpandedMusicPlayer(
     } else {
         LandscapeLayout(
             modifier = modifier,
-            repeatMode = repeatMode,
+            playerRepeatMode = playerRepeatMode,
             currentPagerPage = currentPagerPage,
             musicPlayerState = musicPlayerState,
             currentMusicPosition = currentMusicPosition,
@@ -134,10 +135,10 @@ private fun FullScreenPreview() {
                     ),
                     isPlaying = false,
                     isBuffering = false,
-                    repeatMode = 0,
+                    playerRepeatMode = PlayerRepeatMode.MODE_OFF,
                     isShuffleMode = false,
                 ),
-            repeatMode = 0,
+            playerRepeatMode = PlayerRepeatMode.MODE_OFF,
             currentMusicPosition = 10000L,
             currentPagerPage = 0,
             pagerMusicList = emptyList<ArtworkModel>().toImmutableList(),

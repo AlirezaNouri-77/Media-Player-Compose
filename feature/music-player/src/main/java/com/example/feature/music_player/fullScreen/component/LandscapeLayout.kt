@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.core.model.MusicPlayerState
+import com.example.core.model.PlayerRepeatMode
 import com.example.core.music_media3.model.ArtworkModel
 import com.example.feature.music_player.PlayerActions
 import kotlinx.collections.immutable.ImmutableList
@@ -20,7 +21,7 @@ import kotlinx.collections.immutable.ImmutableList
 @Composable
 internal fun LandscapeLayout(
     modifier: Modifier = Modifier,
-    repeatMode: Int,
+    playerRepeatMode: PlayerRepeatMode,
     currentPagerPage: Int,
     musicPlayerState: MusicPlayerState,
     currentMusicPosition: Long,
@@ -87,7 +88,7 @@ internal fun LandscapeLayout(
             )
             SongController(
                 isPlaying = musicPlayerState.isPlaying,
-                repeatMode = repeatMode,
+                playerRepeatMode = playerRepeatMode,
                 onPauseMusic = { onPlayerAction(PlayerActions.PausePlayer) },
                 onResumeMusic = { onPlayerAction(PlayerActions.ResumePlayer) },
                 onMovePreviousMusic = { onPlayerAction(PlayerActions.MovePreviousPlayer(false)) },

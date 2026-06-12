@@ -11,13 +11,13 @@ import androidx.media3.session.SessionToken
 import com.example.core.model.CurrentMusicInfo
 import com.example.core.model.MusicModel
 import com.example.core.model.MusicPlayerState
+import com.example.core.model.toRepeatMode
 import com.example.core.music_media3.mapper.toActiveMusicInfo
 import com.example.core.music_media3.mapper.toArtworkModel
 import com.example.core.music_media3.mapper.toMediaItem
 import com.example.core.music_media3.mapper.toMusicModel
 import com.example.core.music_media3.model.ArtworkModel
 import com.google.common.util.concurrent.ListenableFuture
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -136,7 +136,7 @@ class MusicServiceConnection(
 
     private val exoPlayerListener = object : Player.Listener {
         override fun onRepeatModeChanged(repeatMode: Int) {
-            _playerState.update { it.copy(repeatMode = repeatMode) }
+            _playerState.update { it.copy(playerRepeatMode = repeatMode.toRepeatMode()) }
         }
 
         override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {

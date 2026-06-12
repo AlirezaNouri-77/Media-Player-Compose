@@ -30,6 +30,7 @@ import com.example.core.common.util.removeFileExtension
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.model.CurrentMusicInfo
 import com.example.core.model.MusicPlayerState
+import com.example.core.model.PlayerRepeatMode
 
 @Composable
 fun SongDetail(
@@ -115,7 +116,7 @@ private fun FullScreenPreview() {
                 ),
                 isPlaying = false,
                 isBuffering = false,
-                repeatMode = 1,
+                playerRepeatMode = PlayerRepeatMode.MODE_OFF,
                 isShuffleMode = false,
             ),
         )

@@ -1,6 +1,7 @@
 package com.example.feature.music_player
 
 import com.example.core.model.MusicModel
+import com.example.core.model.PlayerRepeatMode
 
 sealed interface PlayerActions {
     data object PausePlayer : PlayerActions
@@ -21,7 +22,7 @@ sealed interface PlayerActions {
 
     data class SeekTo(val value: Long) : PlayerActions
 
-    data class OnRepeatMode(val value: Int) : PlayerActions
+    data class OnRepeatMode(val value: PlayerRepeatMode) : PlayerActions
 
     data class UpdateArtworkPageIndex(val value: Int) : PlayerActions
 }

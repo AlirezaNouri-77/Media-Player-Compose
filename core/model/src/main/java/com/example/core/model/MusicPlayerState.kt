@@ -4,7 +4,7 @@ data class MusicPlayerState(
     val currentMusicInfo: CurrentMusicInfo,
     val isPlaying: Boolean,
     val isBuffering: Boolean,
-    val repeatMode: Int,
+    val playerRepeatMode: PlayerRepeatMode,
     val isShuffleMode: Boolean,
 ) {
     companion object {
@@ -12,7 +12,7 @@ data class MusicPlayerState(
             currentMusicInfo = CurrentMusicInfo.Initial,
             isPlaying = false,
             isBuffering = false,
-            repeatMode = 0,
+            playerRepeatMode = PlayerRepeatMode.MODE_OFF,
             isShuffleMode = false,
         )
     }

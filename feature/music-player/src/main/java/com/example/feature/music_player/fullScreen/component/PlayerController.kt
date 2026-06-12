@@ -25,19 +25,19 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.example.core.designsystem.R
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.example.core.music_media3.model.RepeatModes
+import com.example.core.model.PlayerRepeatMode
 
 @Composable
 fun SongController(
     modifier: Modifier = Modifier,
     isPlaying: Boolean,
     isShuffleMode: Boolean,
-    repeatMode: Int,
+    playerRepeatMode: PlayerRepeatMode,
     onMovePreviousMusic: () -> Unit,
     onPauseMusic: () -> Unit,
     onResumeMusic: () -> Unit,
     onMoveNextMusic: () -> Unit,
-    onRepeatMode: (Int) -> Unit,
+    onRepeatMode: (PlayerRepeatMode) -> Unit,
     onShuffleModeClick: () -> Unit,
 ) {
     Row(
@@ -76,20 +76,19 @@ fun SongController(
             onClick = onMoveNextMusic,
         )
         ButtonOfFullScreenPlayer(
-            icon = when (repeatMode) {
-                0 -> R.drawable.icon_repeat_off
-                1 -> R.drawable.icon_repeat_once
-                2 -> R.drawable.icon_repeat_all
-                else -> -1
+            icon = when (playerRepeatMode) {
+                PlayerRepeatMode.MODE_OFF -> R.drawable.icon_repeat_off
+                PlayerRepeatMode.MODE_ONE -> R.drawable.icon_repeat_once
+                PlayerRepeatMode.MODE_ALL -> R.drawable.icon_repeat_all
             },
             size = DpSize(24.dp, 24.dp),
             contentDescription = "RepeatMode",
-            color = if (repeatMode != 0) Color.White else Color.White.copy(alpha = 0.5f),
+            color = if (playerRepeatMode != PlayerRepeatMode.MODE_OFF) Color.White else Color.White.copy(alpha = 0.5f),
             onClick = {
-                if (repeatMode == RepeatModes.entries.toMutableList().lastIndex) {
-                    onRepeatMode.invoke(0)
-                } else {
-                    onRepeatMode.invoke(repeatMode + 1)
+                when (playerRepeatMode) {
+                    PlayerRepeatMode.MODE_OFF -> onRepeatMode.invoke(PlayerRepeatMode.MODE_ONE)
+                    PlayerRepeatMode.MODE_ONE -> onRepeatMode.invoke(PlayerRepeatMode.MODE_ALL)
+                    PlayerRepeatMode.MODE_ALL -> onRepeatMode.invoke(PlayerRepeatMode.MODE_OFF)
                 }
             },
         )
@@ -158,7 +157,7 @@ private fun Preview() {
             modifier = Modifier,
             isPlaying = false,
             isShuffleMode = true,
-            repeatMode = 0,
+            playerRepeatMode = PlayerRepeatMode.MODE_OFF,
             onMovePreviousMusic = {},
             onPauseMusic = {},
             onResumeMusic = {},

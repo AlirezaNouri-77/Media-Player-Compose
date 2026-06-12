@@ -96,7 +96,7 @@ fun BottomSheetContent(
                     .padding(top = MiniPlayerHeight),
                 isFavorite = currentMusicState.currentMusicInfo.isFavorite,
                 pagerMusicList = pagerThumbnailList.toImmutableList(),
-                repeatMode = currentMusicState.repeatMode,
+                playerRepeatMode = currentMusicState.playerRepeatMode,
                 currentPagerPage = currentArtworkPagerIndex,
                 onPlayerAction = playerViewModel::onPlayerAction,
                 currentVolume = currentDeviceVolume,

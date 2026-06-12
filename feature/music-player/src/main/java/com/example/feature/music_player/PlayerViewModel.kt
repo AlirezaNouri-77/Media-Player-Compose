@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.core.domain.MusicThumbnailUtilImpl
 import com.example.core.domain.respository.FavoriteRepositoryImpl
 import com.example.core.model.MusicModel
+import com.example.core.model.toId
 import com.example.core.music_media3.MusicServiceConnection
 import com.example.core.music_media3.util.DeviceVolumeManager
 import com.example.feature.music_player.model.PlayerUiState
@@ -79,7 +80,7 @@ class PlayerViewModel(
             }
 
             is PlayerActions.OnRepeatMode -> {
-                musicServiceConnection.setRepeatMode(action.value)
+                musicServiceConnection.setRepeatMode(action.value.toId())
                 updatePagerItem()
             }
 
