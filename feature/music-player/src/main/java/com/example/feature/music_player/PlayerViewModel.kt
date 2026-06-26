@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.core.domain.MusicThumbnailUtilImpl
 import com.example.core.domain.respository.FavoriteRepositoryImpl
 import com.example.core.model.MusicModel
+import com.example.core.model.PlayerTimers
 import com.example.core.model.toId
 import com.example.core.music_media3.MusicServiceConnection
 import com.example.core.music_media3.util.DeviceVolumeManager
@@ -30,6 +31,7 @@ class PlayerViewModel(
     private var _uiState = MutableStateFlow(PlayerUiState())
     val playerUiState = _uiState.onStart {
         observePlayerStates()
+        observePlayerTimerStates()
         updatePagerItem()
     }.stateIn(
         viewModelScope,
@@ -62,12 +64,18 @@ class PlayerViewModel(
         }.launchIn(viewModelScope)
     }
 
+    private fun observePlayerTimerStates() {
+        musicServiceConnection.playerTimerState.onEach {
+            _uiState.update { uiState -> uiState.copy(playerTimerState = it) }
+        }.launchIn(viewModelScope)
+    }
+
     fun onPlayerAction(action: PlayerActions) {
         when (action) {
             PlayerActions.MoveNextPlayer -> musicServiceConnection.moveToNext()
             PlayerActions.PausePlayer -> musicServiceConnection.pauseMusic()
             PlayerActions.ResumePlayer -> musicServiceConnection.resumeMusic()
-            PlayerActions.onShuffleMode -> {
+            PlayerActions.OnShuffleMode -> {
                 musicServiceConnection.setShuffleMode(!playerUiState.value.currentPlayerState.isShuffleMode)
                 updatePagerItem()
             }
@@ -103,6 +111,14 @@ class PlayerViewModel(
                     _uiState.update { uiState -> uiState.copy(currentThumbnailPagerIndex = targetIndex) }
                 }
             }
+
+            PlayerActions.OnShowTimerBottomSheet ->
+                _uiState.update { it.copy(shouldShowTimerBottomSheet = true) }
+
+            PlayerActions.OnHideTimerBottomSheet ->
+                _uiState.update { it.copy(shouldShowTimerBottomSheet = false) }
+
+            is PlayerActions.OnTimerClick -> handleOnTimer(action.timers)
         }
     }
 
@@ -112,6 +128,20 @@ class PlayerViewModel(
     }
 
     fun getMaxDeviceVolume(): Int = deviceVolumeManager.getMaxVolume()
+
+    private fun handleOnTimer(timers: PlayerTimers) {
+        if (playerUiState.value.playerTimerState.playerTimerState == PlayerTimers.INITIAL) {
+            if (timers == PlayerTimers.END_OFF_SONG) {
+                musicServiceConnection.setPlayerTimer(timers, true)
+            } else {
+                musicServiceConnection.startPlayerTimer(timers.time)
+                musicServiceConnection.setPlayerTimer(timers)
+            }
+        } else {
+            musicServiceConnection.stopPlayerTimer()
+            musicServiceConnection.setPlayerTimer(PlayerTimers.INITIAL)
+        }
+    }
 
     fun getColorPaletteFromArtwork(uri: Uri) {
         viewModelScope.launch {
@@ -125,7 +155,8 @@ class PlayerViewModel(
     private fun updatePagerItem() {
         val list = musicServiceConnection.getMediaItemsList()
         if (list.isEmpty()) return
-        val index = list.indexOfFirst { it.musicId == _uiState.value.currentPlayerState.currentMusicInfo.musicID }
+        val index =
+            list.indexOfFirst { it.musicId == _uiState.value.currentPlayerState.currentMusicInfo.musicID }
         _uiState.update { uiState ->
             uiState.copy(
                 thumbnailsList = list,

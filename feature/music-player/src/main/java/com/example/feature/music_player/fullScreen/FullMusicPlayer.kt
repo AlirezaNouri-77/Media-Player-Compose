@@ -3,7 +3,6 @@ package com.example.feature.music_player.fullScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.designsystem.util.CurrentWindowSizeState
 import com.example.core.model.CurrentMusicInfo
@@ -14,6 +13,7 @@ import com.example.core.music_media3.model.ArtworkModel
 import com.example.feature.music_player.PlayerActions
 import com.example.feature.music_player.fullScreen.component.LandscapeLayout
 import com.example.feature.music_player.fullScreen.component.PortraitLayout
+import com.example.feature.music_player.model.PlayerUiState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -22,7 +22,7 @@ fun FullMusicPlayer(
     modifier: Modifier,
     playerRepeatMode: PlayerRepeatMode,
     currentPagerPage: Int,
-    currentPlayerState: MusicPlayerState,
+    playerUiState: PlayerUiState,
     currentMusicPosition: Long,
     isFavorite: Boolean,
     pagerMusicList: ImmutableList<ArtworkModel>,
@@ -38,7 +38,7 @@ fun FullMusicPlayer(
         modifier = modifier,
         playerRepeatMode = playerRepeatMode,
         currentPagerPage = currentPagerPage,
-        musicPlayerState = currentPlayerState,
+        playerUiState = playerUiState,
         currentMusicPosition = currentMusicPosition,
         isFavorite = isFavorite,
         pagerMusicList = pagerMusicList,
@@ -57,7 +57,7 @@ private fun ExpandedMusicPlayer(
     modifier: Modifier = Modifier,
     playerRepeatMode: PlayerRepeatMode,
     currentPagerPage: Int,
-    musicPlayerState: MusicPlayerState,
+    playerUiState: PlayerUiState,
     currentMusicPosition: Long,
     isFavorite: Boolean,
     maxDeviceVolume: Int,
@@ -76,7 +76,7 @@ private fun ExpandedMusicPlayer(
             modifier = modifier,
             playerRepeatMode = playerRepeatMode,
             currentPagerPage = currentPagerPage,
-            musicPlayerState = musicPlayerState,
+            playerUiState = playerUiState,
             currentMusicPosition = currentMusicPosition,
             isFavorite = isFavorite,
             pagerMusicList = pagerMusicList,
@@ -93,7 +93,7 @@ private fun ExpandedMusicPlayer(
             modifier = modifier,
             playerRepeatMode = playerRepeatMode,
             currentPagerPage = currentPagerPage,
-            musicPlayerState = musicPlayerState,
+            playerUiState = playerUiState,
             currentMusicPosition = currentMusicPosition,
             isFavorite = isFavorite,
             pagerMusicList = pagerMusicList,
@@ -111,16 +111,15 @@ private fun ExpandedMusicPlayer(
 @Preview(heightDp = 360, widthDp = 800)
 @Preview(heightDp = 460, widthDp = 1000)
 @Preview(heightDp = 460, widthDp = 600)
-@Preview()
-@PreviewScreenSizes
+@Preview
 @Composable
 private fun FullScreenPreview() {
     MediaPlayerJetpackComposeTheme {
         FullMusicPlayer(
             modifier = Modifier,
             isFavorite = false,
-            currentPlayerState =
-                MusicPlayerState(
+            playerUiState = PlayerUiState(
+                currentPlayerState = MusicPlayerState(
                     currentMusicInfo = CurrentMusicInfo(
                         title = "Example Music name.mp3",
                         musicID = "0",
@@ -138,6 +137,7 @@ private fun FullScreenPreview() {
                     playerRepeatMode = PlayerRepeatMode.MODE_OFF,
                     isShuffleMode = false,
                 ),
+            ),
             playerRepeatMode = PlayerRepeatMode.MODE_OFF,
             currentMusicPosition = 10000L,
             currentPagerPage = 0,

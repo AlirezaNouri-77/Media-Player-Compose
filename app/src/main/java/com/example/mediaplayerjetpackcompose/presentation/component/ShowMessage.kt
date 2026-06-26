@@ -2,10 +2,8 @@ package com.example.mediaplayerjetpackcompose.presentation.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -23,29 +21,24 @@ fun ShowMessage(
     actionMessage: String,
     onAction: () -> Unit,
 ) {
-    Box(
+    Column(
         modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Text(
+            text = message,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.SemiBold,
+        )
+        TextButton(
+            onClick = onAction,
+            border = BorderStroke(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.onPrimary,
+            ),
         ) {
-            Text(
-                text = message,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold,
-            )
-            TextButton(
-                onClick = onAction,
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                ),
-            ) {
-                Text(text = actionMessage, color = MaterialTheme.colorScheme.onPrimary)
-            }
+            Text(text = actionMessage, color = MaterialTheme.colorScheme.onPrimary)
         }
     }
 }

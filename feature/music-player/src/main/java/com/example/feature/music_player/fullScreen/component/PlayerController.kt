@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.example.core.designsystem.R
@@ -47,20 +48,19 @@ fun SongController(
     ) {
         ButtonOfFullScreenPlayer(
             icon = R.drawable.icon_shuffle,
-            size = DpSize(24.dp, 24.dp),
             color = if (isShuffleMode) Color.White else Color.White.copy(alpha = 0.5f),
             contentDescription = "shuffle Music",
             onClick = onShuffleModeClick,
         )
         ButtonOfFullScreenPlayer(
             icon = R.drawable.icon_previous,
-            size = DpSize(32.dp, 32.dp),
+            size = 32.dp,
             contentDescription = "Next",
             onClick = onMovePreviousMusic,
         )
         ButtonOfFullScreenPlayer(
             icon = if (isPlaying) R.drawable.icon_pause else R.drawable.icon_play,
-            size = DpSize(42.dp, 42.dp),
+            size = 42.dp,
             contentDescription = "Play and Pause",
             onClick = {
                 when (isPlaying) {
@@ -71,7 +71,7 @@ fun SongController(
         )
         ButtonOfFullScreenPlayer(
             icon = R.drawable.icon_next,
-            size = DpSize(32.dp, 32.dp),
+            size = 32.dp,
             contentDescription = "Next",
             onClick = onMoveNextMusic,
         )
@@ -81,9 +81,14 @@ fun SongController(
                 PlayerRepeatMode.MODE_ONE -> R.drawable.icon_repeat_once
                 PlayerRepeatMode.MODE_ALL -> R.drawable.icon_repeat_all
             },
-            size = DpSize(24.dp, 24.dp),
             contentDescription = "RepeatMode",
-            color = if (playerRepeatMode != PlayerRepeatMode.MODE_OFF) Color.White else Color.White.copy(alpha = 0.5f),
+            color = if (playerRepeatMode != PlayerRepeatMode.MODE_OFF) {
+                Color.White
+            } else {
+                Color.White.copy(
+                    alpha = 0.5f,
+                )
+            },
             onClick = {
                 when (playerRepeatMode) {
                     PlayerRepeatMode.MODE_OFF -> onRepeatMode.invoke(PlayerRepeatMode.MODE_ONE)
@@ -99,21 +104,23 @@ fun SongController(
 private fun ButtonOfFullScreenPlayer(
     modifier: Modifier = Modifier,
     icon: Int,
-    size: DpSize,
-    color: Color = Color.Unspecified,
+    size: Dp = 24.dp,
+    color: Color = Color.White,
     contentDescription: String,
     onClick: () -> Unit,
 ) {
     IconButton(
-        modifier = modifier
-            .size(size.copy(size.width + 8.dp, height = size.height + 8.dp)),
+        modifier = modifier.size(size + 16.dp),
         onClick = onClick,
+        colors = IconButtonDefaults.iconButtonColors(
+            contentColor = color,
+            containerColor = Color.Transparent,
+        ),
         shape = RoundedCornerShape(16.dp),
     ) {
         Icon(
             modifier = Modifier.size(size),
             imageVector = ImageVector.vectorResource(icon),
-            tint = color,
             contentDescription = contentDescription,
         )
     }

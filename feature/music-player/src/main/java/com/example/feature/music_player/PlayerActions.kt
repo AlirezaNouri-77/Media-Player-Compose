@@ -2,6 +2,7 @@ package com.example.feature.music_player
 
 import com.example.core.model.MusicModel
 import com.example.core.model.PlayerRepeatMode
+import com.example.core.model.PlayerTimers
 
 sealed interface PlayerActions {
     data object PausePlayer : PlayerActions
@@ -10,9 +11,15 @@ sealed interface PlayerActions {
 
     data object MoveNextPlayer : PlayerActions
 
-    data object onShuffleMode : PlayerActions
+    data object OnShuffleMode : PlayerActions
+
+    data object OnShowTimerBottomSheet : PlayerActions
+
+    data object OnHideTimerBottomSheet : PlayerActions
 
     data class PlaySongs(val index: Int, val list: List<MusicModel>) : PlayerActions
+
+    data class OnTimerClick(val timers: PlayerTimers) : PlayerActions
 
     data class OnFavoriteToggle(val mediaId: String) : PlayerActions
 

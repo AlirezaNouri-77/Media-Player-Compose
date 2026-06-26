@@ -1,14 +1,11 @@
 package com.example.mediaplayerjetpackcompose.presentation
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -16,8 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.domain.model.PermissionState
@@ -30,17 +25,12 @@ import com.example.mediaplayerjetpackcompose.presentation.component.ShowMessage
 import com.example.mediaplayerjetpackcompose.presentation.navigation.NavMainGraph
 import com.example.mediaplayerjetpackcompose.presentation.navigation.VideoPlayer
 import com.example.mediaplayerjetpackcompose.presentation.util.Constant.musicPermission
+import com.example.mediaplayerjetpackcompose.presentation.util.enableEdgeToEdgeScreen
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        val systemBarStyle = when (currentNightMode) {
-            Configuration.UI_MODE_NIGHT_NO -> SystemBarStyle.light(Color.Transparent.toArgb(), Color.Transparent.toArgb())
-            Configuration.UI_MODE_NIGHT_YES -> SystemBarStyle.dark(Color.Transparent.toArgb())
-            else -> SystemBarStyle.dark(Color.Transparent.toArgb())
-        }
-        enableEdgeToEdge(statusBarStyle = systemBarStyle, navigationBarStyle = systemBarStyle)
+        enableEdgeToEdgeScreen(resources = resources)
         super.onCreate(savedInstanceState)
 
         setContent {

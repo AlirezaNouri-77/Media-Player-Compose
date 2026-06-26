@@ -7,16 +7,27 @@ import androidx.media3.common.C.USAGE_MEDIA
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
 import com.example.core.common.ExoPlayerType
+import com.example.core.music_media3.ExoPlayerHelperClass
 import com.example.core.music_media3.MusicServiceConnection
 import com.example.core.music_media3.util.DeviceVolumeManager
 import org.koin.android.ext.koin.androidApplication
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 @SuppressLint("UnsafeOptInUsageError")
 var MusicMedia3Module = module {
 
     single {
-        MusicServiceConnection(androidApplication().applicationContext)
+        MusicServiceConnection(
+            context = androidApplication().applicationContext,
+            exoPlayerHelperClass = get(),
+        )
+    }
+
+    single {
+        ExoPlayerHelperClass(
+            exoplayer = get(named(ExoPlayerType.MUSIC.qualifier.value)),
+        )
     }
 
     single(ExoPlayerType.MUSIC.qualifier) {

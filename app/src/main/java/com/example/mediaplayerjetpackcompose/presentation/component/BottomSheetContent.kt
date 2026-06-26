@@ -28,12 +28,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.example.core.designsystem.util.MiniPlayerHeight
-import com.example.core.model.MusicPlayerState
 import com.example.core.music_media3.model.ArtworkModel
 import com.example.feature.music_player.PlayerActions
 import com.example.feature.music_player.PlayerViewModel
 import com.example.feature.music_player.fullScreen.FullMusicPlayer
 import com.example.feature.music_player.miniPlayer.MiniMusicPlayer
+import com.example.feature.music_player.model.PlayerUiState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
@@ -42,7 +42,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun BottomSheetContent(
     isVisible: Boolean,
-    currentMusicState: MusicPlayerState,
+    playerUiState: PlayerUiState,
     playerViewModel: PlayerViewModel,
     artworkDominateColor: Int,
     currentMusicPlayerPosition: Long,
@@ -94,13 +94,13 @@ fun BottomSheetContent(
                     }
                     .navigationBarsPadding()
                     .padding(top = MiniPlayerHeight),
-                isFavorite = currentMusicState.currentMusicInfo.isFavorite,
+                isFavorite = playerUiState.currentPlayerState.currentMusicInfo.isFavorite,
                 pagerMusicList = pagerThumbnailList.toImmutableList(),
-                playerRepeatMode = currentMusicState.playerRepeatMode,
+                playerRepeatMode = playerUiState.currentPlayerState.playerRepeatMode,
                 currentPagerPage = currentArtworkPagerIndex,
                 onPlayerAction = playerViewModel::onPlayerAction,
                 currentVolume = currentDeviceVolume,
-                currentPlayerState = currentMusicState,
+                playerUiState = playerUiState,
                 currentMusicPosition = currentMusicPlayerPosition,
                 maxDeviceVolume = playerViewModel.getMaxDeviceVolume(),
                 onVolumeChange = { playerViewModel.setDeviceVolume(it) },
@@ -127,10 +127,10 @@ fun BottomSheetContent(
                 currentMusicPosition = currentMusicPlayerPosition,
                 currentPagerPage = currentArtworkPagerIndex,
                 onPlayerAction = playerViewModel::onPlayerAction,
-                currentPlayerMediaId = currentMusicState.currentMusicInfo.musicID.toLong(),
-                currentPlayerDuration = currentMusicState.currentMusicInfo.duration.toInt(),
-                currentPlayerArtworkUri = currentMusicState.currentMusicInfo.artworkUri,
-                isPlaying = currentMusicState.isPlaying,
+                currentPlayerMediaId = playerUiState.currentPlayerState.currentMusicInfo.musicID.toLong(),
+                currentPlayerDuration = playerUiState.currentPlayerState.currentMusicInfo.duration.toInt(),
+                currentPlayerArtworkUri = playerUiState.currentPlayerState.currentMusicInfo.artworkUri,
+                isPlaying = playerUiState.currentPlayerState.isPlaying,
                 musicArtWorkColorAnimation = musicArtWorkColorAnimation,
                 onClick = { coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.expand() } },
                 setCurrentPagerNumber = {
@@ -138,5 +138,16 @@ fun BottomSheetContent(
                 },
             )
         }
+    }
+
+    if (playerUiState.shouldShowTimerBottomSheet) {
+        TimerBottomSheet(
+            onDismiss = { playerViewModel.onPlayerAction(PlayerActions.OnHideTimerBottomSheet) },
+            selectedTimer = playerUiState.playerTimerState.playerTimerState,
+            timerTimerLeft = playerUiState.playerTimerState.timerTimeLeft,
+            onClick = {
+                playerViewModel.onPlayerAction(PlayerActions.OnTimerClick(it))
+            },
+        )
     }
 }

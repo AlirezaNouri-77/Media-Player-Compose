@@ -2,25 +2,22 @@ package com.example.core.music_media3
 
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
-import com.example.core.common.ExoPlayerType
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 import org.koin.core.component.inject
 
 class MusicPlayerService : MediaLibraryService(), KoinComponent {
     private var mediaSession: MediaLibrarySession? = null
     private lateinit var mediaLibrarySessionCallback: MediaLibrarySession.Callback
-    val musicPlayer: ExoPlayer by inject(ExoPlayerType.MUSIC.qualifier)
+    val exoPlayerHelperClass: ExoPlayerHelperClass by inject()
 
     @OptIn(UnstableApi::class)
     override fun onCreate() {
         super.onCreate()
         mediaLibraryCallBack()
 
-        mediaSession = MediaLibrarySession.Builder(this, musicPlayer, mediaLibrarySessionCallback).build()
+        mediaSession = MediaLibrarySession.Builder(this, exoPlayerHelperClass.exoplayer, mediaLibrarySessionCallback).build()
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession? {

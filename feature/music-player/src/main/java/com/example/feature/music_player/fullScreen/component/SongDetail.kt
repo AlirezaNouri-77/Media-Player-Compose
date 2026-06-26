@@ -31,12 +31,13 @@ import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.model.CurrentMusicInfo
 import com.example.core.model.MusicPlayerState
 import com.example.core.model.PlayerRepeatMode
+import com.example.feature.music_player.model.PlayerUiState
 
 @Composable
 fun SongDetail(
     modifier: Modifier = Modifier,
     isFavorite: Boolean,
-    currentMusicPlayerState: MusicPlayerState,
+    playerUiState: PlayerUiState,
     onArtistClick: (String) -> Unit,
     onFavoriteClick: () -> Unit,
 ) {
@@ -54,7 +55,7 @@ fun SongDetail(
                     .fillMaxWidth()
                     .basicMarquee()
                     .weight(1f),
-                text = currentMusicPlayerState.currentMusicInfo.title.removeFileExtension(),
+                text = playerUiState.currentPlayerState.currentMusicInfo.title.removeFileExtension(),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
                 overflow = TextOverflow.Visible,
@@ -75,8 +76,8 @@ fun SongDetail(
             }
         }
         Text(
-            modifier = Modifier.clickable { onArtistClick(currentMusicPlayerState.currentMusicInfo.artist) },
-            text = currentMusicPlayerState.currentMusicInfo.artist,
+            modifier = Modifier.clickable { onArtistClick(playerUiState.currentPlayerState.currentMusicInfo.artist) },
+            text = playerUiState.currentPlayerState.currentMusicInfo.artist,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
             maxLines = 1,
@@ -84,9 +85,9 @@ fun SongDetail(
         )
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = "${currentMusicPlayerState.currentMusicInfo.title.extractFileExtension()}, " +
-                "${currentMusicPlayerState.currentMusicInfo.bitrate.convertToReadableBitrate()}, " +
-                "${currentMusicPlayerState.currentMusicInfo.size.convertByteToReadableSize()} ",
+            text = "${playerUiState.currentPlayerState.currentMusicInfo.title.extractFileExtension()}, " +
+                "${playerUiState.currentPlayerState.currentMusicInfo.bitrate.convertToReadableBitrate()}, " +
+                "${playerUiState.currentPlayerState.currentMusicInfo.size.convertByteToReadableSize()} ",
             fontSize = 12.sp,
             color = Color.White.copy(alpha = 0.7f),
         )
@@ -101,23 +102,25 @@ private fun FullScreenPreview() {
             onArtistClick = {},
             isFavorite = true,
             onFavoriteClick = {},
-            currentMusicPlayerState = MusicPlayerState(
-                currentMusicInfo = CurrentMusicInfo(
-                    title = "Blinding Lights.mp3",
-                    musicID = "1",
-                    artworkUri = "",
-                    musicUri = "",
-                    artist = "The Weeknd",
-                    album = "After Hours",
-                    duration = 200000,
-                    bitrate = 320,
-                    size = 8388608,
-                    isFavorite = true,
+            playerUiState = PlayerUiState(
+                currentPlayerState = MusicPlayerState(
+                    currentMusicInfo = CurrentMusicInfo(
+                        title = "Blinding Lights.mp3",
+                        musicID = "1",
+                        artworkUri = "",
+                        musicUri = "",
+                        artist = "The Weeknd",
+                        album = "After Hours",
+                        duration = 200000,
+                        bitrate = 320,
+                        size = 8388608,
+                        isFavorite = true,
+                    ),
+                    isPlaying = false,
+                    isBuffering = false,
+                    playerRepeatMode = PlayerRepeatMode.MODE_OFF,
+                    isShuffleMode = false,
                 ),
-                isPlaying = false,
-                isBuffering = false,
-                playerRepeatMode = PlayerRepeatMode.MODE_OFF,
-                isShuffleMode = false,
             ),
         )
     }

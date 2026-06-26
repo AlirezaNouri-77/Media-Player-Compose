@@ -135,7 +135,7 @@ fun MusicMain(
                     sheetContent = {
                         BottomSheetContent(
                             isVisible = uiState.currentPlayerState.currentMusicInfo.musicID.isNotEmpty(),
-                            currentMusicState = uiState.currentPlayerState,
+                            playerUiState = uiState,
                             playerViewModel = playerViewModel,
                             currentMusicPlayerPosition = uiState.currentPlayerPosition,
                             currentArtworkPagerIndex = uiState.currentThumbnailPagerIndex,

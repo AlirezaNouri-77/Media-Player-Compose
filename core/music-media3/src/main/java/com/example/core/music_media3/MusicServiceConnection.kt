@@ -2,15 +2,20 @@ package com.example.core.music_media3
 
 import android.content.ComponentName
 import android.content.Context
+import android.os.CountDownTimer
+import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.example.core.model.CurrentMusicInfo
 import com.example.core.model.MusicModel
 import com.example.core.model.MusicPlayerState
+import com.example.core.model.PlayerTimerState
+import com.example.core.model.PlayerTimers
 import com.example.core.model.toRepeatMode
 import com.example.core.music_media3.mapper.toActiveMusicInfo
 import com.example.core.music_media3.mapper.toArtworkModel
@@ -25,16 +30,23 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
+import org.koin.core.component.KoinComponent
+import kotlin.getValue
 import kotlin.time.Duration.Companion.milliseconds
 
 class MusicServiceConnection(
     private var context: Context,
-) {
+    private val exoPlayerHelperClass: ExoPlayerHelperClass,
+) : KoinComponent {
     private var factory: ListenableFuture<MediaController>? = null
     private var mediaController: MediaController? = null
+    private var timerCounter: CountDownTimer? = null
 
     private var _playerState = MutableStateFlow(MusicPlayerState.Initial)
     var playerState = _playerState.asStateFlow()
+
+    private var _playerTimerState = MutableStateFlow(PlayerTimerState.Initial)
+    var playerTimerState = _playerTimerState.asStateFlow()
 
     private var _currentPlayedMusicList = MutableStateFlow(emptyList<MusicModel>())
     var currentPlayedMusicList = _currentPlayedMusicList.asStateFlow()
@@ -56,7 +68,10 @@ class MusicServiceConnection(
                     {
                         mediaController = factory?.get().also { it?.addListener(exoPlayerListener) }
                         _playerState.update {
-                            it.copy(currentMusicInfo = mediaController?.currentMediaItem?.toActiveMusicInfo() ?: CurrentMusicInfo.Initial)
+                            it.copy(
+                                currentMusicInfo = mediaController?.currentMediaItem?.toActiveMusicInfo()
+                                    ?: CurrentMusicInfo.Initial,
+                            )
                         }
                     },
                     ContextCompat.getMainExecutor(context),
@@ -164,6 +179,47 @@ class MusicServiceConnection(
                 else -> {}
             }
         }
+    }
+
+    fun startPlayerTimer(timeInMinute: Int) {
+        timerCounter?.cancel()
+        timerCounter = object : CountDownTimer(timeInMinute * 60000L, 1000L) {
+            override fun onFinish() {
+                mediaController?.pause()
+                setPlayerTimer(PlayerTimers.INITIAL)
+            }
+
+            override fun onTick(timeLeft: Long) {
+                _playerTimerState.update { it.copy(timerTimeLeft = timeLeft) }
+            }
+        }.start()
+    }
+
+    @OptIn(UnstableApi::class)
+    fun setPlayerTimer(timers: PlayerTimers, isEndOfSong: Boolean = false) {
+        if (isEndOfSong && !playerTimerState.value.isPauseEndOfMedia) {
+            _playerTimerState.update {
+                it.copy(
+                    playerTimerState = timers,
+                    isPauseEndOfMedia = true,
+                )
+            }
+            exoPlayerHelperClass.setPauseAtEndMedia(true)
+            stopPlayerTimer()
+        } else {
+            exoPlayerHelperClass.setPauseAtEndMedia(false)
+            _playerTimerState.update {
+                it.copy(
+                    playerTimerState = timers,
+                    isPauseEndOfMedia = false,
+                )
+            }
+        }
+    }
+
+    fun stopPlayerTimer() {
+        timerCounter?.cancel()
+        timerCounter = null
     }
 
     fun getMediaItemsList(): List<ArtworkModel> {
