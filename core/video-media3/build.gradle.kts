@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.core.video_media3"
+    namespace = "com.shermanrex.core.video_media3"
 }
 
 dependencies {

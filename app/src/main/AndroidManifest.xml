@@ -42,7 +42,7 @@
         </activity>
 
         <service
-            android:name="com.example.core.music_media3.MusicPlayerService"
+            android:name="com.shermanrex.core.music_media3.MusicPlayerService"
             android:exported="true"
             android:foregroundServiceType="mediaPlayback"
             android:permission="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" >

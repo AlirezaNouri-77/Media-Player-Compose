@@ -5,7 +5,7 @@ plugins {
 }
 
 extensions.configure<LibraryExtension> {
-    namespace = "com.example.core.common"
+    namespace = "com.shermanrex.core.common"
 }
 
 dependencies {

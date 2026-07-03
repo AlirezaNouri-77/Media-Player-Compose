@@ -5,7 +5,7 @@ plugins {
 }
 
 configure<LibraryExtension> {
-    namespace = "com.example.core.domain"
+    namespace = "com.shermanrex.core.domain"
 }
 
 dependencies {

@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.feature.video"
+    namespace = "com.shermanrex.feature.video"
 }
 
 dependencies {

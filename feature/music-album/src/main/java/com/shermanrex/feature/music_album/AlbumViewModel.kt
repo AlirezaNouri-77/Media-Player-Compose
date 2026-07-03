@@ -1,0 +1,85 @@
+package com.shermanrex.feature.music_album
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.shermanrex.core.data.util.sortMusic
+import com.shermanrex.core.domain.respository.MusicSourceImpl
+import com.shermanrex.core.model.datastore.CategorizedSortModel
+import com.shermanrex.core.model.datastore.CategorizedSortType
+import com.shermanrex.datastore.ScrollListDataStoreManager
+import com.shermanrex.datastore.SortDataStoreManagerImpl
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+class AlbumViewModel(
+    private val musicSource: MusicSourceImpl,
+    private val albumSortDataStoreManager: SortDataStoreManagerImpl<CategorizedSortModel>,
+    private val scrollListDataStoreManager: ScrollListDataStoreManager,
+) : ViewModel() {
+    private var mUiState = MutableStateFlow(AlbumScreenUiState())
+    val albumScreenUiState = mUiState
+        .onStart {
+            getAlbumData()
+            getScrollState()
+            getSortState()
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000L),
+            AlbumScreenUiState(),
+        )
+
+    fun onEvent(event: AlbumUiEvent) {
+        when (event) {
+            AlbumUiEvent.HideSortDropDownMenu -> mUiState.update { it.copy(isSortDropDownMenuShow = false) }
+            AlbumUiEvent.ShowSortDropDownMenu -> mUiState.update { it.copy(isSortDropDownMenuShow = true) }
+            is AlbumUiEvent.UpdateSortOrder -> updateSortOrder(event.isDec)
+            is AlbumUiEvent.UpdateSortType -> updateSortType(event.sortType)
+            is AlbumUiEvent.UpdateScrollIndex -> updateAlbumScrollIndex(event.index)
+        }
+    }
+
+    private fun getScrollState() = viewModelScope.launch {
+        val scroll = scrollListDataStoreManager.scrollDataStoreState.first()
+        mUiState.update {
+            it.copy(lastScrollState = scroll.albumMusic)
+        }
+    }
+
+    private fun updateAlbumScrollIndex(int: Int) {
+        viewModelScope.launch {
+            scrollListDataStoreManager.updateAlbumScroll(int)
+        }
+    }
+
+    private fun getSortState() = viewModelScope.launch {
+        albumSortDataStoreManager.sortState.collectLatest { sort ->
+            mUiState.update { it.copy(sortState = sort) }
+        }
+    }
+
+    private fun getAlbumData() = viewModelScope.launch {
+        combine(
+            musicSource.album(),
+            albumSortDataStoreManager.sortState,
+        ) { songs, sortState ->
+            sortMusic(list = songs, isDescending = sortState.isDec, sortType = sortState.sortType)
+        }.collect { albumData ->
+            mUiState.update { it.copy(isLoading = false, albumList = albumData) }
+        }
+    }
+
+    private fun updateSortType(songsSortType: CategorizedSortType) = viewModelScope.launch {
+        albumSortDataStoreManager.updateSortType(songsSortType)
+    }
+
+    private fun updateSortOrder(boolean: Boolean) = viewModelScope.launch {
+        albumSortDataStoreManager.updateSortOrder(boolean)
+    }
+}

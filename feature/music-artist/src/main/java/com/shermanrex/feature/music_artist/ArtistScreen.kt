@@ -1,0 +1,159 @@
+package com.shermanrex.feature.music_artist
+
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.shermanrex.core.designsystem.CategoryListItem
+import com.shermanrex.core.designsystem.EmptyPage
+import com.shermanrex.core.designsystem.Loading
+import com.shermanrex.core.designsystem.R
+import com.shermanrex.core.designsystem.SortDropDownMenu
+import com.shermanrex.core.designsystem.util.MiniPlayerHeight
+import com.shermanrex.core.designsystem.util.NavigationBottomBarHeight
+import com.shermanrex.core.designsystem.util.rememberLazyListState
+import com.shermanrex.core.model.MusicModel
+import com.shermanrex.core.model.datastore.CategorizedSortType
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
+import org.koin.androidx.compose.koinViewModel
+
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
+@Composable
+fun SharedTransitionScope.ArtistRoute(
+    navigateToCategory: (String) -> Unit,
+) {
+    val artistViewModel: ArtistViewModel = koinViewModel<ArtistViewModel>()
+    val uiState by artistViewModel.artistScreenUiState.collectAsStateWithLifecycle()
+
+    ArtistScreen(
+        artistsList = uiState.artistList.toImmutableList(),
+        onEvent = artistViewModel::onEvent,
+        isLoading = uiState.isLoading,
+        navigateToCategory = navigateToCategory,
+        isDropDownMenuSortExpand = { uiState.isSortDropDownMenuShow },
+        isSortDescending = uiState.sortState.isDec,
+        currentSortType = uiState.sortState.sortType,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@Composable
+fun SharedTransitionScope.ArtistScreen(
+    modifier: Modifier = Modifier,
+    onEvent: (ArtistUiEvent) -> Unit,
+    artistsList: ImmutableList<Pair<String, List<MusicModel>>>,
+    isLoading: Boolean,
+    isDropDownMenuSortExpand: () -> Boolean,
+    isSortDescending: Boolean,
+    currentSortType: CategorizedSortType,
+    navigateToCategory: (String) -> Unit,
+) {
+    val listState = rememberLazyListState {
+        onEvent(ArtistUiEvent.UpdateScrollIndex(it))
+    }
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Artist",
+                        modifier = Modifier,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 38.sp,
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                ),
+                actions = {
+                    Box(
+                        modifier = Modifier
+                            .wrapContentSize(Alignment.TopEnd),
+                    ) {
+                        IconButton(
+                            onClick = { onEvent(ArtistUiEvent.ShowSortDropDownMenu) },
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(24.dp),
+                                painter = painterResource(id = R.drawable.icon_sort),
+                                contentDescription = "Sort Icon",
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                            )
+                        }
+                        SortDropDownMenu(
+                            isExpand = isDropDownMenuSortExpand(),
+                            sortTypeList = CategorizedSortType.entries.toList(),
+                            isSortDescending = isSortDescending,
+                            currentSortType = currentSortType,
+                            onSortClick = { onEvent(ArtistUiEvent.UpdateSortType(it as CategorizedSortType)) },
+                            onOrderClick = { onEvent(ArtistUiEvent.UpdateSortOrder(!isSortDescending)) },
+                            onDismiss = { onEvent(ArtistUiEvent.HideSortDropDownMenu) },
+                        )
+                    }
+                },
+            )
+        },
+    ) { innerPadding ->
+
+        Crossfade(isLoading) {
+            if (it) {
+                Loading(modifier = Modifier.fillMaxSize())
+            } else {
+                if (artistsList.isNotEmpty()) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
+                        state = listState,
+                        contentPadding = PaddingValues(bottom = NavigationBottomBarHeight + MiniPlayerHeight),
+                    ) {
+                        items(
+                            items = artistsList,
+                            key = { key -> key.first },
+                        ) { item ->
+                            CategoryListItem(
+                                categoryName = item.first,
+                                musicListSize = item.second.size,
+                                thumbnailUri = item.second.first { it.artworkUri.isNotEmpty() }.artworkUri,
+                                onClick = { categoryName ->
+                                    navigateToCategory(categoryName)
+                                },
+                                sharedTransitionScope = this@ArtistScreen,
+                            )
+                        }
+                    }
+                } else {
+                    EmptyPage()
+                }
+            }
+        }
+    }
+}

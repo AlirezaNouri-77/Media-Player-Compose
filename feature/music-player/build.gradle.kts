@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.feature.music_player"
+    namespace = "com.shermanrex.feature.music_player"
 }
 
 dependencies {

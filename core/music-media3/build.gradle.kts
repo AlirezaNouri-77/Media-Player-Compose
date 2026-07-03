@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.core.music_media3"
+    namespace = "com.shermanrex.core.music_media3"
 }
 
 dependencies {

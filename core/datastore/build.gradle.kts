@@ -10,7 +10,7 @@ extensions.configure<LibraryExtension> {
     defaultConfig {
         consumerProguardFiles("consumer-proguard-rules.pro")
     }
-    namespace = "com.example.core.datastore"
+    namespace = "com.shermanrex.core.datastore"
 }
 
 protobuf {

@@ -10,10 +10,10 @@ plugins {
 }
 
 extensions.configure<ApplicationExtension> {
-    namespace = "com.example.mediaplayerjetpackcompose"
+    namespace = "com.shermanrex.shermbeat"
 
     defaultConfig {
-        applicationId = "com.example.mediaplayerjetpackcompose"
+        applicationId = "com.shermanrex.shermbeat"
         versionCode = 1
         versionName = "1.0"
 

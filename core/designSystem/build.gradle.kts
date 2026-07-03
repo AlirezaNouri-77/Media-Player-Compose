@@ -5,7 +5,7 @@ plugins {
 }
 
 extensions.configure<LibraryExtension> {
-    namespace = "com.example.core.designsystem"
+    namespace = "com.shermanrex.core.designsystem"
 }
 
 dependencies {
