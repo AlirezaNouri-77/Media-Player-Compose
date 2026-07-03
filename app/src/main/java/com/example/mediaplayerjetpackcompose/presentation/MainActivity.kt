@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.example.core.domain.model.PermissionState
 import com.example.feature.video.VideoPlayer
@@ -31,8 +32,8 @@ import org.koin.androidx.compose.koinViewModel
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdgeScreen(resources = resources)
+        installSplashScreen()
         super.onCreate(savedInstanceState)
-
         setContent {
             MediaPlayerJetpackComposeTheme {
                 Surface(
