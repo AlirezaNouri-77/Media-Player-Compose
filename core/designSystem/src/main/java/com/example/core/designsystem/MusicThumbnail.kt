@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -38,6 +39,7 @@ fun MusicThumbnail(
 private fun PlaceHolder(modifier: Modifier = Modifier) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         Image(
+            modifier = Modifier.fillMaxSize(0.5f),
             painter = painterResource(R.drawable.icon_music_note),
             colorFilter = ColorFilter.tint(Color.White),
             contentDescription = "",

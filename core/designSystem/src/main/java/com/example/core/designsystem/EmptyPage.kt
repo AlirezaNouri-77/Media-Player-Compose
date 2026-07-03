@@ -21,13 +21,13 @@ fun EmptyPage(
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Companion.Center,
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = message,
             fontSize = textSize,
-            fontWeight = FontWeight.Companion.Bold,
-            textAlign = TextAlign.Companion.Center,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onPrimary.copy(alpha = textAlpha),
         )
     }
