@@ -93,7 +93,7 @@ class MusicRepository(
     }
 
     companion object {
-        var MediaInfoArray = buildList<String> {
+        var MediaInfoArray = buildList {
             addAll(
                 arrayOf(
                     MediaStore.Audio.Media._ID,

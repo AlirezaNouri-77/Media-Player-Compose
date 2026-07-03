@@ -11,10 +11,12 @@ import com.shermanrex.core.model.datastore.SortType
 import com.shermanrex.datastore.ScrollListDataStoreManager
 import com.shermanrex.datastore.SortDataStoreManagerImpl
 import com.shermanrex.feature.music_home.model.TabBarModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -91,7 +93,7 @@ class HomeViewModel(
             songsSortDataStoreManager.sortState,
         ) { songs, sortState ->
             sortMusic(list = songs, isDescending = sortState.isDec, sortType = sortState.sortType)
-        }.collect { songs ->
+        }.flowOn(Dispatchers.IO).collect { songs ->
             mUiState.update { it.copy(isLoading = false, songsList = songs) }
         }
     }
@@ -102,7 +104,7 @@ class HomeViewModel(
             folderSortDataStoreManager.sortState,
         ) { songs, sortState ->
             sortMusic(list = songs, isDescending = sortState.isDec, sortType = sortState.sortType)
-        }.collect { folder ->
+        }.flowOn(Dispatchers.IO).collect { folder ->
             mUiState.update { it.copy(folderSongsList = folder) }
         }
     }
