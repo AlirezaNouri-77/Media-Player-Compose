@@ -27,7 +27,7 @@ class VideoMediaMetaData(
                 VideoModel(
                     videoId = 0,
                     uri = uri.toString(),
-                    name = documentFile.name.toString(),
+                    name = documentFile.name ?: "",
                     mimeType = mimeType.toString(),
                     duration = duration.toLong(),
                     size = size,

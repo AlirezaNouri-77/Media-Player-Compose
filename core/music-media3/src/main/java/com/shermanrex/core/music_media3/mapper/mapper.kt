@@ -1,8 +1,8 @@
 package com.shermanrex.core.music_media3.mapper
 
 import android.net.Uri
+import android.os.Bundle
 import androidx.core.net.toUri
-import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import com.shermanrex.core.model.CurrentMusicInfo
@@ -20,13 +20,13 @@ fun MusicModel.toMediaItem() =
                 .setArtist(this.artist)
                 .setAlbumTitle(this.album)
                 .setExtras(
-                    bundleOf(
-                        MEDIAMETADATA_BUNDLE_DURATION_KEY to this.duration,
-                        MEDIAMETADATA_BUNDLE_BITRATE_KEY to this.bitrate,
-                        MEDIAMETADATA_BUNDLE_SIZE_KEY to this.size,
-                        MEDIAMETADATA_BUNDLE_ISFAVORITE_KEY to this.isFavorite,
-                        MEDIAMETADATA_BUNDLE_FOLDER_KEY to this.folderName,
-                    ),
+                    Bundle().apply {
+                        putLong(MEDIAMETADATA_BUNDLE_DURATION_KEY, this@toMediaItem.duration)
+                        putInt(MEDIAMETADATA_BUNDLE_BITRATE_KEY, this@toMediaItem.bitrate)
+                        putLong(MEDIAMETADATA_BUNDLE_SIZE_KEY, this@toMediaItem.size)
+                        putBoolean(MEDIAMETADATA_BUNDLE_ISFAVORITE_KEY, this@toMediaItem.isFavorite)
+                        putString(MEDIAMETADATA_BUNDLE_FOLDER_KEY, this@toMediaItem.folderName)
+                    },
                 ).build(),
         ).build()
 
@@ -40,7 +40,8 @@ fun MediaItem.toMusicModel() = MusicModel(
     artworkUri = (this.mediaMetadata.artworkUri ?: Uri.EMPTY).toString(),
     bitrate = this.mediaMetadata.extras?.getInt(MEDIAMETADATA_BUNDLE_BITRATE_KEY) ?: 0,
     artist = (this.mediaMetadata.artist ?: "None").toString(),
-    isFavorite = this.mediaMetadata.extras?.getBoolean(MEDIAMETADATA_BUNDLE_ISFAVORITE_KEY) ?: false,
+    isFavorite = this.mediaMetadata.extras?.getBoolean(MEDIAMETADATA_BUNDLE_ISFAVORITE_KEY)
+        ?: false,
     path = (this.mediaMetadata.title ?: "None").toString(),
     album = (this.mediaMetadata.albumTitle ?: "None").toString(),
     folderName = this.mediaMetadata.extras?.getString(MEDIAMETADATA_BUNDLE_FOLDER_KEY) ?: "None",
@@ -56,7 +57,8 @@ fun MediaItem.toActiveMusicInfo() = CurrentMusicInfo(
     duration = this.mediaMetadata.extras?.getLong(MEDIAMETADATA_BUNDLE_DURATION_KEY) ?: 0L,
     bitrate = this.mediaMetadata.extras?.getInt(MEDIAMETADATA_BUNDLE_BITRATE_KEY) ?: 0,
     size = this.mediaMetadata.extras?.getLong(MEDIAMETADATA_BUNDLE_SIZE_KEY) ?: 0L,
-    isFavorite = this.mediaMetadata.extras?.getBoolean(MEDIAMETADATA_BUNDLE_ISFAVORITE_KEY) ?: false,
+    isFavorite = this.mediaMetadata.extras?.getBoolean(MEDIAMETADATA_BUNDLE_ISFAVORITE_KEY)
+        ?: false,
 )
 
 fun MediaItem.toArtworkModel(): ArtworkModel {
