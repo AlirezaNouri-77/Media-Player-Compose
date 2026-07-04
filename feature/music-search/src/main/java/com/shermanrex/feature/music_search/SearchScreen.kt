@@ -35,10 +35,10 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(FlowPreview::class, ExperimentalMaterial3Api::class)
 @Composable
-fun SearchRout(
-    searchViewModel: SearchViewModel = koinViewModel<SearchViewModel>(),
+fun SearchRoute(
     onMusicClick: (Int, List<MusicModel>) -> Unit,
 ) {
+    val searchViewModel: SearchViewModel = koinViewModel<SearchViewModel>()
     val uiState by searchViewModel.searchScreenUiState.collectAsStateWithLifecycle()
 
     SearchScreen(

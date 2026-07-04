@@ -49,7 +49,7 @@ import com.shermanrex.feature.music_categorydetail.CategoryViewModel
 import com.shermanrex.feature.music_home.HomeScreen
 import com.shermanrex.feature.music_player.PlayerActions
 import com.shermanrex.feature.music_player.PlayerViewModel
-import com.shermanrex.feature.music_search.SearchRout
+import com.shermanrex.feature.music_search.SearchRoute
 import com.shermanrex.shermbeat.presentation.bottomBar.MusicNavigationBar
 import com.shermanrex.shermbeat.presentation.component.BottomSheetContent
 import com.shermanrex.shermbeat.presentation.navigation.AlbumMusic
@@ -188,7 +188,7 @@ fun MusicMain(
                                         )
                                     }
                                     entry<SearchMusic> {
-                                        SearchRout(
+                                        SearchRoute(
                                             onMusicClick = { index, list ->
                                                 playerViewModel.onPlayerAction(PlayerActions.PlaySongs(index, list))
                                             },
