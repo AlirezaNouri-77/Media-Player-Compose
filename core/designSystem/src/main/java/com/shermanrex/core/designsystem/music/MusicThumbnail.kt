@@ -1,4 +1,4 @@
-package com.shermanrex.core.designsystem
+package com.shermanrex.core.designsystem.music
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import coil.compose.SubcomposeAsyncImage
+import com.shermanrex.core.designsystem.R
 
 @Composable
 fun MusicThumbnail(

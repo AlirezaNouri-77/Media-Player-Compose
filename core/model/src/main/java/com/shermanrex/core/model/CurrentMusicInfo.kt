@@ -1,5 +1,8 @@
 package com.shermanrex.core.model
 
+import androidx.compose.runtime.Stable
+
+@Stable
 data class CurrentMusicInfo(
     val title: String,
     val musicID: String,

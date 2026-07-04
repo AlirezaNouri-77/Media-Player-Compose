@@ -8,6 +8,7 @@ import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(FlowPreview::class)
 @Composable
@@ -24,7 +25,7 @@ fun rememberLazyListState(
     LaunchedEffect(lazyList) {
         snapshotFlow {
             lazyList.firstVisibleItemIndex
-        }.debounce(500)
+        }.debounce(500.milliseconds)
             .collectLatest {
                 if (!lazyList.isScrollInProgress) onStopScroll(it)
             }

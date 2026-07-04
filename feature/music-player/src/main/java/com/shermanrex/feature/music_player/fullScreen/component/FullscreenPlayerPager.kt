@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.shermanrex.core.designsystem.MusicThumbnail
+import com.shermanrex.core.designsystem.music.MusicThumbnail
 import com.shermanrex.core.music_media3.model.ArtworkModel
 import com.shermanrex.feature.music_player.PagerHandler
 import com.shermanrex.feature.music_player.PlayerActions

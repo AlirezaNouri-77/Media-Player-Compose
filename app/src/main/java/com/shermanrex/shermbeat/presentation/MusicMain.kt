@@ -49,7 +49,7 @@ import com.shermanrex.feature.music_categorydetail.CategoryViewModel
 import com.shermanrex.feature.music_home.HomeScreen
 import com.shermanrex.feature.music_player.PlayerActions
 import com.shermanrex.feature.music_player.PlayerViewModel
-import com.shermanrex.feature.music_search.SearchRoot
+import com.shermanrex.feature.music_search.SearchRout
 import com.shermanrex.shermbeat.presentation.bottomBar.MusicNavigationBar
 import com.shermanrex.shermbeat.presentation.component.BottomSheetContent
 import com.shermanrex.shermbeat.presentation.navigation.AlbumMusic
@@ -80,7 +80,7 @@ fun MusicMain(
 
     val windowSize = CurrentWindowSizeState()
 
-    val uiState by playerViewModel.playerUiState.collectAsStateWithLifecycle()
+    val playerUiState by playerViewModel.playerUiState.collectAsStateWithLifecycle()
     val windowInset = WindowInsets.systemBars.asPaddingValues()
 
     val bottomPadding = remember(windowInset.calculateBottomPadding(), windowSize) {
@@ -128,21 +128,21 @@ fun MusicMain(
                     modifier = Modifier,
                     scaffoldState = bottomSheetScaffoldState,
                     sheetDragHandle = null,
-                    sheetPeekHeight = bottomPadding + if (uiState.currentPlayerState.currentMusicInfo.musicID.isNotEmpty()) MiniPlayerHeight else 0.dp,
+                    sheetPeekHeight = bottomPadding + if (playerUiState.currentPlayerState.currentMusicInfo.musicID.isNotEmpty()) MiniPlayerHeight else 0.dp,
                     sheetContainerColor = Color.Transparent,
                     containerColor = Color.Transparent,
                     sheetShadowElevation = 0.dp,
                     sheetContent = {
                         BottomSheetContent(
-                            isVisible = uiState.currentPlayerState.currentMusicInfo.musicID.isNotEmpty(),
-                            playerUiState = uiState,
+                            isVisible = playerUiState.currentPlayerState.currentMusicInfo.musicID.isNotEmpty(),
+                            playerUiState = playerUiState,
                             playerViewModel = playerViewModel,
-                            currentMusicPlayerPosition = uiState.currentPlayerPosition,
-                            currentArtworkPagerIndex = uiState.currentThumbnailPagerIndex,
-                            currentDeviceVolume = uiState.currentDeviceVolume,
+                            currentMusicPlayerPosition = playerUiState.currentPlayerPosition,
+                            currentArtworkPagerIndex = playerUiState.currentThumbnailPagerIndex,
+                            currentDeviceVolume = playerUiState.currentDeviceVolume,
                             bottomSheetScaffoldState = bottomSheetScaffoldState,
-                            pagerThumbnailList = uiState.thumbnailsList.toImmutableList(),
-                            artworkDominateColor = uiState.thumbnailDominantColor,
+                            pagerThumbnailList = playerUiState.thumbnailsList.toImmutableList(),
+                            artworkDominateColor = playerUiState.thumbnailDominantColor,
                             bottomSheetSwapFraction = { bottomSheetSwapFraction },
                             navigateToArtist = { artist ->
                                 navBackStack.add(DetailMusic(artist, MediaCategory.ARTIST))
@@ -170,24 +170,25 @@ fun MusicMain(
                                 ) {
                                     entry<HomeMusic> {
                                         HomeScreen(
-                                            navigateToCategoryPage = { name ->
-                                                navBackStack.add(DetailMusic(name, MediaCategory.FOLDER))
-                                            },
                                             onNavigateToVideoScreen = navigateToVideo,
                                             onMusicClick = { index, list ->
                                                 playerViewModel.onPlayerAction(PlayerActions.PlaySongs(index, list))
+                                            },
+                                            navigateToCategoryPage = { name ->
+                                                navBackStack.add(DetailMusic(name, MediaCategory.FOLDER))
                                             },
                                         )
                                     }
                                     entry<ArtistMusic> {
                                         ArtistRoute(
+                                            currentPlayerInfo = playerUiState.currentPlayerState.currentMusicInfo,
                                             navigateToCategory = { name ->
                                                 navBackStack.add(DetailMusic(name, MediaCategory.ARTIST))
                                             },
                                         )
                                     }
                                     entry<SearchMusic> {
-                                        SearchRoot(
+                                        SearchRout(
                                             onMusicClick = { index, list ->
                                                 playerViewModel.onPlayerAction(PlayerActions.PlaySongs(index, list))
                                             },
@@ -195,6 +196,7 @@ fun MusicMain(
                                     }
                                     entry<AlbumMusic> {
                                         AlbumRoute(
+                                            currentPlayerInfo = playerUiState.currentPlayerState.currentMusicInfo,
                                             navigateToCategory = { name ->
                                                 navBackStack.add(DetailMusic(name, MediaCategory.ALBUM))
                                             },

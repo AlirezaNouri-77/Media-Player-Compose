@@ -1,4 +1,4 @@
-package com.shermanrex.core.designsystem
+package com.shermanrex.core.designsystem.music
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.shermanrex.core.common.util.convertMilliSecondToTime
 import com.shermanrex.core.common.util.removeFileExtension
+import com.shermanrex.core.designsystem.WaveForm
 import com.shermanrex.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 
 @Composable

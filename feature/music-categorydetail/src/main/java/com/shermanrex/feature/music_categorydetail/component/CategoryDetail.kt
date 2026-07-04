@@ -26,8 +26,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.shermanrex.core.designsystem.MusicMediaItem
-import com.shermanrex.core.designsystem.MusicThumbnail
+import com.shermanrex.core.designsystem.music.MusicMediaItem
+import com.shermanrex.core.designsystem.music.MusicThumbnail
 import com.shermanrex.core.designsystem.util.MiniPlayerHeight
 import com.shermanrex.core.designsystem.util.NavigationBottomBarHeight
 import com.shermanrex.feature.music_categorydetail.CategoryUiState

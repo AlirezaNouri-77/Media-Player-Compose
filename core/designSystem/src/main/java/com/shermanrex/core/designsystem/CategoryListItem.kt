@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import com.shermanrex.core.designsystem.music.MusicThumbnail
 import com.shermanrex.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 
 @OptIn(ExperimentalSharedTransitionApi::class)

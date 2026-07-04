@@ -2,7 +2,6 @@ package com.shermanrex.feature.music_player.fullScreen.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -17,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,7 +31,7 @@ fun HeaderSection(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.Start),
+        horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
@@ -39,7 +39,7 @@ fun HeaderSection(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(
-                modifier = Modifier.size(32.dp),
+                modifier = Modifier,
                 onClick = onBackClick,
                 colors = IconButtonDefaults.iconButtonColors(
                     containerColor = Color.Transparent,
@@ -47,15 +47,16 @@ fun HeaderSection(
                 ),
             ) {
                 Icon(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.size(36.dp),
                     imageVector = Icons.Default.KeyboardArrowDown,
                     contentDescription = "",
                 )
             }
             Text(
                 text = "Now Playing",
-                modifier = Modifier,
-                fontSize = 16.sp,
+                modifier = Modifier.fillMaxWidth(),
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Medium,
                 color = Color.White,
             )
@@ -67,7 +68,7 @@ fun HeaderSection(
             ),
         ) {
             Icon(
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(24.dp),
                 painter = painterResource(R.drawable.icon_timer),
                 contentDescription = "",
             )

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.MediaPlayerJetpackCompose" parent="android:Theme.Material.NoActionBar"/>
+
+    <style name="Theme.MediaPlayerJetpackCompose.SplashScreen" parent="android:Theme.Material.NoActionBar">
+        <item name="windowSplashScreenBackground">@color/splashBackground</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/splashBackground</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/icon_splash</item>
+        <item name="postSplashScreenTheme">@style/Theme.MediaPlayerJetpackCompose</item>
+    </style>
+
+</resources>

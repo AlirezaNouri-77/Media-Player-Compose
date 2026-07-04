@@ -20,8 +20,8 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.shermanrex.core.designsystem.MusicThumbnail
 import com.shermanrex.core.designsystem.NoRippleEffect
+import com.shermanrex.core.designsystem.music.MusicThumbnail
 import com.shermanrex.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.shermanrex.core.designsystem.util.MiniPlayerHeight
 import com.shermanrex.core.music_media3.model.ArtworkModel

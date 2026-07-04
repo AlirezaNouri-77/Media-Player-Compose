@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.shermanrex.core.designsystem.EmptyPage
-import com.shermanrex.core.designsystem.MusicMediaItem
+import com.shermanrex.core.designsystem.music.MusicMediaItem
 import com.shermanrex.core.designsystem.util.getLazyColumnPadding
 import com.shermanrex.core.model.MusicModel
 import com.shermanrex.feature.music_search.component.SearchTextFieldComponent
@@ -35,7 +35,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(FlowPreview::class, ExperimentalMaterial3Api::class)
 @Composable
-fun SearchRoot(
+fun SearchRout(
     searchViewModel: SearchViewModel = koinViewModel<SearchViewModel>(),
     onMusicClick: (Int, List<MusicModel>) -> Unit,
 ) {

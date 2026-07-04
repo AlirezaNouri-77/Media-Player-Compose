@@ -4,13 +4,10 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,14 +26,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.shermanrex.core.designsystem.CategoryListItem
-import com.shermanrex.core.designsystem.EmptyPage
 import com.shermanrex.core.designsystem.Loading
 import com.shermanrex.core.designsystem.R
 import com.shermanrex.core.designsystem.SortDropDownMenu
-import com.shermanrex.core.designsystem.util.MiniPlayerHeight
-import com.shermanrex.core.designsystem.util.NavigationBottomBarHeight
+import com.shermanrex.core.designsystem.music.CategoryListComponent
 import com.shermanrex.core.designsystem.util.rememberLazyListState
+import com.shermanrex.core.model.CurrentMusicInfo
 import com.shermanrex.core.model.MusicModel
 import com.shermanrex.core.model.datastore.CategorizedSortType
 import kotlinx.collections.immutable.ImmutableList
@@ -47,6 +42,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SharedTransitionScope.ArtistRoute(
     navigateToCategory: (String) -> Unit,
+    currentPlayerInfo: CurrentMusicInfo,
 ) {
     val artistViewModel: ArtistViewModel = koinViewModel<ArtistViewModel>()
     val uiState by artistViewModel.artistScreenUiState.collectAsStateWithLifecycle()
@@ -58,6 +54,7 @@ fun SharedTransitionScope.ArtistRoute(
         navigateToCategory = navigateToCategory,
         isDropDownMenuSortExpand = { uiState.isSortDropDownMenuShow },
         isSortDescending = uiState.sortState.isDec,
+        currentPlayerInfo = currentPlayerInfo,
         currentSortType = uiState.sortState.sortType,
     )
 }
@@ -69,14 +66,12 @@ fun SharedTransitionScope.ArtistScreen(
     onEvent: (ArtistUiEvent) -> Unit,
     artistsList: ImmutableList<Pair<String, List<MusicModel>>>,
     isLoading: Boolean,
+    currentPlayerInfo: CurrentMusicInfo,
     isDropDownMenuSortExpand: () -> Boolean,
     isSortDescending: Boolean,
     currentSortType: CategorizedSortType,
     navigateToCategory: (String) -> Unit,
 ) {
-    val listState = rememberLazyListState {
-        onEvent(ArtistUiEvent.UpdateScrollIndex(it))
-    }
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -122,37 +117,21 @@ fun SharedTransitionScope.ArtistScreen(
             )
         },
     ) { innerPadding ->
-
-        Crossfade(isLoading) {
-            if (it) {
+        Crossfade(isLoading) { targetState ->
+            if (targetState) {
                 Loading(modifier = Modifier.fillMaxSize())
             } else {
-                if (artistsList.isNotEmpty()) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding),
-                        state = listState,
-                        contentPadding = PaddingValues(bottom = NavigationBottomBarHeight + MiniPlayerHeight),
-                    ) {
-                        items(
-                            items = artistsList,
-                            key = { key -> key.first },
-                        ) { item ->
-                            CategoryListItem(
-                                categoryName = item.first,
-                                musicListSize = item.second.size,
-                                thumbnailUri = item.second.first { it.artworkUri.isNotEmpty() }.artworkUri,
-                                onClick = { categoryName ->
-                                    navigateToCategory(categoryName)
-                                },
-                                sharedTransitionScope = this@ArtistScreen,
-                            )
-                        }
-                    }
-                } else {
-                    EmptyPage()
+                val listState = rememberLazyListState {
+                    onEvent(ArtistUiEvent.UpdateScrollIndex(it))
                 }
+                CategoryListComponent(
+                    modifier = modifier.padding(innerPadding),
+                    listItem = artistsList,
+                    lazyListState = listState,
+                    currentMusicId = currentPlayerInfo.musicID,
+                    sharedTransitionScope = this@ArtistScreen,
+                    navigateToCategoryPage = navigateToCategory,
+                )
             }
         }
     }

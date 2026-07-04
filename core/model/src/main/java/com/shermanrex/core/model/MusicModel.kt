@@ -1,5 +1,8 @@
 package com.shermanrex.core.model
 
+import androidx.compose.runtime.Stable
+
+@Stable
 data class MusicModel(
     val musicId: Long,
     val uri: String,
