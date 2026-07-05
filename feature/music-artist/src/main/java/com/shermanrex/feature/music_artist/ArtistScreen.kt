@@ -26,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.shermanrex.core.designsystem.Loading
+import com.shermanrex.core.designsystem.LoadingComponent
 import com.shermanrex.core.designsystem.R
 import com.shermanrex.core.designsystem.SortDropDownMenu
 import com.shermanrex.core.designsystem.music.CategoryListComponent
@@ -119,7 +119,7 @@ fun SharedTransitionScope.ArtistScreen(
     ) { innerPadding ->
         Crossfade(isLoading) { targetState ->
             if (targetState) {
-                Loading(modifier = Modifier.fillMaxSize())
+                LoadingComponent(modifier = Modifier.fillMaxSize())
             } else {
                 val listState = rememberLazyListState {
                     onEvent(ArtistUiEvent.UpdateScrollIndex(it))

@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.shermanrex.core.designsystem.Loading
+import com.shermanrex.core.designsystem.LoadingComponent
 import com.shermanrex.core.designsystem.MainTopAppBar
 import com.shermanrex.core.designsystem.R
 import com.shermanrex.core.designsystem.Sort
@@ -133,7 +133,7 @@ fun SharedTransitionScope.HomeScreen(
                 label = "",
             ) { isLoading ->
                 if (isLoading) {
-                    Loading(modifier = Modifier)
+                    LoadingComponent(modifier = Modifier)
                 } else {
                     HomeMusicPager(
                         currentTabBarIndex = uiState.currentTabBarPosition.id,

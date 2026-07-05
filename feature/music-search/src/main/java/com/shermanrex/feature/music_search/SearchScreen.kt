@@ -2,13 +2,10 @@ package com.shermanrex.feature.music_search
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -24,8 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.shermanrex.core.designsystem.EmptyPage
-import com.shermanrex.core.designsystem.music.MusicMediaItem
-import com.shermanrex.core.designsystem.util.getLazyColumnPadding
+import com.shermanrex.core.designsystem.LoadingComponent
+import com.shermanrex.core.designsystem.music.MusicListComponent
 import com.shermanrex.core.model.MusicModel
 import com.shermanrex.feature.music_search.component.SearchTextFieldComponent
 import kotlinx.collections.immutable.ImmutableList
@@ -46,7 +43,7 @@ fun SearchRoute(
         isLoading = uiState.isLoading,
         listItem = uiState.searchList.toImmutableList(),
         currentPlayerMediaId = uiState.musicPlayerState.currentMusicInfo.musicID,
-        currentPlayerPlayingState = uiState.musicPlayerState.isPlaying,
+        isPlaying = uiState.musicPlayerState.isPlaying,
         onMusicClick = { index, list -> onMusicClick(index, list) },
         searchTextFieldValue = uiState.searchTextFieldValue,
         onClearSearchTextField = { searchViewModel.onEvent(SearchScreenUiEvent.OnClearSearchTextField) },
@@ -64,7 +61,7 @@ fun SearchScreen(
     listItem: ImmutableList<MusicModel>,
     searchTextFieldValue: String,
     currentPlayerMediaId: String,
-    currentPlayerPlayingState: Boolean,
+    isPlaying: Boolean,
     onMusicClick: (Int, List<MusicModel>) -> Unit,
     onSearchTextFieldValueChange: (String) -> Unit,
     onClearSearchTextField: () -> Unit,
@@ -101,35 +98,21 @@ fun SearchScreen(
                 onClear = onClearSearchTextField,
             )
 
-            if (listItem.isNotEmpty() && !isLoading) {
-                LazyColumn(
-                    modifier = modifier
-                        .fillMaxSize(),
-                    contentPadding = PaddingValues(
-                        bottom = getLazyColumnPadding(currentPlayerMediaId.isNotEmpty()),
-                    ),
-                ) {
-                    itemsIndexed(
-                        items = listItem,
-                        key = { _, item -> item.musicId },
-                    ) { index, item ->
-                        MusicMediaItem(
-                            musicId = item.musicId,
-                            artworkUri = item.artworkUri,
-                            name = item.name,
-                            artist = item.artist,
-                            duration = item.duration,
-                            isFavorite = item.isFavorite,
-                            currentMediaId = currentPlayerMediaId,
-                            onItemClick = { onMusicClick(index, listItem) },
-                            isPlaying = { currentPlayerPlayingState },
-                        )
-                    }
-                }
-            } else if (searchTextFieldValue.isNotEmpty() && listItem.isEmpty()) {
-                EmptyPage(message = "Nothing found")
+            if (isLoading) {
+                LoadingComponent()
             } else {
-                EmptyPage()
+                if (listItem.isNotEmpty()) {
+                    MusicListComponent(
+                        listItem = listItem,
+                        isPlaying = isPlaying,
+                        currentMusicId = currentPlayerMediaId,
+                        onMusicClick = onMusicClick,
+                    )
+                } else if (searchTextFieldValue.isNotEmpty() && listItem.isEmpty()) {
+                    EmptyPage(message = "Nothing found")
+                } else {
+                    EmptyPage()
+                }
             }
         }
     }

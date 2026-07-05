@@ -20,8 +20,9 @@ class SearchViewModel(
     private var mUiState = MutableStateFlow(SearchScreenUiState())
     val searchScreenUiState = mUiState
         .onStart {
-            loadSearchData()
+            observeSearchQuery()
             observePlayerState()
+            initSearchList()
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000L),
@@ -29,12 +30,12 @@ class SearchViewModel(
         )
 
     private fun observePlayerState() = viewModelScope.launch {
-        getMusicPlayerStateUseCase.invoke().collect { playerStateModel ->
+        getMusicPlayerStateUseCase().collect { playerStateModel ->
             mUiState.update { it.copy(musicPlayerState = playerStateModel) }
         }
     }
 
-    private fun loadSearchData() = viewModelScope.launch {
+    private fun observeSearchQuery() = viewModelScope.launch {
         searchMusicManager.searchList.collectLatest { searchData ->
             mUiState.update {
                 it.copy(
@@ -52,11 +53,18 @@ class SearchViewModel(
                 mUiState.update { it.copy(searchTextFieldValue = event.newValue) }
                 searchMusic(input = event.newValue)
             }
-            SearchScreenUiEvent.OnClearSearchTextField -> mUiState.update { it.copy(searchTextFieldValue = "") }
+
+            SearchScreenUiEvent.OnClearSearchTextField ->
+                mUiState.update { it.copy(searchTextFieldValue = "") }
         }
     }
 
+    private fun initSearchList() = viewModelScope.launch {
+        searchMusic("")
+    }
+
     private fun searchMusic(input: String) = viewModelScope.launch {
+        mUiState.update { it.copy(isLoading = true) }
         searchMusicManager.search(input)
     }
 }

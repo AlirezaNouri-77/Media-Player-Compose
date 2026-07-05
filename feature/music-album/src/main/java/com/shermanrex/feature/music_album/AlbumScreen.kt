@@ -26,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.shermanrex.core.designsystem.Loading
+import com.shermanrex.core.designsystem.LoadingComponent
 import com.shermanrex.core.designsystem.R
 import com.shermanrex.core.designsystem.SortDropDownMenu
 import com.shermanrex.core.designsystem.music.CategoryListComponent
@@ -120,7 +120,7 @@ private fun AlbumScreen(
     ) { innerPadding ->
         Crossfade(isLoading) {
             if (it) {
-                Loading(modifier = Modifier.fillMaxSize())
+                LoadingComponent(modifier = Modifier.fillMaxSize())
             } else {
                 CategoryListComponent(
                     modifier = Modifier.padding(innerPadding),

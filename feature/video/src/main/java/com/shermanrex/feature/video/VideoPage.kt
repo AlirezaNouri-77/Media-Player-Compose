@@ -20,7 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.shermanrex.core.designsystem.Loading
+import com.shermanrex.core.designsystem.LoadingComponent
 import com.shermanrex.core.model.VideoModel
 import com.shermanrex.feature.video.component.EmptyVideoResultHandler
 import com.shermanrex.feature.video.component.TopBarVideo
@@ -86,7 +86,7 @@ fun VideoPage(
             label = "",
         ) {
             if (it.loading) {
-                Loading(modifier = Modifier.fillMaxSize())
+                LoadingComponent(modifier = Modifier.fillMaxSize())
             }
 
             if (!it.loading && it.videoList.isEmpty()) {

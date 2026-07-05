@@ -11,8 +11,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun Loading(
-    modifier: Modifier,
+fun LoadingComponent(
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
