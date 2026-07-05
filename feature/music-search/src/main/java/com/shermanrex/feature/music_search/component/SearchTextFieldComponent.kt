@@ -22,8 +22,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.shermanrex.core.designsystem.R
 import com.shermanrex.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.shermanrex.feature.music_search.R
 import kotlinx.coroutines.FlowPreview
 
 @OptIn(FlowPreview::class)
@@ -70,7 +70,7 @@ fun SearchTextFieldComponent(
                 }
             },
             leadingIcon = {
-                Icon(painter = painterResource(id = R.drawable.icon_search_24), contentDescription = "")
+                Icon(painter = painterResource(id = R.drawable.icon_search), contentDescription = "")
             },
             shape = RoundedCornerShape(15.dp),
             colors = OutlinedTextFieldDefaults.colors(

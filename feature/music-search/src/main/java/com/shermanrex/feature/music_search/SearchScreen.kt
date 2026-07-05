@@ -43,6 +43,7 @@ fun SearchRoute(
 
     SearchScreen(
         modifier = Modifier.imePadding(),
+        isLoading = uiState.isLoading,
         listItem = uiState.searchList.toImmutableList(),
         currentPlayerMediaId = uiState.musicPlayerState.currentMusicInfo.musicID,
         currentPlayerPlayingState = uiState.musicPlayerState.isPlaying,
@@ -59,6 +60,7 @@ fun SearchRoute(
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
+    isLoading: Boolean,
     listItem: ImmutableList<MusicModel>,
     searchTextFieldValue: String,
     currentPlayerMediaId: String,
@@ -99,7 +101,7 @@ fun SearchScreen(
                 onClear = onClearSearchTextField,
             )
 
-            if (listItem.isNotEmpty()) {
+            if (listItem.isNotEmpty() && !isLoading) {
                 LazyColumn(
                     modifier = modifier
                         .fillMaxSize(),
@@ -124,8 +126,10 @@ fun SearchScreen(
                         )
                     }
                 }
-            } else if (searchTextFieldValue.isNotEmpty()) {
+            } else if (searchTextFieldValue.isNotEmpty() && listItem.isEmpty()) {
                 EmptyPage(message = "Nothing found")
+            } else {
+                EmptyPage()
             }
         }
     }
