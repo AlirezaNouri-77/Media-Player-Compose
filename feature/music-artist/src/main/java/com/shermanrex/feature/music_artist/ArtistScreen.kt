@@ -119,7 +119,7 @@ fun SharedTransitionScope.ArtistScreen(
     ) { innerPadding ->
         Crossfade(isLoading) { targetState ->
             if (targetState) {
-                LoadingComponent(modifier = Modifier.fillMaxSize())
+                LoadingComponent()
             } else {
                 val listState = rememberLazyListState {
                     onEvent(ArtistUiEvent.UpdateScrollIndex(it))

@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.shermanrex.core.designsystem.CategoryListItem
 import com.shermanrex.core.designsystem.EmptyPage
-import com.shermanrex.core.designsystem.util.LocalParentScaffoldPadding
 import com.shermanrex.core.designsystem.util.MiniPlayerHeight
+import com.shermanrex.core.designsystem.util.NavigationBottomBarHeight
 import com.shermanrex.core.model.MusicModel
 
 @Composable
@@ -30,7 +30,7 @@ fun CategoryListComponent(
             state = lazyListState,
             modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                bottom = LocalParentScaffoldPadding.current.calculateBottomPadding() + if (currentMusicId.isNotEmpty()) MiniPlayerHeight else 0.dp,
+                bottom = NavigationBottomBarHeight + if (currentMusicId.isNotEmpty()) MiniPlayerHeight else 0.dp,
             ),
         ) {
             items(
