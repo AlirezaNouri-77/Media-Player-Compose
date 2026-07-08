@@ -26,6 +26,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun WaveForm(
@@ -35,24 +36,25 @@ fun WaveForm(
     waveColor: Color = Color.White,
     density: Density = LocalDensity.current,
 ) {
-    val lineSpace = 12f
-    val lineWidth = 7f
+    val lineWidth = 6f
+    val lineSpace = lineWidth * 2
     val areaSize = with(density) {
         size.toPx()
     }
-    val lineCount = ((areaSize - (lineSpace + lineWidth)) / (lineSpace + lineWidth)).roundToInt()
-    val halfHeight = (areaSize / 2)
-
-    val animatable = remember {
+    val lineCount = remember(density, size) {
+        ((areaSize - (lineSpace + lineWidth)) / (lineSpace + lineWidth)).roundToInt()
+    }
+    val halfHeight = areaSize / 2
+    val animatable = remember(lineCount) {
         Array(lineCount) { Animatable(initialValue = 0f) }
     }
 
-    if (enable) {
-        LaunchedEffect(Unit) {
+    LaunchedEffect(lineCount, enable) {
+        if (enable) {
             (1..lineCount).forEachIndexed { index, _ ->
                 val targetValueStartAndEnd = halfHeight / 2 - 10f
                 launch(Dispatchers.Main.immediate) {
-                    delay(45L * (5..10).random())
+                    delay((45L * (5..10).random()).milliseconds)
                     animatable[index].animateTo(
                         targetValue = targetValueStartAndEnd,
                         infiniteRepeatable(
@@ -65,13 +67,9 @@ fun WaveForm(
                     )
                 }
             }
-        }
-    } else {
-        LaunchedEffect(Unit) {
-            (1..lineCount).forEachIndexed { index, _ ->
-                animatable[index].stop()
+        } else {
+            animatable.forEachIndexed { index, _ ->
                 launch(Dispatchers.Main.immediate) {
-                    animatable[index].stop()
                     animatable[index].animateTo(
                         targetValue = 0f,
                         animationSpec = tween(350, 80, LinearEasing),
@@ -82,8 +80,7 @@ fun WaveForm(
     }
 
     Box(
-        modifier = modifier
-            .size(size),
+        modifier = modifier.size(size),
         contentAlignment = Alignment.Center,
     ) {
         Canvas(modifier = Modifier.size(size)) {
