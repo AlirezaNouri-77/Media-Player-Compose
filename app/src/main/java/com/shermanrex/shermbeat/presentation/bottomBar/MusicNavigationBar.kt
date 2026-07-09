@@ -29,7 +29,7 @@ fun MusicNavigationBar(
     isVisible: Boolean,
     topLevel: NavKey,
     navigateTo: (NavKey) -> Unit,
-    bottomBarGradientColor: Color,
+    bottomBarGradientColor: Color = if (isSystemInDarkTheme()) Color.Black else Color.White,
     bottomSheetSwapFraction: () -> Float,
 ) {
     AnimatedVisibility(

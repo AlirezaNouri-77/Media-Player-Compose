@@ -6,10 +6,10 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.BottomSheetScaffold
@@ -17,7 +17,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -36,10 +35,9 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
-import com.shermanrex.core.designsystem.util.CurrentWindowSizeState
-import com.shermanrex.core.designsystem.util.LocalParentScaffoldPadding
 import com.shermanrex.core.designsystem.util.MiniPlayerHeight
 import com.shermanrex.core.designsystem.util.NavigationBottomBarHeight
+import com.shermanrex.core.designsystem.util.calculateWindowSize
 import com.shermanrex.core.model.MediaCategory
 import com.shermanrex.core.model.WindowSize
 import com.shermanrex.feature.music_album.AlbumRoute
@@ -78,7 +76,7 @@ fun MusicMain(
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
-    val windowSize = CurrentWindowSizeState()
+    val windowSize = calculateWindowSize()
 
     val playerUiState by playerViewModel.playerUiState.collectAsStateWithLifecycle()
     val windowInset = WindowInsets.systemBars.asPaddingValues()
@@ -117,7 +115,6 @@ fun MusicMain(
                 MusicNavigationBar(
                     isVisible = (windowSize == WindowSize.COMPACT),
                     navigateTo = { route -> navBackStack.addTopLevel(route, false) },
-                    bottomBarGradientColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
                     bottomSheetSwapFraction = { bottomSheetSwapFraction },
                     topLevel = navBackStack.topLevelKey,
                 )
@@ -125,7 +122,7 @@ fun MusicMain(
             contentWindowInsets = WindowInsets.navigationBars,
             content = { innerPadding ->
                 BottomSheetScaffold(
-                    modifier = Modifier,
+                    modifier = Modifier.consumeWindowInsets(innerPadding),
                     scaffoldState = bottomSheetScaffoldState,
                     sheetDragHandle = null,
                     sheetPeekHeight = bottomPadding + if (playerUiState.currentPlayerState.currentMusicInfo.musicID.isNotEmpty()) MiniPlayerHeight else 0.dp,
@@ -165,63 +162,59 @@ fun MusicMain(
                                 rememberViewModelStoreNavEntryDecorator(),
                             ),
                             entryProvider = entryProvider {
-                                CompositionLocalProvider(
-                                    LocalParentScaffoldPadding provides innerPadding,
-                                ) {
-                                    entry<HomeMusic> {
-                                        HomeScreen(
-                                            onNavigateToVideoScreen = navigateToVideo,
-                                            onMusicClick = { index, list ->
-                                                playerViewModel.onPlayerAction(PlayerActions.PlaySongs(index, list))
-                                            },
-                                            navigateToCategoryPage = { name ->
-                                                navBackStack.add(DetailMusic(name, MediaCategory.FOLDER))
-                                            },
-                                        )
-                                    }
-                                    entry<ArtistMusic> {
-                                        ArtistRoute(
-                                            currentPlayerInfo = playerUiState.currentPlayerState.currentMusicInfo,
-                                            navigateToCategory = { name ->
-                                                navBackStack.add(DetailMusic(name, MediaCategory.ARTIST))
-                                            },
-                                        )
-                                    }
-                                    entry<SearchMusic> {
-                                        SearchRoute(
-                                            onMusicClick = { index, list ->
-                                                playerViewModel.onPlayerAction(PlayerActions.PlaySongs(index, list))
-                                            },
-                                        )
-                                    }
-                                    entry<AlbumMusic> {
-                                        AlbumRoute(
-                                            currentPlayerInfo = playerUiState.currentPlayerState.currentMusicInfo,
-                                            navigateToCategory = { name ->
-                                                navBackStack.add(DetailMusic(name, MediaCategory.ALBUM))
-                                            },
-                                        )
-                                    }
-                                    entry<DetailMusic> { param ->
-                                        val categoryViewModel: CategoryViewModel = koinViewModel<CategoryViewModel>(
-                                            parameters = {
-                                                parametersOf(param.name, param.mediaCategory)
-                                            },
-                                        )
+                                entry<HomeMusic> {
+                                    HomeScreen(
+                                        onNavigateToVideoScreen = navigateToVideo,
+                                        onMusicClick = { index, list ->
+                                            playerViewModel.onPlayerAction(PlayerActions.PlaySongs(index, list))
+                                        },
+                                        navigateToCategoryPage = { name ->
+                                            navBackStack.add(DetailMusic(name, MediaCategory.FOLDER))
+                                        },
+                                    )
+                                }
+                                entry<ArtistMusic> {
+                                    ArtistRoute(
+                                        currentPlayerInfo = playerUiState.currentPlayerState.currentMusicInfo,
+                                        navigateToCategory = { name ->
+                                            navBackStack.add(DetailMusic(name, MediaCategory.ARTIST))
+                                        },
+                                    )
+                                }
+                                entry<SearchMusic> {
+                                    SearchRoute(
+                                        onMusicClick = { index, list ->
+                                            playerViewModel.onPlayerAction(PlayerActions.PlaySongs(index, list))
+                                        },
+                                    )
+                                }
+                                entry<AlbumMusic> {
+                                    AlbumRoute(
+                                        currentPlayerInfo = playerUiState.currentPlayerState.currentMusicInfo,
+                                        navigateToCategory = { name ->
+                                            navBackStack.add(DetailMusic(name, MediaCategory.ALBUM))
+                                        },
+                                    )
+                                }
+                                entry<DetailMusic> { param ->
+                                    val categoryViewModel: CategoryViewModel = koinViewModel<CategoryViewModel>(
+                                        parameters = {
+                                            parametersOf(param.name, param.mediaCategory)
+                                        },
+                                    )
 
-                                        val categoryUiState by categoryViewModel.uiState.collectAsStateWithLifecycle()
+                                    val categoryUiState by categoryViewModel.uiState.collectAsStateWithLifecycle()
 
-                                        CategoryDetailRoute(
-                                            categoryUiState = categoryUiState,
-                                            categoryName = param.name,
-                                            displayWithVisuals = param.displayWithVisuals,
-                                            animatedVisibilityScope = LocalNavAnimatedContentScope.current,
-                                            onBackClick = { navBackStack.removeLast() },
-                                            onMusicClick = { index, list ->
-                                                playerViewModel.onPlayerAction(PlayerActions.PlaySongs(index, list))
-                                            },
-                                        )
-                                    }
+                                    CategoryDetailRoute(
+                                        categoryUiState = categoryUiState,
+                                        categoryName = param.name,
+                                        displayWithVisuals = param.displayWithVisuals,
+                                        animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+                                        onBackClick = { navBackStack.removeLast() },
+                                        onMusicClick = { index, list ->
+                                            playerViewModel.onPlayerAction(PlayerActions.PlaySongs(index, list))
+                                        },
+                                    )
                                 }
                             },
                         )

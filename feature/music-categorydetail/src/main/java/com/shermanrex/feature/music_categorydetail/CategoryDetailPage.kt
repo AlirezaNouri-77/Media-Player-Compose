@@ -25,7 +25,7 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.shermanrex.core.designsystem.util.CurrentWindowSizeState
+import com.shermanrex.core.designsystem.util.calculateWindowSize
 import com.shermanrex.core.model.MusicModel
 import com.shermanrex.core.model.WindowSize
 import com.shermanrex.feature.music_categorydetail.component.CategoryDetail
@@ -66,7 +66,7 @@ fun SharedTransitionScope.CategoryDetailPage(
         targetValue = Color(uiState.thumbnailDominateColor),
         animationSpec = tween(durationMillis = 200, easing = LinearEasing),
     )
-    val windowSize = CurrentWindowSizeState()
+    val windowSize = calculateWindowSize()
 
     Scaffold(
         modifier = modifier

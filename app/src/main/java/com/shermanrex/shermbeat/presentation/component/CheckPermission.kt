@@ -1,7 +1,5 @@
 package com.shermanrex.shermbeat.presentation.component
 
-import android.app.Activity
-import android.content.Context
 import android.content.pm.PackageManager
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -18,9 +16,10 @@ fun CheckPermission(
     shouldShowPermissionRationale: () -> Unit,
     onGrant: () -> Unit,
     onDenied: () -> Unit,
-    context: Context = LocalContext.current,
-    activity: Activity? = LocalActivity.current,
 ) {
+    val context = LocalContext.current
+    val activity = LocalActivity.current
+
     val activityResult = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGrant ->
         when (isGrant) {
             true -> onGrant()
