@@ -85,7 +85,7 @@ class MusicServiceConnection(
         updatedFavoriteMusic?.let {
             mediaController?.replaceMediaItem(
                 mediaController?.currentMediaItemIndex ?: 0,
-                updatedFavoriteMusic.toMediaItem(),
+                it.toMediaItem(),
             )
         }
     }

@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.shermanrex.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.shermanrex.core.designsystem.util.CurrentWindowSizeState
+import com.shermanrex.core.designsystem.util.calculateWindowSize
 import com.shermanrex.core.model.CurrentMusicInfo
 import com.shermanrex.core.model.MusicPlayerState
 import com.shermanrex.core.model.PlayerRepeatMode
@@ -69,7 +69,7 @@ private fun ExpandedMusicPlayer(
     onVolumeChange: (Float) -> Unit,
     clickOnArtist: (String) -> Unit,
 ) {
-    val windowSize = CurrentWindowSizeState()
+    val windowSize = calculateWindowSize()
 
     if (windowSize == WindowSize.COMPACT) {
         PortraitLayout(
