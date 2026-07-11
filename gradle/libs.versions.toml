@@ -16,7 +16,7 @@ material3 = "1.4.0"
 media3 = "1.10.1"
 navVersion = "2.9.7"
 paletteKtx = "1.0.0"
-roomVersion = "2.8.4"
+roomVersion = "3.0.0"
 serialization = "1.11.0"
 pluginSerialization = "2.4.0"
 uiTestAndroid = "1.10.3"
@@ -98,9 +98,8 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 
 squareup-leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 
-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
+room3-compiler = { module = "androidx.room3:room3-compiler", version.ref = "roomVersion" }
+room3-runtime = { module = "androidx.room3:room3-runtime", version.ref = "roomVersion" }
 
 androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }

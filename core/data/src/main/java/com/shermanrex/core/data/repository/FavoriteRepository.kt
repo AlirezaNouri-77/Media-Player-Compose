@@ -20,11 +20,10 @@ class FavoriteRepository(
             val isFavorite = favoriteDao.isFavorite(mediaId)
             if (isFavorite) {
                 favoriteDao.deleteFavoriteSong(mediaId)
-                return@withContext false
             } else {
                 favoriteDao.insertFavoriteSong(FavoriteEntity(mediaId = mediaId))
-                return@withContext true
             }
+            favoriteDao.isFavorite(mediaId)
         }
     }
 }

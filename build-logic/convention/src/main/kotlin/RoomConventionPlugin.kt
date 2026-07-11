@@ -11,9 +11,8 @@ class RoomConventionPlugin : Plugin<Project> {
 
       dependencies {
 
-        "implementation"(getLibs.findLibrary("room.ktx").get())
-        "implementation"(getLibs.findLibrary("room.runtime").get())
-        "ksp"(getLibs.findLibrary("room.compiler").get())
+        "implementation"(getLibs.findLibrary("room3.runtime").get())
+        "ksp"(getLibs.findLibrary("room3.compiler").get())
 
       }
 
