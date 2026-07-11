@@ -12,16 +12,15 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
-import com.shermanrex.core.model.CurrentMusicInfo
 import com.shermanrex.core.model.MusicModel
-import com.shermanrex.core.model.MusicPlayerState
 import com.shermanrex.core.model.PlayerTimerState
 import com.shermanrex.core.model.PlayerTimers
+import com.shermanrex.core.model.PlayingMusicInfo
+import com.shermanrex.core.model.PlayingMusicState
 import com.shermanrex.core.model.toRepeatMode
 import com.shermanrex.core.music_media3.mapper.toActiveMusicInfo
 import com.shermanrex.core.music_media3.mapper.toArtworkModel
 import com.shermanrex.core.music_media3.mapper.toMediaItem
-import com.shermanrex.core.music_media3.mapper.toMusicModel
 import com.shermanrex.core.music_media3.model.ArtworkModel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -41,7 +40,7 @@ class MusicServiceConnection(
     private var mediaController: MediaController? = null
     private var timerCounter: CountDownTimer? = null
 
-    private var _playerState = MutableStateFlow(MusicPlayerState.Initial)
+    private var _playerState = MutableStateFlow(PlayingMusicState.Initial)
     var playerState = _playerState.asStateFlow()
 
     private var _playerTimerState = MutableStateFlow(PlayerTimerState.Initial)
@@ -68,25 +67,14 @@ class MusicServiceConnection(
                         mediaController = factory?.get().also { it?.addListener(exoPlayerListener) }
                         _playerState.update {
                             it.copy(
-                                currentMusicInfo = mediaController?.currentMediaItem?.toActiveMusicInfo()
-                                    ?: CurrentMusicInfo.Initial,
+                                playingMusicInfo = mediaController?.currentMediaItem?.toActiveMusicInfo()
+                                    ?: PlayingMusicInfo.Initial,
                             )
                         }
                     },
                     ContextCompat.getMainExecutor(context),
                 )
             }
-        }
-    }
-
-    fun updateCurrentMusicFavorite(isFavorite: Boolean) {
-        val currentMediaItem = mediaController?.currentMediaItem
-        val updatedFavoriteMusic = currentMediaItem?.toMusicModel()?.copy(isFavorite = isFavorite)
-        updatedFavoriteMusic?.let {
-            mediaController?.replaceMediaItem(
-                mediaController?.currentMediaItemIndex ?: 0,
-                it.toMediaItem(),
-            )
         }
     }
 
@@ -160,7 +148,7 @@ class MusicServiceConnection(
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
             _playerState.update {
                 _playerState.value.copy(
-                    currentMusicInfo = mediaItem?.toActiveMusicInfo() ?: CurrentMusicInfo.Initial,
+                    playingMusicInfo = mediaItem?.toActiveMusicInfo() ?: PlayingMusicInfo.Initial,
                 )
             }
         }

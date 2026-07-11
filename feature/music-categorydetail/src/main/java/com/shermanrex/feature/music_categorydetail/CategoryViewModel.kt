@@ -39,15 +39,14 @@ class CategoryViewModel(
 
     private fun getColorPaletteFromArtwork(uri: Uri) {
         viewModelScope.launch {
-            val bitmap = musicThumbnailUtil.getMusicThumbnail(uri)
-            val color = musicThumbnailUtil.getMainColorOfBitmap(bitmap)
+            val color = musicThumbnailUtil.getMainColorOfBitmap(uri)
             mCategoryUiState.update { it.copy(thumbnailDominateColor = color) }
         }
     }
 
     private fun observePlayerState() = viewModelScope.launch {
         getMusicPlayerStateUseCase().collect { playerStateModel ->
-            mCategoryUiState.update { it.copy(musicPlayerState = playerStateModel) }
+            mCategoryUiState.update { it.copy(playingMusicState = playerStateModel) }
         }
     }
 

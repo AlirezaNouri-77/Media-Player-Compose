@@ -125,13 +125,13 @@ fun MusicMain(
                     modifier = Modifier.consumeWindowInsets(innerPadding),
                     scaffoldState = bottomSheetScaffoldState,
                     sheetDragHandle = null,
-                    sheetPeekHeight = bottomPadding + if (playerUiState.currentPlayerState.currentMusicInfo.musicID.isNotEmpty()) MiniPlayerHeight else 0.dp,
+                    sheetPeekHeight = bottomPadding + if (playerUiState.currentPlayerState.playingMusicInfo.musicID.isNotEmpty()) MiniPlayerHeight else 0.dp,
                     sheetContainerColor = Color.Transparent,
                     containerColor = Color.Transparent,
                     sheetShadowElevation = 0.dp,
                     sheetContent = {
                         BottomSheetContent(
-                            isVisible = playerUiState.currentPlayerState.currentMusicInfo.musicID.isNotEmpty(),
+                            isVisible = playerUiState.currentPlayerState.playingMusicInfo.musicID.isNotEmpty(),
                             playerUiState = playerUiState,
                             playerViewModel = playerViewModel,
                             currentMusicPlayerPosition = playerUiState.currentPlayerPosition,
@@ -175,7 +175,7 @@ fun MusicMain(
                                 }
                                 entry<ArtistMusic> {
                                     ArtistRoute(
-                                        currentPlayerInfo = playerUiState.currentPlayerState.currentMusicInfo,
+                                        PlayingMusicInfo = playerUiState.currentPlayerState.playingMusicInfo,
                                         navigateToCategory = { name ->
                                             navBackStack.add(DetailMusic(name, MediaCategory.ARTIST))
                                         },
@@ -190,7 +190,7 @@ fun MusicMain(
                                 }
                                 entry<AlbumMusic> {
                                     AlbumRoute(
-                                        currentPlayerInfo = playerUiState.currentPlayerState.currentMusicInfo,
+                                        PlayingMusicInfo = playerUiState.currentPlayerState.playingMusicInfo,
                                         navigateToCategory = { name ->
                                             navBackStack.add(DetailMusic(name, MediaCategory.ALBUM))
                                         },

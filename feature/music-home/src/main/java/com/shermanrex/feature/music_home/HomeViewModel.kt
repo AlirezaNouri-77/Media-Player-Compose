@@ -111,7 +111,7 @@ class HomeViewModel(
 
     private fun observePlayerState() = viewModelScope.launch {
         getMusicPlayerStateUseCase().collect { playerStateModel ->
-            mUiState.update { it.copy(musicPlayerState = playerStateModel) }
+            mUiState.update { it.copy(playingMusicState = playerStateModel) }
         }
     }
 

@@ -38,9 +38,9 @@ class MusicThumbnailUtil(
         }
     }
 
-    override suspend fun getMainColorOfBitmap(bitmap: Bitmap?): Int {
+    override suspend fun getMainColorOfBitmap(uri: Uri): Int {
         return withContext(ioDispatcher) {
-            if (bitmap == null) return@withContext DEFAULT_COLOR_PALETTE
+            val bitmap = getMusicThumbnail(uri) ?: return@withContext DEFAULT_COLOR_PALETTE
 
             val palette = Palette.from(bitmap).generate()
 

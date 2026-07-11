@@ -1,7 +1,7 @@
 package com.shermanrex.feature.music_home
 
 import com.shermanrex.core.model.MusicModel
-import com.shermanrex.core.model.MusicPlayerState
+import com.shermanrex.core.model.PlayingMusicState
 import com.shermanrex.core.model.datastore.CategorizedSortModel
 import com.shermanrex.core.model.datastore.CategorizedSortType
 import com.shermanrex.core.model.datastore.SongSortModel
@@ -14,7 +14,7 @@ data class HomeScreenUiState(
     val lastHomeScrollState: Int = 0,
     val lastFavoriteScrollState: Int = 0,
     val lastFolderScrollState: Int = 0,
-    val musicPlayerState: MusicPlayerState = MusicPlayerState.Initial,
+    val playingMusicState: PlayingMusicState = PlayingMusicState.Initial,
     val currentTabBarPosition: TabBarModel = TabBarModel.All,
     val songsList: List<MusicModel> = emptyList(),
     val favoritesList: List<MusicModel> = emptyList(),

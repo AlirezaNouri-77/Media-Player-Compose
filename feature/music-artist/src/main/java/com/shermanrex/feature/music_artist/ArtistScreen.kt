@@ -30,8 +30,8 @@ import com.shermanrex.core.designsystem.R
 import com.shermanrex.core.designsystem.SortDropDownMenu
 import com.shermanrex.core.designsystem.music.CategoryListComponent
 import com.shermanrex.core.designsystem.util.rememberLazyListState
-import com.shermanrex.core.model.CurrentMusicInfo
 import com.shermanrex.core.model.MusicModel
+import com.shermanrex.core.model.PlayingMusicInfo
 import com.shermanrex.core.model.datastore.CategorizedSortType
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -41,7 +41,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SharedTransitionScope.ArtistRoute(
     navigateToCategory: (String) -> Unit,
-    currentPlayerInfo: CurrentMusicInfo,
+    PlayingMusicInfo: PlayingMusicInfo,
 ) {
     val artistViewModel: ArtistViewModel = koinViewModel<ArtistViewModel>()
     val uiState by artistViewModel.artistScreenUiState.collectAsStateWithLifecycle()
@@ -53,7 +53,7 @@ fun SharedTransitionScope.ArtistRoute(
         navigateToCategory = navigateToCategory,
         isDropDownMenuSortExpand = { uiState.isSortDropDownMenuShow },
         isSortDescending = uiState.sortState.isDec,
-        currentPlayerInfo = currentPlayerInfo,
+        currentPlayerInfo = PlayingMusicInfo,
         currentSortType = uiState.sortState.sortType,
     )
 }
@@ -65,7 +65,7 @@ fun SharedTransitionScope.ArtistScreen(
     onEvent: (ArtistUiEvent) -> Unit,
     artistsList: ImmutableList<Pair<String, List<MusicModel>>>,
     isLoading: Boolean,
-    currentPlayerInfo: CurrentMusicInfo,
+    currentPlayerInfo: PlayingMusicInfo,
     isDropDownMenuSortExpand: () -> Boolean,
     isSortDescending: Boolean,
     currentSortType: CategorizedSortType,

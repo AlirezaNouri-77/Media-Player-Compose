@@ -1,9 +1,6 @@
 package com.shermanrex.core.model
 
-import androidx.compose.runtime.Stable
-
-@Stable
-data class CurrentMusicInfo(
+data class PlayingMusicInfo(
     val title: String,
     val musicID: String,
     val artworkUri: String,
@@ -13,10 +10,9 @@ data class CurrentMusicInfo(
     val duration: Long,
     val bitrate: Int,
     val size: Long,
-    val isFavorite: Boolean,
 ) {
     companion object {
-        val Initial = CurrentMusicInfo(
+        val Initial = PlayingMusicInfo(
             title = "",
             musicID = "",
             artworkUri = "",
@@ -26,7 +22,6 @@ data class CurrentMusicInfo(
             duration = 0,
             bitrate = 0,
             size = 0,
-            isFavorite = false,
         )
     }
 }

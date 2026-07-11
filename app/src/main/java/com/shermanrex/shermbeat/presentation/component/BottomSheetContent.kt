@@ -94,14 +94,10 @@ fun BottomSheetContent(
                     }
                     .navigationBarsPadding()
                     .padding(top = MiniPlayerHeight),
-                isFavorite = playerUiState.currentPlayerState.currentMusicInfo.isFavorite,
                 pagerMusicList = pagerThumbnailList.toImmutableList(),
-                playerRepeatMode = playerUiState.currentPlayerState.playerRepeatMode,
-                currentPagerPage = currentArtworkPagerIndex,
                 onPlayerAction = playerViewModel::onPlayerAction,
                 currentVolume = currentDeviceVolume,
                 playerUiState = playerUiState,
-                currentMusicPosition = currentMusicPlayerPosition,
                 maxDeviceVolume = playerViewModel.getMaxDeviceVolume(),
                 onVolumeChange = { playerViewModel.setDeviceVolume(it) },
                 setCurrentPagerNumber = {
@@ -127,9 +123,9 @@ fun BottomSheetContent(
                 currentMusicPosition = currentMusicPlayerPosition,
                 currentPagerPage = currentArtworkPagerIndex,
                 onPlayerAction = playerViewModel::onPlayerAction,
-                currentPlayerMediaId = playerUiState.currentPlayerState.currentMusicInfo.musicID.toLong(),
-                currentPlayerDuration = playerUiState.currentPlayerState.currentMusicInfo.duration.toInt(),
-                currentPlayerArtworkUri = playerUiState.currentPlayerState.currentMusicInfo.artworkUri,
+                currentPlayerMediaId = playerUiState.currentPlayerState.playingMusicInfo.musicID.toLong(),
+                currentPlayerDuration = playerUiState.currentPlayerState.playingMusicInfo.duration.toInt(),
+                currentPlayerArtworkUri = playerUiState.currentPlayerState.playingMusicInfo.artworkUri,
                 isPlaying = playerUiState.currentPlayerState.isPlaying,
                 musicArtWorkColorAnimation = musicArtWorkColorAnimation,
                 onClick = { coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.expand() } },

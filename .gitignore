@@ -20,6 +20,7 @@ local.properties
 /core/designSystem/build
 /core/domain/build
 /core/model/build
+/core/proto-datastore
 /core/music-media3/build
 /core/video-media3/build
 /build-logic/convention/build

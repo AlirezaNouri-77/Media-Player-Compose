@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.shermanrex.core.model.PlayerRepeatMode
 import com.shermanrex.core.music_media3.model.ArtworkModel
 import com.shermanrex.feature.music_player.PlayerActions
 import com.shermanrex.feature.music_player.model.PlayerUiState
@@ -21,11 +20,7 @@ import kotlinx.collections.immutable.ImmutableList
 @Composable
 internal fun LandscapeLayout(
     modifier: Modifier = Modifier,
-    playerRepeatMode: PlayerRepeatMode,
-    currentPagerPage: Int,
     playerUiState: PlayerUiState,
-    currentMusicPosition: Long,
-    isFavorite: Boolean,
     pagerMusicList: ImmutableList<ArtworkModel>,
     onBack: () -> Unit,
     onPlayerAction: (PlayerActions) -> Unit,
@@ -58,8 +53,8 @@ internal fun LandscapeLayout(
                     .weight(1f, false)
                     .aspectRatio(0.9f),
                 pagerItem = pagerMusicList,
-                currentPagerPage = currentPagerPage,
-                currentMusicID = playerUiState.currentPlayerState.currentMusicInfo.musicID.toLong(),
+                currentPagerPage = playerUiState.currentThumbnailPagerIndex,
+                currentMusicID = playerUiState.currentPlayerState.playingMusicInfo.musicID.toLong(),
                 onPlayerAction = { onPlayerAction(it) },
                 setCurrentPagerNumber = { setCurrentPagerNumber(it) },
             )
@@ -77,21 +72,21 @@ internal fun LandscapeLayout(
             SongDetail(
                 modifier = Modifier,
                 playerUiState = playerUiState,
-                isFavorite = isFavorite,
+                isFavorite = playerUiState.currentPlayerState.isFavorite,
                 onArtistClick = onArtistClick,
                 onFavoriteClick = {
-                    onPlayerAction(PlayerActions.OnFavoriteToggle(playerUiState.currentPlayerState.currentMusicInfo.musicID))
+                    onPlayerAction(PlayerActions.OnFavoriteToggle(playerUiState.currentPlayerState.playingMusicInfo.musicID))
                 },
             )
             SliderSection(
                 modifier = Modifier,
-                currentMusicPosition = currentMusicPosition,
+                currentMusicPosition = playerUiState.currentPlayerPosition,
                 seekTo = { onPlayerAction(PlayerActions.SeekTo(it)) },
-                duration = playerUiState.currentPlayerState.currentMusicInfo.duration.toFloat(),
+                duration = playerUiState.currentPlayerState.playingMusicInfo.duration.toFloat(),
             )
             SongController(
                 isPlaying = playerUiState.currentPlayerState.isPlaying,
-                playerRepeatMode = playerRepeatMode,
+                playerRepeatMode = playerUiState.currentPlayerState.playerRepeatMode,
                 onPauseMusic = { onPlayerAction(PlayerActions.PausePlayer) },
                 onResumeMusic = { onPlayerAction(PlayerActions.ResumePlayer) },
                 onMovePreviousMusic = { onPlayerAction(PlayerActions.MovePreviousPlayer(false)) },

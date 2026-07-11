@@ -42,8 +42,8 @@ fun SearchRoute(
         modifier = Modifier.imePadding(),
         isLoading = uiState.isLoading,
         listItem = uiState.searchList.toImmutableList(),
-        currentPlayerMediaId = uiState.musicPlayerState.currentMusicInfo.musicID,
-        isPlaying = uiState.musicPlayerState.isPlaying,
+        currentPlayerMediaId = uiState.playingMusicState.playingMusicInfo.musicID,
+        isPlaying = uiState.playingMusicState.isPlaying,
         onMusicClick = { index, list -> onMusicClick(index, list) },
         searchTextFieldValue = uiState.searchTextFieldValue,
         onClearSearchTextField = { searchViewModel.onEvent(SearchScreenUiEvent.OnClearSearchTextField) },
@@ -72,7 +72,7 @@ fun SearchScreen(
                 title = {
                     Text(
                         text = "Search",
-                        modifier = Modifier,
+                        modifier = modifier,
                         fontWeight = FontWeight.Bold,
                         fontSize = 38.sp,
                     )

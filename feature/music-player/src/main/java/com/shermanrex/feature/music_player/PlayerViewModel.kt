@@ -15,6 +15,7 @@ import com.shermanrex.feature.music_player.model.PlayerUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -28,47 +29,17 @@ class PlayerViewModel(
     private val deviceVolumeManager: DeviceVolumeManager,
     private val favoriteMusicSource: FavoriteRepositoryImpl,
 ) : ViewModel() {
-    private var _uiState = MutableStateFlow(PlayerUiState())
-    val playerUiState = _uiState.onStart {
+    private var _playerUiState = MutableStateFlow(PlayerUiState())
+    val playerUiState = _playerUiState.onStart {
         observePlayerStates()
         observePlayerTimerStates()
         updatePagerItem()
+        observerCurrentPlayerIsFavorite()
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
-        _uiState.value,
+        _playerUiState.value,
     )
-
-    private fun observePlayerStates() {
-        deviceVolumeManager.volumeChangeListener().onEach {
-            _uiState.update { uiState -> uiState.copy(currentDeviceVolume = it) }
-        }.launchIn(viewModelScope)
-
-        viewModelScope.launch {
-            musicServiceConnection.currentPlayedMusicList.collectLatest {
-                _uiState.update { uiState -> uiState.copy(playedMusicList = it) }
-            }
-        }
-
-        viewModelScope.launch {
-            musicServiceConnection.playerState.collectLatest {
-                if (it.currentMusicInfo.musicID != _uiState.value.currentPlayerState.currentMusicInfo.musicID) {
-                    getColorPaletteFromArtwork(it.currentMusicInfo.musicUri.toUri())
-                }
-                _uiState.update { uiState -> uiState.copy(currentPlayerState = it) }
-            }
-        }
-
-        musicServiceConnection.currentPlayerPosition.onEach {
-            _uiState.update { uiState -> uiState.copy(currentPlayerPosition = it) }
-        }.launchIn(viewModelScope)
-    }
-
-    private fun observePlayerTimerStates() {
-        musicServiceConnection.playerTimerState.onEach {
-            _uiState.update { uiState -> uiState.copy(playerTimerState = it) }
-        }.launchIn(viewModelScope)
-    }
 
     fun onPlayerAction(action: PlayerActions) {
         when (action) {
@@ -83,7 +54,7 @@ class PlayerViewModel(
             is PlayerActions.OnFavoriteToggle -> handleFavoriteSongs(action.mediaId)
             is PlayerActions.PlaySongs -> playMusic(action.index, action.list)
             is PlayerActions.SeekTo -> {
-                _uiState.update { it.copy(currentPlayerPosition = action.value) }
+                _playerUiState.update { it.copy(currentPlayerPosition = action.value) }
                 musicServiceConnection.seekToPosition(action.value)
             }
 
@@ -92,39 +63,67 @@ class PlayerViewModel(
                 updatePagerItem()
             }
 
-            is PlayerActions.MovePreviousPlayer -> musicServiceConnection.moveToPrevious(
-                action.seekToStart,
-                _uiState.value.currentPlayerPosition,
-            )
+            is PlayerActions.MovePreviousPlayer ->
+                musicServiceConnection.moveToPrevious(action.seekToStart, _playerUiState.value.currentPlayerPosition)
 
             is PlayerActions.OnMoveToIndex -> {
-                val index =
-                    playerUiState.value.playedMusicList.indexOfFirst { action.musicId.toLong() == it.musicId }
+                val index = playerUiState.value.playedMusicList.indexOfFirst { action.musicId.toLong() == it.musicId }
                 musicServiceConnection.moveToMediaIndex(index = index)
             }
 
             is PlayerActions.UpdateArtworkPageIndex -> {
                 val targetIndex = playerUiState.value.thumbnailsList.indexOfFirst {
-                    it.musicId == playerUiState.value.currentPlayerState.currentMusicInfo.musicID
+                    it.musicId == playerUiState.value.currentPlayerState.playingMusicInfo.musicID
                 }
                 if (targetIndex > -1) {
-                    _uiState.update { uiState -> uiState.copy(currentThumbnailPagerIndex = targetIndex) }
+                    _playerUiState.update { uiState -> uiState.copy(currentThumbnailPagerIndex = targetIndex) }
                 }
             }
 
             PlayerActions.OnShowTimerBottomSheet ->
-                _uiState.update { it.copy(shouldShowTimerBottomSheet = true) }
+                _playerUiState.update { it.copy(shouldShowTimerBottomSheet = true) }
 
             PlayerActions.OnHideTimerBottomSheet ->
-                _uiState.update { it.copy(shouldShowTimerBottomSheet = false) }
+                _playerUiState.update { it.copy(shouldShowTimerBottomSheet = false) }
 
             is PlayerActions.OnTimerClick -> handleOnTimer(action.timers)
         }
     }
 
+    private fun observePlayerStates() {
+        deviceVolumeManager.volumeChangeListener.onEach {
+            _playerUiState.update { uiState -> uiState.copy(currentDeviceVolume = it) }
+        }.launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            musicServiceConnection.currentPlayedMusicList.collectLatest {
+                _playerUiState.update { uiState -> uiState.copy(playedMusicList = it) }
+            }
+        }
+
+        viewModelScope.launch {
+            musicServiceConnection.playerState.collectLatest {
+                if (it.playingMusicInfo.musicID != _playerUiState.value.currentPlayerState.playingMusicInfo.musicID) {
+                    setColorPaletteFromArtwork(it.playingMusicInfo.musicUri.toUri())
+                }
+                _playerUiState.update { uiState -> uiState.copy(currentPlayerState = it) }
+            }
+        }
+
+        musicServiceConnection.currentPlayerPosition.onEach {
+            _playerUiState.update { uiState -> uiState.copy(currentPlayerPosition = it) }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun observePlayerTimerStates() {
+        musicServiceConnection.playerTimerState.onEach {
+            _playerUiState.update { uiState -> uiState.copy(playerTimerState = it) }
+        }.launchIn(viewModelScope)
+    }
+
     fun setDeviceVolume(volume: Float) {
         deviceVolumeManager.setVolume(volume)
-        _uiState.update { it.copy(currentDeviceVolume = volume.toInt()) }
+        _playerUiState.update { it.copy(currentDeviceVolume = volume.toInt()) }
     }
 
     fun getMaxDeviceVolume(): Int = deviceVolumeManager.getMaxVolume()
@@ -143,12 +142,10 @@ class PlayerViewModel(
         }
     }
 
-    fun getColorPaletteFromArtwork(uri: Uri) {
+    private fun setColorPaletteFromArtwork(uri: Uri) {
         viewModelScope.launch {
-            val bitmap = mediaThumbnailUtil.getMusicThumbnail(uri)
-            _uiState.update {
-                it.copy(thumbnailDominantColor = mediaThumbnailUtil.getMainColorOfBitmap(bitmap))
-            }
+            val color: Int = mediaThumbnailUtil.getMainColorOfBitmap(uri)
+            _playerUiState.update { it.copy(thumbnailDominantColor = color) }
         }
     }
 
@@ -156,8 +153,8 @@ class PlayerViewModel(
         val list = musicServiceConnection.getMediaItemsList()
         if (list.isEmpty()) return
         val index =
-            list.indexOfFirst { it.musicId == _uiState.value.currentPlayerState.currentMusicInfo.musicID }
-        _uiState.update { uiState ->
+            list.indexOfFirst { it.musicId == _playerUiState.value.currentPlayerState.playingMusicInfo.musicID }
+        _playerUiState.update { uiState ->
             uiState.copy(
                 thumbnailsList = list,
                 currentThumbnailPagerIndex = if (index != -1) index else uiState.currentThumbnailPagerIndex,
@@ -165,16 +162,24 @@ class PlayerViewModel(
         }
     }
 
-    private fun handleFavoriteSongs(mediaId: String) {
+    private fun observerCurrentPlayerIsFavorite() {
         viewModelScope.launch {
-            val update = favoriteMusicSource.handleFavoriteSongs(mediaId)
-            musicServiceConnection.updateCurrentMusicFavorite(update)
+            combine(
+                playerUiState,
+                favoriteMusicSource.favoritesMediaIdList(),
+            ) { playerState, favoriteList ->
+                playerState.currentPlayerState.playingMusicInfo.musicID in favoriteList
+            }.collectLatest { isFavorite ->
+                _playerUiState.update { it.copy(currentPlayerState = playerUiState.value.currentPlayerState.copy(isFavorite = isFavorite)) }
+            }
         }
     }
 
+    private fun handleFavoriteSongs(mediaId: String) = viewModelScope.launch { favoriteMusicSource.handleFavoriteSongs(mediaId) }
+
     private fun playMusic(index: Int, musicList: List<MusicModel>) {
         musicServiceConnection.playSongs(index, musicList)
-        _uiState.update { it.copy(playedMusicList = musicList) }
+        _playerUiState.update { it.copy(playedMusicList = musicList) }
         if (playerUiState.value.currentPlayerState.isShuffleMode) {
             musicServiceConnection.setShuffleMode(!playerUiState.value.currentPlayerState.isShuffleMode)
         }

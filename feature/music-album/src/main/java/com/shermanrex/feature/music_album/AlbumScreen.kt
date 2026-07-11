@@ -30,8 +30,8 @@ import com.shermanrex.core.designsystem.LoadingComponent
 import com.shermanrex.core.designsystem.R
 import com.shermanrex.core.designsystem.SortDropDownMenu
 import com.shermanrex.core.designsystem.music.CategoryListComponent
-import com.shermanrex.core.model.CurrentMusicInfo
 import com.shermanrex.core.model.MusicModel
+import com.shermanrex.core.model.PlayingMusicInfo
 import com.shermanrex.core.model.datastore.CategorizedSortType
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -40,7 +40,7 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SharedTransitionScope.AlbumRoute(
-    currentPlayerInfo: CurrentMusicInfo,
+    PlayingMusicInfo: PlayingMusicInfo,
     navigateToCategory: (String) -> Unit,
 ) {
     val albumArtistViewModel = koinViewModel<AlbumViewModel>()
@@ -54,7 +54,7 @@ fun SharedTransitionScope.AlbumRoute(
         isLoading = uiState.isLoading,
         isSortDescending = uiState.sortState.isDec,
         currentSortType = uiState.sortState.sortType,
-        currentPlayerInfo = currentPlayerInfo,
+        currentPlayerInfo = PlayingMusicInfo,
         isSortDropDownMenuExpanded = uiState.isSortDropDownMenuShow,
     )
 }
@@ -67,7 +67,7 @@ private fun AlbumScreen(
     sharedTransitionScope: SharedTransitionScope,
     albumsList: ImmutableList<Pair<String, List<MusicModel>>>,
     isLoading: Boolean,
-    currentPlayerInfo: CurrentMusicInfo,
+    currentPlayerInfo: PlayingMusicInfo,
     isSortDescending: Boolean,
     currentSortType: CategorizedSortType,
     navigateTo: (String) -> Unit,
