@@ -9,11 +9,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.shermanrex.core.designsystem.CategoryListItem
 import com.shermanrex.core.designsystem.EmptyPage
-import com.shermanrex.core.designsystem.util.MiniPlayerHeight
-import com.shermanrex.core.designsystem.util.NavigationBottomBarHeight
+import com.shermanrex.core.designsystem.util.listBottomContentSpace
 import com.shermanrex.core.model.MusicModel
 
 @Composable
@@ -30,7 +28,7 @@ fun CategoryListComponent(
             state = lazyListState,
             modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                bottom = NavigationBottomBarHeight + if (currentMusicId.isNotEmpty()) MiniPlayerHeight else 0.dp,
+                bottom = listBottomContentSpace(currentMusicId.isNotEmpty()),
             ),
         ) {
             items(
