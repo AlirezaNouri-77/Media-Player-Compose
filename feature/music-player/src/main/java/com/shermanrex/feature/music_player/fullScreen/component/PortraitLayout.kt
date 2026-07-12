@@ -2,8 +2,11 @@ package com.shermanrex.feature.music_player.fullScreen.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,7 +31,11 @@ internal fun PortraitLayout(
     clickOnArtist: (String) -> Unit,
 ) {
     Column(
-        modifier = modifier.padding(bottom = 32.dp).padding(horizontal = 12.dp),
+        modifier = modifier
+            .padding(
+                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+            )
+            .padding(horizontal = 12.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
