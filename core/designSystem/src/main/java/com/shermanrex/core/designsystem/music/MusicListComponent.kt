@@ -8,10 +8,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.shermanrex.core.designsystem.EmptyPage
-import com.shermanrex.core.designsystem.util.MiniPlayerHeight
-import com.shermanrex.core.designsystem.util.NavigationBottomBarHeight
+import com.shermanrex.core.designsystem.util.listBottomContentSpace
 import com.shermanrex.core.model.MusicModel
 
 @Composable
@@ -28,7 +26,7 @@ fun MusicListComponent(
             modifier = modifier.fillMaxSize(),
             state = lazyListState,
             contentPadding = PaddingValues(
-                bottom = NavigationBottomBarHeight + if (currentMusicId.isNotEmpty()) MiniPlayerHeight else 0.dp,
+                bottom = listBottomContentSpace(currentMusicId.isNotEmpty()),
             ),
         ) {
             itemsIndexed(
