@@ -34,10 +34,10 @@ fun SongController(
     isPlaying: Boolean,
     isShuffleMode: Boolean,
     playerRepeatMode: PlayerRepeatMode,
-    onMovePreviousMusic: () -> Unit,
+    onPreviousClick: () -> Unit,
     onPauseMusic: () -> Unit,
     onResumeMusic: () -> Unit,
-    onMoveNextMusic: () -> Unit,
+    onNextClick: () -> Unit,
     onRepeatMode: (PlayerRepeatMode) -> Unit,
     onShuffleModeClick: () -> Unit,
 ) {
@@ -56,7 +56,7 @@ fun SongController(
             icon = R.drawable.icon_previous,
             size = 32.dp,
             contentDescription = "Next",
-            onClick = onMovePreviousMusic,
+            onClick = onPreviousClick,
         )
         ButtonOfFullScreenPlayer(
             icon = if (isPlaying) R.drawable.icon_pause else R.drawable.icon_play,
@@ -73,7 +73,7 @@ fun SongController(
             icon = R.drawable.icon_next,
             size = 32.dp,
             contentDescription = "Next",
-            onClick = onMoveNextMusic,
+            onClick = onNextClick,
         )
         ButtonOfFullScreenPlayer(
             icon = when (playerRepeatMode) {
@@ -165,10 +165,10 @@ private fun Preview() {
             isPlaying = false,
             isShuffleMode = true,
             playerRepeatMode = PlayerRepeatMode.MODE_OFF,
-            onMovePreviousMusic = {},
+            onPreviousClick = {},
             onPauseMusic = {},
             onResumeMusic = {},
-            onMoveNextMusic = {},
+            onNextClick = {},
             onRepeatMode = {},
             onShuffleModeClick = {},
         )

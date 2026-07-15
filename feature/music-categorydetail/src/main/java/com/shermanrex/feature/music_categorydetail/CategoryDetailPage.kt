@@ -6,9 +6,10 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,15 +22,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.shermanrex.core.designsystem.util.calculateWindowSize
 import com.shermanrex.core.model.MusicModel
-import com.shermanrex.core.model.WindowSize
-import com.shermanrex.feature.music_categorydetail.component.CategoryDetail
-import com.shermanrex.feature.music_categorydetail.component.CategoryDetailPortrait
+import com.shermanrex.feature.music_categorydetail.component.CategoryDetailComponent
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -39,7 +38,7 @@ fun SharedTransitionScope.CategoryDetailRoute(
     onMusicClick: (index: Int, list: List<MusicModel>) -> Unit,
     onBackClick: () -> Unit,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    displayWithVisuals: Boolean = true,
+    displayWithVisuals: Boolean = false,
 ) {
     CategoryDetailPage(
         uiState = categoryUiState,
@@ -60,93 +59,57 @@ fun SharedTransitionScope.CategoryDetailPage(
     onMusicClick: (index: Int) -> Unit,
     onBackClick: () -> Unit,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    displayWithVisuals: Boolean = true,
+    displayWithVisuals: Boolean = false,
 ) {
     val animatedColor by animateColorAsState(
         targetValue = Color(uiState.thumbnailDominateColor),
         animationSpec = tween(durationMillis = 200, easing = LinearEasing),
     )
-    val windowSize = calculateWindowSize()
-
     Scaffold(
         modifier = modifier
-            .then(
-                if (displayWithVisuals) {
-                    Modifier.drawWithCache {
-                        onDrawWithContent {
-                            drawRect(
-                                brush = Brush.verticalGradient(
-                                    0.4f to animatedColor.copy(alpha = 0.5f),
-                                    0.7f to animatedColor.copy(alpha = 0.3f),
-                                    1f to Color.Transparent,
-                                ),
-                            )
-                            drawRect(
-                                Brush.verticalGradient(
-                                    0.3f to Color.Transparent,
-                                    1f to Color.Black.copy(0.6f),
-                                    startY = this.size.height,
-                                    endY = 0f,
-                                ),
-                            )
-                            drawContent()
-                        }
-                    }
-                } else {
-                    Modifier
-                },
-            ),
+            .statusBarsPadding()
+            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            .drawWithCache {
+                onDrawWithContent {
+                    drawRect(
+                        brush = Brush.verticalGradient(
+                            0.4f to animatedColor.copy(alpha = 0.5f),
+                            0.7f to animatedColor.copy(alpha = 0.3f),
+                            1f to Color.Transparent,
+                            endY = size.height / 3,
+                        ),
+                    )
+                    drawContent()
+                }
+            },
         topBar = {
-            if (windowSize == WindowSize.COMPACT) {
-                TopAppBar(
-                    title = {},
-                    navigationIcon = {
-                        IconButton(onClick = onBackClick) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                                contentDescription = "",
-                                modifier = Modifier.size(35.dp),
-                                tint = Color.White,
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent,
-                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
-                )
-            }
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = "",
+                            modifier = Modifier.size(35.dp),
+                            tint = Color.White,
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                ),
+            )
         },
         containerColor = Color.Transparent,
     ) { innerPadding ->
-
-        if (windowSize == WindowSize.COMPACT) {
-            CategoryDetailPortrait(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                uiState = uiState,
-                categoryName = categoryName,
-                currentMusicId = uiState.playingMusicState.playingMusicInfo.musicID,
-                isPlayerPlaying = uiState.playingMusicState.isPlaying,
-                onMusicClick = onMusicClick,
-                animatedVisibilityScope = animatedVisibilityScope,
-                displayWithVisuals = displayWithVisuals,
-            )
-        } else {
-            CategoryDetail(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                uiState = uiState,
-                categoryName = categoryName,
-                currentMusicId = uiState.playingMusicState.playingMusicInfo.musicID,
-                isPlayerPlaying = uiState.playingMusicState.isPlaying,
-                onMusicClick = onMusicClick,
-                animatedVisibilityScope = animatedVisibilityScope,
-                displayWithVisuals = displayWithVisuals,
-                onBackClick = onBackClick,
-            )
-        }
+        CategoryDetailComponent(
+            modifier = Modifier.padding(innerPadding),
+            categoryUiState = uiState,
+            categoryName = categoryName,
+            showArtworkOnTop = displayWithVisuals,
+            onMusicClick = onMusicClick,
+            animatedVisibilityScope = animatedVisibilityScope,
+        )
     }
 }

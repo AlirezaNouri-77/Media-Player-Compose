@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.shermanrex.core.common.util.convertMilliSecondToTime
 import com.shermanrex.core.designsystem.theme.MediaPlayerJetpackComposeTheme
+import com.shermanrex.core.designsystem.util.DeviceSize
+import com.shermanrex.core.designsystem.util.calculateWindowSize
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,6 +39,7 @@ fun SliderSection(
     seekTo: (Long) -> Unit,
     duration: Float,
 ) {
+    val isCompactWindow = calculateWindowSize() == DeviceSize.COMPACT
     var seekPosition by remember {
         mutableFloatStateOf(0f)
     }
@@ -44,8 +47,34 @@ fun SliderSection(
     val sliderInteractionSource = remember { MutableInteractionSource() }
     val isSliderDragging by sliderInteractionSource.collectIsDraggedAsState()
 
-    val trackHeight by animateDpAsState(targetValue = if (isSliderDragging) 16.dp else 20.dp, label = "")
-    val thumbWidth by animateDpAsState(targetValue = if (isSliderDragging) 3.dp else 5.dp, label = "")
+    val trackHeight by animateDpAsState(
+        targetValue = if (isSliderDragging) {
+            if (isCompactWindow) {
+                16.dp
+            } else {
+                12.dp
+            }
+        } else if (isCompactWindow) {
+            20.dp
+        } else {
+            12.dp
+        },
+        label = "",
+    )
+    val thumbWidth by animateDpAsState(
+        targetValue = if (isSliderDragging) {
+            if (isCompactWindow) {
+                3.dp
+            } else {
+                1.dp
+            }
+        } else if (isCompactWindow) {
+            5.dp
+        } else {
+            2.dp
+        },
+        label = "",
+    )
 
     val sliderValue by remember(currentMusicPosition) {
         derivedStateOf {
@@ -97,12 +126,12 @@ fun SliderSection(
         ) {
             Text(
                 text = sliderValue.convertMilliSecondToTime(),
-                fontSize = 13.sp,
+                fontSize = if (isCompactWindow) 13.sp else 7.sp,
                 color = Color.White,
             )
             Text(
                 text = duration.convertMilliSecondToTime(),
-                fontSize = 13.sp,
+                fontSize = if (isCompactWindow) 13.sp else 7.sp,
                 color = Color.White,
             )
         }

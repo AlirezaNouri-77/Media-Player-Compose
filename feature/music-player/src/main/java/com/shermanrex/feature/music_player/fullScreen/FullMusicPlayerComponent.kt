@@ -4,11 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.shermanrex.core.designsystem.theme.MediaPlayerJetpackComposeTheme
+import com.shermanrex.core.designsystem.util.DeviceSize
 import com.shermanrex.core.designsystem.util.calculateWindowSize
 import com.shermanrex.core.model.PlayerRepeatMode
 import com.shermanrex.core.model.PlayingMusicInfo
 import com.shermanrex.core.model.PlayingMusicState
-import com.shermanrex.core.model.WindowSize
 import com.shermanrex.core.music_media3.model.ArtworkModel
 import com.shermanrex.feature.music_player.PlayerActions
 import com.shermanrex.feature.music_player.fullScreen.component.LandscapeLayout
@@ -18,72 +18,55 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-fun FullMusicPlayer(
+fun FullMusicPlayerComponent(
     modifier: Modifier,
     playerUiState: PlayerUiState,
     pagerMusicList: ImmutableList<ArtworkModel>,
-    onBack: () -> Unit,
     onPlayerAction: (PlayerActions) -> Unit,
-    setCurrentPagerNumber: (Int) -> Unit,
-    maxDeviceVolume: Int,
-    currentVolume: Int,
-    onVolumeChange: (Float) -> Unit,
-    clickOnArtist: (String) -> Unit,
-) {
-    ExpandedMusicPlayer(
-        modifier = modifier,
-        playerUiState = playerUiState,
-        pagerMusicList = pagerMusicList,
-        onBack = onBack,
-        onPlayerAction = onPlayerAction,
-        setCurrentPagerNumber = setCurrentPagerNumber,
-        maxDeviceVolume = maxDeviceVolume,
-        currentVolume = currentVolume,
-        onVolumeChange = onVolumeChange,
-        clickOnArtist = clickOnArtist,
-    )
-}
-
-@Composable
-private fun ExpandedMusicPlayer(
-    modifier: Modifier = Modifier,
-    playerUiState: PlayerUiState,
-    maxDeviceVolume: Int,
-    currentVolume: Int,
-    pagerMusicList: ImmutableList<ArtworkModel>,
+    onArtistClick: (String) -> Unit,
     onBack: () -> Unit,
-    onPlayerAction: (PlayerActions) -> Unit,
-    setCurrentPagerNumber: (Int) -> Unit,
-    onVolumeChange: (Float) -> Unit,
-    clickOnArtist: (String) -> Unit,
 ) {
     val windowSize = calculateWindowSize()
 
-    if (windowSize == WindowSize.COMPACT) {
+    if (windowSize == DeviceSize.COMPACT) {
         PortraitLayout(
             modifier = modifier,
             playerUiState = playerUiState,
             pagerMusicList = pagerMusicList,
+            setCurrentPagerIndex = { onPlayerAction(PlayerActions.UpdateArtworkPageIndex(it)) },
+            onVolumeChange = { onPlayerAction(PlayerActions.OnVolumeChange(it)) },
+            onTimerClick = { onPlayerAction(PlayerActions.OnShowTimerBottomSheet) },
+            seekTo = { onPlayerAction(PlayerActions.SeekTo(it)) },
+            onMoveToIndexPager = { index, musicId -> onPlayerAction(PlayerActions.OnMoveToIndex(index, musicId)) },
+            onFavoriteClick = { onPlayerAction(PlayerActions.OnFavoriteToggle(it)) },
+            onPreviousClick = { onPlayerAction(PlayerActions.OnPreviousMusic(false)) },
+            onPauseMusic = { onPlayerAction(PlayerActions.PausePlayer) },
+            onResumeMusic = { onPlayerAction(PlayerActions.ResumePlayer) },
+            onNextClick = { onPlayerAction(PlayerActions.OnNextMusic) },
+            onRepeatMode = { onPlayerAction(PlayerActions.OnRepeatMode(it)) },
+            onShuffleModeClick = { onPlayerAction(PlayerActions.OnShuffleMode) },
+            onArtistClick = onArtistClick,
             onBack = onBack,
-            onPlayerAction = onPlayerAction,
-            setCurrentPagerNumber = setCurrentPagerNumber,
-            maxDeviceVolume = maxDeviceVolume,
-            currentVolume = currentVolume,
-            onVolumeChange = onVolumeChange,
-            clickOnArtist = clickOnArtist,
         )
     } else {
         LandscapeLayout(
             modifier = modifier,
             playerUiState = playerUiState,
             pagerMusicList = pagerMusicList,
+            setCurrentPagerIndex = { onPlayerAction(PlayerActions.UpdateArtworkPageIndex(it)) },
+            onVolumeChange = { onPlayerAction(PlayerActions.OnVolumeChange(it)) },
+            onTimerClick = { onPlayerAction(PlayerActions.OnShowTimerBottomSheet) },
+            seekTo = { onPlayerAction(PlayerActions.SeekTo(it)) },
+            onMoveToIndexPager = { index, musicId -> onPlayerAction(PlayerActions.OnMoveToIndex(index, musicId)) },
+            onFavoriteClick = { onPlayerAction(PlayerActions.OnFavoriteToggle(it)) },
+            onPreviousClick = { onPlayerAction(PlayerActions.OnPreviousMusic(false)) },
+            onPauseMusic = { onPlayerAction(PlayerActions.PausePlayer) },
+            onResumeMusic = { onPlayerAction(PlayerActions.ResumePlayer) },
+            onNextClick = { onPlayerAction(PlayerActions.OnNextMusic) },
+            onRepeatMode = { onPlayerAction(PlayerActions.OnRepeatMode(it)) },
+            onShuffleModeClick = { onPlayerAction(PlayerActions.OnShuffleMode) },
+            onArtistClick = onArtistClick,
             onBack = onBack,
-            onPlayerAction = onPlayerAction,
-            setCurrentPagerNumber = setCurrentPagerNumber,
-            maxDeviceVolume = maxDeviceVolume,
-            currentVolume = currentVolume,
-            onVolumeChange = onVolumeChange,
-            onArtistClick = clickOnArtist,
         )
     }
 }
@@ -93,9 +76,9 @@ private fun ExpandedMusicPlayer(
 @Preview(heightDp = 460, widthDp = 600)
 @Preview
 @Composable
-private fun FullScreenPreview() {
+private fun FullScreenPreviewComponent() {
     MediaPlayerJetpackComposeTheme {
-        FullMusicPlayer(
+        FullMusicPlayerComponent(
             modifier = Modifier,
             playerUiState = PlayerUiState(
                 currentPlayerState = PlayingMusicState(
@@ -119,12 +102,8 @@ private fun FullScreenPreview() {
             ),
             pagerMusicList = emptyList<ArtworkModel>().toImmutableList(),
             onBack = {},
-            setCurrentPagerNumber = {},
             onPlayerAction = {},
-            maxDeviceVolume = 10,
-            currentVolume = 2,
-            onVolumeChange = {},
-            clickOnArtist = {},
+            onArtistClick = {},
         )
     }
 }

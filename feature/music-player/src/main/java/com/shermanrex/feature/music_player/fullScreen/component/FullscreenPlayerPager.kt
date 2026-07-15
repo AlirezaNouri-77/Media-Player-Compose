@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import com.shermanrex.core.designsystem.music.MusicThumbnail
 import com.shermanrex.core.music_media3.model.ArtworkModel
 import com.shermanrex.feature.music_player.PagerHandler
-import com.shermanrex.feature.music_player.PlayerActions
 import kotlinx.collections.immutable.ImmutableList
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -27,8 +26,8 @@ fun FullscreenPlayerPager(
     modifier: Modifier = Modifier,
     pagerItem: ImmutableList<ArtworkModel>,
     currentMusicID: Long,
-    onPlayerAction: (action: PlayerActions) -> Unit,
-    setCurrentPagerNumber: (Int) -> Unit,
+    onMoveToIndexPager: (Int, String) -> Unit,
+    setCurrentPagerIndex: (Int) -> Unit,
     currentPagerPage: Int,
 ) {
     val pagerState = rememberPagerState(
@@ -41,10 +40,8 @@ fun FullscreenPlayerPager(
         pagerMusicList = pagerItem,
         currentPagerPage = currentPagerPage,
         pagerState = pagerState,
-        setCurrentPagerNumber = setCurrentPagerNumber,
-        onMoveToIndex = { index, musicId ->
-            onPlayerAction(PlayerActions.OnMoveToIndex(index, musicId))
-        },
+        setCurrentPagerNumber = setCurrentPagerIndex,
+        onMoveToIndex = onMoveToIndexPager,
     )
 
     Box(

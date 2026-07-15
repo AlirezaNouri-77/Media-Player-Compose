@@ -4,14 +4,18 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
-import com.shermanrex.core.model.WindowSize
 
 @Composable
-fun calculateWindowSize(): WindowSize {
+fun calculateWindowSize(): DeviceSize {
     val windowSize = currentWindowAdaptiveInfo().windowSizeClass
     return when {
-        windowSize.isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND) -> WindowSize.EXPANDED
-        windowSize.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND) -> WindowSize.MEDIUM
-        else -> WindowSize.COMPACT
+        windowSize.minWidthDp < WIDTH_DP_MEDIUM_LOWER_BOUND -> DeviceSize.COMPACT
+        windowSize.minWidthDp in WIDTH_DP_MEDIUM_LOWER_BOUND..<WIDTH_DP_EXPANDED_LOWER_BOUND -> DeviceSize.COMPACT
+        else -> DeviceSize.LARGE
     }
+}
+
+enum class DeviceSize {
+    COMPACT,
+    LARGE,
 }

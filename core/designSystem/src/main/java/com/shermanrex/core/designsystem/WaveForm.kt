@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.shermanrex.core.designsystem.theme.MediaPlayerJetpackComposeTheme
+import com.shermanrex.core.designsystem.util.DeviceSize
+import com.shermanrex.core.designsystem.util.calculateWindowSize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -36,7 +38,8 @@ fun WaveForm(
     waveColor: Color = Color.White,
     density: Density = LocalDensity.current,
 ) {
-    val lineWidth = 6f
+    val windowSize = calculateWindowSize()
+    val lineWidth = if (windowSize == DeviceSize.COMPACT) 6f else 3f
     val lineSpace = lineWidth * 2
     val areaSize = with(density) {
         size.toPx()

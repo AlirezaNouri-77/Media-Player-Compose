@@ -16,6 +16,7 @@ data class PlayerUiState(
     val currentThumbnailPagerIndex: Int = 0,
     val currentPlayerPosition: Long = 0,
     val currentDeviceVolume: Int = 0,
+    val maxDeviceVolume: Int = 0,
     val shouldShowTimerBottomSheet: Boolean = false,
     val playerTimerState: PlayerTimerState = PlayerTimerState.Initial,
 )

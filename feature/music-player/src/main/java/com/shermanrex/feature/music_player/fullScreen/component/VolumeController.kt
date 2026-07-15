@@ -34,7 +34,7 @@ import com.shermanrex.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 fun VolumeController(
     modifier: Modifier = Modifier,
     maxDeviceVolume: Int,
-    currentVolume: () -> Int,
+    currentVolume: Int,
     onVolumeChange: (Float) -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -53,7 +53,7 @@ fun VolumeController(
             modifier = Modifier
                 .size(19.dp)
                 .graphicsLayer {
-                    if (currentVolume() == 0) {
+                    if (currentVolume == 0) {
                         this.scaleX *= iconsScale
                         this.scaleY *= iconsScale
                     }
@@ -63,7 +63,7 @@ fun VolumeController(
             contentDescription = "",
         )
         Slider(
-            value = currentVolume().toFloat() / maxDeviceVolume,
+            value = currentVolume.toFloat() / maxDeviceVolume,
             modifier = Modifier.fillMaxWidth(0.7f),
             onValueChange = { value -> onVolumeChange(value * maxDeviceVolume) },
             interactionSource = interactionSource,
@@ -97,7 +97,7 @@ fun VolumeController(
             modifier = Modifier
                 .size(19.dp)
                 .graphicsLayer {
-                    if (currentVolume() == maxDeviceVolume) {
+                    if (currentVolume == maxDeviceVolume) {
                         this.scaleX *= iconsScale
                         this.scaleY *= iconsScale
                     }
@@ -116,7 +116,7 @@ private fun Preview() {
         VolumeController(
             modifier = Modifier,
             maxDeviceVolume = 15,
-            currentVolume = { 4 },
+            currentVolume = 4,
             onVolumeChange = {},
         )
     }

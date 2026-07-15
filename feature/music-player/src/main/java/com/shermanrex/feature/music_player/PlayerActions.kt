@@ -9,7 +9,11 @@ sealed interface PlayerActions {
 
     data object ResumePlayer : PlayerActions
 
-    data object MoveNextPlayer : PlayerActions
+    data object OnNextMusic : PlayerActions
+
+    data class OnPreviousMusic(val seekToStart: Boolean) : PlayerActions
+
+    data class OnMoveToIndex(val value: Int, val musicId: String) : PlayerActions
 
     data object OnShuffleMode : PlayerActions
 
@@ -23,13 +27,11 @@ sealed interface PlayerActions {
 
     data class OnFavoriteToggle(val mediaId: String) : PlayerActions
 
-    data class OnMoveToIndex(val value: Int, val musicId: String) : PlayerActions
-
-    data class MovePreviousPlayer(val seekToStart: Boolean) : PlayerActions
-
     data class SeekTo(val value: Long) : PlayerActions
 
     data class OnRepeatMode(val value: PlayerRepeatMode) : PlayerActions
 
     data class UpdateArtworkPageIndex(val value: Int) : PlayerActions
+
+    data class OnVolumeChange(val value: Float) : PlayerActions
 }

@@ -1,11 +1,15 @@
 package com.shermanrex.feature.music_search
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,6 +27,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.shermanrex.core.designsystem.EmptyPage
 import com.shermanrex.core.designsystem.LoadingComponent
 import com.shermanrex.core.designsystem.music.MusicListComponent
+import com.shermanrex.core.designsystem.util.DeviceSize
+import com.shermanrex.core.designsystem.util.calculateWindowSize
 import com.shermanrex.core.model.MusicModel
 import com.shermanrex.feature.music_search.component.SearchTextFieldComponent
 import kotlinx.collections.immutable.ImmutableList
@@ -39,7 +45,6 @@ fun SearchRoute(
     val uiState by searchViewModel.searchScreenUiState.collectAsStateWithLifecycle()
 
     SearchScreen(
-        modifier = Modifier.imePadding(),
         isLoading = uiState.isLoading,
         listItem = uiState.searchList.toImmutableList(),
         currentPlayerMediaId = uiState.playingMusicState.playingMusicInfo.musicID,
@@ -53,7 +58,7 @@ fun SearchRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
+@OptIn(ExperimentalMaterial3Api::class, FlowPreview::class, ExperimentalLayoutApi::class)
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
@@ -66,38 +71,43 @@ fun SearchScreen(
     onSearchTextFieldValueChange: (String) -> Unit,
     onClearSearchTextField: () -> Unit,
 ) {
+    val windowSize = calculateWindowSize()
     Scaffold(
+        modifier = Modifier.statusBarsPadding(),
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Search",
-                        modifier = modifier,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 38.sp,
+            Column {
+                AnimatedVisibility(!WindowInsets.isImeVisible || windowSize == DeviceSize.COMPACT) {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                text = "Search",
+                                modifier = modifier,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 38.sp,
+                            )
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = Color.Transparent,
+                        ),
                     )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                ),
-            )
+                }
+                SearchTextFieldComponent(
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                    textFieldValue = searchTextFieldValue,
+                    onTextFieldChange = onSearchTextFieldValueChange,
+                    onClear = onClearSearchTextField,
+                )
+            }
         },
     ) { innerPadding ->
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .consumeWindowInsets(innerPadding),
-            verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
+                .imePadding(),
+            verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            SearchTextFieldComponent(
-                textFieldValue = searchTextFieldValue,
-                onTextFieldChange = onSearchTextFieldValueChange,
-                onClear = onClearSearchTextField,
-            )
-
             if (isLoading) {
                 LoadingComponent()
             } else {

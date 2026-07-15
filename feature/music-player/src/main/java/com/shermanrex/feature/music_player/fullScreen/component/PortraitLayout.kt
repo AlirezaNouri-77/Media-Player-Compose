@@ -12,8 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.shermanrex.core.model.PlayerRepeatMode
 import com.shermanrex.core.music_media3.model.ArtworkModel
-import com.shermanrex.feature.music_player.PlayerActions
 import com.shermanrex.feature.music_player.model.PlayerUiState
 import kotlinx.collections.immutable.ImmutableList
 
@@ -22,18 +22,25 @@ internal fun PortraitLayout(
     modifier: Modifier = Modifier,
     playerUiState: PlayerUiState,
     pagerMusicList: ImmutableList<ArtworkModel>,
-    onBack: () -> Unit,
-    onPlayerAction: (PlayerActions) -> Unit,
-    setCurrentPagerNumber: (Int) -> Unit,
-    maxDeviceVolume: Int,
-    currentVolume: Int,
+    setCurrentPagerIndex: (Int) -> Unit,
     onVolumeChange: (Float) -> Unit,
-    clickOnArtist: (String) -> Unit,
+    onTimerClick: () -> Unit,
+    onArtistClick: (String) -> Unit,
+    seekTo: (Long) -> Unit,
+    onMoveToIndexPager: (Int, String) -> Unit,
+    onFavoriteClick: (String) -> Unit,
+    onPreviousClick: () -> Unit,
+    onPauseMusic: () -> Unit,
+    onResumeMusic: () -> Unit,
+    onNextClick: () -> Unit,
+    onRepeatMode: (PlayerRepeatMode) -> Unit,
+    onShuffleModeClick: () -> Unit,
+    onBack: () -> Unit,
 ) {
     Column(
         modifier = modifier
             .padding(
-                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 16.dp,
             )
             .padding(horizontal = 12.dp),
         verticalArrangement = Arrangement.Center,
@@ -42,49 +49,45 @@ internal fun PortraitLayout(
         HeaderSection(
             modifier = Modifier.fillMaxWidth(),
             onBackClick = onBack,
-            onTimerClick = {
-                onPlayerAction(PlayerActions.OnShowTimerBottomSheet)
-            },
         )
         FullscreenPlayerPager(
-            modifier = Modifier
-                .weight(1f)
-                .aspectRatio(1f),
+            modifier = Modifier.weight(1f).aspectRatio(1f),
             pagerItem = pagerMusicList,
             currentPagerPage = playerUiState.currentThumbnailPagerIndex,
             currentMusicID = playerUiState.currentPlayerState.playingMusicInfo.musicID.toLong(),
-            onPlayerAction = { onPlayerAction(it) },
-            setCurrentPagerNumber = { setCurrentPagerNumber(it) },
+            setCurrentPagerIndex = setCurrentPagerIndex,
+            onMoveToIndexPager = onMoveToIndexPager,
+        )
+        UtilityActionComponent(
+            isFavorite = playerUiState.currentPlayerState.isFavorite,
+            onTimerIconClick = onTimerClick,
+            onFavoriteClick = { onFavoriteClick(playerUiState.currentPlayerState.playingMusicInfo.musicID) },
         )
         SongDetail(
             modifier = Modifier.padding(horizontal = 12.dp),
-            onArtistClick = clickOnArtist,
-            isFavorite = playerUiState.currentPlayerState.isFavorite,
             playerUiState = playerUiState,
-            onFavoriteClick = {
-                onPlayerAction(PlayerActions.OnFavoriteToggle(playerUiState.currentPlayerState.playingMusicInfo.musicID))
-            },
+            onArtistClick = onArtistClick,
         )
         SliderSection(
             modifier = Modifier.padding(horizontal = 12.dp),
             currentMusicPosition = playerUiState.currentPlayerPosition,
-            seekTo = { onPlayerAction(PlayerActions.SeekTo(it)) },
             duration = playerUiState.currentPlayerState.playingMusicInfo.duration.toFloat(),
+            seekTo = seekTo,
         )
         SongController(
             isPlaying = playerUiState.currentPlayerState.isPlaying,
             playerRepeatMode = playerUiState.currentPlayerState.playerRepeatMode,
-            onPauseMusic = { onPlayerAction(PlayerActions.PausePlayer) },
-            onResumeMusic = { onPlayerAction(PlayerActions.ResumePlayer) },
-            onMovePreviousMusic = { onPlayerAction(PlayerActions.MovePreviousPlayer(false)) },
-            onMoveNextMusic = { onPlayerAction(PlayerActions.MoveNextPlayer) },
-            onRepeatMode = { onPlayerAction(PlayerActions.OnRepeatMode(it)) },
             isShuffleMode = playerUiState.currentPlayerState.isShuffleMode,
-            onShuffleModeClick = { onPlayerAction(PlayerActions.OnShuffleMode) },
+            onPauseMusic = onPauseMusic,
+            onResumeMusic = onResumeMusic,
+            onPreviousClick = onPreviousClick,
+            onNextClick = onNextClick,
+            onRepeatMode = onRepeatMode,
+            onShuffleModeClick = onShuffleModeClick,
         )
         VolumeController(
-            maxDeviceVolume = maxDeviceVolume,
-            currentVolume = { currentVolume },
+            maxDeviceVolume = playerUiState.maxDeviceVolume,
+            currentVolume = playerUiState.currentDeviceVolume,
             onVolumeChange = onVolumeChange,
         )
     }

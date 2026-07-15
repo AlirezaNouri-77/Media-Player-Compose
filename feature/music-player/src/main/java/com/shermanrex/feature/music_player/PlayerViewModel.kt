@@ -35,6 +35,7 @@ class PlayerViewModel(
         observePlayerTimerStates()
         updatePagerItem()
         observerCurrentPlayerIsFavorite()
+        getMaxDeviceVolume()
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
@@ -43,7 +44,7 @@ class PlayerViewModel(
 
     fun onPlayerAction(action: PlayerActions) {
         when (action) {
-            PlayerActions.MoveNextPlayer -> musicServiceConnection.moveToNext()
+            PlayerActions.OnNextMusic -> musicServiceConnection.moveToNext()
             PlayerActions.PausePlayer -> musicServiceConnection.pauseMusic()
             PlayerActions.ResumePlayer -> musicServiceConnection.resumeMusic()
             PlayerActions.OnShuffleMode -> {
@@ -63,7 +64,7 @@ class PlayerViewModel(
                 updatePagerItem()
             }
 
-            is PlayerActions.MovePreviousPlayer ->
+            is PlayerActions.OnPreviousMusic ->
                 musicServiceConnection.moveToPrevious(action.seekToStart, _playerUiState.value.currentPlayerPosition)
 
             is PlayerActions.OnMoveToIndex -> {
@@ -87,6 +88,7 @@ class PlayerViewModel(
                 _playerUiState.update { it.copy(shouldShowTimerBottomSheet = false) }
 
             is PlayerActions.OnTimerClick -> handleOnTimer(action.timers)
+            is PlayerActions.OnVolumeChange -> setDeviceVolume(action.value)
         }
     }
 
@@ -121,12 +123,14 @@ class PlayerViewModel(
         }.launchIn(viewModelScope)
     }
 
-    fun setDeviceVolume(volume: Float) {
+    private fun setDeviceVolume(volume: Float) {
         deviceVolumeManager.setVolume(volume)
         _playerUiState.update { it.copy(currentDeviceVolume = volume.toInt()) }
     }
 
-    fun getMaxDeviceVolume(): Int = deviceVolumeManager.getMaxVolume()
+    private fun getMaxDeviceVolume() {
+        _playerUiState.update { it.copy(maxDeviceVolume = deviceVolumeManager.getMaxVolume()) }
+    }
 
     private fun handleOnTimer(timers: PlayerTimers) {
         if (playerUiState.value.playerTimerState.playerTimerState == PlayerTimers.INITIAL) {

@@ -31,7 +31,7 @@ import com.shermanrex.core.designsystem.util.MiniPlayerHeight
 import com.shermanrex.core.music_media3.model.ArtworkModel
 import com.shermanrex.feature.music_player.PlayerActions
 import com.shermanrex.feature.music_player.PlayerViewModel
-import com.shermanrex.feature.music_player.fullScreen.FullMusicPlayer
+import com.shermanrex.feature.music_player.fullScreen.FullMusicPlayerComponent
 import com.shermanrex.feature.music_player.miniPlayer.MiniMusicPlayer
 import com.shermanrex.feature.music_player.model.PlayerUiState
 import kotlinx.collections.immutable.ImmutableList
@@ -61,6 +61,7 @@ fun BottomSheetContent(
     val coroutineScope = rememberCoroutineScope()
 
     AnimatedVisibility(
+        modifier = Modifier.fillMaxWidth(),
         visible = isVisible,
         enter = fadeIn(tween(200, delayMillis = 90)) + slideInVertically(
             animationSpec = tween(400, 250),
@@ -72,7 +73,7 @@ fun BottomSheetContent(
         ) + fadeOut(tween(200, delayMillis = 90)),
     ) {
         Box {
-            FullMusicPlayer(
+            FullMusicPlayerComponent(
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer { alpha = bottomSheetSwapFraction() }
@@ -96,17 +97,11 @@ fun BottomSheetContent(
                     .padding(top = MiniPlayerHeight),
                 pagerMusicList = pagerThumbnailList.toImmutableList(),
                 onPlayerAction = playerViewModel::onPlayerAction,
-                currentVolume = currentDeviceVolume,
                 playerUiState = playerUiState,
-                maxDeviceVolume = playerViewModel.getMaxDeviceVolume(),
-                onVolumeChange = { playerViewModel.setDeviceVolume(it) },
-                setCurrentPagerNumber = {
-                    playerViewModel.onPlayerAction(PlayerActions.UpdateArtworkPageIndex(it))
-                },
                 onBack = {
                     coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.partialExpand() }
                 },
-                clickOnArtist = { artistName ->
+                onArtistClick = { artistName ->
                     coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.partialExpand() }
                     navigateToArtist(artistName)
                 },
