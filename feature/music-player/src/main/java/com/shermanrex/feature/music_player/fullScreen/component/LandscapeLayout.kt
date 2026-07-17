@@ -54,8 +54,7 @@ internal fun LandscapeLayout(
                 .weight(1f, false)
                 .aspectRatio(1f)
                 .fillMaxWidth()
-                .displayCutoutPadding()
-                .weight(0.4f),
+                .displayCutoutPadding(),
             pagerItem = pagerMusicList,
             currentPagerPage = playerUiState.currentThumbnailPagerIndex,
             currentMusicID = playerUiState.currentPlayerState.playingMusicInfo.musicID.toLong(),

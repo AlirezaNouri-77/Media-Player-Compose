@@ -51,7 +51,7 @@ internal fun PortraitLayout(
             onBackClick = onBack,
         )
         FullscreenPlayerPager(
-            modifier = Modifier.weight(1f).aspectRatio(1f),
+            modifier = Modifier.aspectRatio(1f),
             pagerItem = pagerMusicList,
             currentPagerPage = playerUiState.currentThumbnailPagerIndex,
             currentMusicID = playerUiState.currentPlayerState.playingMusicInfo.musicID.toLong(),

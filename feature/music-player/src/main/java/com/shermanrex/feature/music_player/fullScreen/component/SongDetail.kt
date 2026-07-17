@@ -40,10 +40,7 @@ fun SongDetail(
         modifier = modifier,
     ) {
         Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .basicMarquee()
-                .weight(1f),
+            modifier = Modifier.fillMaxWidth().basicMarquee(),
             text = playerUiState.currentPlayerState.playingMusicInfo.title.removeFileExtension(),
             fontSize = if (windowSize == DeviceSize.COMPACT) 20.sp else 14.sp,
             fontWeight = FontWeight.SemiBold,
@@ -54,15 +51,15 @@ fun SongDetail(
         Text(
             modifier = Modifier.clickable { onArtistClick(playerUiState.currentPlayerState.playingMusicInfo.artist) },
             text = playerUiState.currentPlayerState.playingMusicInfo.artist.trim(),
-            fontSize = 14.sp,
+            fontSize = 15.sp,
             fontWeight = FontWeight.Medium,
             maxLines = 1,
             color = Color.White.copy(alpha = 0.7f),
         )
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = "${playerUiState.currentPlayerState.playingMusicInfo.title.extractFileExtension()}, " +
-                "${playerUiState.currentPlayerState.playingMusicInfo.bitrate.convertToReadableBitrate()}, " +
+            text = "${playerUiState.currentPlayerState.playingMusicInfo.title.extractFileExtension()} " +
+                "${playerUiState.currentPlayerState.playingMusicInfo.bitrate.convertToReadableBitrate()} " +
                 "${playerUiState.currentPlayerState.playingMusicInfo.size.convertByteToReadableSize()} ",
             fontSize = 12.sp,
             color = Color.White.copy(alpha = 0.7f),

@@ -84,11 +84,11 @@ private fun FullScreenPreviewComponent() {
                 currentPlayerState = PlayingMusicState(
                     playingMusicInfo = PlayingMusicInfo(
                         title = "Example Music name.mp3",
-                        musicID = "0",
+                        musicID = "1",
                         artworkUri = "",
                         musicUri = "",
                         artist = "Example Music artist",
-                        duration = 240_000,
+                        duration = 20000L,
                         bitrate = 320_000,
                         size = 120_000,
                         album = "Example Music album",
@@ -99,6 +99,7 @@ private fun FullScreenPreviewComponent() {
                     playerRepeatMode = PlayerRepeatMode.MODE_OFF,
                     isShuffleMode = false,
                 ),
+                currentPlayerPosition = 1000L,
             ),
             pagerMusicList = emptyList<ArtworkModel>().toImmutableList(),
             onBack = {},
