@@ -1,7 +1,6 @@
 package com.shermanrex.feature.music_player.fullScreen.component
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -26,13 +25,12 @@ fun HeaderSection(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
 ) {
-    Row(
+    Box(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically,
+        contentAlignment = Alignment.Center,
     ) {
         IconButton(
-            modifier = Modifier,
+            modifier = Modifier.align(Alignment.CenterStart),
             onClick = onBackClick,
             colors = IconButtonDefaults.iconButtonColors(
                 containerColor = Color.Transparent,
@@ -47,7 +45,7 @@ fun HeaderSection(
         }
         Text(
             text = "Now Playing",
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.align(Alignment.Center),
             fontSize = 20.sp,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Medium,
