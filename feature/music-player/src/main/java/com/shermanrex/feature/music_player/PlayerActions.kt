@@ -13,9 +13,9 @@ sealed interface PlayerActions {
 
     data class OnPreviousMusic(val seekToStart: Boolean) : PlayerActions
 
-    data class OnMoveToIndex(val value: Int, val musicId: String) : PlayerActions
+    data class OnMoveToMedia(val value: Int, val musicId: String) : PlayerActions
 
-    data object OnShuffleMode : PlayerActions
+    data object OnSetShuffleMode : PlayerActions
 
     data object OnShowTimerBottomSheet : PlayerActions
 

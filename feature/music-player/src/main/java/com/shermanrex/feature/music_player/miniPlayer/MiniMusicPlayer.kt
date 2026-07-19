@@ -59,7 +59,7 @@ fun MiniMusicPlayer(
         currentPagerPage = currentPagerPage,
         pagerState = pagerState,
         setCurrentPagerNumber = setCurrentPagerNumber,
-        onMoveToIndex = { index, musicId -> onPlayerAction(PlayerActions.OnMoveToIndex(index, musicId)) },
+        onMoveToIndex = { index, musicId -> onPlayerAction(PlayerActions.OnMoveToMedia(index, musicId)) },
     )
 
     Card(

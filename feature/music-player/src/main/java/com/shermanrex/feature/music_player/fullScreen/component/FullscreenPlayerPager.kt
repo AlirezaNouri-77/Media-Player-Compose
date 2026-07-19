@@ -50,7 +50,7 @@ fun FullscreenPlayerPager(
     ) {
         HorizontalPager(
             modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
+            contentPadding = PaddingValues(vertical = 10.dp),
             beyondViewportPageCount = 4,
             state = pagerState,
             pageSpacing = 24.dp,

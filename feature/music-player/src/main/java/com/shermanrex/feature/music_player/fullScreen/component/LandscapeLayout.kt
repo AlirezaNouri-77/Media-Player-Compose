@@ -75,12 +75,10 @@ internal fun LandscapeLayout(
                 onBackClick = onBack,
             )
             SongDetail(
-                modifier = Modifier,
                 playerUiState = playerUiState,
                 onArtistClick = onArtistClick,
             )
             SliderSection(
-                modifier = Modifier,
                 currentMusicPosition = playerUiState.currentPlayerPosition,
                 seekTo = seekTo,
                 duration = playerUiState.currentPlayerState.playingMusicInfo.duration.toFloat(),

@@ -42,8 +42,7 @@ fun SongDetail(
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .basicMarquee()
-                .weight(1f),
+                .basicMarquee(),
             text = playerUiState.currentPlayerState.playingMusicInfo.title.removeFileExtension(),
             fontSize = if (windowSize == DeviceSize.COMPACT) 20.sp else 14.sp,
             fontWeight = FontWeight.SemiBold,
