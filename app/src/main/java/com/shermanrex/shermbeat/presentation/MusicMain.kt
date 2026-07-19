@@ -14,16 +14,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -273,7 +275,7 @@ fun MusicMain(
                                 }
                             },
                         )
-
+                        Spacer(Modifier.width(4.dp))
                         LandscapePlayerComponent(
                             playerUiState = playerUiState,
                             isVisible = windowSize != DeviceSize.COMPACT && playerUiState.currentPlayerState.playingMusicInfo.musicID.isNotEmpty(),
@@ -293,7 +295,7 @@ fun MusicMain(
                             },
                             onMoveToIndexPager = { index, musicId ->
                                 playerViewModel.onPlayerAction(
-                                    PlayerActions.OnMoveToIndex(
+                                    PlayerActions.OnMoveToMedia(
                                         index,
                                         musicId,
                                     ),
@@ -319,7 +321,7 @@ fun MusicMain(
                                     PlayerActions.OnRepeatMode(repeatMode),
                                 )
                             },
-                            onShuffleModeClick = { playerViewModel.onPlayerAction(PlayerActions.OnShuffleMode) },
+                            onShuffleModeClick = { playerViewModel.onPlayerAction(PlayerActions.OnSetShuffleMode) },
                             onArtistClick = { artist ->
                                 navBackStack.add(
                                     DetailMusic(artist, MediaCategory.ARTIST),
@@ -366,7 +368,6 @@ fun RowScope.LandscapePlayerComponent(
             .fillMaxSize()
             .weight(0.5f)
             .statusBarsPadding()
-            .padding(start = 12.dp, bottom = 12.dp)
             .clip(RoundedCornerShape(16.dp))
             .drawBehind {
                 drawRect(Color.Black)
@@ -388,7 +389,7 @@ fun RowScope.LandscapePlayerComponent(
         enter = fadeIn(),
     ) {
         Column(
-            modifier = modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize().padding(horizontal = 8.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -396,9 +397,7 @@ fun RowScope.LandscapePlayerComponent(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 FullscreenPlayerPager(
-                    modifier = Modifier
-                        .weight(0.5f)
-                        .aspectRatio(1f),
+                    modifier = Modifier.size(180.dp),
                     pagerItem = playerUiState.thumbnailsList.toImmutableList(),
                     currentPagerPage = playerUiState.currentThumbnailPagerIndex,
                     currentMusicID = playerUiState.currentPlayerState.playingMusicInfo.musicID.toLong(),

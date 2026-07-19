@@ -69,7 +69,7 @@ internal fun PortraitLayout(
             onArtistClick = onArtistClick,
         )
         SliderSection(
-            modifier = Modifier.padding(horizontal = 12.dp),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
             currentMusicPosition = playerUiState.currentPlayerPosition,
             duration = playerUiState.currentPlayerState.playingMusicInfo.duration.toFloat(),
             seekTo = seekTo,

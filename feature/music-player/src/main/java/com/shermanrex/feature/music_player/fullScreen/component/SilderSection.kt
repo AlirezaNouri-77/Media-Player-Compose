@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
@@ -28,8 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.shermanrex.core.common.util.convertMilliSecondToTime
 import com.shermanrex.core.designsystem.theme.MediaPlayerJetpackComposeTheme
-import com.shermanrex.core.designsystem.util.DeviceSize
-import com.shermanrex.core.designsystem.util.calculateWindowSize
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,42 +38,10 @@ fun SliderSection(
     seekTo: (Long) -> Unit,
     duration: Float,
 ) {
-    val isCompactWindow = calculateWindowSize() == DeviceSize.COMPACT
-    var seekPosition by remember {
-        mutableFloatStateOf(0f)
-    }
-
+    var seekPosition by remember { mutableFloatStateOf(0f) }
     val sliderInteractionSource = remember { MutableInteractionSource() }
     val isSliderDragging by sliderInteractionSource.collectIsDraggedAsState()
-
-    val trackHeight by animateDpAsState(
-        targetValue = if (isSliderDragging) {
-            if (isCompactWindow) {
-                16.dp
-            } else {
-                12.dp
-            }
-        } else if (isCompactWindow) {
-            20.dp
-        } else {
-            12.dp
-        },
-        label = "",
-    )
-    val thumbWidth by animateDpAsState(
-        targetValue = if (isSliderDragging) {
-            if (isCompactWindow) {
-                3.dp
-            } else {
-                1.dp
-            }
-        } else if (isCompactWindow) {
-            5.dp
-        } else {
-            2.dp
-        },
-        label = "",
-    )
+    val thumbWidth by animateDpAsState(targetValue = if (isSliderDragging) 14.dp else 12.dp, label = "")
 
     val sliderValue by remember(currentMusicPosition) {
         derivedStateOf {
@@ -89,30 +56,32 @@ fun SliderSection(
         modifier = modifier,
     ) {
         Slider(
+            modifier = Modifier.height(16.dp),
             value = sliderValue,
             interactionSource = sliderInteractionSource,
             onValueChange = { value -> seekPosition = value },
             onValueChangeFinished = { seekTo(seekPosition.toLong()) },
             thumb = {
                 SliderDefaults.Thumb(
+                    modifier = Modifier.offset(y = 1.5.dp),
                     colors = SliderDefaults.colors(
                         thumbColor = Color.White,
                     ),
-                    thumbSize = DpSize(width = thumbWidth, height = 24.dp),
+                    thumbSize = DpSize(thumbWidth, thumbWidth),
                     interactionSource = remember { MutableInteractionSource() },
                 )
             },
             track = { sliderState ->
                 SliderDefaults.Track(
-                    modifier = Modifier.height(trackHeight),
+                    modifier = Modifier.height(4.dp),
                     sliderState = sliderState,
                     colors = SliderDefaults.colors(
                         activeTrackColor = Color.White.copy(alpha = 0.8f),
-                        inactiveTrackColor = Color.White.copy(alpha = 0.4f),
+                        inactiveTrackColor = Color.White.copy(alpha = 0.3f),
                     ),
                     drawStopIndicator = null,
-                    trackInsideCornerSize = 3.dp,
-                    thumbTrackGapSize = 2.dp,
+                    trackInsideCornerSize = 0.dp,
+                    thumbTrackGapSize = 0.dp,
                 )
             },
             valueRange = 0f..duration,
@@ -126,13 +95,13 @@ fun SliderSection(
         ) {
             Text(
                 text = sliderValue.convertMilliSecondToTime(),
-                fontSize = if (isCompactWindow) 13.sp else 7.sp,
-                color = Color.White,
+                fontSize = 12.sp,
+                color = Color.White.copy(alpha = 0.7f),
             )
             Text(
                 text = duration.convertMilliSecondToTime(),
-                fontSize = if (isCompactWindow) 13.sp else 7.sp,
-                color = Color.White,
+                fontSize = 12.sp,
+                color = Color.White.copy(alpha = 0.7f),
             )
         }
     }

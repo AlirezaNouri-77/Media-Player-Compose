@@ -44,51 +44,29 @@ class PlayerViewModel(
 
     fun onPlayerAction(action: PlayerActions) {
         when (action) {
-            PlayerActions.OnNextMusic -> musicServiceConnection.moveToNext()
+            PlayerActions.OnNextMusic -> {
+                musicServiceConnection.moveToNext()
+                setCurrentMusicPosition()
+            }
             PlayerActions.PausePlayer -> musicServiceConnection.pauseMusic()
             PlayerActions.ResumePlayer -> musicServiceConnection.resumeMusic()
-            PlayerActions.OnShuffleMode -> {
-                musicServiceConnection.setShuffleMode(!playerUiState.value.currentPlayerState.isShuffleMode)
-                updatePagerItem()
-            }
-
-            is PlayerActions.OnFavoriteToggle -> handleFavoriteSongs(action.mediaId)
-            is PlayerActions.PlaySongs -> playMusic(action.index, action.list)
-            is PlayerActions.SeekTo -> {
-                _playerUiState.update { it.copy(currentPlayerPosition = action.value) }
-                musicServiceConnection.seekToPosition(action.value)
-            }
-
-            is PlayerActions.OnRepeatMode -> {
-                musicServiceConnection.setRepeatMode(action.value.toId())
-                updatePagerItem()
-            }
-
-            is PlayerActions.OnPreviousMusic ->
-                musicServiceConnection.moveToPrevious(action.seekToStart, _playerUiState.value.currentPlayerPosition)
-
-            is PlayerActions.OnMoveToIndex -> {
-                val index = playerUiState.value.playedMusicList.indexOfFirst { action.musicId.toLong() == it.musicId }
-                musicServiceConnection.moveToMediaIndex(index = index)
-            }
-
-            is PlayerActions.UpdateArtworkPageIndex -> {
-                val targetIndex = playerUiState.value.thumbnailsList.indexOfFirst {
-                    it.musicId == playerUiState.value.currentPlayerState.playingMusicInfo.musicID
-                }
-                if (targetIndex > -1) {
-                    _playerUiState.update { uiState -> uiState.copy(currentThumbnailPagerIndex = targetIndex) }
-                }
-            }
-
+            PlayerActions.OnSetShuffleMode -> setShuffleMode()
             PlayerActions.OnShowTimerBottomSheet ->
                 _playerUiState.update { it.copy(shouldShowTimerBottomSheet = true) }
-
             PlayerActions.OnHideTimerBottomSheet ->
                 _playerUiState.update { it.copy(shouldShowTimerBottomSheet = false) }
-
+            is PlayerActions.OnFavoriteToggle -> handleFavoriteSongs(action.mediaId)
+            is PlayerActions.PlaySongs -> playMusic(action.index, action.list)
+            is PlayerActions.SeekTo -> onSeekTo(action.value)
+            is PlayerActions.OnRepeatMode -> setRepeatMode(action.value.toId())
             is PlayerActions.OnTimerClick -> handleOnTimer(action.timers)
             is PlayerActions.OnVolumeChange -> setDeviceVolume(action.value)
+            is PlayerActions.OnMoveToMedia -> moveToMediaIndex(action.musicId)
+            is PlayerActions.UpdateArtworkPageIndex -> setArtworkPageIndex()
+            is PlayerActions.OnPreviousMusic -> {
+                musicServiceConnection.moveToPrevious(action.seekToStart, _playerUiState.value.currentPlayerPosition)
+                setCurrentMusicPosition()
+            }
         }
     }
 
@@ -166,6 +144,37 @@ class PlayerViewModel(
         }
     }
 
+    private fun setArtworkPageIndex() {
+        val targetIndex = playerUiState.value.thumbnailsList.indexOfFirst {
+            it.musicId == playerUiState.value.currentPlayerState.playingMusicInfo.musicID
+        }
+        if (targetIndex > -1) {
+            _playerUiState.update { uiState -> uiState.copy(currentThumbnailPagerIndex = targetIndex) }
+        }
+    }
+
+    private fun moveToMediaIndex(musicId: String) {
+        val index =
+            playerUiState.value.playedMusicList.indexOfFirst { musicId.toLong() == it.musicId }
+        musicServiceConnection.moveToMediaIndex(index = index)
+        setCurrentMusicPosition()
+    }
+
+    private fun setRepeatMode(repeatMode: Int) {
+        musicServiceConnection.setRepeatMode(repeatMode)
+        updatePagerItem()
+    }
+
+    private fun onSeekTo(seekPosition: Long) {
+        _playerUiState.update { it.copy(currentPlayerPosition = seekPosition) }
+        musicServiceConnection.seekToPosition(seekPosition)
+    }
+
+    private fun setShuffleMode() {
+        musicServiceConnection.setShuffleMode(!playerUiState.value.currentPlayerState.isShuffleMode)
+        updatePagerItem()
+    }
+
     private fun observerCurrentPlayerIsFavorite() {
         viewModelScope.launch {
             combine(
@@ -174,12 +183,23 @@ class PlayerViewModel(
             ) { playerState, favoriteList ->
                 playerState.currentPlayerState.playingMusicInfo.musicID in favoriteList
             }.collectLatest { isFavorite ->
-                _playerUiState.update { it.copy(currentPlayerState = playerUiState.value.currentPlayerState.copy(isFavorite = isFavorite)) }
+                _playerUiState.update {
+                    it.copy(
+                        currentPlayerState = playerUiState.value.currentPlayerState.copy(
+                            isFavorite = isFavorite,
+                        ),
+                    )
+                }
             }
         }
     }
 
-    private fun handleFavoriteSongs(mediaId: String) = viewModelScope.launch { favoriteMusicSource.handleFavoriteSongs(mediaId) }
+    private fun handleFavoriteSongs(mediaId: String) =
+        viewModelScope.launch { favoriteMusicSource.handleFavoriteSongs(mediaId) }
+
+    private fun setCurrentMusicPosition(position: Long = 0L) {
+        _playerUiState.update { it.copy(currentPlayerPosition = position) }
+    }
 
     private fun playMusic(index: Int, musicList: List<MusicModel>) {
         musicServiceConnection.playSongs(index, musicList)
