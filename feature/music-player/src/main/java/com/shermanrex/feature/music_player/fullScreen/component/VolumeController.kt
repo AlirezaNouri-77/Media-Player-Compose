@@ -45,13 +45,13 @@ fun VolumeController(
     val iconsScale by animateFloatAsState(if (isDragged) 1.4f else 1f)
 
     Row(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
+        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
     ) {
         Icon(
             modifier = Modifier
-                .size(19.dp)
+                .size(18.dp)
                 .graphicsLayer {
                     if (currentVolume == 0) {
                         this.scaleX *= iconsScale
@@ -64,7 +64,7 @@ fun VolumeController(
         )
         Slider(
             value = currentVolume.toFloat() / maxDeviceVolume,
-            modifier = Modifier.fillMaxWidth(0.7f),
+            modifier = Modifier.height(8.dp).fillMaxWidth(0.7f),
             onValueChange = { value -> onVolumeChange(value * maxDeviceVolume) },
             interactionSource = interactionSource,
             thumb = {
@@ -80,7 +80,7 @@ fun VolumeController(
                 SliderDefaults.Track(
                     modifier = Modifier
                         .height(sliderTrackHeight)
-                        .clip(RoundedCornerShape(5.dp)),
+                        .clip(RoundedCornerShape(4.dp)),
                     sliderState = sliderState,
                     colors = SliderDefaults.colors(
                         activeTrackColor = Color.White.copy(alpha = 0.8f),
@@ -95,7 +95,7 @@ fun VolumeController(
         )
         Icon(
             modifier = Modifier
-                .size(19.dp)
+                .size(18.dp)
                 .graphicsLayer {
                     if (currentVolume == maxDeviceVolume) {
                         this.scaleX *= iconsScale

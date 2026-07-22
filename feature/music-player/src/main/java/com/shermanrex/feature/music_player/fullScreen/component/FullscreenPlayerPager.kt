@@ -2,8 +2,8 @@ package com.shermanrex.feature.music_player.fullScreen.component
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
@@ -44,26 +44,22 @@ fun FullscreenPlayerPager(
         onMoveToIndex = onMoveToIndexPager,
     )
 
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center,
-    ) {
-        HorizontalPager(
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(vertical = 10.dp),
-            beyondViewportPageCount = 4,
-            state = pagerState,
-            pageSpacing = 24.dp,
-            verticalAlignment = Alignment.CenterVertically,
-            key = { index -> if (index in pagerItem.indices) pagerItem[index].musicId else index },
-        ) { page ->
-            MusicThumbnail(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(color = MaterialTheme.colorScheme.primary),
-                uri = pagerItem[page].uri.toString(),
-            )
-        }
+    HorizontalPager(
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(vertical = 12.dp),
+        beyondViewportPageCount = 4,
+        state = pagerState,
+        pageSpacing = 24.dp,
+        verticalAlignment = Alignment.CenterVertically,
+        key = { index -> if (index in pagerItem.indices) pagerItem[index].musicId else index },
+    ) { page ->
+        MusicThumbnail(
+            modifier = Modifier
+                .fillMaxSize()
+                .aspectRatio(1f, true)
+                .clip(RoundedCornerShape(12.dp))
+                .background(color = MaterialTheme.colorScheme.primary),
+            uri = pagerItem[page].uri.toString(),
+        )
     }
 }

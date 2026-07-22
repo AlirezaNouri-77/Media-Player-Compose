@@ -31,7 +31,7 @@ import com.shermanrex.core.designsystem.util.MiniPlayerHeight
 import com.shermanrex.core.music_media3.model.ArtworkModel
 import com.shermanrex.feature.music_player.PlayerActions
 import com.shermanrex.feature.music_player.PlayerViewModel
-import com.shermanrex.feature.music_player.fullScreen.FullMusicPlayerComponent
+import com.shermanrex.feature.music_player.fullScreen.component.BottomSheetPlayerComponent
 import com.shermanrex.feature.music_player.miniPlayer.MiniMusicPlayer
 import com.shermanrex.feature.music_player.model.PlayerUiState
 import kotlinx.collections.immutable.ImmutableList
@@ -73,7 +73,7 @@ fun BottomSheetContent(
         ) + fadeOut(tween(200, delayMillis = 90)),
     ) {
         Box {
-            FullMusicPlayerComponent(
+            BottomSheetPlayerComponent(
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer { alpha = bottomSheetSwapFraction() }
@@ -95,9 +95,20 @@ fun BottomSheetContent(
                     }
                     .navigationBarsPadding()
                     .padding(top = MiniPlayerHeight),
-                pagerMusicList = pagerThumbnailList.toImmutableList(),
-                onPlayerAction = playerViewModel::onPlayerAction,
                 playerUiState = playerUiState,
+                pagerMusicList = pagerThumbnailList.toImmutableList(),
+                setCurrentPagerIndex = { playerViewModel.onPlayerAction(PlayerActions.UpdateArtworkPageIndex(it)) },
+                onVolumeChange = { playerViewModel.onPlayerAction(PlayerActions.OnVolumeChange(it)) },
+                onTimerClick = { playerViewModel.onPlayerAction(PlayerActions.OnShowTimerBottomSheet) },
+                seekTo = { playerViewModel.onPlayerAction(PlayerActions.SeekTo(it)) },
+                onMoveToIndexPager = { index, musicId -> playerViewModel.onPlayerAction(PlayerActions.OnMoveToMedia(index, musicId)) },
+                onFavoriteClick = { playerViewModel.onPlayerAction(PlayerActions.OnFavoriteToggle(it)) },
+                onPreviousClick = { playerViewModel.onPlayerAction(PlayerActions.OnPreviousMusic(false)) },
+                onPauseMusic = { playerViewModel.onPlayerAction(PlayerActions.PausePlayer) },
+                onResumeMusic = { playerViewModel.onPlayerAction(PlayerActions.ResumePlayer) },
+                onNextClick = { playerViewModel.onPlayerAction(PlayerActions.OnNextMusic) },
+                onRepeatMode = { playerViewModel.onPlayerAction(PlayerActions.OnRepeatMode(it)) },
+                onShuffleModeClick = { playerViewModel.onPlayerAction(PlayerActions.OnSetShuffleMode) },
                 onBack = {
                     coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.partialExpand() }
                 },

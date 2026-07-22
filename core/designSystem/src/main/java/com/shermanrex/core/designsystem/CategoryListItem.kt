@@ -75,6 +75,7 @@ fun CategoryListItem(
                     Text(
                         text = "$musicListSize Music",
                         fontSize = 15.sp,
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
                         fontWeight = FontWeight.Medium,
                     )
                 }

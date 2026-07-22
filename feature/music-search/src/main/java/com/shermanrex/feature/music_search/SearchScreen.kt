@@ -28,7 +28,7 @@ import com.shermanrex.core.designsystem.EmptyPage
 import com.shermanrex.core.designsystem.LoadingComponent
 import com.shermanrex.core.designsystem.music.MusicListComponent
 import com.shermanrex.core.designsystem.util.DeviceSize
-import com.shermanrex.core.designsystem.util.calculateWindowSize
+import com.shermanrex.core.designsystem.util.calculateWidthWindowSize
 import com.shermanrex.core.model.MusicModel
 import com.shermanrex.feature.music_search.component.SearchTextFieldComponent
 import kotlinx.collections.immutable.ImmutableList
@@ -71,7 +71,7 @@ fun SearchScreen(
     onSearchTextFieldValueChange: (String) -> Unit,
     onClearSearchTextField: () -> Unit,
 ) {
-    val windowSize = calculateWindowSize()
+    val windowSize = calculateWidthWindowSize()
     Scaffold(
         modifier = Modifier.statusBarsPadding(),
         topBar = {

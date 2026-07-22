@@ -6,14 +6,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,7 +22,7 @@ import com.shermanrex.core.common.util.extractFileExtension
 import com.shermanrex.core.common.util.removeFileExtension
 import com.shermanrex.core.designsystem.theme.MediaPlayerJetpackComposeTheme
 import com.shermanrex.core.designsystem.util.DeviceSize
-import com.shermanrex.core.designsystem.util.calculateWindowSize
+import com.shermanrex.core.designsystem.util.calculateWidthWindowSize
 import com.shermanrex.core.model.PlayerRepeatMode
 import com.shermanrex.core.model.PlayingMusicInfo
 import com.shermanrex.core.model.PlayingMusicState
@@ -36,7 +34,7 @@ fun SongDetail(
     playerUiState: PlayerUiState,
     onArtistClick: (String) -> Unit,
 ) {
-    val windowSize = calculateWindowSize()
+    val windowSize = calculateWidthWindowSize()
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Center,

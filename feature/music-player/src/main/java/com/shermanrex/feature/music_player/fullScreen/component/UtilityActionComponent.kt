@@ -39,7 +39,7 @@ fun UtilityActionComponent(
             ),
         ) {
             Icon(
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(16.dp),
                 painter = painterResource(R.drawable.icon_timer),
                 contentDescription = "",
             )
@@ -51,7 +51,7 @@ fun UtilityActionComponent(
             ),
         ) {
             Icon(
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(16.dp),
                 imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                 contentDescription = "",
             )

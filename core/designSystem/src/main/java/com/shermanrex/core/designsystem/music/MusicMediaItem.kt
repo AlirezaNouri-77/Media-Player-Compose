@@ -107,7 +107,7 @@ fun MusicMediaItem(
                     modifier = Modifier.fillMaxWidth(),
                     text = artist,
                     fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
                     fontWeight = FontWeight.Normal,
                     maxLines = 1,
                 )

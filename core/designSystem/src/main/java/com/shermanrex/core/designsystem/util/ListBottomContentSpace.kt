@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun listBottomContentSpace(considerMiniPlayer: Boolean = false): Dp {
-    val windowSize = calculateWindowSize()
+    val windowSize = calculateWidthWindowSize()
     val navigationBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     return if (windowSize == DeviceSize.COMPACT) {
         NavigationBottomBarHeight + navigationBarHeight + if (considerMiniPlayer) MiniPlayerHeight else 0.dp + 24.dp

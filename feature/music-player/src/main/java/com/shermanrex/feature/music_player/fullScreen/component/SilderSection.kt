@@ -1,6 +1,6 @@
 package com.shermanrex.feature.music_player.fullScreen.component
 
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -41,7 +42,7 @@ fun SliderSection(
     var seekPosition by remember { mutableFloatStateOf(0f) }
     val sliderInteractionSource = remember { MutableInteractionSource() }
     val isSliderDragging by sliderInteractionSource.collectIsDraggedAsState()
-    val thumbWidth by animateDpAsState(targetValue = if (isSliderDragging) 14.dp else 12.dp, label = "")
+    val thumbWidthScale by animateFloatAsState(targetValue = if (isSliderDragging) 1.2f else 1f, label = "")
 
     val sliderValue by remember(currentMusicPosition) {
         derivedStateOf {
@@ -63,11 +64,16 @@ fun SliderSection(
             onValueChangeFinished = { seekTo(seekPosition.toLong()) },
             thumb = {
                 SliderDefaults.Thumb(
-                    modifier = Modifier.offset(y = 1.5.dp),
+                    modifier = Modifier
+                        .offset(y = 3.dp)
+                        .graphicsLayer {
+                            scaleX *= thumbWidthScale
+                            scaleY *= thumbWidthScale
+                        },
                     colors = SliderDefaults.colors(
                         thumbColor = Color.White,
                     ),
-                    thumbSize = DpSize(thumbWidth, thumbWidth),
+                    thumbSize = DpSize(10.dp, 10.dp),
                     interactionSource = remember { MutableInteractionSource() },
                 )
             },

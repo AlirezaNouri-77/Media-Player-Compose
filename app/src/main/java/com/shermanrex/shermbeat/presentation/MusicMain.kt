@@ -1,32 +1,20 @@
 package com.shermanrex.shermbeat.presentation
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -39,9 +27,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.retain.retain
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -58,9 +43,8 @@ import androidx.navigation3.ui.NavDisplay
 import com.shermanrex.core.designsystem.util.DeviceSize
 import com.shermanrex.core.designsystem.util.MiniPlayerHeight
 import com.shermanrex.core.designsystem.util.NavigationBottomBarHeight
-import com.shermanrex.core.designsystem.util.calculateWindowSize
+import com.shermanrex.core.designsystem.util.calculateWidthWindowSize
 import com.shermanrex.core.model.MediaCategory
-import com.shermanrex.core.model.PlayerRepeatMode
 import com.shermanrex.feature.music_album.AlbumRoute
 import com.shermanrex.feature.music_artist.ArtistRoute
 import com.shermanrex.feature.music_categorydetail.CategoryDetailRoute
@@ -68,15 +52,10 @@ import com.shermanrex.feature.music_categorydetail.CategoryViewModel
 import com.shermanrex.feature.music_home.HomeScreen
 import com.shermanrex.feature.music_player.PlayerActions
 import com.shermanrex.feature.music_player.PlayerViewModel
-import com.shermanrex.feature.music_player.fullScreen.component.FullscreenPlayerPager
-import com.shermanrex.feature.music_player.fullScreen.component.SliderSection
-import com.shermanrex.feature.music_player.fullScreen.component.SongController
-import com.shermanrex.feature.music_player.fullScreen.component.SongDetail
-import com.shermanrex.feature.music_player.fullScreen.component.VolumeController
-import com.shermanrex.feature.music_player.model.PlayerUiState
 import com.shermanrex.feature.music_search.SearchRoute
 import com.shermanrex.shermbeat.presentation.bottomBar.MusicNavigationBar
 import com.shermanrex.shermbeat.presentation.component.BottomSheetContent
+import com.shermanrex.shermbeat.presentation.component.LandscapePlayerComponent
 import com.shermanrex.shermbeat.presentation.navigation.AlbumMusic
 import com.shermanrex.shermbeat.presentation.navigation.ArtistMusic
 import com.shermanrex.shermbeat.presentation.navigation.BackStackHandler
@@ -101,19 +80,23 @@ fun MusicMain(
     val screenHeight: Int = LocalWindowInfo.current.containerSize.height
 
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
+
     val coroutineScope = rememberCoroutineScope()
 
-    val windowSize = calculateWindowSize()
+    val windowSize = calculateWidthWindowSize()
 
     val playerUiState by playerViewModel.playerUiState.collectAsStateWithLifecycle()
-    val windowInset = WindowInsets.systemBars.asPaddingValues()
 
-    val bottomPadding = remember(windowInset.calculateBottomPadding(), windowSize) {
-        if (windowSize == DeviceSize.COMPACT) {
-            windowInset.calculateBottomPadding() + NavigationBottomBarHeight
-        } else {
-            10.dp
-        }
+    val bottomPadding = if (windowSize == DeviceSize.COMPACT) {
+        WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + NavigationBottomBarHeight
+    } else {
+        10.dp
+    }
+
+    val sheetPeekHeight = if (windowSize == DeviceSize.COMPACT) {
+        bottomPadding + if (playerUiState.currentPlayerState.playingMusicInfo.musicID.isNotEmpty()) MiniPlayerHeight else 0.dp
+    } else {
+        0.dp
     }
 
     BackHandler {
@@ -152,7 +135,7 @@ fun MusicMain(
                     modifier = Modifier.consumeWindowInsets(innerPadding),
                     scaffoldState = bottomSheetScaffoldState,
                     sheetDragHandle = null,
-                    sheetPeekHeight = bottomPadding + if (playerUiState.currentPlayerState.playingMusicInfo.musicID.isNotEmpty()) MiniPlayerHeight else 0.dp,
+                    sheetPeekHeight = sheetPeekHeight,
                     sheetContainerColor = Color.Transparent,
                     containerColor = Color.Transparent,
                     sheetMaxWidth = Dp.Unspecified,
@@ -277,49 +260,33 @@ fun MusicMain(
                         )
                         Spacer(Modifier.width(4.dp))
                         LandscapePlayerComponent(
+                            modifier = Modifier.weight(0.5f),
                             playerUiState = playerUiState,
                             isVisible = windowSize != DeviceSize.COMPACT && playerUiState.currentPlayerState.playingMusicInfo.musicID.isNotEmpty(),
                             setCurrentPagerIndex = { index ->
-                                playerViewModel.onPlayerAction(
-                                    PlayerActions.UpdateArtworkPageIndex(index),
-                                )
+                                playerViewModel.onPlayerAction(PlayerActions.UpdateArtworkPageIndex(index))
                             },
                             onVolumeChange = { volume ->
-                                playerViewModel.onPlayerAction(
-                                    PlayerActions.OnVolumeChange(volume),
-                                )
+                                playerViewModel.onPlayerAction(PlayerActions.OnVolumeChange(volume))
                             },
                             onTimerClick = { playerViewModel.onPlayerAction(PlayerActions.OnShowTimerBottomSheet) },
                             seekTo = { seekPosition ->
                                 playerViewModel.onPlayerAction(PlayerActions.SeekTo(seekPosition))
                             },
                             onMoveToIndexPager = { index, musicId ->
-                                playerViewModel.onPlayerAction(
-                                    PlayerActions.OnMoveToMedia(
-                                        index,
-                                        musicId,
-                                    ),
-                                )
+                                playerViewModel.onPlayerAction(PlayerActions.OnMoveToMedia(index, musicId))
                             },
                             onFavoriteClick = { musicId ->
-                                playerViewModel.onPlayerAction(
-                                    PlayerActions.OnFavoriteToggle(musicId),
-                                )
+                                playerViewModel.onPlayerAction(PlayerActions.OnFavoriteToggle(musicId))
                             },
                             onPreviousClick = {
-                                playerViewModel.onPlayerAction(
-                                    PlayerActions.OnPreviousMusic(
-                                        false,
-                                    ),
-                                )
+                                playerViewModel.onPlayerAction(PlayerActions.OnPreviousMusic(false))
                             },
                             onPauseMusic = { playerViewModel.onPlayerAction(PlayerActions.PausePlayer) },
                             onResumeMusic = { playerViewModel.onPlayerAction(PlayerActions.ResumePlayer) },
                             onNextClick = { playerViewModel.onPlayerAction(PlayerActions.OnNextMusic) },
                             onRepeatMode = { repeatMode ->
-                                playerViewModel.onPlayerAction(
-                                    PlayerActions.OnRepeatMode(repeatMode),
-                                )
+                                playerViewModel.onPlayerAction(PlayerActions.OnRepeatMode(repeatMode))
                             },
                             onShuffleModeClick = { playerViewModel.onPlayerAction(PlayerActions.OnSetShuffleMode) },
                             onArtistClick = { artist ->
@@ -332,108 +299,5 @@ fun MusicMain(
                 }
             },
         )
-    }
-}
-
-@Composable
-fun RowScope.LandscapePlayerComponent(
-    modifier: Modifier = Modifier,
-    isVisible: Boolean,
-    playerUiState: PlayerUiState,
-    setCurrentPagerIndex: (Int) -> Unit,
-    onVolumeChange: (Float) -> Unit,
-    onTimerClick: () -> Unit,
-    onArtistClick: (String) -> Unit,
-    seekTo: (Long) -> Unit,
-    onMoveToIndexPager: (Int, String) -> Unit,
-    onFavoriteClick: (String) -> Unit,
-    onPreviousClick: () -> Unit,
-    onPauseMusic: () -> Unit,
-    onResumeMusic: () -> Unit,
-    onNextClick: () -> Unit,
-    onRepeatMode: (PlayerRepeatMode) -> Unit,
-    onShuffleModeClick: () -> Unit,
-) {
-    val musicArtWorkColorAnimation by animateColorAsState(
-        targetValue = Color(playerUiState.thumbnailDominantColor),
-        animationSpec = tween(
-            durationMillis = 150,
-            delayMillis = 90,
-            easing = LinearEasing,
-        ),
-        label = "",
-    )
-    AnimatedVisibility(
-        modifier = Modifier
-            .fillMaxSize()
-            .weight(0.5f)
-            .statusBarsPadding()
-            .clip(RoundedCornerShape(16.dp))
-            .drawBehind {
-                drawRect(Color.Black)
-                drawRect(
-                    Brush.verticalGradient(
-                        0.2f to musicArtWorkColorAnimation.copy(alpha = 0.8f),
-                        0.6f to musicArtWorkColorAnimation.copy(alpha = 0.3f),
-                        1f to Color.Transparent,
-                    ),
-                )
-                drawRect(
-                    Brush.verticalGradient(
-                        0.5f to Color.Black.copy(alpha = 0.5f),
-                        1f to Color.Transparent,
-                    ),
-                )
-            },
-        visible = isVisible,
-        enter = fadeIn(),
-    ) {
-        Column(
-            modifier = modifier.fillMaxSize().padding(horizontal = 8.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                FullscreenPlayerPager(
-                    modifier = Modifier.size(180.dp),
-                    pagerItem = playerUiState.thumbnailsList.toImmutableList(),
-                    currentPagerPage = playerUiState.currentThumbnailPagerIndex,
-                    currentMusicID = playerUiState.currentPlayerState.playingMusicInfo.musicID.toLong(),
-                    setCurrentPagerIndex = setCurrentPagerIndex,
-                    onMoveToIndexPager = onMoveToIndexPager,
-                )
-                SongDetail(
-                    modifier = Modifier
-                        .weight(0.5f)
-                        .padding(horizontal = 12.dp),
-                    playerUiState = playerUiState,
-                    onArtistClick = onArtistClick,
-                )
-            }
-            SliderSection(
-                modifier = Modifier.padding(horizontal = 12.dp),
-                currentMusicPosition = playerUiState.currentPlayerPosition,
-                seekTo = seekTo,
-                duration = playerUiState.currentPlayerState.playingMusicInfo.duration.toFloat(),
-            )
-            SongController(
-                isPlaying = playerUiState.currentPlayerState.isPlaying,
-                playerRepeatMode = playerUiState.currentPlayerState.playerRepeatMode,
-                onPauseMusic = onPauseMusic,
-                onResumeMusic = onResumeMusic,
-                onPreviousClick = onPreviousClick,
-                onNextClick = onNextClick,
-                onRepeatMode = onRepeatMode,
-                onShuffleModeClick = onShuffleModeClick,
-                isShuffleMode = playerUiState.currentPlayerState.isShuffleMode,
-            )
-            VolumeController(
-                maxDeviceVolume = playerUiState.maxDeviceVolume,
-                currentVolume = playerUiState.currentDeviceVolume,
-                onVolumeChange = onVolumeChange,
-            )
-        }
     }
 }
